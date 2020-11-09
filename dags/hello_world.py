@@ -42,13 +42,13 @@ dag = DAG(
 
 # t1, t2 and t3 are examples of tasks created by instantiating operators
 install_openshift_cluster = BashOperator(
-    task_id='install_openshift_cluster_{{ params.platform }}_{{ params.openshift_version }}',
+    task_id='install_openshift_cluster',
     bash_command='date',
     dag=dag,
 )
 
 run_network_benchmarks = BashOperator(
-    task_id='run_network_benchmarks_{{ params.platform }}_{{ params.openshift_version }}',
+    task_id='run_network_benchmarks',
     depends_on_past=False,
     bash_command='sleep 5',
     retries=3,
@@ -56,7 +56,7 @@ run_network_benchmarks = BashOperator(
 )
 
 run_io_benchmarks = BashOperator(
-    task_id='run_io_benchmarks_{{ params.platform }}_{{ params.openshift_version }}',
+    task_id='run_io_benchmarks',
     depends_on_past=False,
     bash_command='sleep 5',
     retries=3,
@@ -64,7 +64,7 @@ run_io_benchmarks = BashOperator(
 )
 
 run_scale_tests = BashOperator(
-    task_id='run_scale_tests_{{ params.platform }}_{{ params.openshift_version }}',
+    task_id='run_scale_tests',
     depends_on_past=False,
     bash_command='sleep 5',
     retries=3,
@@ -72,7 +72,7 @@ run_scale_tests = BashOperator(
 )
 
 run_comparisons = BashOperator(
-    task_id='run_comparisons_{{ params.platform }}_{{ params.openshift_version }}',
+    task_id='run_comparisons',
     depends_on_past=False,
     bash_command='sleep 5',
     retries=3,
