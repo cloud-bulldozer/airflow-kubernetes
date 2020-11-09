@@ -17,6 +17,8 @@ default_args = {
     'email_on_retry': False,
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
+    'openshift_version': "4.7",
+    'platform': 'AWS'
     # 'queue': 'bash_queue',
     # 'pool': 'backfill',
     # 'priority_weight': 10,
@@ -32,49 +34,74 @@ default_args = {
     # 'trigger_rule': 'all_success'
 }
 dag = DAG(
-    'tutorial',
+    'Openshift Nightlies',
     default_args=default_args,
     description='A simple tutorial DAG',
     schedule_interval=timedelta(days=1),
 )
 
 # t1, t2 and t3 are examples of tasks created by instantiating operators
-t1 = BashOperator(
-    task_id='print_date',
+install_openshift_cluster = BashOperator(
+    task_id='install_openshift_cluster_{{ params.platform }}_{{ params.openshift_version }}',
     bash_command='date',
     dag=dag,
 )
 
-t2 = BashOperator(
-    task_id='sleep',
+run_network_benchmarks = BashOperator(
+    task_id='run_network_benchmarks_{{ params.platform }}_{{ params.openshift_version }}',
     depends_on_past=False,
     bash_command='sleep 5',
     retries=3,
     dag=dag,
 )
+
+run_io_benchmarks = BashOperator(
+    task_id='run_io_benchmarks_{{ params.platform }}_{{ params.openshift_version }}',
+    depends_on_past=False,
+    bash_command='sleep 5',
+    retries=3,
+    dag=dag,
+)
+
+run_scale_tests = BashOperator(
+    task_id='run_scale_tests_{{ params.platform }}_{{ params.openshift_version }}',
+    depends_on_past=False,
+    bash_command='sleep 5',
+    retries=3,
+    dag=dag,
+)
+
+run_comparisons = BashOperator(
+    task_id='run_comparisons_{{ params.platform }}_{{ params.openshift_version }}',
+    depends_on_past=False,
+    bash_command='sleep 5',
+    retries=3,
+    dag=dag,
+)
+
 dag.doc_md = __doc__
 
-t1.doc_md = """\
+install_openshift_cluster.doc_md = """\
 #### Task Documentation
 You can document your task using the attributes `doc_md` (markdown),
 `doc` (plain text), `doc_rst`, `doc_json`, `doc_yaml` which gets
 rendered in the UI's Task Instance Details page.
 ![img](http://montcs.bloomu.edu/~bobmon/Semesters/2012-01/491/import%20soul.png)
 """
-templated_command = """
-{% for i in range(5) %}
-    echo "{{ ds }}"
-    echo "{{ macros.ds_add(ds, 7)}}"
-    echo "{{ params.my_param }}"
-{% endfor %}
-"""
+# templated_command = """
+# {% for i in range(5) %}
+#     echo "{{ ds }}"
+#     echo "{{ macros.ds_add(ds, 7)}}"
+#     echo "{{ params.my_param }}"
+# {% endfor %}
+# """
 
-t3 = BashOperator(
-    task_id='templated',
-    depends_on_past=False,
-    bash_command=templated_command,
-    params={'my_param': 'Parameter I passed in'},
-    dag=dag,
-)
+# t3 = BashOperator(
+#     task_id='templated',
+#     depends_on_past=False,
+#     bash_command=templated_command,
+#     params={'my_param': 'Parameter I passed in'},
+#     dag=dag,
+# )
 
-t1 >> [t2, t3]
+install_openshift_cluster >> [run_network_benchmarks, run_io_benchmarks, run_scale_tests] >> run_comparisons
