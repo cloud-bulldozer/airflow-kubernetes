@@ -95,7 +95,13 @@ cleanup_cluster = BashOperator(
     dag=dag,
 )
 
-
+publish_results = BashOperator(
+    task_id='publish_results',
+    depends_on_past=False,
+    bash_command='sleep 5',
+    retries=3,
+    dag=dag,
+)
 
 dag.doc_md = __doc__
 
@@ -122,4 +128,4 @@ rendered in the UI's Task Instance Details page.
 #     dag=dag,
 # )
 
-install_openshift_cluster >> run_http_scale_tests >> [run_network_benchmarks, run_io_benchmarks] >> run_cluster_scale_tests >> run_comparisons
+install_openshift_cluster >> run_http_scale_tests >> [run_network_benchmarks, run_io_benchmarks] >> run_cluster_scale_tests >> run_comparisons >> [cleanup_cluster, publish_results]
