@@ -63,8 +63,16 @@ run_io_benchmarks = BashOperator(
     dag=dag,
 )
 
-run_scale_tests = BashOperator(
-    task_id='run_scale_tests',
+run_http_scale_tests = BashOperator(
+    task_id='run_http_scale_tests',
+    depends_on_past=False,
+    bash_command='sleep 5',
+    retries=3,
+    dag=dag,
+)
+
+run_cluster_scale_tests = BashOperator(
+    task_id='run_http_scale_tests',
     depends_on_past=False,
     bash_command='sleep 5',
     retries=3,
@@ -78,6 +86,16 @@ run_comparisons = BashOperator(
     retries=3,
     dag=dag,
 )
+
+cleanup_cluster = BashOperator(
+    task_id='cleanup_cluster',
+    depends_on_past=False,
+    bash_command='sleep 5',
+    retries=3,
+    dag=dag,
+)
+
+
 
 dag.doc_md = __doc__
 
@@ -104,4 +122,4 @@ rendered in the UI's Task Instance Details page.
 #     dag=dag,
 # )
 
-install_openshift_cluster >> [run_network_benchmarks, run_io_benchmarks, run_scale_tests] >> run_comparisons
+install_openshift_cluster >> run_http_scale_tests >> [run_network_benchmarks, run_io_benchmarks] >> run_cluster_scale_tests >> run_comparisons
