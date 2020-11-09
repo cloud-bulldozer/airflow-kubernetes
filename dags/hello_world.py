@@ -72,7 +72,7 @@ run_http_scale_tests = BashOperator(
 )
 
 run_cluster_scale_tests = BashOperator(
-    task_id='run_http_scale_tests',
+    task_id='run_cluster_scale_tests',
     depends_on_past=False,
     bash_command='sleep 5',
     retries=3,
