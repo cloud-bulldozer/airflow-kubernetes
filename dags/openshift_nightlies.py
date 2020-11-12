@@ -5,7 +5,7 @@ from airflow.utils.dates import days_ago
 from tasks.install_cluster import task
 
 
-with open("vars/common.json") as arg_file:
+with open("/opt/airflow/dags/repo/dags/vars/common.json") as arg_file:
     common_args = json.load(arg_file)
 
 
