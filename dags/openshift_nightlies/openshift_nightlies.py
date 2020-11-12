@@ -2,8 +2,8 @@ import json
 from datetime import timedelta
 from airflow import DAG
 from airflow.utils.dates import days_ago
-from tasks.install_cluster import task
-from openshift_nightlies.airflow.operators.bash_operator import BashOperator
+from openshift_nightlies.tasks.install_cluster import task
+from airflow.operators.bash_operator import BashOperator
 
 
 with open("/opt/airflow/dags/repo/dags/openshift_nightlies/vars/common.json") as arg_file:
