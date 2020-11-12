@@ -1,9 +1,9 @@
 #!/bin/bash
-while getopts p:t:s:x: flag
+while getopts p:v:j: flag
 do
     case "${flag}" in
         p) platform=${OPTARG};;
-        t) version=${OPTARG};;
+        v) version=${OPTARG};;
         j) json_string=${OPTARG};;
     esac
 done
