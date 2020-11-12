@@ -42,4 +42,6 @@ dag = DAG(
     schedule_interval=timedelta(days=1),
 )
 
-task.get_task(dag, default_args["install"]["platform"], default_args["install"]["version"], default_args["install"]["config"])
+install_cluster = task.get_task(dag, default_args["install"]["platform"], default_args["install"]["version"], default_args["install"]["config"])
+
+install_cluster 
