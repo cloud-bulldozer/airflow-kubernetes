@@ -6,7 +6,7 @@ import json
 from datetime import timedelta
 from airflow import DAG
 from airflow.utils.dates import days_ago
-from openshift_nightlies.tasks.install_cluster import task
+from tasks.install_cluster import task
 from airflow.operators.bash_operator import BashOperator
 
 
