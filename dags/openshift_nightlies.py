@@ -8,8 +8,7 @@ from tasks.install_cluster import task
 with open("/opt/airflow/dags/repo/dags/vars/common.json") as arg_file:
     common_args = json.load(arg_file)
 
-
-default_args = common_args + {
+metadata_args = {
     'owner': 'airflow',
     'depends_on_past': False,
     'start_date': days_ago(2),
@@ -34,6 +33,9 @@ default_args = common_args + {
     # 'sla_miss_callback': yet_another_function,
     # 'trigger_rule': 'all_success'
 }
+
+
+default_args = {**common_args, **metadata_args}
 
 dag = DAG(
     'openshift_nightlies_real',
