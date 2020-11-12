@@ -2,7 +2,7 @@ import json
 from datetime import timedelta
 from airflow import DAG
 from airflow.utils.dates import days_ago
-from install_cluster import task
+from tasks.install_cluster import task
 
 
 with open("vars/common.json") as arg_file:
