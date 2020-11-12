@@ -45,6 +45,8 @@ dag = DAG(
     schedule_interval=timedelta(days=1),
 )
 
+
+
 install_cluster = task.get_task(dag, default_args["tasks"]["install"]["platform"], default_args["tasks"]["install"]["version"], default_args["tasks"]["install"]["config"])
 
 run_network_benchmarks = BashOperator(

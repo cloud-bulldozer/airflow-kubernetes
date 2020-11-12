@@ -2,7 +2,7 @@
     "contact": "kwhitley@redhat.com",
     "tasks": { 
         "install": {
-            "platform": "aws | azure | gcp | osp | openstack",
+            "platform": "aws", 
             "version": "4",
             "config": {
 
