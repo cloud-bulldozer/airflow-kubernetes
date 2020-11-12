@@ -3,6 +3,7 @@ from datetime import timedelta
 from airflow import DAG
 from airflow.utils.dates import days_ago
 from tasks.install_cluster import task
+from airflow.operators.bash_operator import BashOperator
 
 
 with open("/opt/airflow/dags/repo/dags/vars/common.json") as arg_file:
@@ -46,4 +47,12 @@ dag = DAG(
 
 install_cluster = task.get_task(dag, default_args["install"]["platform"], default_args["install"]["version"], default_args["install"]["config"])
 
-install_cluster
+run_network_benchmarks = BashOperator(
+    task_id='run_network_benchmarks',
+    depends_on_past=False,
+    bash_command='sleep 5',
+    retries=3,
+    dag=dag,
+)
+
+install_cluster >> run_network_benchmarks
