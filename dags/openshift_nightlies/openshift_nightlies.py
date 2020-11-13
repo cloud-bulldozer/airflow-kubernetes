@@ -43,7 +43,7 @@ metadata_args = {
 default_args = {**common_args, **metadata_args}
 
 dag = DAG(
-    'openshift_nightlies_real',
+    'oc_scale',
     default_args=default_args,
     description='A simple tutorial DAG',
     schedule_interval=timedelta(days=1),
