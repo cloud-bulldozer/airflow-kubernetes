@@ -1,7 +1,16 @@
 import json
 from airflow.operators.bash_operator import BashOperator
 
-def get_task(dag, platform, version, config): 
+
+
+def get_task(dag, platform, version, config):
+    import logging 
+    import sys
+
+    log = logging.getLogger("airflow.task.operators")
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.INFO)
+    log.addHandler(handler) 
     return BashOperator(
         task_id=f"install_openshift_{version}_{platform}",
         depends_on_past=False,
