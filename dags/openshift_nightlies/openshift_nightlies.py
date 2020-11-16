@@ -57,8 +57,15 @@ dag = DAG(
 )
 
 
+with open("/opt/airflow/dags/repo/dags/openshift_nightlies/tasks/install_cluster/vars/common.json") as install_json:
+    install_args = json.load(install_json)
 
-install_cluster = task.get_task(dag, default_args["tasks"]["install"]["platform"], default_args["tasks"]["install"]["version"], default_args["tasks"]["install"]["config"])
+with open("/opt/airflow/dags/repo/dags/openshift_nightlies/tasks/install_cluster/vars/aws.json") as install_json:
+    aws_install_args = json.load(install_json)
+
+install_task_args = {**install_args, **aws_install_args}
+
+install_cluster = task.get_task(dag, default_args["tasks"]["install"]["platform"], default_args["tasks"]["install"]["version"], install_task_args)
 
 run_network_benchmarks = BashOperator(
     task_id='run_network_benchmarks',
