@@ -3,7 +3,7 @@ from airflow.operators.bash_operator import BashOperator
 
 exec_config = {
     "KubernetesExecutor": {
-        "image": "quay.io/keithwhitley4/airflow:latest"
+        "image": "quay.io/keithwhitley4/airflow-ansible:latest"
     }
 }
 
