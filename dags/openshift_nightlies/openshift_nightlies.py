@@ -1,13 +1,20 @@
 import sys
 import os
-sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
-
+import logging 
 import json
+
+sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
+log = logging.getLogger("airflow.task.operators")
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.INFO)
+log.addHandler(handler) 
+
 from datetime import timedelta
 from airflow import DAG
 from airflow.utils.dates import days_ago
 from tasks.install_cluster import task
 from airflow.operators.bash_operator import BashOperator
+
 
 
 with open("/opt/airflow/dags/repo/dags/openshift_nightlies/vars/common.json") as arg_file:
