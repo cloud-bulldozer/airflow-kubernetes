@@ -1,4 +1,7 @@
 #!/bin/bash
+
+echo "Hello!"
+
 while getopts p:v:j: flag
 do
     case "${flag}" in
