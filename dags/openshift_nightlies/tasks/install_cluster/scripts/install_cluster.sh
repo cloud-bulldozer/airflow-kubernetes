@@ -7,7 +7,7 @@ do
     case "${flag}" in
         p) platform=${OPTARG};;
         v) version=${OPTARG};;
-        j) json_string=${OPTARG};;
+        j) json_file=${OPTARG};;
     esac
 done
 
@@ -29,4 +29,6 @@ echo "${ORCHESTRATION_HOST}" >> inventory
 cat inventory
 
 
-ANSIBLE_DEBUG=True ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --syntax-check --extra-vars ${json_string}
+cat ${json_file}
+
+ANSIBLE_DEBUG=True ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --syntax-check --extra-vars @${json_file}
