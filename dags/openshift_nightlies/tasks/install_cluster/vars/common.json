@@ -6,7 +6,7 @@
     "openshift_install": true,
     "openshift_post_install": true,
     "openshift_post_config": true,
-    "openshift_debug_config": false,
+    "openshift_debug_config": true,
     "openshift_client_location": "",
     "openshift_install_release_image_override": "",
     "openshift_install_binary_url": "",

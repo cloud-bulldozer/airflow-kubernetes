@@ -1,5 +1,4 @@
 IMAGE_NAME=airflow-ansible
-IMAGE_TAG=latest
 QUAY_ACCOUNT=quay.io/keithwhitley4
 IMAGE_BUILDER=podman
 
