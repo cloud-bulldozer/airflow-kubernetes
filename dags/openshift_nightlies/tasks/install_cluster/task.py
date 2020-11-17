@@ -25,5 +25,6 @@ def get_task(dag, platform, version, config):
         bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/tasks/install_cluster/scripts/install_cluster.sh -p {platform} -v {version} -j '{json.dumps(config)}'",
         retries=3,
         dag=dag,
-        executor_config=exec_config
+        executor_config=exec_config,
+        env=env
 )
