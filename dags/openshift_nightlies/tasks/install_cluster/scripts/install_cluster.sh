@@ -32,4 +32,4 @@ cat inventory
 
 cat ${json_file}
 echo "ANSIBLE_DEBUG=True ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars @${json_file}"
-ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars "@${json_file}"
+CERBERUS_IMAGE=quay.io/openshift-scale/cerberus:latest ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars "@${json_file}"
