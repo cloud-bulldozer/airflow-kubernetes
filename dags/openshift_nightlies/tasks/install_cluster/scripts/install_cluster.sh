@@ -11,7 +11,7 @@ do
     esac
 done
 
-git clone https://github.com/openshift-scale/scale-ci-deploy /home/airflow/
-cd scale-ci-deploy
+git clone https://github.com/openshift-scale/scale-ci-deploy /home/airflow/scale-ci-deploy
+cd /home/airflow/scale-ci-deploy
 cat /inventory
 ANSIBLE_DEBUG=True ansible-playbook -vvvv -i /inventory OCP-$version.X/install-on-$platform.yml --syntax-check --extra-vars ${json_string}
