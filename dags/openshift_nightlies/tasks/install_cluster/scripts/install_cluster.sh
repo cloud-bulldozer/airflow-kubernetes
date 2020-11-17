@@ -27,6 +27,8 @@ cd scale-ci-deploy
 echo "[orchestration]" > inventory
 echo "${ORCHESTRATION_HOST}" >> inventory
 
+export CERBERUS_ENABLE=false
+
 cat inventory
 printenv
 
