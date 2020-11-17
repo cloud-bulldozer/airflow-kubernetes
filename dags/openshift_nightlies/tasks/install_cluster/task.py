@@ -29,5 +29,5 @@ def get_task(dag, platform, version, config):
         retries=3,
         dag=dag,
         executor_config=exec_config,
-        env={k.upper(): v for k,v in config.items()}
+        env=env
 )
