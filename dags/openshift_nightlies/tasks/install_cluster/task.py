@@ -20,7 +20,7 @@ def get_task(dag, platform, version, config):
     }
 
     with open('/home/airflow/task.json', 'w') as json_file:
-        data = json.dump(config)
+        json.dump(config, json_file)
     
     return BashOperator(
         task_id=f"install_openshift_{version}_{platform}",
