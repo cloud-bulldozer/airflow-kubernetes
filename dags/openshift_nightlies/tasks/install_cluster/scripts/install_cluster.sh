@@ -14,4 +14,4 @@ done
 git clone https://github.com/openshift-scale/scale-ci-deploy 
 cd scale-ci-deploy
 cat /inventory
-ansible-playbook -vv -i /inventory OCP-$version.X/install-on-$platform.yml --extra-vars ${json_string}
+ansible-playbook -vvvvv -i /inventory OCP-$version.X/install-on-$platform.yml --extra-vars ${json_string}
