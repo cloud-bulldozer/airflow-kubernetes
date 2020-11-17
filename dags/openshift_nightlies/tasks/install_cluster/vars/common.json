@@ -33,6 +33,7 @@
     "cerberus_image": "quay.io/openshift-scale/cerberus:latest",
     "cerberus_url": "http://0.0.0.0:8080",
     "cerberus_publish_status": true,
+    "cerberus_enable": true,
     "watch_nodes": true,
     "watch_cluster_operators": true,
     "watch_namepsaces": [

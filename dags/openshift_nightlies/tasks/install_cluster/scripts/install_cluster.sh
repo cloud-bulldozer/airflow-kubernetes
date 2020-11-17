@@ -31,4 +31,4 @@ cat inventory
 
 cat ${json_file}
 
-ANSIBLE_DEBUG=True ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --syntax-check --extra-vars @${json_file}
+ANSIBLE_DEBUG=True ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars @${json_file}
