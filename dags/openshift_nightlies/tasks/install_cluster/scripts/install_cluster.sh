@@ -33,4 +33,4 @@ printenv
 
 cat ${json_file}
 echo "ANSIBLE_DEBUG=True ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars @${json_file}"
-ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars "@${json_file}"
+ansible-playbook -vv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars "@${json_file}"
