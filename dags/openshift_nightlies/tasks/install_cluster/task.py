@@ -14,10 +14,12 @@ aws = Variable.get('aws', deserialize_json=True)
 def get_task(dag, platform, version, config):
     config = {**config, **aws}
 
-    env = {
-        "SSHKEY_TOKEN": aws['sshkey_token'],
-        "ORCHESTRATION_HOST": aws['orchestration_host']
-    }
+    # env = {
+    #     "SSHKEY_TOKEN": aws['sshkey_token'],
+    #     "ORCHESTRATION_HOST": aws['orchestration_host']
+    # }
+
+    env = {k.upper(): v for k,v in config.items()}
 
     with open('/home/airflow/task.json', 'w') as json_file:
         json.dump(config, json_file)
