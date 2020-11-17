@@ -30,4 +30,4 @@ cat inventory
 
 echo "ANSIBLE_DEBUG=True ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --list-tasks --extra-vars ${json_string}"
 
-ANSIBLE_DEBUG=True ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --list-tasks --extra-vars ${json_string}
+ANSIBLE_DEBUG=True ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --list-tasks --extra-vars '${json_string}'
