@@ -29,4 +29,4 @@ echo "${ORCHESTRATION_HOST}" >> inventory
 cat inventory
 
 
-ANSIBLE_DEBUG=True ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --syntax-check --extra-vars '${json_string}'
+ANSIBLE_DEBUG=True ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --syntax-check --extra-vars ${json_string}
