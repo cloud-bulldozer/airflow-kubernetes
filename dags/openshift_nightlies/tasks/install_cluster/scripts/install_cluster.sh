@@ -19,6 +19,7 @@ git clone https://github.com/openshift-scale/scale-ci-deploy
 git clone https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git
 export PUBLIC_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
 export PRIVATE_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2 
+export OPENSHIFT_INSTALL_SSH_PUB_KEY_FILE=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
 chmod 600 ${PRIVATE_KEY}
 
 
