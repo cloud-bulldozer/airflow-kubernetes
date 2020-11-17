@@ -4,7 +4,7 @@ from airflow.models import Variable
 
 exec_config = {
     "KubernetesExecutor": {
-        "image": "quay.io/keithwhitley4/airflow-ansible:root"
+        "image": "quay.io/keithwhitley4/airflow-ansible:latest"
     }
 }
 
