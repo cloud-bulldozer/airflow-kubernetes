@@ -1,5 +1,5 @@
 {
-    "orchestration_user": "root",
+    "orchestration_user": "",
     "orchestration_host": "",
     "sshkey_token": "",
     "openshift_cleanup": false,
