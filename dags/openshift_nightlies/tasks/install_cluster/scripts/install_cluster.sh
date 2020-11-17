@@ -19,6 +19,7 @@ git clone https://github.com/openshift-scale/scale-ci-deploy
 git clone https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git
 export PUBLIC_KEY=perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
 export PRIVATE_KEY=perf-dept/ssh_keys/id_rsa_pbench_ec2
+export CERBERUS_IMAGE=quay.io/openshift-scale/cerberus:latest 
 chmod 600 ${PRIVATE_KEY}
 
 
@@ -28,8 +29,8 @@ echo "[orchestration]" > inventory
 echo "${ORCHESTRATION_HOST}" >> inventory
 
 cat inventory
-
+printenv
 
 cat ${json_file}
 echo "ANSIBLE_DEBUG=True ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars @${json_file}"
-CERBERUS_IMAGE=quay.io/openshift-scale/cerberus:latest ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars "@${json_file}"
+ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars "@${json_file}"
