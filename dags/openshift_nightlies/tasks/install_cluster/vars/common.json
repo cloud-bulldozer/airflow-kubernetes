@@ -29,7 +29,7 @@
     "openshift_toggle_workload_node": true,
     "dittybopper_enable": true,
     "kubeconfig_path": "/root/.kube/config",
-    "cerberus_config_path": "/root/cerberus.yml",
+    "cerberus_config_path": "/opt/airflow/dags/repo/dags/openshift_nightlies/tasks/install_cluster/files/cerberus.yml",
     "cerberus_image": "quay.io/openshift-scale/cerberus:latest",
     "cerberus_url": "http://0.0.0.0:8080",
     "cerberus_publish_status": true,
