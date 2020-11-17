@@ -13,6 +13,11 @@ aws = Variable.get('aws', deserialize_json=True)
 
 def get_task(dag, platform, version, config):
     config = {**config, **aws}
+
+    env = {
+        "SSHKEY_TOKEN": aws['sshkey_token'],
+        "ORCHESTRATION_HOST": aws['orchestration_host']
+    }
     
     return BashOperator(
         task_id=f"install_openshift_{version}_{platform}",
