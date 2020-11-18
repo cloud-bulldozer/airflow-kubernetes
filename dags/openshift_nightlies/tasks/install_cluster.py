@@ -10,10 +10,10 @@ exec_config = {
 
 
 def get_install_task(dag, platform, version, config):
-    _get_task(dag, platform, version, config, operation="install")
+    return _get_task(dag, platform, version, config, operation="install")
 
 def get_uninstall_task(dag, platform, version, config):
-    _get_task(dag, platform, version, config, operation="cleanup")
+    return _get_task(dag, platform, version, config, operation="cleanup")
 
 
 def _get_task(dag, platform, version, config, operation="install"):
