@@ -35,7 +35,7 @@ def _get_task(dag, platform, version, config, operation="install"):
     return BashOperator(
         task_id=f"{operation}_rhos_{version}_{platform}",
         depends_on_past=False,
-        bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {platform} -v 4 -j '{json.dumps(config)}'",
+        bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {platform} -v 4 -j {json.dumps(config)}",
         retries=3,
         dag=dag,
         trigger_rule=trigger_rule,
