@@ -32,10 +32,13 @@ def _get_task(dag, platform, version, config, operation="install"):
     trigger_rule = "all_done" if operation == "cleanup" else "all_success"
     
 
+    with open(f"/home/airflow/{operation}_task.json", 'w') as json_file:
+        json.dump(config, json_file, sort_keys=True, indent=4)
+
     return BashOperator(
         task_id=f"{operation}_rhos_{version}_{platform}",
         depends_on_past=False,
-        bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {platform} -v 4 -j {json.dumps(config)}",
+        bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {platform} -v 4 -j /home/airflow/{operation}_task.json",
         retries=3,
         dag=dag,
         trigger_rule=trigger_rule,
