@@ -28,5 +28,5 @@ cd scale-ci-deploy
 echo "[orchestration]" > inventory
 echo "${ORCHESTRATION_HOST}" >> inventory
 cat inventory
-cat ${json_file}
-ansible-playbook -vv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars ${json_string}
+cat ${json_string}
+ansible-playbook -vv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars $json_string
