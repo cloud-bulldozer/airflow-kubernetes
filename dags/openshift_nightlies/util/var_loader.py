@@ -3,6 +3,8 @@ import json
 # Base Directory where all OpenShift Nightly DAG Code lives
 root_dag_dir = "/opt/airflow/dags/repo/dags/openshift_nightlies"
 
+### Json File Loads
+
 def get_common_vars():
     file_path = f"{root_dag_dir}/vars/common.json"
     return get_json(file_path)

@@ -12,12 +12,14 @@ exec_config = {
 
 
 def get_task(dag, platform, version, config):
-    platform_secrets = Variable.get(platform, deserialize_json=True)
-    config = {**config, **platform_secrets}
+    ansible_orchestrator = Variable.get("ansible_orchestrator", deserialize_json=True)
+    version_secrets = Variable.get(f"openshift_install_{version}", deserialize_json=True)
+    aws_creds = Variable.get("aws_creds", deserialize_json=True)
+    config = {**config, **ansible_orchestrator, **version_secrets, **aws_creds}
 
     env = {
-        "SSHKEY_TOKEN": platform_secrets['sshkey_token'],
-        "ORCHESTRATION_HOST": platform_secrets['orchestration_host']
+        "SSHKEY_TOKEN": config['sshkey_token'],
+        "ORCHESTRATION_HOST": config['orchestration_host']
     }
     
 
