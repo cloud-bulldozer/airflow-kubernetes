@@ -2,22 +2,29 @@ import sys
 import os
 import logging 
 import json
-
-sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
-log = logging.getLogger("airflow.task.operators")
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.INFO)
-log.addHandler(handler) 
-
 from datetime import timedelta
 from airflow import DAG
 from airflow.utils.dates import days_ago
-from tasks.install_cluster import task
+from openshift_nightlies.tasks import install_cluster
+from openshift_nightlies.util import var_loader
 from airflow.operators.bash_operator import BashOperator
 
+# Base Directory where all OpenShift Nightly DAG Code lives
+root_dag_dir = "/opt/airflow/dags/repo/dags/openshift_nightlies"
+
+# Configure Path to have the Python Module on it
+sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
+
+# Set Task Logger to INFO for better task logs
+log = logging.getLogger("airflow.task.operators")
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.INFO)
+log.addHandler(handler)
 
 
-with open("/opt/airflow/dags/repo/dags/openshift_nightlies/vars/common.json") as arg_file:
+
+
+with open(f"{root_dag_dir}/vars/common.json") as arg_file:
     common_args = json.load(arg_file)
 
 metadata_args = {
@@ -46,7 +53,7 @@ metadata_args = {
     # 'trigger_rule': 'all_success'
 }
 
-
+common_args = var_loader.get_common_vars()
 default_args = {**common_args, **metadata_args}
 
 dag = DAG(
@@ -56,14 +63,14 @@ dag = DAG(
     schedule_interval=timedelta(days=1),
 )
 
+openshift_version = default_args["tasks"]["install"]["version"]
+platform = default_args["tasks"]["install"]["platform"]
+profile = default_args["tasks"]["install"]["profile"]
 
-with open("/opt/airflow/dags/repo/dags/openshift_nightlies/tasks/install_cluster/vars/common.json") as install_json:
-    install_args = json.load(install_json)
+install_args = var_loader.get_common_install_vars(version=openshift_version)
+profile_args = var_loader.get_profile_install_vars(version=openshift_version, platform=platform, profile=profile)
 
-with open("/opt/airflow/dags/repo/dags/openshift_nightlies/tasks/install_cluster/vars/aws.json") as install_json:
-    aws_install_args = json.load(install_json)
-
-install_task_args = {**install_args, **aws_install_args}
+install_task_args = {**install_args, **profile_args}
 
 install_cluster = task.get_task(dag, default_args["tasks"]["install"]["platform"], default_args["tasks"]["install"]["version"], install_task_args)
 

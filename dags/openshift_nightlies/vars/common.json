@@ -3,7 +3,8 @@
     "tasks": { 
         "install": {
             "platform": "aws", 
-            "version": "4",
+            "version": "stable",
+            "profile": "default",
             "config": {
 
             }
