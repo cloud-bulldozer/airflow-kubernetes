@@ -22,7 +22,7 @@ def get_task(dag, platform, version, config):
     
 
     with open('/home/airflow/task.json', 'w') as json_file:
-        json.dump(config, json_file)
+        json.dump(config, json_file, sort_keys=True, indent=4)
     
     return BashOperator(
         task_id=f"install_rhos_{version}_{platform}",
