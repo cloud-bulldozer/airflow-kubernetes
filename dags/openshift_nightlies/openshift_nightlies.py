@@ -5,15 +5,17 @@ import json
 from datetime import timedelta
 from airflow import DAG
 from airflow.utils.dates import days_ago
+from airflow.operators.bash_operator import BashOperator
+
+# Configure Path to have the Python Module on it
+sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
 from tasks import install_cluster
 from util import var_loader
-from airflow.operators.bash_operator import BashOperator
 
 # Base Directory where all OpenShift Nightly DAG Code lives
 root_dag_dir = "/opt/airflow/dags/repo/dags/openshift_nightlies"
 
-# Configure Path to have the Python Module on it
-sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
+
 
 # Set Task Logger to INFO for better task logs
 log = logging.getLogger("airflow.task.operators")
