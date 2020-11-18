@@ -20,7 +20,7 @@ def _get_task(dag, platform, version, config, operation="install"):
     ansible_orchestrator = Variable.get("ansible_orchestrator", deserialize_json=True)
     version_secrets = Variable.get(f"openshift_install_{version}", deserialize_json=True)
     aws_creds = Variable.get("aws_creds", deserialize_json=True)
-    playbook_operations = Variable.get(f"playbook_{operation}")
+    playbook_operations = Variable.get(f"playbook_{operation}", deserialize_json=True)
 
     config = {**config, **ansible_orchestrator, **version_secrets, **aws_creds, **playbook_operations}
 
