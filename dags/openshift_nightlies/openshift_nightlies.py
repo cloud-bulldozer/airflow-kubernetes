@@ -24,11 +24,6 @@ handler.setLevel(logging.INFO)
 log.addHandler(handler)
 
 
-
-
-with open(f"{root_dag_dir}/vars/common.json") as arg_file:
-    common_args = json.load(arg_file)
-
 metadata_args = {
     'owner': 'airflow',
     'depends_on_past': False,
