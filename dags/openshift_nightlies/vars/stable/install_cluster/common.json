@@ -2,7 +2,7 @@
     "orchestration_user": "",
     "orchestration_host": "",
     "sshkey_token": "",
-    "openshift_cleanup": true,
+    "openshift_cleanup": false,
     "openshift_install": true,
     "openshift_post_install": true,
     "openshift_post_config": true,
