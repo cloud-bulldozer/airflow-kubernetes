@@ -28,6 +28,8 @@ def _get_task(dag, platform, version, config, operation="install"):
         "SSHKEY_TOKEN": config['sshkey_token'],
         "ORCHESTRATION_HOST": config['orchestration_host']
     }
+
+    trigger_rule = "all_done" if operation == "cleanup" else "all_success"
     
 
     with open('/home/airflow/task.json', 'w') as json_file:
@@ -39,6 +41,7 @@ def _get_task(dag, platform, version, config, operation="install"):
         bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {platform} -v 4 -j /home/airflow/task.json",
         retries=3,
         dag=dag,
+        trigger_rule=trigger_rule,
         executor_config=exec_config,
         env=env
     )
