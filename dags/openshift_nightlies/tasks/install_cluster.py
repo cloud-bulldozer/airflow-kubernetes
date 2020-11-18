@@ -9,13 +9,20 @@ exec_config = {
 }
 
 
+def get_install_task(dag, platform, version, config):
+    _get_task(dag, platform, version, config, operation="install")
+
+def get_uninstall_task(dag, platform, version, config):
+    _get_task(dag, platform, version, config, operation="cleanup")
 
 
-def get_task(dag, platform, version, config):
+def _get_task(dag, platform, version, config, operation="install"):
     ansible_orchestrator = Variable.get("ansible_orchestrator", deserialize_json=True)
     version_secrets = Variable.get(f"openshift_install_{version}", deserialize_json=True)
     aws_creds = Variable.get("aws_creds", deserialize_json=True)
-    config = {**config, **ansible_orchestrator, **version_secrets, **aws_creds}
+    playbook_operations = Variable.get(f"playbook_{operation}")
+
+    config = {**config, **ansible_orchestrator, **version_secrets, **aws_creds, **playbook_operations}
 
     env = {
         "SSHKEY_TOKEN": config['sshkey_token'],
@@ -25,13 +32,13 @@ def get_task(dag, platform, version, config):
 
     with open('/home/airflow/task.json', 'w') as json_file:
         json.dump(config, json_file, sort_keys=True, indent=4)
-    
+
     return BashOperator(
-        task_id=f"install_rhos_{version}_{platform}",
+        task_id=f"{operation}_rhos_{version}_{platform}",
         depends_on_past=False,
         bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {platform} -v 4 -j /home/airflow/task.json",
         retries=3,
         dag=dag,
         executor_config=exec_config,
         env=env
-)
+    )

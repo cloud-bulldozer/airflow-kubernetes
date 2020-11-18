@@ -69,14 +69,8 @@ profile_args = var_loader.get_profile_install_vars(version=openshift_version, pl
 
 install_task_args = {**install_args, **profile_args}
 
-install_cluster = install_cluster.get_task(dag, default_args["tasks"]["install"]["platform"], default_args["tasks"]["install"]["version"], install_task_args)
+install_cluster = install_cluster.get_install_task(dag, default_args["tasks"]["install"]["platform"], default_args["tasks"]["install"]["version"], install_task_args)
+cleanup_cluster = install_cluster.get_cleanup_task(dag, default_args["tasks"]["install"]["platform"], default_args["tasks"]["install"]["version"], install_task_args)
 
-run_network_benchmarks = BashOperator(
-    task_id='run_network_benchmarks',
-    depends_on_past=False,
-    bash_command='sleep 5',
-    retries=3,
-    dag=dag,
-)
 
-install_cluster >> run_network_benchmarks
+install_cluster >> cleanup_cluster
