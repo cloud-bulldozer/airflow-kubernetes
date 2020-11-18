@@ -5,8 +5,8 @@ import json
 from datetime import timedelta
 from airflow import DAG
 from airflow.utils.dates import days_ago
-from openshift_nightlies.tasks import install_cluster
-from openshift_nightlies.util import var_loader
+from tasks import install_cluster
+from util import var_loader
 from airflow.operators.bash_operator import BashOperator
 
 # Base Directory where all OpenShift Nightly DAG Code lives
