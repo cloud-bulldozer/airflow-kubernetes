@@ -1,6 +1,6 @@
 IMAGE_NAME=airflow-ansible
 QUAY_ACCOUNT=quay.io/keithwhitley4
-IMAGE_BUILDER=podman
+IMAGE_BUILDER ?= podman
 
 .PHONY: all
 all: build push

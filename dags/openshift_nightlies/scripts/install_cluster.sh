@@ -29,4 +29,9 @@ echo "[orchestration]" > inventory
 echo "${ORCHESTRATION_HOST}" >> inventory
 cat inventory
 cat ${json_file}
+
+
+echo "[ssh_connection]" >> ansible.cfg
+echo "pipelining = True" >> ansible.cfg
+cat ansible.cfg
 ansible-playbook -vv --flush-cache -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars "@${json_file}"
