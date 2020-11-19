@@ -6,7 +6,7 @@
     "openshift_install_release_image_override": "",
     "openshift_install_binary_url": "",
     "openshift_install_apiversion": "v1",
-    "openshift_install_ssh_pub_key_file": "/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub",
+    "openshift_install_ssh_pub_key_file": "/root/.ssh/id_rsa.pub",
     "openshift_install_pull_secret": "",
     "openshift_install_quay_registry_token": "",
     "openshift_install_image_registry": "registry.svc.ci.openshift.org",
