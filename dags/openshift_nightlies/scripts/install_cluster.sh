@@ -29,4 +29,4 @@ echo "[orchestration]" > inventory
 echo "${ORCHESTRATION_HOST}" >> inventory
 cat inventory
 cat ${json_file}
-ansible-playbook -vv -i inventory OCP-$version.X/install-on-$platform.yml --become-user root --extra-vars "@${json_file}"
+ansible-playbook -vv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars "@${json_file}"
