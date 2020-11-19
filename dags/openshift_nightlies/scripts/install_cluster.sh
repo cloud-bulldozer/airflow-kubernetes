@@ -29,4 +29,4 @@ echo "[orchestration]" > inventory
 echo "${ORCHESTRATION_HOST}" >> inventory
 cat inventory
 cat ${json_file}
-ANSIBLE_DEBUG=true ansible-playbook -vvvv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars "@${json_file}"
+ANSIBLE_DEBUG=true ansible-playbook -vvvv --flush-cache -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars "@${json_file}"
