@@ -1,0 +1,43 @@
+release:
+- name: stable
+  dags: 
+  - name: aws
+    platform: aws
+    profile: default
+  - name: aws_ovn
+    platform: aws
+    profile: ovn
+  - name: azure
+    platform: azure
+    profile: default
+  - name: gcp
+    platform: gcp
+    profile: default    
+- name: .next
+  dags: 
+  - name: aws
+    platform: aws
+    profile: default
+  - name: aws_ovn
+    platform: aws
+    profile: ovn
+  - name: azure
+    platform: azure
+    profile: default
+  - name: gcp
+    platform: gcp
+    profile: default
+- name: .future
+  dags: 
+  - name: aws
+    platform: aws
+    profile: default
+  - name: aws_ovn
+    platform: aws
+    profile: ovn
+  - name: azure
+    platform: azure
+    profile: default
+  - name: gcp
+    platform: gcp
+    profile: default
