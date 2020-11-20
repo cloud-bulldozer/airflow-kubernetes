@@ -35,5 +35,6 @@ echo "[ssh_connection]" >> ansible.cfg
 echo "pipelining = True" >> ansible.cfg
 echo "retries = 3" >> ansible.cfg
 echo "control_path = /tmp/ansible-ssh-%%h-%%p-%%r" >> ansible.cfg
+echo "ssh_args = -o ServerAliveInterval=30" >> ansible.cfg
 cat ansible.cfg
 ansible-playbook -vvvv --flush-cache -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars "@${json_file}"
