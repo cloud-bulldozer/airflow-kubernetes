@@ -30,7 +30,7 @@ echo "${ORCHESTRATION_HOST}" >> inventory
 cat inventory
 cat ${json_file}
 
-
+sed -i 's/timeout = 30/timeout = 60' ansible.cfg
 echo "[ssh_connection]" >> ansible.cfg
 echo "pipelining = True" >> ansible.cfg
 cat ansible.cfg
