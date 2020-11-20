@@ -33,5 +33,6 @@ cat ${json_file}
 sed -i 's/timeout = 30/timeout = 60/g' ansible.cfg
 echo "[ssh_connection]" >> ansible.cfg
 echo "pipelining = True" >> ansible.cfg
+echo "retries = 3" >> ansible.cfg
 cat ansible.cfg
 ansible-playbook -vvvv --flush-cache -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars "@${json_file}"
