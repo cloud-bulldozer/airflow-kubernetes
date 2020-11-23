@@ -4,7 +4,7 @@
     "aws_secret_access_key": "",
     "aws_region": "",
     "openshift_base_domain": "",
-    "openshift_cluster_name": "airflow-new-aws",
+    "openshift_cluster_name": "airflow-test",
     "openshift_master_count": 3,
     "openshift_worker_count": 3,
     "openshift_host_prefix": "22",
