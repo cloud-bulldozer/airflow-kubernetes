@@ -54,8 +54,5 @@
     "sincgars_enable ": false,
     "sincgars_remote_write_url": "",
     "kubeconfig_auth_dir_path": "",
-    "fips": false,
-    "elastic_url": "",
-    "elastic_user": ""
-
+    "fips": false
 }
