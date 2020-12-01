@@ -77,7 +77,7 @@ cleanup_cluster_task = install_cluster.get_cleanup_task(dag, platform, version, 
 
 uperf = benchmarks.get_task(dag, platform, version, operation="uperf")
 http = benchmarks.get_task(dag, platform, version, operation="http")
-http_copy = benchmarks.get_task(dag, platform, version, operation="http")
+http_copy = benchmarks.get_task(dag, platform, version, operation="http_post")
 scale_up = benchmarks.get_task(dag, platform, version, operation="scale_up")
 scale_down = benchmarks.get_task(dag, platform, version, operation="scale_down")
 cluster_density = benchmarks.get_task(dag, platform, version, "cluster_density")
