@@ -9,7 +9,7 @@ from airflow.operators.bash_operator import BashOperator
 
 # Configure Path to have the Python Module on it
 sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
-from tasks import install_cluster
+from tasks import install_cluster, benchmarks
 from util import var_loader
 
 # Base Directory where all OpenShift Nightly DAG Code lives
@@ -69,8 +69,17 @@ profile_args = var_loader.get_profile_install_vars(version=openshift_version, pl
 
 install_task_args = {**install_args, **profile_args}
 
-install_cluster_task = install_cluster.get_install_task(dag, default_args["tasks"]["install"]["platform"], default_args["tasks"]["install"]["version"], install_task_args)
-cleanup_cluster_task = install_cluster.get_cleanup_task(dag, default_args["tasks"]["install"]["platform"], default_args["tasks"]["install"]["version"], install_task_args)
+platform = default_args["tasks"]["install"]["platform"]
+version = default_args["tasks"]["install"]["version"]
 
+install_cluster_task = install_cluster.get_install_task(dag, platform, version, install_task_args)
+cleanup_cluster_task = install_cluster.get_cleanup_task(dag, platform, version, install_task_args)
 
-install_cluster_task >> cleanup_cluster_task
+uperf = benchmarks.get_task(dag, platform, version, operation="uperf")
+http = benchmarks.get_task(dag, platform, version, operation="http")
+scale_up = benchmarks.get_task(dag, platform, version, operation="scale_up")
+scale_down = benchmarks.get_task(dag, platform, version, operation="scale_down")
+cluster_density = benchmarks.get_task(dag, platform, version, "cluster_density")
+kubelet_density = benchmarks.get_task(dag, platform, version, "kubelet_density") 
+
+install_cluster_task >> [http, uperf] >> scale_up >> [http, cluster_density, kubelet_density] >> scale_down >> cleanup_cluster_task
