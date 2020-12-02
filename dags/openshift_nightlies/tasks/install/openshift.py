@@ -61,7 +61,7 @@ class OpenshiftInstaller():
             bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {self.platform} -v 4 -j /home/airflow/{operation}_task.json",
             retries=0,
             dag=self.dag,
-            trigger_rule=self.trigger_rule,
+            trigger_rule=trigger_rule,
             executor_config=self.exec_config,
             env=env
         )
