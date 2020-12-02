@@ -53,7 +53,7 @@ class OpenshiftInstaller():
 
         # Dump all vars to json file for Ansible to pick up
         with open(f"/home/airflow/{operation}_task.json", 'w') as json_file:
-            json.dump(self.vars, json_file, sort_keys=True, indent=4)
+            json.dump(config, json_file, sort_keys=True, indent=4)
 
         return BashOperator(
             task_id=f"{operation}_rhos_{self.version}_{self.platform}",
