@@ -6,7 +6,7 @@ from os.path import dirname, abspath
 import sys
 
 sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
-from util import var_loader
+from ...util import var_loader
 
 # Defines Tasks for installation of Openshift Clusters
 
