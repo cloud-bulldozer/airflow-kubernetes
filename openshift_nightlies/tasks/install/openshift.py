@@ -1,6 +1,11 @@
 import json
 from airflow.operators.bash_operator import BashOperator
 from airflow.models import Variable
+
+from os.path import dirname, abspath
+import sys
+
+sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
 from util import var_loader
 
 # Defines Tasks for installation of Openshift Clusters
