@@ -42,6 +42,7 @@ class OpenshiftInstaller():
         playbook_operations = Variable.get(f"playbook_{operation}", deserialize_json=True)
 
         # Merge all variables, prioritizing Airflow Secrets over git based vars
+        print(self.vars)
         config = {**self.vars, **self.ansible_orchestrator, **self.version_secrets, **self.aws_creds, **playbook_operations}
 
         # Required Environment Variables for Install script
