@@ -39,7 +39,7 @@ class OpenshiftInstaller():
     
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", trigger_rule="all_success"):
-        playbook_operations = Variable.get(f"playbook_{self.operation}", deserialize_json=True)
+        playbook_operations = Variable.get(f"playbook_{operation}", deserialize_json=True)
 
         # Merge all variables, prioritizing Airflow Secrets over git based vars
         config = {**self.vars, **self.ansible_orchestrator, **self.version_secrets, **self.aws_creds, **playbook_operations}
