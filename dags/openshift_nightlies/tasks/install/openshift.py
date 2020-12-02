@@ -27,7 +27,7 @@ class OpenshiftInstaller():
 
         # Airflow Variables
         self.ansible_orchestrator = Variable.get("ansible_orchestrator", deserialize_json=True)
-        self.version_secrets = Variable.get(f"openshift_install_{self.version}", deserialize_json=True)
+        self.version_secrets = Variable.get(f"openshift_install_{version}", deserialize_json=True)
         self.aws_creds = Variable.get("aws_creds", deserialize_json=True)
        
     def get_install_task(self):
