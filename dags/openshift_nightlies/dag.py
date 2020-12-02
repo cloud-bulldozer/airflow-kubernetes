@@ -9,7 +9,7 @@ from airflow.operators.bash_operator import BashOperator
 
 # Configure Path to have the Python Module on it
 sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
-from tasks.install import install
+from tasks.install import openshift
 from tasks.benchmarks import ripsaw
 from util import var_loader
 
