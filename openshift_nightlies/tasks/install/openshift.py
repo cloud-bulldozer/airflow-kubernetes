@@ -2,16 +2,10 @@ import json
 from airflow.operators.bash_operator import BashOperator
 from airflow.models import Variable
 
-from os.path import dirname, abspath
-import sys
-
-sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
-from ...util import var_loader
-
 # Defines Tasks for installation of Openshift Clusters
 
 class OpenshiftInstaller():
-    def __init__(self, dag, platform, version, profile): 
+    def __init__(self, dag, platform, version, profile, vars): 
 
         # Which Image do these tasks use
         self.exec_config = {
@@ -28,7 +22,7 @@ class OpenshiftInstaller():
         
         
         # Specific Task Configuration
-        self.vars = var_loader.build_task_vars(task="install", version=version, platform=platform, profile=profile) 
+        self.vars = vars
 
 
         # Airflow Variables

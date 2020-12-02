@@ -49,8 +49,8 @@ dag = DAG(
 openshift_version = default_args["tasks"]["install"]["version"]
 platform = default_args["tasks"]["install"]["platform"]
 profile = default_args["tasks"]["install"]["profile"]
-
-installer = openshift.OpenshiftInstaller(dag, platform, openshift_version, profile)
+install_vars = var_loader.build_task_vars(task="install", version=openshift_version, platform=platform, profile=profile) 
+installer = openshift.OpenshiftInstaller(dag, platform, openshift_version, profile, vars)
 
 
 install_cluster = installer.get_install_task()
