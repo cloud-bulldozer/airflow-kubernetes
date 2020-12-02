@@ -9,12 +9,12 @@ from airflow.operators.bash_operator import BashOperator
 
 # Configure Path to have the Python Module on it
 sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
-from tasks.install import openshift 
+from tasks.install import install
 from tasks.benchmarks import ripsaw
 from util import var_loader
 
 # Base Directory where all OpenShift Nightly DAG Code lives
-root_dag_dir = "/opt/airflow/dags/repo/openshift_nightlies"
+root_dag_dir = "/opt/airflow/dags/repo/dags/openshift_nightlies"
 
 # Set Task Logger to INFO for better task logs
 log = logging.getLogger("airflow.task.operators")

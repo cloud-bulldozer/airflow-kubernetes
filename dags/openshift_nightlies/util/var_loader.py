@@ -1,7 +1,7 @@
 import json
 
 # Base Directory where all OpenShift Nightly DAG Code lives
-root_dag_dir = "/opt/airflow/dags/repo/openshift_nightlies"
+root_dag_dir = "/opt/airflow/dags/repo/dags/openshift_nightlies"
 
 ### Task Variable Generator
 ### Grabs variables from appropriately placed JSON Files
