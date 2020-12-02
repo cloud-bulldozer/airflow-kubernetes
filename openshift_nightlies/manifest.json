@@ -4,10 +4,7 @@
         "install": {
             "platform": "aws", 
             "version": "stable",
-            "profile": "default",
-            "config": {
-
-            }
+            "profile": "default"
         },
         "tests": {
             "conformance": false,
