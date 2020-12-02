@@ -5,7 +5,7 @@ from airflow.models import Variable
 # Defines Tasks for installation of Openshift Clusters
 
 class OpenshiftInstaller():
-    def __init__(self, dag, platform, version, profile, vars): 
+    def __init__(self, dag, platform, version, profile, install_vars): 
 
         # Which Image do these tasks use
         self.exec_config = {
@@ -22,7 +22,7 @@ class OpenshiftInstaller():
         
         
         # Specific Task Configuration
-        self.vars = vars
+        self.vars = install_vars
 
 
         # Airflow Variables
