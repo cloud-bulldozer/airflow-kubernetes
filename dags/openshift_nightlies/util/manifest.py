@@ -17,4 +17,4 @@ class Manifest():
         return self.yaml.get('defaults', {})
 
     def get_releases(self): 
-        yield self.yaml.get('releases', [])
+        return self.yaml.get('releases', [])
