@@ -11,7 +11,7 @@ from airflow.operators.bash_operator import BashOperator
 sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
 from tasks.install import openshift
 from tasks.benchmarks import ripsaw
-from util import var_loader
+from util import var_loader, manifest
 
 # Base Directory where all OpenShift Nightly DAG Code lives
 root_dag_dir = "/opt/airflow/dags/repo/dags/openshift_nightlies"
