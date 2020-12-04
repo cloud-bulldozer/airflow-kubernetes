@@ -20,7 +20,7 @@ Generally speaking, this project attempts to mitigate this problem by slicing va
 3. `profile` refers to a specific configuration within that release+platform (i.e. ovn)
 
 
-Since `profile` is the last level of the hierarchy the dags are generated on a profile basis and are defined in the `manifest.yaml`
+The combination of these three arguments defines a unique `release` within the `manifest.yaml`
 
 
 #### Airflow Variables
@@ -34,15 +34,12 @@ Task Variables should be defined in accordance with the variable hierarchy, alth
 A good example is the install task:
 
 ```
-profiles
-├── default.json
+releases
 ├── next
 └── stable
-    ├── aws
-    │   ├── default.json
-    │   └── ovn.json
-    ├── azure
-    └── gcp
+    └── aws
+        └── default
+            └── install.json
 ```
 
 KISS still applies here. If a task has no reason to split the variables then there is no reason to write the logic to do so. 
