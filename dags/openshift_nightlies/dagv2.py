@@ -72,6 +72,7 @@ class OpenshiftNightlyDAG():
 
 release_manifest = manifest.Manifest(root_dag_dir)
 for release in release_manifest.get_releases():
+    print(release)
     nightly = OpenshiftNightlyDAG(release['platform'], release['version'], release['profile'])
     nightly.build()
     globals()[nightly.release] = nightly.dag
