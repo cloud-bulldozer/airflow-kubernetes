@@ -52,7 +52,8 @@ class OpenshiftInstaller():
         # Required Environment Variables for Install script
         env = {
             "SSHKEY_TOKEN": config['sshkey_token'],
-            "ORCHESTRATION_HOST": config['orchestration_host']
+            "ORCHESTRATION_HOST": config['orchestration_host'],
+            "ORCHESTRATION_USER": config['orchestration_user']
         }
         
 
@@ -63,7 +64,7 @@ class OpenshiftInstaller():
         return BashOperator(
             task_id=f"{operation}_rhos_{self.version}_{self.platform}",
             depends_on_past=False,
-            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {self.platform} -v 4 -j /home/airflow/{operation}_task.json",
+            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {self.platform} -v 4 -j /home/airflow/{operation}_task.json -o {operation}",
             retries=0,
             dag=self.dag,
             trigger_rule=trigger_rule,
