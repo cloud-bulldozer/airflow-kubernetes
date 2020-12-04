@@ -51,11 +51,11 @@ post_install(){
 setup
 run_ansible_playbook
 
-if [ "$operation" -eq "install" ]; then
+if [[ "$operation" == "install" ]]; then
     printf "Running Post Install Steps"
     post_install
 
-elif [ "$operation" -eq "cleanup" ]; then
+elif [[ "$operation" == "cleanup" ]]; then
     printf "Running Cleanup Steps"
 
 fi
