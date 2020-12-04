@@ -30,6 +30,10 @@ def get_default_task_vars(task="install"):
     file_path = f"{root_dag_dir}/tasks/{task}/profiles/default.json"
     return get_json(file_path)
 
+def get_manifest_vars():
+    file_path = f"{root_dag_dir}/manifest.json"
+    return get_json(file_path)
+
 
 def get_json(file_path):
     try: 
