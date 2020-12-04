@@ -1,45 +1,14 @@
 defaults:
   indexResults: true 
 
-versions:
-  stable:
-    benchmarks:
-      - uperf 
-    aws:
-      profiles: 
-      - name: default
-        benchmarks: 
-          - http 
-      - name: ovn
-    azure: 
-      profiles:
-      - name: default
-    gcp: 
-      profiles:
-      - name: default
-  .next: 
-    aws:
-      profiles: 
-      - name: default
-        benchmarks: 
-          - http 
-      - name: ovn
-    azure: 
-      profiles:
-      - name: default
-    gcp: 
-      profiles:
-      - name: default 
-  .future: 
-    aws:
-      profiles: 
-      - name: default
-        benchmarks: 
-          - http 
-      - name: ovn
-    azure: 
-      profiles:
-      - name: default
-    gcp: 
-      profiles:
-      - name: default
+
+releases:
+  - version: stable
+    platform: aws
+    profile: default
+  - version: stable
+    platform: aws
+    profile: ovn
+  - version: stable
+    platform: gcp
+    profile: default

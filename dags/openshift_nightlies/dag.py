@@ -32,8 +32,6 @@ metadata_args = {
     'email_on_retry': False,
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
-    'openshift_version': "4.7",
-    'platform': 'AWS'
 }
 
 manifest_args = var_loader.get_manifest_vars()
