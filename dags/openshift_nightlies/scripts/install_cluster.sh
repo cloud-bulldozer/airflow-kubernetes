@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -ex
+
 while getopts p:v:j:o: flag
 do
     case "${flag}" in
@@ -45,6 +48,7 @@ run_ansible_playbook(){
 
 post_install(){
     ssh ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat ./scale-ci-deploy/scale-ci-$platform/.openshift_install.log"
+    kubectl create configmap test-kubeconfig --from-file=./kubeconfig
 }
 
 

@@ -15,7 +15,7 @@ class OpenshiftInstaller():
         # Which Image do these tasks use
         self.exec_config = {
             "KubernetesExecutor": {
-                "image": "quay.io/keithwhitley4/airflow-ansible:new-ansible-3"
+                "image": "quay.io/keithwhitley4/airflow-ansible:kubectl"
             }
         }
 
