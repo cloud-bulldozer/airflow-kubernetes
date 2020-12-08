@@ -1,6 +1,7 @@
 import json
 import sys
 from os.path import abspath, dirname
+from os import environ
 from airflow.operators.bash_operator import BashOperator
 from airflow.models import Variable
 
@@ -53,7 +54,8 @@ class OpenshiftInstaller():
         env = {
             "SSHKEY_TOKEN": config['sshkey_token'],
             "ORCHESTRATION_HOST": config['orchestration_host'],
-            "ORCHESTRATION_USER": config['orchestration_user']
+            "ORCHESTRATION_USER": config['orchestration_user'],
+            **self.__insert_kube_env()
         }
         
 
@@ -71,3 +73,8 @@ class OpenshiftInstaller():
             executor_config=self.exec_config,
             env=env
         )
+
+    # This Helper Injects Airflow environment variables into the task execution runtime
+    # This allows the task to interface with the Kubernetes cluster Airflow is hosted on.
+    def _insert_kube_env(self):
+        return { key:value for (key, value) in environ.items() if "KUBERNETES" in key }
