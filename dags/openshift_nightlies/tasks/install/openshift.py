@@ -55,7 +55,7 @@ class OpenshiftInstaller():
             "SSHKEY_TOKEN": config['sshkey_token'],
             "ORCHESTRATION_HOST": config['orchestration_host'],
             "ORCHESTRATION_USER": config['orchestration_user'],
-            **self.__insert_kube_env()
+            **self._insert_kube_env()
         }
         
 
