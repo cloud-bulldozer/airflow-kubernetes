@@ -46,13 +46,19 @@ run_ansible_playbook(){
     ansible-playbook -vv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars "@${json_file}"
 }
 
+pre_install(){
+    touch test.json
+    echo "{}" >> test.json
+    kubectl create secret generic test-kubeconfig --from-file=test=test.json
+}
+
 post_install(){
     ssh ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat ./scale-ci-deploy/scale-ci-$platform/.openshift_install.log"
     printenv
-    kubectl create secret test-kubeconfig --from-file=kubeconfig=/home/airflow/workspace/scale-ci-deploy/OCP-4.X/kubeconfig
+    kubectl create secret generic test-kubeconfig --from-file=kubeconfig=/home/airflow/workspace/scale-ci-deploy/OCP-4.X/kubeconfig
 }
 
-
+pre_install
 setup
 run_ansible_playbook
 
