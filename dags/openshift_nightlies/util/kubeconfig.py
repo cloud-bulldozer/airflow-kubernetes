@@ -8,7 +8,7 @@ def get_kubeconfig_volume():
     return {
         "name": "kubeconfig",
         "secret": {
-            "secretName": f"{environ['AIRFLOW_CTX_DAG_ID']}-kubeconfig"
+            "secretName": f"{environ.get('AIRFLOW_CTX_DAG_ID', 'test')}-kubeconfig"
         }
     }
 
