@@ -1,6 +1,3 @@
-from airflow.contrib.kubernetes.secret import Secret
-from airflow.kubernetes.volume import Volume
-from airflow.kubernetes.volume_mount import VolumeMount
 from os import environ
 
 
