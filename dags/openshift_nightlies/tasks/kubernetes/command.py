@@ -30,7 +30,7 @@ class KubectlCommand():
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(task="kubernetes", version=version, platform=platform, profile=profile)
 
-    def _get_tasks(self):
+    def get_task(self):
         return BashOperator(
             task_id=f"kubecommand_rhos_{self.version}_{self.platform}",
             depends_on_past=False,
