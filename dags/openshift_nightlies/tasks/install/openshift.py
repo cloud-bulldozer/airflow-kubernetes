@@ -55,6 +55,7 @@ class OpenshiftInstaller():
             "SSHKEY_TOKEN": config['sshkey_token'],
             "ORCHESTRATION_HOST": config['orchestration_host'],
             "ORCHESTRATION_USER": config['orchestration_user'],
+            "DAG_ID": environ.get('AIRFLOW_CTX_DAG_ID', 'test').replace("_", "-"),
             **self._insert_kube_env()
         }
         
