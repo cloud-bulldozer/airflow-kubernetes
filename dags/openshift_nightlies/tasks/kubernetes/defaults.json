@@ -1,4 +1,4 @@
 {
     "binary": "kubectl",
-    "command": "get pods"
+    "command": "get pods -A"
 }
