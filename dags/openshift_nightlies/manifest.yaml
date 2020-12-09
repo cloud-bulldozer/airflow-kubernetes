@@ -12,3 +12,6 @@ releases:
   - version: stable
     platform: gcp
     profile: default
+  - version: stable
+    platform: aws
+    profile: test
