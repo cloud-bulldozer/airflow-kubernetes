@@ -11,6 +11,7 @@ from airflow.operators.bash_operator import BashOperator
 sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
 from tasks.install import openshift
 from tasks.benchmarks import ripsaw
+from tasks.kubernetes import command
 from util import var_loader, manifest
 
 # Base Directory where all OpenShift Nightly DAG Code lives
@@ -49,17 +50,13 @@ platform = default_args["tasks"]["install"]["platform"]
 profile = default_args["tasks"]["install"]["profile"]
 
 installer = openshift.OpenshiftInstaller(dag, platform, openshift_version, profile)
+command_operator = command.KubectlCommand(dag, platform, openshift_version, profile)
 
 
 install_cluster = installer.get_install_task()
 cleanup_cluster = installer.get_cleanup_task()
+kubectl_command = command_operator.get_task()
 
-uperf = ripsaw.get_task(dag, platform, openshift_version, operation="uperf")
-http = ripsaw.get_task(dag, platform, openshift_version, operation="http")
-http_copy = ripsaw.get_task(dag, platform, openshift_version, operation="http_post")
-scale_up = ripsaw.get_task(dag, platform, openshift_version, operation="scale_up")
-scale_down = ripsaw.get_task(dag, platform, openshift_version, operation="scale_down")
-cluster_density = ripsaw.get_task(dag, platform, openshift_version, "cluster_density")
-kubelet_density = ripsaw.get_task(dag, platform, openshift_version, "kubelet_density") 
 
-install_cluster >> [http, uperf] >> scale_up >> [http_copy, cluster_density, kubelet_density] >> scale_down >> cleanup_cluster
+
+install_cluster >> kubectl_command >> cleanup_cluster
