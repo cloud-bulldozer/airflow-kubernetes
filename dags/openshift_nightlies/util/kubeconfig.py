@@ -1,12 +1,11 @@
 from os import environ
 
 
-def get_kubeconfig_volume():
-    dag_id_no_underscores = environ.get('AIRFLOW_CTX_DAG_ID', 'test').replace("_", "-")
+def get_kubeconfig_volume(version, platform, profile):
     return {
         "name": "kubeconfig",
         "secret": {
-            "secretName": f"{dag_id_no_underscores}-kubeconfig"
+            "secretName": f"{version}-{platform}-{profile}-kubeconfig"
         }
     }
 

@@ -43,7 +43,7 @@ setup(){
 }
 
 run_ansible_playbook(){
-    ansible-playbook -vv -i inventory OCP-$version.X/install-on-$platform.yml --extra-vars "@${json_file}"
+    ansible-playbook -vv -i inventory OCP-4.X/install-on-$platform.yml --extra-vars "@${json_file}"
 }
 
 post_install(){

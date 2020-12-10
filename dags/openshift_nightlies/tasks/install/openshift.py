@@ -11,7 +11,7 @@ from util import var_loader
 # Defines Tasks for installation of Openshift Clusters
 
 class OpenshiftInstaller():
-    def __init__(self, dag, platform, version, profile): 
+    def __init__(self, dag, version, platform, profile): 
 
         # Which Image do these tasks use
         self.exec_config = {
@@ -55,7 +55,7 @@ class OpenshiftInstaller():
             "SSHKEY_TOKEN": config['sshkey_token'],
             "ORCHESTRATION_HOST": config['orchestration_host'],
             "ORCHESTRATION_USER": config['orchestration_user'],
-            "DAG_ID": environ.get('AIRFLOW_CTX_DAG_ID', 'test').replace("_", "-"),
+            "DAG_ID": f"{self.version}-{self.platform}-{self.profile}-kubeconfig",
             **self._insert_kube_env()
         }
         
@@ -67,7 +67,7 @@ class OpenshiftInstaller():
         return BashOperator(
             task_id=f"{operation}_rhos_{self.version}_{self.platform}",
             depends_on_past=False,
-            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {self.platform} -v 4 -j /home/airflow/{operation}_task.json -o {operation}",
+            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {self.platform} -v {self.version} -j /home/airflow/{operation}_task.json -o {operation}",
             retries=0,
             dag=self.dag,
             trigger_rule=trigger_rule,

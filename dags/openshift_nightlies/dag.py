@@ -49,8 +49,8 @@ openshift_version = default_args["tasks"]["install"]["version"]
 platform = default_args["tasks"]["install"]["platform"]
 profile = default_args["tasks"]["install"]["profile"]
 
-installer = openshift.OpenshiftInstaller(dag, platform, openshift_version, profile)
-command_operator = command.KubectlCommand(dag, platform, openshift_version, profile)
+installer = openshift.OpenshiftInstaller(dag, openshift_version, platform, profile)
+command_operator = command.KubectlCommand(dag, openshift_version, platform, profile)
 
 
 install_cluster = installer.get_install_task()

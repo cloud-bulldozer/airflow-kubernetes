@@ -9,7 +9,7 @@ sys.path.insert(0,dirname(dirname(abspath(dirname(__file__)))))
 from util import var_loader, kubeconfig
 
 class KubectlCommand():
-    def __init__(self, dag, platform, version, profile): 
+    def __init__(self, dag, version, platform, profile): 
 
         # Which Image do these tasks use
         self.exec_config = {
