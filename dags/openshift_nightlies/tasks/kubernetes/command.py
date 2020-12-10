@@ -15,7 +15,7 @@ class KubectlCommand():
         self.exec_config = {
             "KubernetesExecutor": {
                 "image": "quay.io/keithwhitley4/airflow-ansible:kubectl",
-                "volumes": [kubeconfig.get_kubeconfig_volume()],
+                "volumes": [kubeconfig.get_kubeconfig_volume(self.version, self.platform, self.profile)],
                 "volume_mounts": [kubeconfig.get_kubeconfig_volume_mount()]
             }
         }
