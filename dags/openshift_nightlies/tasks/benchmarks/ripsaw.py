@@ -39,7 +39,9 @@ class Ripsaw():
         print(benchmarks)
         benchmark_operators = self._get_benchmarks(benchmarks)
         print(benchmark_operators)
-        chain(upstream, benchmark_operators, downstream)
+        chain(benchmark_operators)
+        benchmark_operators[0].set_upstream(upstream)
+        benchmark_operators[-1].set_downstream(downstream)
 
         
 
