@@ -45,13 +45,13 @@ class Ripsaw():
         
 
     def _get_benchmarks(self, benchmarks):
-        for benchmark in benchmarks:
+        for index, benchmark in enumerate(benchmarks):
             if isinstance(benchmark, str):
-                benchmark = self._get_benchmark_operator(benchmark)
+                benchmarks[index] = self._get_benchmark_operator(benchmark)
             elif isinstance(benchmark, list):
-                benchmark = self._get_benchmarks(benchmark)
+                benchmark[index] = self._get_benchmarks(benchmark)
         return benchmarks
-
+        
     def _get_benchmark_operator(self, benchmark):
         return BashOperator(
             task_id=f"{benchmark}_rhos_{self.version}_{self.platform}",
