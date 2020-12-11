@@ -1,0 +1,7 @@
+{
+    "benchmarks": [
+        "scale_up",
+        ["http", "uperf", "kubeburner"],
+        "scale_down"
+    ]
+}

@@ -50,13 +50,12 @@ platform = default_args["tasks"]["install"]["platform"]
 profile = default_args["tasks"]["install"]["profile"]
 
 installer = openshift.OpenshiftInstaller(dag, openshift_version, platform, profile)
-command_operator = command.KubectlCommand(dag, openshift_version, platform, profile)
+benchmarks = ripsaw.Ripsaw(dag, openshift_version, platform, profile)
+
 
 
 install_cluster = installer.get_install_task()
 cleanup_cluster = installer.get_cleanup_task()
-kubectl_command = command_operator.get_task()
 
 
-
-install_cluster >> kubectl_command >> cleanup_cluster
+benchmarks.add_benchmarks_to_dag(install_cluster, cleanup_cluster)

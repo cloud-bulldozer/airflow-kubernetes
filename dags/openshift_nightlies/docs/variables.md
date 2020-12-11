@@ -15,7 +15,7 @@ We need to install and perf test Openshift in a variety of different environment
 
 
 ### How does it work? 
-We model the variable hierarchy directly off of the way we define a `release` ([Read about releases](./manifest_and_release.md)).
+We model the variable hierarchy directly off of the way we define a `release` ([Read about releases](./manifest_and_releases.md)).
 
 All `release` configurations should go into `releases` and no where else. All default task configurations should go into `defaults.json` in the task package and no where else. This is a strict requirement and PRs breaking this pattern should not be merged. 
 
