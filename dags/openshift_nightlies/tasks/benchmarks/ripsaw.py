@@ -38,8 +38,6 @@ class Ripsaw():
         benchmarks = self.vars["benchmarks"]
         print(benchmarks)
         benchmark_operators = self._get_benchmarks(benchmarks)
-        print(*benchmark_operators)
-        print(benchmark_operators[1][1])
         chain(upstream, *benchmark_operators, downstream)
 
         
@@ -49,7 +47,7 @@ class Ripsaw():
             if isinstance(benchmark, str):
                 benchmarks[index] = self._get_benchmark_operator(benchmark)
             elif isinstance(benchmark, list):
-                benchmark[index] = self._get_benchmarks(benchmark)
+                benchmarks[index] = self._get_benchmarks(benchmark)
         return benchmarks
         
     def _get_benchmark_operator(self, benchmark):
