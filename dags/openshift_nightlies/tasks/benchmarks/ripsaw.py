@@ -38,6 +38,7 @@ class Ripsaw():
         benchmarks = self.vars["benchmarks"]
         print(benchmarks)
         benchmark_operators = self._get_benchmarks(benchmarks)
+        print(*benchmark_operators)
         chain(upstream, *benchmark_operators, downstream)
 
         
