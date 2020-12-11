@@ -50,22 +50,16 @@ class OpenshiftNightlyDAG():
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         cleanup_cluster = installer.get_cleanup_task()
-        uperf = ripsaw.get_task(self.dag, self.platform, self.version, operation="uperf")
-        http = ripsaw.get_task(self.dag, self.platform, self.version, operation="http")
-        http_copy = ripsaw.get_task(self.dag, self.platform, self.version, operation="http_post")
-        scale_up = ripsaw.get_task(self.dag, self.platform, self.version, operation="scale_up")
-        scale_down = ripsaw.get_task(self.dag, self.platform, self.version, operation="scale_down")
-        cluster_density = ripsaw.get_task(self.dag, self.platform, self.version, "cluster_density")
-        kubelet_density = ripsaw.get_task(self.dag, self.platform, self.version, "kubelet_density") 
+        
 
-        install_cluster >> [http, uperf] >> scale_up >> [http_copy, cluster_density, kubelet_density] >> scale_down >> cleanup_cluster
-
+        benchmarks = self._get_benchmarks()
+        benchmarks.add_benchmarks_to_dag(install_cluster, cleanup_cluster)
 
     def _get_openshift_installer(self):
         return openshift.OpenshiftInstaller(self.dag, self.version, self.platform, self.profile)
 
     def _get_benchmarks(self): 
-        pass
+        return ripsaw.Ripsaw(self.dag, self.version, self.platform, self.profile)
 
 
 

@@ -1,7 +1,8 @@
 {
     "benchmarks": [
+        [ "http", "uperf"],
         "scale_up",
-        ["http", "uperf", "kubeburner"],
+        ["http_copy", "cluster_density", "kubelet_density"],
         "scale_down"
     ]
 }
