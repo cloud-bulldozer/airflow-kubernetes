@@ -58,7 +58,7 @@ class Ripsaw():
             depends_on_past=False,
             bash_command=f"ls",
             retries=0,
-            dag=dag,
+            dag=self.dag,
     )
 
 def get_task(dag, platform, version, operation="uperf"):
