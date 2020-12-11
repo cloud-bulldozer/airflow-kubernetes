@@ -36,6 +36,7 @@ class Ripsaw():
 
     def add_benchmarks_to_dag(self, upstream, downstream):
         benchmarks = self.vars["benchmarks"]
+        print(benchmarks)
         benchmark_operators = self._get_benchmarks(benchmarks)
         print(benchmark_operators)
         chain(upstream, benchmark_operators, downstream)
