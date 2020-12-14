@@ -56,8 +56,7 @@ installer = openshift.OpenshiftInstaller(dag, openshift_version, platform, profi
 benchmarks = ripsaw.Ripsaw(dag, openshift_version, platform, profile)
 
 
-
-install_cluster = wrapper.ConditionalTask(dag, task_config['install'] == True, installer.get_install_task()).get_task()
+install_cluster = wrapper.ConditionalTask(dag, task_config['install'] == True, installer.get_install_task()).get_leaf_tasks()
 
 cleanup_cluster = wrapper.ConditionalTask(dag, task_config['cleanup'] == True, installer.get_cleanup_task()).get_task()
 
