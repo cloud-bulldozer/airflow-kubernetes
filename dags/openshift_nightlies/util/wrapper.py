@@ -8,9 +8,6 @@ class ConditionalTask():
         self.condition = condition
         self.task = task 
         self.dummy_task = DummyOperator(dag=dag, task_id=f"skip_{task.task_id}")
-        
-
-    def build(self): 
         self.branch_task = BranchPythonOperator(
             dag=self.dag,
             task_id=f"branch_{self.task.task_id}",
