@@ -24,3 +24,4 @@ class ConditionalTask():
 
         branch_task >> self.task 
         branch_task >> self.dummy_task 
+        return branch_task
