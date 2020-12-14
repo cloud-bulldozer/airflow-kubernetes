@@ -24,7 +24,7 @@ class ConditionalTask():
             return self.dummy_task.task_id
 
     def get_branch_task(self):
-        return branch_task
+        return self.branch_task
     
     def get_leaf_tasks(self):
         return (self.task, self.dummy_task)
