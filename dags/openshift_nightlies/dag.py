@@ -6,13 +6,14 @@ from datetime import timedelta
 from airflow import DAG
 from airflow.utils.dates import days_ago
 from airflow.operators.bash_operator import BashOperator
+from airflow.models import Variable
 
 # Configure Path to have the Python Module on it
 sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
 from tasks.install import openshift
 from tasks.benchmarks import ripsaw
 from tasks.kubernetes import command
-from util import var_loader, manifest
+from util import var_loader, manifest, skip_tasks
 
 # Base Directory where all OpenShift Nightly DAG Code lives
 root_dag_dir = "/opt/airflow/dags/repo/dags/openshift_nightlies"
@@ -49,13 +50,22 @@ openshift_version = default_args["tasks"]["install"]["version"]
 platform = default_args["tasks"]["install"]["platform"]
 profile = default_args["tasks"]["install"]["profile"]
 
+task_config = Variable.get('oc_scale_tasks')
+
 installer = openshift.OpenshiftInstaller(dag, openshift_version, platform, profile)
 benchmarks = ripsaw.Ripsaw(dag, openshift_version, platform, profile)
 
 
+if task_config['install'] == True:
+    install_cluster = installer.get_install_task()
+else: 
+    install_cluster = skip_tasks.get_skip_task(dag, "skip_install")
 
-install_cluster = installer.get_install_task()
-cleanup_cluster = installer.get_cleanup_task()
+
+if task_config['cleanup'] == True:
+    cleanup_cluster = installer.get_cleanup_task()
+else: 
+    cleanup_cluster = skip_tasks.get_skip_task(dag, "skip_cleanup")
 
 
-benchmarks.add_benchmarks_to_dag(install_cluster, cleanup_cluster)
+benchmarks.add_benchmarks_to_dag(upstream=install_cluster, downstream=cleanup_cluster)

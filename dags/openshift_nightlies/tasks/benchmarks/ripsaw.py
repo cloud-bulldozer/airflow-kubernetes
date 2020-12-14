@@ -34,7 +34,7 @@ class Ripsaw():
         self.vars = var_loader.build_task_vars(task="benchmarks", version=version, platform=platform, profile=profile)
 
 
-    def add_benchmarks_to_dag(self, upstream, downstream):
+    def add_benchmarks_to_dag(self, upstream=None, downstream=None):
         benchmarks = self.vars["benchmarks"]
         print(benchmarks)
         benchmark_operators = self._get_benchmarks(benchmarks)
