@@ -6,7 +6,7 @@ class ConditionalTask():
     def __init__(self, dag, condition, task):
         self.dag = dag
         self.condition = condition
-        self.task
+        self.task = task 
 
     def _get_task(self):
         if condition: 
