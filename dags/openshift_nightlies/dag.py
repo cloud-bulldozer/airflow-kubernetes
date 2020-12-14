@@ -58,7 +58,7 @@ benchmarks = ripsaw.Ripsaw(dag, openshift_version, platform, profile)
 
 install_cluster = wrapper.ConditionalTask(dag, task_config['install'] == True, installer.get_install_task()).get_leaf_tasks()
 
-cleanup_cluster = wrapper.ConditionalTask(dag, task_config['cleanup'] == True, installer.get_cleanup_task()).get_task()
+cleanup_cluster = wrapper.ConditionalTask(dag, task_config['cleanup'] == True, installer.get_cleanup_task()).get_branch_task()
 
 
 benchmarks.add_benchmarks_to_dag(upstream=install_cluster, downstream=cleanup_cluster)
