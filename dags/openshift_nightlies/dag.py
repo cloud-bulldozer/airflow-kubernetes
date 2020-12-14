@@ -60,5 +60,7 @@ install_cluster = wrapper.ConditionalTask(dag, task_config['install'] == True, i
 
 cleanup_cluster = wrapper.ConditionalTask(dag, task_config['cleanup'] == True, installer.get_cleanup_task()).get_branch_task()
 
+join = DummyOperator(dag=dag, task_id="join")
+install_cluster >> join
 
-benchmarks.add_benchmarks_to_dag(upstream=install_cluster, downstream=cleanup_cluster)
+benchmarks.add_benchmarks_to_dag(upstream=join, downstream=cleanup_cluster)
