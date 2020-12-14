@@ -16,7 +16,7 @@ class ConditionalTask():
 
     def get_task(self):
         return BranchPythonOperator(
-            dag=dag,
+            dag=self.dag,
             task_id=f"branch_{self.task.task_id}",
             python_callable=self._get_task
         )
