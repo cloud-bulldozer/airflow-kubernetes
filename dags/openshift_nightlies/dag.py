@@ -56,11 +56,10 @@ task_config = Variable.get('oc_scale_tasks', deserialize_json=True)
 installer = openshift.OpenshiftInstaller(dag, openshift_version, platform, profile)
 benchmarks = ripsaw.Ripsaw(dag, openshift_version, platform, profile)
 
-install_cluster = wrapper.ConditionalTask(dag, task_config['install'] == True, installer.get_install_task()).get_leaf_tasks()
+install_cluster = installer.get_install_task()
 
 cleanup_cluster = wrapper.ConditionalTask(dag, task_config['cleanup'] == True, installer.get_cleanup_task()).get_branch_task()
 
-join = DummyOperator(dag=dag, task_id="join")
-install_cluster >> join
 
-benchmarks.add_benchmarks_to_dag(upstream=join, downstream=cleanup_cluster)
+
+benchmarks.add_benchmarks_to_dag(upstream=install_cluster, downstream=cleanup_cluster)
