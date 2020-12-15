@@ -50,7 +50,7 @@ class OpenshiftNightlyDAG():
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         cleanup_cluster = installer.get_cleanup_task()
-        benchmark_cluster = _get_benchmarks().create_subdag()
+        benchmark_cluster = self._get_benchmarks().create_subdag()
         
         install_cluster >> benchmark_cluster >> cleanup_cluster
         
