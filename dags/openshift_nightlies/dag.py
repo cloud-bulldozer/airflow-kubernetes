@@ -14,7 +14,7 @@ sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
 from tasks.install import openshift
 from tasks.benchmarks import ripsaw
 from tasks.kubernetes import command
-from util import var_loader, manifest, wrapper
+from util import var_loader, manifest
 
 # Base Directory where all OpenShift Nightly DAG Code lives
 root_dag_dir = "/opt/airflow/dags/repo/dags/openshift_nightlies"
@@ -57,11 +57,7 @@ installer = openshift.OpenshiftInstaller(dag, openshift_version, platform, profi
 benchmarks = ripsaw.Ripsaw(dag, openshift_version, platform, profile, default_args)
 
 install_cluster = installer.get_install_task()
-
-cleanup_cluster = wrapper.ConditionalTask(dag, task_config['cleanup'] == True, installer.get_cleanup_task()).get_branch_task()
-
-
-
+cleanup_cluster = installer.get_cleanup_task()
 benchmark_subdag = benchmarks.create_subdag()
 
 install_cluster >> benchmark_subdag >> cleanup_cluster
