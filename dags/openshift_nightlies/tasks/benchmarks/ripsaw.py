@@ -38,6 +38,7 @@ class Ripsaw():
             default_args=default_args,
             schedule_interval=timedelta(days=1)
         )
+        globals()[f"{dag.dag_id}.benchmarks"] = self.benchmark_subdag
         
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(task="benchmarks", version=version, platform=platform, profile=profile)
