@@ -54,7 +54,7 @@ profile = default_args["tasks"]["install"]["profile"]
 task_config = Variable.get('oc_scale_tasks', deserialize_json=True)
 
 installer = openshift.OpenshiftInstaller(dag, openshift_version, platform, profile)
-benchmarks = ripsaw.Ripsaw(dag, openshift_version, platform, profile)
+benchmarks = ripsaw.Ripsaw(dag, openshift_version, platform, profile, default_args)
 
 install_cluster = installer.get_install_task()
 
@@ -62,4 +62,6 @@ cleanup_cluster = wrapper.ConditionalTask(dag, task_config['cleanup'] == True, i
 
 
 
-benchmarks.add_benchmarks_to_dag(upstream=install_cluster, downstream=cleanup_cluster)
+benchmark_subdag = benchmarks.create_subdag()
+
+install_cluster >> benchmark_subdag >> cleanup_cluster
