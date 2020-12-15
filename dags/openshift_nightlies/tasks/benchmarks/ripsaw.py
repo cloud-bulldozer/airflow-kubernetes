@@ -34,7 +34,7 @@ class Ripsaw():
         self.default_args = default_args
 
         self.benchmark_subdag = DAG(
-            dag_id=f"{dag}.benchmarks",
+            dag_id=f"{dag.dag_id}.benchmarks",
             default_args=default_args,
             schedule_interval=timedelta(days=1)
         )
