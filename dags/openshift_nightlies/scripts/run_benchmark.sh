@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -eux
 
 while getopts b: flag
 do
@@ -11,7 +11,9 @@ done
 
 
 setup() {
+    echo "HELLO"
     mkdir /home/airflow/workspace
+    echo "hello"
     cd /home/airflow/workspace
     git clone https://github.com/cloud-bulldozer/e2e-benchmarking
     export KUBECONFIG=~/.kube/config
