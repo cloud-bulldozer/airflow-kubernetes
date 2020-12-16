@@ -53,7 +53,7 @@ post_install(){
 }
 
 cleanup(){
-    kubectl delete secret ${KUBECONFIG_NAME}
+    kubectl delete secret ${KUBECONFIG_NAME}-kubeconfig
 }
 
 setup
