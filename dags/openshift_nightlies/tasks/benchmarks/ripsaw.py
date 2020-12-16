@@ -67,7 +67,7 @@ class Ripsaw():
         return BashOperator(
             task_id=f"{benchmark}_rhos_{self.version}_{self.platform}",
             depends_on_past=False,
-            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark -b uperf_smoke",
+            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark.sh -b uperf_smoke",
             retries=0,
             dag=self.benchmark_subdag,
             env=self.version_secrets
