@@ -42,7 +42,7 @@ class Ripsaw():
         
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(task="benchmarks", version=version, platform=platform, profile=profile)
-
+        self.version_secrets = Variable.get(f"openshift_install_{version}", deserialize_json=True)
     
     def create_subdag(self): 
         benchmarks = self.vars["benchmarks"]
@@ -67,16 +67,17 @@ class Ripsaw():
         return BashOperator(
             task_id=f"{benchmark}_rhos_{self.version}_{self.platform}",
             depends_on_past=False,
-            bash_command=f"ls",
+            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark -b uperf_smoke",
             retries=0,
             dag=self.benchmark_subdag,
+            env=self.version_secrets
     )
 
 def get_task(dag, platform, version, operation="uperf"):
     return BashOperator(
         task_id=f"{operation}_rhos_{version}_{platform}",
         depends_on_past=False,
-        bash_command=f"ls",
+        bash_command="ls",
         retries=0,
         dag=dag,
     )
