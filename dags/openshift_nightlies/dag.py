@@ -8,6 +8,7 @@ from airflow.utils.dates import days_ago
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.models import Variable
+from airflow.utils.helpers import chain
 
 # Configure Path to have the Python Module on it
 sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
@@ -58,6 +59,6 @@ benchmarks = ripsaw.Ripsaw(dag, openshift_version, platform, profile, default_ar
 
 install_cluster = installer.get_install_task()
 cleanup_cluster = installer.get_cleanup_task()
-benchmark_subdag = benchmarks.create_subdag()
+benchmark_cluster = benchmarks.get_benchmarks()
 
-install_cluster >> benchmark_subdag >> cleanup_cluster
+chain(install_cluster, *benchmark_cluster, cleanup_cluster)

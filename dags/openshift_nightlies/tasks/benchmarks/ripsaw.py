@@ -7,7 +7,7 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.operators.subdag_operator import SubDagOperator
 from airflow.models import Variable
 from airflow.models import DAG
-from airflow.utils.helpers import chain
+
 
 sys.path.insert(0,dirname(dirname(abspath(dirname(__file__)))))
 from util import var_loader, kubeconfig
@@ -32,52 +32,25 @@ class Ripsaw():
         self.version = version # e.g. stable/.next/.future
         self.profile = profile # e.g. default/ovn
         self.default_args = default_args
-
-        self.benchmark_subdag = DAG(
-            dag_id=f"{dag.dag_id}.benchmarks",
-            default_args=default_args,
-            schedule_interval=timedelta(days=1)
-        )
-        globals()[f"{dag.dag_id}.benchmarks"] = self.benchmark_subdag
         
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(task="benchmarks", version=version, platform=platform, profile=profile)
         self.version_secrets = Variable.get(f"openshift_install_{version}", deserialize_json=True)
-    
-    def create_subdag(self): 
-        benchmarks = self.vars["benchmarks"]
-        benchmark_operators = self._get_benchmarks(benchmarks)
-        chain(*benchmark_operators)
-        return SubDagOperator(
-            task_id='benchmarks',
-            subdag=self.benchmark_subdag,
-            dag=self.dag
-        )
 
-
-    def _get_benchmarks(self, benchmarks):
+    def get_benchmarks(self, benchmarks):
         for index, benchmark in enumerate(benchmarks):
             if isinstance(benchmark, str):
-                benchmarks[index] = self._get_benchmark_operator(benchmark)
+                benchmarks[index] = self._get_benchmark(benchmark)
             elif isinstance(benchmark, list):
                 benchmarks[index] = self._get_benchmarks(benchmark)
         return benchmarks
         
-    def _get_benchmark_operator(self, benchmark):
+    def _get_benchmark(self, benchmark):
         return BashOperator(
             task_id=f"{benchmark}_rhos_{self.version}_{self.platform}",
             depends_on_past=False,
             bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark.sh -b uperf_smoke",
             retries=0,
-            dag=self.benchmark_subdag,
+            dag=self.dag,
             env=self.version_secrets
-    )
-
-def get_task(dag, platform, version, operation="uperf"):
-    return BashOperator(
-        task_id=f"{operation}_rhos_{version}_{platform}",
-        depends_on_past=False,
-        bash_command="ls",
-        retries=0,
-        dag=dag,
     )

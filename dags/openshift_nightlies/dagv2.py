@@ -5,6 +5,7 @@ import json
 from datetime import timedelta
 from airflow import DAG
 from airflow.utils.dates import days_ago
+from airflow.utils.helpers import chain
 from airflow.operators.bash_operator import BashOperator
 
 # Configure Path to have the Python Module on it
@@ -50,15 +51,13 @@ class OpenshiftNightlyDAG():
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         cleanup_cluster = installer.get_cleanup_task()
-        benchmark_cluster = self._get_benchmarks().create_subdag()
-        
-        install_cluster >> benchmark_cluster >> cleanup_cluster
-        
+        benchmark_cluster = self._get_ripsaw().get_benchmarks()
+        chain(install_cluster, *benchmark_cluster, cleanup_cluster)
 
     def _get_openshift_installer(self):
         return openshift.OpenshiftInstaller(self.dag, self.version, self.platform, self.profile)
 
-    def _get_benchmarks(self): 
+    def _get_ripsaw(self): 
         return ripsaw.Ripsaw(self.dag, self.version, self.platform, self.profile, self.metadata_args)
 
 
