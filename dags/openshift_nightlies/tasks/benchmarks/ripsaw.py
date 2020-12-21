@@ -37,7 +37,10 @@ class Ripsaw():
         self.vars = var_loader.build_task_vars(task="benchmarks", version=version, platform=platform, profile=profile)
         self.version_secrets = Variable.get(f"openshift_install_{version}", deserialize_json=True)
 
-    def get_benchmarks(self, benchmarks=self.vars["benchmarks"]):
+    def get_benchmarks(self):
+        return self._get_benchmarks(self.vars["benchmarks"])
+
+    def _get_benchmarks(self, benchmarks):
         for index, benchmark in enumerate(benchmarks):
             if isinstance(benchmark, str):
                 benchmarks[index] = self._get_benchmark(benchmark)
