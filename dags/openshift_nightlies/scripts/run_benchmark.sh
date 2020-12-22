@@ -29,7 +29,7 @@ setup() {
     mv ./oc /usr/local/bin/oc 
 
 }
-
+echo "HELLO"
 setup
 cd e2e-benchmarking/network-perf
 ./smoke_test.sh test_cloud $KUBECONFIG
