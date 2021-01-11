@@ -52,7 +52,6 @@ openshift_version = default_args["tasks"]["install"]["version"]
 platform = default_args["tasks"]["install"]["platform"]
 profile = default_args["tasks"]["install"]["profile"]
 
-task_config = Variable.get('oc_scale_tasks', deserialize_json=True)
 
 installer = openshift.OpenshiftInstaller(dag, openshift_version, platform, profile)
 benchmarks = ripsaw.Ripsaw(dag, openshift_version, platform, profile, default_args)
