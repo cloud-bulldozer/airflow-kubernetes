@@ -55,5 +55,6 @@ class Ripsaw():
             bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark.sh -b uperf_smoke",
             retries=0,
             dag=self.dag,
-            env=self.version_secrets
+            env=self.version_secrets,
+            executor_config=self.exec_config
     )
