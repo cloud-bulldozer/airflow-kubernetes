@@ -10,7 +10,7 @@ do
 done
 
 
-setup() {
+setup(){
     echo "HELLO"
     mkdir /home/airflow/workspace
     echo "hello"
@@ -27,8 +27,8 @@ setup() {
     tar -xzf openshift-client.tar.gz
     mv ./kubectl /usr/local/bin/kubectl
     mv ./oc /usr/local/bin/oc 
-
 }
+
 echo "HELLO"
 setup
 cd e2e-benchmarking/network-perf

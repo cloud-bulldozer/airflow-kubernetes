@@ -36,6 +36,9 @@ class Ripsaw():
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(task="benchmarks", version=version, platform=platform, profile=profile)
         self.version_secrets = Variable.get(f"openshift_install_{version}", deserialize_json=True)
+        self.env = {
+            "OPENSHIFT_CLIENT_LOCATION": self.version_secrets["openshift_client_location"]
+        }
 
     def get_benchmarks(self):
         return self._get_benchmarks(self.vars["benchmarks"])
@@ -55,6 +58,6 @@ class Ripsaw():
             bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark.sh -b uperf_smoke",
             retries=0,
             dag=self.dag,
-            env=self.version_secrets,
+            env=self.env,
             executor_config=self.exec_config
     )
