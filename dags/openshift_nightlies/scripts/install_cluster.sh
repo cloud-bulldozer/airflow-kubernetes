@@ -26,6 +26,7 @@ setup(){
 
 
     cd scale-ci-deploy
+    git checkout 0b64cb8000ae85e5d3e795a9ce08e72129ddd73b
     # Create inventory File:
     echo "[orchestration]" > inventory
     echo "${ORCHESTRATION_HOST}" >> inventory
