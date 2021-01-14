@@ -41,7 +41,7 @@ class OpenshiftInstaller():
 
     def get_cleanup_task(self):
         # trigger_rule = "all_done" means this task will run when every other task has finished, whether it fails or succeededs
-        return self._get_task(operation="cleanup", trigger_rule="all_done")
+        return self._get_task(operation="cleanup")
     
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", trigger_rule="all_success"):

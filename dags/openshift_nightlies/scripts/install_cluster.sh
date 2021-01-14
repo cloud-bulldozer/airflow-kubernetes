@@ -54,7 +54,7 @@ post_install(){
 }
 
 cleanup(){
-    kubectl delete secret ${KUBECONFIG_NAME}
+    kubectl delete secret ${KUBECONFIG_NAME} || true
 }
 
 setup
@@ -62,6 +62,7 @@ run_ansible_playbook
 
 if [[ "$operation" == "install" ]]; then
     printf "Running Post Install Steps"
+    cleanup
     post_install
 
 elif [[ "$operation" == "cleanup" ]]; then
