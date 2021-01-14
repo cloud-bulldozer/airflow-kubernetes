@@ -70,7 +70,7 @@ class OpenshiftInstaller():
         return BashOperator(
             task_id=f"{operation}",
             depends_on_past=False,
-            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {self.platform} -v {self.version} -j /tmp/{operation}_task.json -o {operation}",
+            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {self.platform} -v {self.version} -j {config} -o {operation}",
             retries=3,
             dag=self.dag,
             trigger_rule=trigger_rule,
