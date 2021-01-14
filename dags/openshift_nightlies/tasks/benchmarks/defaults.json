@@ -1,10 +1,5 @@
 {
-    "env": {
-        "FOO": "bar"
-    },
-    "benchmarks":[{
-        "name": "network_perf",
-        "path": "network_perf/smoke_test.sh",
-        "env": {}     
-    }]
+    "benchmarks": [
+        "uperf_smoke"
+    ]
 }
