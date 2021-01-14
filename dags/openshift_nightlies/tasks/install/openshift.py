@@ -65,7 +65,7 @@ class OpenshiftInstaller():
             json.dump(config, json_file, sort_keys=True, indent=4)
 
         return BashOperator(
-            task_id=f"{operation}_rhos_{self.version}_{self.platform}",
+            task_id=f"{operation}",
             depends_on_past=False,
             bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {self.platform} -v {self.version} -j /tmp/{operation}_task.json -o {operation}",
             retries=3,
