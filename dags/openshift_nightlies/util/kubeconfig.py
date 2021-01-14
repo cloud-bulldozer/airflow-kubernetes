@@ -15,3 +15,15 @@ def get_kubeconfig_volume_mount():
         "mountPath": "~/.kube/config",
         "readOnly": True
     }
+
+def get_empty_dir_volume_mount():
+    return {
+        "name": "tmpdir",
+        "mountPath": "/tmp"
+    }
+
+def get_empty_dir_volume():
+    return {
+        "name": "tmpdir",
+        "emptyDir": {}
+    }

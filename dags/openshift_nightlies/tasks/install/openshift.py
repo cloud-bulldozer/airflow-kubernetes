@@ -6,7 +6,8 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.models import Variable
 
 sys.path.insert(0,dirname(dirname(abspath(dirname(__file__)))))
-from util import var_loader
+from util import var_loader, kubeconfig
+
 
 # Defines Tasks for installation of Openshift Clusters
 
@@ -16,7 +17,9 @@ class OpenshiftInstaller():
         # Which Image do these tasks use
         self.exec_config = {
             "KubernetesExecutor": {
-                "image": "quay.io/keithwhitley4/airflow-ansible:kubectl"
+                "image": "quay.io/keithwhitley4/airflow-ansible:kubectl",
+                "volumes": [kubeconfig.get_empty_dir_volume()],
+                "volume_mounts": [kubeconfig.get_empty_dir_volume_mount()]
             }
         }
 
