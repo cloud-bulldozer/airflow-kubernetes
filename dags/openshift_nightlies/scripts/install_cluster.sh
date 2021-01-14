@@ -7,7 +7,7 @@ do
     case "${flag}" in
         p) platform=${OPTARG};;
         v) version=${OPTARG};;
-        j) json_string=${OPTARG};;
+        j) json_file=${OPTARG};;
         o) operation=${OPTARG};;
     esac
 done
@@ -31,8 +31,7 @@ setup(){
     echo "[orchestration]" > inventory
     echo "${ORCHESTRATION_HOST}" >> inventory
     cat inventory
-    echo ${json_string} > extra_vars.json
-    cat extra_vars.json
+    cat ${json_file}
 
     sed -i 's/timeout = 30/timeout = 60/g' ansible.cfg
     echo "[ssh_connection]" >> ansible.cfg
@@ -45,7 +44,7 @@ setup(){
 }
 
 run_ansible_playbook(){
-    ansible-playbook -vv -i inventory OCP-4.X/install-on-$platform.yml --extra-vars "@extra_vars.json"
+    ansible-playbook -vv -i inventory OCP-4.X/install-on-$platform.yml --extra-vars "@${json_file}"
 }
 
 post_install(){
