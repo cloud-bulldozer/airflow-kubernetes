@@ -61,13 +61,13 @@ class OpenshiftInstaller():
         
 
         # Dump all vars to json file for Ansible to pick up
-        with open(f"/home/airflow/{operation}_task.json", 'w') as json_file:
+        with open(f"/tmp/{operation}_task.json", 'w') as json_file:
             json.dump(config, json_file, sort_keys=True, indent=4)
 
         return BashOperator(
             task_id=f"{operation}_rhos_{self.version}_{self.platform}",
             depends_on_past=False,
-            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {self.platform} -v {self.version} -j /home/airflow/{operation}_task.json -o {operation}",
+            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/install_cluster.sh -p {self.platform} -v {self.version} -j /tmp/{operation}_task.json -o {operation}",
             retries=3,
             dag=self.dag,
             trigger_rule=trigger_rule,
