@@ -25,8 +25,8 @@ setup(){
 
     curl -L $OPENSHIFT_CLIENT_LOCATION -o openshift-client.tar.gz
     tar -xzf openshift-client.tar.gz
-    mv ./kubectl /usr/local/bin/kubectl
-    mv ./oc /usr/local/bin/oc 
+
+    export PATH=$PATH:$(pwd)
 }
 
 echo "HELLO"
