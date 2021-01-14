@@ -2,10 +2,6 @@ releases:
   - version: stable
     platform: aws
     profile: default
-    benchmarks: 
-      - uperf
-      - [ scale_up, scale_down ]
-      - fiod
   - version: stable
     platform: aws
     profile: ovn
