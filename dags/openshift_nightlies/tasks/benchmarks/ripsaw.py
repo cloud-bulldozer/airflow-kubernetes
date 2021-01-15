@@ -53,7 +53,7 @@ class Ripsaw():
         
     def _get_benchmark(self, benchmark):
         return BashOperator(
-            task_id=f"{benchmark}_rhos_{self.version}_{self.platform}",
+            task_id=f"{benchmark}",
             depends_on_past=False,
             bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark.sh -b uperf_smoke",
             retries=0,

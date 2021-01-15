@@ -11,9 +11,7 @@ done
 
 
 setup(){
-    echo "HELLO"
     mkdir /home/airflow/workspace
-    echo "hello"
     cd /home/airflow/workspace
     git clone https://github.com/cloud-bulldozer/e2e-benchmarking
     export KUBECONFIG=~/.kube/config
@@ -29,8 +27,8 @@ setup(){
     export PATH=$PATH:$(pwd)
 }
 
-echo "HELLO"
 setup
+ls
 cd e2e-benchmarking/network-perf
 ./smoke_test.sh test_cloud $KUBECONFIG
 
