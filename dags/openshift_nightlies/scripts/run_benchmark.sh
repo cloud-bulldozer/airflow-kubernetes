@@ -29,6 +29,6 @@ setup(){
 
 setup
 ls
-cd e2e-benchmarking/network-perf
+cd e2e-benchmarking/workloads/network-perf
 ./smoke_test.sh test_cloud $KUBECONFIG
 
