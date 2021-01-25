@@ -28,6 +28,7 @@ setup(){
 }
 
 setup
+cd /home/airflow/workspace
 ls
 cd e2e-benchmarking/workloads/network-perf
 ./smoke_test.sh test_cloud $KUBECONFIG
