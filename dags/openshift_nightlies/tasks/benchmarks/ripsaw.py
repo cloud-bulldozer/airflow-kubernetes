@@ -44,16 +44,19 @@ class Ripsaw():
         return self._get_benchmarks(self.vars["benchmarks"])
 
     def _get_benchmarks(self, benchmarks):
-        for index, benchmark in enumerate(benchmarks):
+        index = 0
+        compiled_benchmarks=[]
+        for name, benchmark in enumerate(benchmarks):
             if isinstance(benchmark, dict):
-                benchmarks[index] = self._get_benchmark(benchmark)
+                compiled_benchmarks[index] = self._get_benchmark(name, benchmark)
             elif isinstance(benchmark, list):
-                benchmarks[index] = self._get_benchmarks(benchmark)
-        return benchmarks
+                compiled_benchmarks[index] = self._get_benchmarks(benchmark)
+            index += 1
+        return compiled_benchmarks
         
-    def _get_benchmark(self, benchmark):
+    def _get_benchmark(self, name, benchmark):
         return BashOperator(
-            task_id=f"{benchmark}",
+            task_id=f"{name}",
             depends_on_past=False,
             bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']}",
             retries=0,
