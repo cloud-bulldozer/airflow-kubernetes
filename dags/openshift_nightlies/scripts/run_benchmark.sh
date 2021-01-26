@@ -2,10 +2,11 @@
 
 set -eux
 
-while getopts b: flag
+while getopts w:b: flag
 do
     case "${flag}" in
-        b) benchmark=${OPTARG};;
+        w) workload=${OPTARG};;
+        c) command=${OPTARG};;
     esac
 done
 
@@ -30,6 +31,6 @@ setup(){
 setup
 cd /home/airflow/workspace
 ls
-cd e2e-benchmarking/workloads/network-perf
-./smoke_test.sh test_cloud $KUBECONFIG
+cd e2e-benchmarking/workloads/$workload
+eval "$command"
 

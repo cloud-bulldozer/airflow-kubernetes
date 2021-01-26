@@ -45,7 +45,7 @@ class Ripsaw():
 
     def _get_benchmarks(self, benchmarks):
         for index, benchmark in enumerate(benchmarks):
-            if isinstance(benchmark, str):
+            if isinstance(benchmark, dict):
                 benchmarks[index] = self._get_benchmark(benchmark)
             elif isinstance(benchmark, list):
                 benchmarks[index] = self._get_benchmarks(benchmark)
@@ -55,7 +55,7 @@ class Ripsaw():
         return BashOperator(
             task_id=f"{benchmark}",
             depends_on_past=False,
-            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark.sh -b uperf_smoke",
+            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark.sh -w {benchmark['workload'] -c {benchmark['command']}",
             retries=0,
             dag=self.dag,
             env=self.env,
