@@ -55,7 +55,7 @@ class Ripsaw():
         return BashOperator(
             task_id=f"{benchmark}",
             depends_on_past=False,
-            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark.sh -w {benchmark['workload'] -c {benchmark['command']}",
+            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']}",
             retries=0,
             dag=self.dag,
             env=self.env,
