@@ -14,7 +14,7 @@ setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
     git clone https://github.com/cloud-bulldozer/e2e-benchmarking
-    export KUBECONFIG=/home/airflow/.kube/config
+    export KUBECONFIG=/home/airflow/.kube/config/kubeconfig
     export BUILD_NUMBER=test
 
     rm /tmp/uperf_$BUILD_NUMBER.status || true
@@ -30,7 +30,6 @@ setup(){
 setup
 cd /home/airflow/workspace
 ls
-ls /home/airflow/.kube/config
 cd e2e-benchmarking/workloads/network-perf
 ./smoke_test.sh test_cloud $KUBECONFIG
 
