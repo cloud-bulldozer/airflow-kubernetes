@@ -1,12 +1,14 @@
 {
-    "benchmarks": {
-        "uperf_smoke": {
+    "benchmarks": [
+        {
+            "name": "uperf_smoke",
             "workload": "network-perf",
             "command": "./smoke_test.sh test_cloud"
         },
-        "kube_burner": {
+        {   
+            "name": "kube_burner",
             "workload": "kube-burner",
             "command":  "./run_kubeletdensity-heavy_test_fromgit.sh"
         }
-    }
+    ]
 }
