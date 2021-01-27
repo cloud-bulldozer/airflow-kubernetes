@@ -2,7 +2,7 @@
 
 set -eux
 
-while getopts w:b: flag
+while getopts w:c: flag
 do
     case "${flag}" in
         w) workload=${OPTARG};;
