@@ -1,14 +1,34 @@
 {
     "benchmarks": [
         {
-            "name": "uperf_smoke",
+            "name": "uperf",
             "workload": "network-perf",
-            "command": "./smoke_test.sh test_cloud"
+            "command": "./run_hostnetwork.sh",
+            "env": {}
         },
-        {   
-            "name": "kube_burner",
+        {
+            "name": "http",
+            "workload": "router-perf",
+            "command": "./run_router_test.sh",
+            "env": {}
+        },
+        {
+            "name": "scale",
+            "workload": "scale-perf",
+            "command": "./run_scale_fromgit.sh",
+            "env": {}
+        },
+        {
+            "name": "cluster_density",
             "workload": "kube-burner",
-            "command":  "./run_kubeletdensity-heavy_test_fromgit.sh"
+            "command": "./run_clusterdensity_test_fromgit.sh",
+            "env": {}
+        },
+        {
+            "name": "kubelet_density",
+            "workload": "kube-burner",
+            "command": "./run_kubeletdensity_test_fromgit.sh",
+            "env": {}
         }
     ]
 }
