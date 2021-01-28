@@ -52,11 +52,10 @@ class Ripsaw():
         return benchmarks
         
     def _get_benchmark(self, benchmark):
-        command_str = f'/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark.sh -w {benchmark["workload"]} -c {benchmark["command"]}'
         return BashOperator(
             task_id=f"{benchmark['name']}",
             depends_on_past=False,
-            bash_command=command_str,
+            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
             retries=0,
             dag=self.dag,
             env=self.env,
