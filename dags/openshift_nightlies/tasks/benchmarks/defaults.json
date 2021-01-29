@@ -3,7 +3,7 @@
         {
             "name": "uperf",
             "workload": "network-perf",
-            "command": "./run_hostnetwork_network_test_fromgit.sh",
+            "command": "./smoke_test.sh test_cloud",
             "env": {}
         },
         {
