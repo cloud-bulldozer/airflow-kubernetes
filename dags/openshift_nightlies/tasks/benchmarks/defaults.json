@@ -7,12 +7,6 @@
             "env": {}
         },
         {
-            "name": "http",
-            "workload": "router-perf",
-            "command": "./run_router_test.sh",
-            "env": {}
-        },
-        {
             "name": "scale",
             "workload": "scale-perf",
             "command": "./run_scale_fromgit.sh",
