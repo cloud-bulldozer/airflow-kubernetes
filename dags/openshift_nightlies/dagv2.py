@@ -51,9 +51,11 @@ class OpenshiftNightlyDAG():
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         cleanup_cluster = installer.get_cleanup_task()
-        benchmark_cluster = self._get_ripsaw().get_benchmarks()
         print(benchmark_cluster)
-        chain(install_cluster, *benchmark_cluster, cleanup_cluster)
+        with TaskGroup("benchmarks", prefix_group_id=False) as benchmarks:
+            benchmark_tasks = self._get_ripsaw().get_benchmarks()
+            chain(*benchmark_cluster)
+        install_cluster >> benchmarks >> cleanup_cluster
 
     def _get_openshift_installer(self):
         return openshift.OpenshiftInstaller(self.dag, self.version, self.platform, self.profile)
