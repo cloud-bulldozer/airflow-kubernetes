@@ -111,7 +111,7 @@
 - name: git-sync-ssh-key
   secret:
     secretName: {{ .Values.dags.gitSync.sshKeySecret }}
-    defaultMode: 288
+    defaultMode: 444
 {{- end }}
 
 {{/*  Git sync container */}}
