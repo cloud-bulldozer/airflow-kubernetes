@@ -14,7 +14,7 @@ def get_kubeconfig_volume_mount():
     return k8s.V1VolumeMount(
         name="kubeconfig",
         mount_path="/home/airflow/.kube/config",
-        readOnly=True
+        read_only=True
     )
 
 def get_empty_dir_volume_mount():
