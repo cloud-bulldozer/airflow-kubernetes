@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -14,13 +15,22 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+set -euo pipefail
+DOCKERHUB_USER=${DOCKERHUB_USER:="apache"}
+DOCKERHUB_REPO=${DOCKERHUB_REPO:="airflow"}
+PGBOUNCER_VERSION="1.14.0"
+AIRFLOW_PGBOUNCER_VERSION="2020.09.05"
+COMMIT_SHA=$(git rev-parse HEAD)
 
-# apiVersion v1 is Helm 2
----
-apiVersion: v1
-name: airflow
-version: 1.0.0
-description: Helm chart to deploy Apache Airflow
-icon: https://airflow.apache.org/docs/apache-airflow/stable/_images/pin_large.png
-keywords:
-  - airflow
+cd "$( dirname "${BASH_SOURCE[0]}" )" || exit 1
+
+TAG="${DOCKERHUB_USER}/${DOCKERHUB_REPO}:airflow-pgbouncer-${AIRFLOW_PGBOUNCER_VERSION}-${PGBOUNCER_VERSION}"
+
+docker build . \
+    --pull \
+    --build-arg "PGBOUNCER_VERSION=${PGBOUNCER_VERSION}" \
+    --build-arg "AIRFLOW_PGBOUNCER_VERSION=${AIRFLOW_PGBOUNCER_VERSION}"\
+    --build-arg "COMMIT_SHA=${COMMIT_SHA}" \
+    --tag "${TAG}"
+
+docker push "${TAG}"

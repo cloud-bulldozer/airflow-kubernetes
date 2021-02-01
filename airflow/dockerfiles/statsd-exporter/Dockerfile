@@ -14,22 +14,18 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+ARG STATSD_VERSION="missing_version"
 
-import unittest
+FROM prom/statsd-exporter:${STATSD_VERSION}
 
-import jmespath
+ARG STATSD_VERSION
+ARG AIRFLOW_STATSD_EXPORTER_VERSION
+ARG COMMIT_SHA
 
-from tests.helm_template_generator import render_chart
+LABEL org.apache.airflow.component="statsd-exporter"
+LABEL org.apache.airflow.stasd.version="${STATSD_VERSION}"
+LABEL org.apache.airflow.airflow_stasd_exporter.version="${AIRFLOW_STATSD_EXPORTER_VERSION}"
+LABEL org.apache.airflow.commit_sha="${COMMIT_SHA}"
+LABEL maintainer="Apache Airflow Community <dev@airflow.apache.org>"
 
-
-class CeleryKubernetesPodLauncherRole(unittest.TestCase):
-    def test_should_allow_both_scheduler_pod_launching_and_worker_pod_launching(self):
-        docs = render_chart(
-            values={"executor": "CeleryKubernetesExecutor"},
-            show_only=[
-                "templates/rbac/pod-launcher-rolebinding.yaml",
-            ],
-        )
-
-        self.assertEqual(jmespath.search("subjects[0].name", docs[0]), "RELEASE-NAME-scheduler")
-        self.assertEqual(jmespath.search("subjects[1].name", docs[0]), "RELEASE-NAME-worker")
+COPY mappings.yml /etc/statsd-exporter/mappings.yml

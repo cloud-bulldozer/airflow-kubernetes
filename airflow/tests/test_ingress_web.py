@@ -15,12 +15,23 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# apiVersion v1 is Helm 2
----
-apiVersion: v1
-name: airflow
-version: 1.0.0
-description: Helm chart to deploy Apache Airflow
-icon: https://airflow.apache.org/docs/apache-airflow/stable/_images/pin_large.png
-keywords:
-  - airflow
+import unittest
+
+import jmespath
+
+from tests.helm_template_generator import render_chart
+
+
+class IngressWebTest(unittest.TestCase):
+    def test_should_pass_validation_with_just_ingress_enabled(self):
+        render_chart(
+            values={"ingress": {"enabled": True}},
+            show_only=["templates/webserver/webserver-ingress.yaml"],
+        )  # checks that no validation exception is raised
+
+    def test_should_allow_more_than_one_annotation(self):
+        docs = render_chart(
+            values={"ingress": {"enabled": True, "web": {"annotations": {"aa": "bb", "cc": "dd"}}}},
+            show_only=["templates/webserver/webserver-ingress.yaml"],
+        )
+        assert {"aa": "bb", "cc": "dd"} == jmespath.search("metadata.annotations", docs[0])
