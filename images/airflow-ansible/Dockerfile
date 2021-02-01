@@ -1,8 +1,9 @@
-FROM apache/airflow:latest 
+ARG AIRFLOW_VERSION=latest
+FROM apache/airflow:${AIRFLOW_VERSION} 
 USER root
 
-RUN apt update
-RUN apt install git
+RUN apt update -y
+RUN apt install git -y
 RUN yes | pip install ansible
 
 

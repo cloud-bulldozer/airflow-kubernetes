@@ -22,7 +22,7 @@ class OpenshiftInstaller():
                     containers=[
                         k8s.V1Container(
                             name="base",
-                            image="quay.io/keithwhitley4/airflow-ansible:kubectl",
+                            image="quay.io/keithwhitley4/airflow-ansible:2.0.0",
                             volume_mounts=[kubeconfig.get_empty_dir_volume_mount()]
 
                         )
