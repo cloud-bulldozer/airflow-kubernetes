@@ -1,9 +1,11 @@
-sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
-from util import var_loader, kubeconfig
-import json
 import sys
 from os.path import abspath, dirname
 from os import environ
+
+sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
+from util import var_loader, kubeconfig
+
+import json
 from datetime import timedelta
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.subdag_operator import SubDagOperator
