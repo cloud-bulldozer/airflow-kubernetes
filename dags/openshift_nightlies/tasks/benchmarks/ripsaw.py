@@ -1,3 +1,4 @@
+sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
 from util import var_loader, kubeconfig
 import json
 import sys
@@ -11,7 +12,6 @@ from airflow.models import DAG
 from kubernetes.client import models as k8s
 
 
-sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
 
 
 class Ripsaw():
@@ -23,7 +23,7 @@ class Ripsaw():
                     containers=[
                         k8s.V1Container(
                             name="base",
-                            image="quay.io/keithwhitley4/airflow-ansible:2.0.0",
+                            image="quay.io/keithwhitley4/airflow-ansible:kubectl",
                             volume_mounts=[
                                 kubeconfig.get_kubeconfig_volume_mount()]
 
