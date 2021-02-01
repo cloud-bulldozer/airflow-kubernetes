@@ -4,6 +4,7 @@ from os.path import abspath, dirname
 from os import environ
 from airflow.operators.bash_operator import BashOperator
 from airflow.models import Variable
+from kubernetes.client import models as k8s
 
 sys.path.insert(0,dirname(dirname(abspath(dirname(__file__)))))
 from util import var_loader, kubeconfig
@@ -14,13 +15,21 @@ from util import var_loader, kubeconfig
 class OpenshiftInstaller():
     def __init__(self, dag, version, platform, profile): 
 
-        # Which Image do these tasks use
+
         self.exec_config = {
-            "KubernetesExecutor": {
-                "image": "quay.io/keithwhitley4/airflow-ansible:kubectl",
-                "volumes": [kubeconfig.get_empty_dir_volume()],
-                "volume_mounts": [kubeconfig.get_empty_dir_volume_mount()]
-            }
+            "pod_override": k8s.V1Pod(
+                spec=k8s.V1PodSpec(
+                    containers=[
+                        k8s.V1Container(
+                            name="base",
+                            image="quay.io/keithwhitley4/airflow-ansible:kubectl",
+                            volume_mounts=[kubeconfig.get_empty_dir_volume_mount()]
+
+                        )
+                    ],
+                    volumes=[kubeconfig.get_empty_dir_volume_mount()]
+                )
+            )
         }
 
         # General DAG Configuration 
