@@ -26,7 +26,6 @@ setup(){
 
 
     cd scale-ci-deploy
-    git checkout 0b64cb8000ae85e5d3e795a9ce08e72129ddd73b
     # Create inventory File:
     echo "[orchestration]" > inventory
     echo "${ORCHESTRATION_HOST}" >> inventory
@@ -44,7 +43,7 @@ setup(){
 }
 
 run_ansible_playbook(){
-    ansible-playbook -vv -i inventory OCP-4.X/install-on-$platform.yml --extra-vars "@${json_file}"
+    ansible-playbook -vv -i inventory OCP-4.X/deploy-cluster.yml -e platform="$platform" --extra-vars "@${json_file}"
 }
 
 post_install(){
