@@ -16,7 +16,7 @@ from kubernetes.client import models as k8s
 
 
 
-class Ripsaw():
+class E2EBenchmarks():
     def __init__(self, dag, version, platform, profile, default_args):
 
         self.exec_config = {

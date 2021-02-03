@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: perf-dashboard
+  namespace: perf-dashboard
+spec:
+  host: perf-dashboard.apps.keith-cluster.perfscale.devcluster.openshift.com
+  port:
+    targetPort: 3000
+  to:
+    kind: Service
+    name: perf-dashboard
+    weight: 100
+  wildcardPolicy: None

@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: airflow
+  namespace: airflow
+spec:
+  host: airflow-k8.apps.keith-cluster.perfscale.devcluster.openshift.com
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: airflow-webserver
+    weight: 100
+  wildcardPolicy: None

@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fluentd
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  destination: 
+    namespace: fluentd
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/bitnami/charts
+    path: bitnami/fluentd
+    revision: HEAD
+    helm:
+      releaseName: fluentd
+      values: |-
+        aggregator:
+          configMap: elasticsearch-output
+          extraEnv:
+          - name: ELASTICSEARCH_HOST
+            value: 172.30.42.249
+          - name: ELASTICSEARCH_PORT
+            value: "9200"
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+

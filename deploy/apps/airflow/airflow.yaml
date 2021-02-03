@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: airflow
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  destination: 
+    namespace: airflow
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/whitleykeith/airflow-kubernetes
+    path: airflow
+    revision: HEAD
+    helm:
+      releaseName: airflow
+      values: |-
+        defaultAirflowTag: 2.0.0
+        env:
+        - name: AIRFLOW__KUBERNETES__DAGS_VOLUME_SUBPATH
+          value: repo/
+        config:
+          logging:
+            colored_console_log: "True"
+          elasticsearch_configs:
+            use_ssl: "True"
+            verify_certs: "True"
+            ssl_show_warn: "False"
+          kubernetes:
+            delete_worker_pods: False
+        dags:
+          gitSync:
+            enabled: true
+            subPath: dags
+            depth: 8
+        elasticsearch:
+          enabled: False
+          connection: 
+            host: elasticsearch.openshift-logging.svc.cluster.local
+            port: 9200
+      parameters:
+      - name: dags.gitSync.repo
+        value: https://github.com/whitleykeith/airflow-kubernetes.git
+      - name: dags.gitSync.branch
+        value: master
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+

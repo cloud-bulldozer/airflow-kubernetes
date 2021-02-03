@@ -1,0 +1,23 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: airflow-worker
+  namespace: airflow
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["secrets", "configmaps", "pods"]
+  verbs:  ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: airflow-worker
+  namespace: airflow
+subjects:
+- kind: ServiceAccount
+  name: airflow-worker
+  namespace: airflow
+roleRef:
+  kind: Role
+  name:  airflow-worker
+  apiGroup: rbac.authorization.k8s.io

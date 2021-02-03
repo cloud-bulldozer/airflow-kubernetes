@@ -1,0 +1,20 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: kibana
+  namespace: elastic-system
+spec:
+  host: kibana.apps.keith-cluster.perfscale.devcluster.openshift.com
+  port:
+    targetPort: https
+  tls:
+    insecureEdgeTerminationPolicy: Redirect 
+    termination: passthrough
+  to:
+    kind: Service
+    name: kibana-sample-kb-http
+    weight: 100
+  wildcardPolicy: None
+
+
+  
