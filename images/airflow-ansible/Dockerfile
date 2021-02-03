@@ -3,7 +3,7 @@ FROM apache/airflow:${AIRFLOW_VERSION}
 USER root
 
 RUN apt update -y
-RUN apt install git -y
+RUN apt install git uuid-runtime -y
 RUN yes | pip install ansible
 
 
