@@ -10,7 +10,9 @@
             "name": "scale",
             "workload": "scale-perf",
             "command": "./run_scale_fromgit.sh",
-            "env": {}
+            "env": {
+                "SCALE": "3"
+            }
         },
         {
             "name": "cluster_density",
