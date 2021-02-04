@@ -21,6 +21,8 @@ spec:
         env:
         - name: AIRFLOW__KUBERNETES__DAGS_VOLUME_SUBPATH
           value: repo/
+        - name: AIRFLOW__CORE__KILLED_TASK_CLEANUP_TIME
+          value: 7200
         config:
           logging:
             colored_console_log: "True"
