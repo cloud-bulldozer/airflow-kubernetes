@@ -24,7 +24,7 @@
     "openshift_toggle_infra_node": true,
     "openshift_toggle_workload_node": true,
     "dittybopper_enable": true,
-    "kubeconfig_path": "/root/.kube/config",
+    "kubeconfig_path": "",
     "cerberus_config_path": "/root/cerberus.yml",
     "cerberus_image": "quay.io/openshift-scale/cerberus:latest",
     "cerberus_url": "http://0.0.0.0:8080",

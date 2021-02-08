@@ -63,6 +63,8 @@ class OpenshiftInstaller():
         # Merge all variables, prioritizing Airflow Secrets over git based vars
         config = {**self.vars, **self.ansible_orchestrator, **self.version_secrets, **self.aws_creds, **playbook_operations}
 
+
+        config['kubeconfig_path'] = f"/root/scale-ci-{openshift['openshift_cluster_name']}-{self.platform}/auth/kubeconfig"
         # Required Environment Variables for Install script
         env = {
             "SSHKEY_TOKEN": config['sshkey_token'],
