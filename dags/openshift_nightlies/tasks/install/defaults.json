@@ -3,6 +3,7 @@
     "orchestration_host": "",
     "sshkey_token": "",
     "openshift_client_location": "",
+    "openshift_cluster_name": "",
     "openshift_install_release_image_override": "",
     "openshift_install_binary_url": "",
     "openshift_install_apiversion": "v1",
