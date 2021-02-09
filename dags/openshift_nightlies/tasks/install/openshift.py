@@ -58,6 +58,7 @@ class OpenshiftInstaller():
 
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", trigger_rule="all_success"):
+        playbook_operations = {}
         if operation == "install":
             playbook_operations = {"openshift_cleanup": True, "openshift_debug_config": True,
                                    "openshift_install": True, "openshift_post_config": True, "openshift_post_install": True}
