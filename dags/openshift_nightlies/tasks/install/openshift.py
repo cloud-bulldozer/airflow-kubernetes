@@ -60,7 +60,7 @@ class OpenshiftInstaller():
     def _get_task(self, operation="install", trigger_rule="all_success"):
         playbook_operations = {}
         if operation == "install":
-            playbook_operations = {"openshift_cleanup": True, "openshift_debug_config": True,
+            playbook_operations = {"openshift_cleanup": True, "openshift_debug_config": False,
                                    "openshift_install": True, "openshift_post_config": True, "openshift_post_install": True}
         else:
             playbook_operations = {"openshift_cleanup": True, "openshift_debug_config": False,
