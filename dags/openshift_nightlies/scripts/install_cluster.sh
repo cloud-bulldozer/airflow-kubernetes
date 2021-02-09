@@ -41,7 +41,7 @@ setup(){
 }
 
 run_ansible_playbook(){
-    ansible-playbook -vv -i inventory OCP-4.X/deploy-cluster.yml -e platform="$platform" --extra-vars "@${json_file}"
+    ansible-playbook -vvvv -i inventory OCP-4.X/deploy-cluster.yml -e platform="$platform" --extra-vars "@${json_file}"
 }
 
 post_install(){
