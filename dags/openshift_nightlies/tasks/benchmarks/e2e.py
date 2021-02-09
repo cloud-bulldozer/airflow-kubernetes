@@ -3,7 +3,7 @@ from os.path import abspath, dirname
 from os import environ
 
 sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
-from util import var_loader, kubeconfig
+from util import var_loader, kubeconfig, constants
 
 import json
 from datetime import timedelta
@@ -70,7 +70,7 @@ class E2EBenchmarks():
         return BashOperator(
             task_id=f"{benchmark['name']}",
             depends_on_past=False,
-            bash_command=f"/opt/airflow/dags/repo/dags/openshift_nightlies/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
+            bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
             retries=0,
             dag=self.dag,
             env=env,

@@ -13,10 +13,7 @@ from airflow.utils.task_group import TaskGroup
 sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
 from tasks.install import openshift
 from tasks.benchmarks import e2e
-from util import var_loader, manifest
-
-# Base Directory where all OpenShift Nightly DAG Code lives
-root_dag_dir = "/opt/airflow/dags/repo/dags/openshift_nightlies"
+from util import var_loader, manifest, constants
 
 # Set Task Logger to INFO for better task logs
 log = logging.getLogger("airflow.task.operators")
@@ -66,7 +63,7 @@ class OpenshiftNightlyDAG():
 
 
 
-release_manifest = manifest.Manifest(root_dag_dir)
+release_manifest = manifest.Manifest(constants.root_dag_dir)
 for release in release_manifest.get_releases():
     print(release)
     nightly = OpenshiftNightlyDAG(release['version'], release['platform'], release['profile'])
