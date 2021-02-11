@@ -40,7 +40,7 @@ setup(){
     cat ansible.cfg
 
 }
-
+s
 run_ansible_playbook(){
     ansible-playbook -vv -i inventory OCP-4.X/deploy-cluster.yml -e platform="$platform" --extra-vars "@${json_file}"
 }
@@ -48,6 +48,8 @@ run_ansible_playbook(){
 post_install(){
     ssh ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat /root/scale-ci-$OPENSHIFT_CLUSTER_NAME-$platform/.openshift_install.log"
     printenv
+    ls -la /home/airflow/workspace/scale-ci-deploy || true
+    ls -la /home/airflow/workspace/scale-ci-deploy/scale-ci-$OPENSHIFT_CLUSTER_NAME-$platform/auth
     kubectl create secret generic ${KUBECONFIG_NAME} --from-file=kubeconfig=/home/airflow/workspace/scale-ci-deploy/kubeconfig
 }
 
