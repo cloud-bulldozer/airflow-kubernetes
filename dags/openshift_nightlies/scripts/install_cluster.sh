@@ -40,7 +40,7 @@ setup(){
     cat ansible.cfg
 
 }
-s
+
 run_ansible_playbook(){
     ansible-playbook -vv -i inventory OCP-4.X/deploy-cluster.yml -e platform="$platform" --extra-vars "@${json_file}"
 }
