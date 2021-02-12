@@ -47,7 +47,7 @@ run_ansible_playbook(){
 post_install(){
     ssh ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat /root/scale-ci-$OPENSHIFT_CLUSTER_NAME-$platform/.openshift_install.log"
     printenv
-    kubectl create secret generic ${KUBECONFIG_NAME} --from-file=kubeconfig=/home/airflow/workspace/scale-ci-deploy/OCP-4.X/kubeconfig
+    kubectl create secret generic ${KUBECONFIG_NAME} --from-file=config=/home/airflow/workspace/scale-ci-deploy/OCP-4.X/kubeconfig
 }
 
 cleanup(){

@@ -13,7 +13,7 @@ def get_kubeconfig_volume(version, platform, profile):
 def get_kubeconfig_volume_mount():
     return k8s.V1VolumeMount(
         name="kubeconfig",
-        mount_path="/home/airflow/.kube/config",
+        mount_path="/home/airflow/.kube",
         read_only=True
     )
 
