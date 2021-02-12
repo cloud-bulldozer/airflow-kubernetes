@@ -4,7 +4,9 @@
             "name": "uperf",
             "workload": "network-perf",
             "command": "./smoke_test.sh test_cloud",
-            "env": {}
+            "env": {
+                "COMPARE": "false"
+            }
         },
         {
             "name": "scale",
