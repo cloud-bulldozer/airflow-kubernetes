@@ -61,7 +61,7 @@ class OpenshiftInstaller():
         latest_tag = latest_good_image.split(':')[1]
         return {
             "openshift_client_location": f"${self.artifact_url}/{latest_tag}/openshift-client-linux-{latest_tag}",
-            "openshift_install_binary_url": f"${self.artifact_url}/{latest_tag}/openshift-client-linux-{latest_tag}"
+            "openshift_install_binary_url": f"${self.artifact_url}/{latest_tag}/openshift-install-linux-{latest_tag}"
         }
 
 
