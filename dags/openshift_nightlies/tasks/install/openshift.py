@@ -51,7 +51,7 @@ class OpenshiftInstaller():
         self.build_info_url = Variable.get("build_info_url")
         self.artifact_url = Variable.get("artifact_url")
         self.install_secrets = Variable.get(
-            f"openshift_install_secrets", deserialize_json=True)
+            f"openshift_install_config", deserialize_json=True)
         self.aws_creds = Variable.get("aws_creds", deserialize_json=True)
 
 
