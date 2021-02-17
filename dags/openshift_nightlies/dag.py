@@ -22,7 +22,7 @@ handler.setLevel(logging.INFO)
 log.addHandler(handler)
 
 class OpenshiftNightlyDAG():
-    def __init__(self, version, platform, profile):
+    def __init__(self, version, platform, profile, tags):
         self.platform = platform
         self.version = version
         self.profile = profile
@@ -41,6 +41,7 @@ class OpenshiftNightlyDAG():
         self.dag = DAG(
             self.release,
             default_args=self.metadata_args,
+            tags=tags,
             description=f"DAG for Openshift Nightly builds {self.release}",
             schedule_interval=timedelta(days=1),
         )
@@ -66,6 +67,6 @@ class OpenshiftNightlyDAG():
 release_manifest = manifest.Manifest(constants.root_dag_dir)
 for release in release_manifest.get_releases():
     print(release)
-    nightly = OpenshiftNightlyDAG(release['version'], release['platform'], release['profile'])
+    nightly = OpenshiftNightlyDAG(release['version'], release['platform'], release['profile'], release.get('tags', []))
     nightly.build()
     globals()[nightly.release] = nightly.dag

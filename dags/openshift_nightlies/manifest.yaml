@@ -1,13 +1,20 @@
 releases:
-  - version: stable
+  - version: 4.6
     platform: aws
     profile: default
-  - version: stable
+    tags:
+      - stable
+      - aws
+  - version: 4.6
     platform: aws
     profile: ovn
-  - version: stable
+    tags:
+      - stable
+      - aws
+      - ovn
+  - version: 4.6
     platform: gcp
     profile: default
-  - version: stable
-    platform: aws
-    profile: test
+    tags: 
+      - stable
+      - gcp
