@@ -23,6 +23,8 @@ def get_manifest_vars():
     return get_json(file_path)
 
 
+
+
 def get_json(file_path):
     try: 
         with open(file_path) as json_file:

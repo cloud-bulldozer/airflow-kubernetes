@@ -6,6 +6,8 @@ sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
 from util import var_loader, kubeconfig, constants
 
 import json
+import requests
+
 from airflow.operators.bash_operator import BashOperator
 from airflow.models import Variable
 from kubernetes.client import models as k8s
@@ -45,9 +47,23 @@ class OpenshiftInstaller():
         # Airflow Variables
         self.ansible_orchestrator = Variable.get(
             "ansible_orchestrator", deserialize_json=True)
-        self.version_secrets = Variable.get(
-            f"openshift_install_{version}", deserialize_json=True)
+
+        self.build_info_url = Variable.get("build_info_url")
+        self.artifact_url = Variable.get("artifact_url")
+        self.install_secrets = Variable.get(
+            f"openshift_install_secrets", deserialize_json=True)
         self.aws_creds = Variable.get("aws_creds", deserialize_json=True)
+
+
+    def get_build_info(self):
+        self.pull_spec_url = f"{self.build_info_url}/{self.version}/pull_spec.txt"
+        latest_good_image = requests.get(self.pull_spec_url).text
+        latest_tag = latest_good_image.split(':')[1]
+        return {
+            "openshift_client_location": f"${self.artifact_url}/{latest_tag}/openshift-client-linux-{latest_tag}",
+            "openshift_install_binary_url": f"${self.artifact_url}/{latest_tag}/openshift-client-linux-{latest_tag}"
+        }
+
 
     def get_install_task(self):
         return self._get_task(operation="install")
@@ -68,7 +84,7 @@ class OpenshiftInstaller():
 
         # Merge all variables, prioritizing Airflow Secrets over git based vars
         config = {**self.vars, **self.ansible_orchestrator, **
-                  self.version_secrets, **self.aws_creds, **playbook_operations}
+                  self.install_secrets, **self.aws_creds, **playbook_operations, **self.get_build_info()}
 
         config['openshift_cluster_name'] = f"{self.version}-{self.platform}-{self.profile}"
 
