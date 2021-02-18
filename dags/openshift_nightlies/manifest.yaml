@@ -36,7 +36,7 @@ releases:
     platform: aws
     profile: ovn
     tags:
-      - next
+      - future
       - ovn
   - version: 4.6
     releaseStream: 4.6.0-0.nightly
