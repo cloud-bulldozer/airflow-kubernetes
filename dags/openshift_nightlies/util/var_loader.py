@@ -8,8 +8,8 @@ def get_latest_release_from_stream(base_url, release_stream):
     latest_accepted_release = payload["name"]
     latest_accepted_release_url = payload["downloadURL"]
     return {
-        "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}",
-        "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}"
+        "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}.tar.gz",
+        "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}.tar.gz"
     }
 ### Task Variable Generator
 ### Grabs variables from appropriately placed JSON Files
