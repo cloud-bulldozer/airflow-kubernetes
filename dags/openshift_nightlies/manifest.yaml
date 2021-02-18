@@ -12,6 +12,32 @@ releases:
     tags:
       - stable
       - ovn
+  - version: 4.7
+    releaseStream: 4.7.0-0.nightly
+    platform: aws
+    profile: default
+    tags:
+      - next
+  - version: 4.7
+    releaseStream: 4.7.0-0.nightly
+    platform: aws
+    profile: default
+    tags:
+      - next
+      - ovn
+  - version: 4.8
+    releaseStream: 4.8.0-0.nightly
+    platform: aws
+    profile: default
+    tags:
+      - future
+  - version: 4.8
+    releaseStream: 4.8.0-0.nightly
+    platform: aws
+    profile: default
+    tags:
+      - next
+      - ovn
   - version: 4.6
     releaseStream: 4.6.0-0.nightly
     platform: gcp
