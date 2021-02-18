@@ -55,17 +55,6 @@ class OpenshiftInstaller():
         self.aws_creds = Variable.get("aws_creds", deserialize_json=True)
 
 
-    def get_latest_release_from_stream(self):
-        url = f"{self.release_stream_base_url}/{self.release_stream}/latest"
-        payload = requests.get(url).json()
-        latest_accepted_release = payload["name"]
-        latest_accepted_release_url = payload["downloadURL"]
-        return {
-            "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}",
-            "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}"
-        }
-
-
     def get_install_task(self):
         return self._get_task(operation="install")
 
@@ -84,8 +73,14 @@ class OpenshiftInstaller():
                                    "openshift_install": False, "openshift_post_config": False, "openshift_post_install": False}
 
         # Merge all variables, prioritizing Airflow Secrets over git based vars
-        config = {**self.vars, **self.ansible_orchestrator, **
-                  self.install_secrets, **self.aws_creds, **playbook_operations, **self.get_latest_release_from_stream()}
+        config = {
+            **self.vars,
+            **self.ansible_orchestrator,
+            **self.install_secrets,
+            **self.aws_creds,
+            **playbook_operations,
+            **var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
+        }
 
         config['openshift_cluster_name'] = f"{self.version}-{self.platform}-{self.profile}"
 

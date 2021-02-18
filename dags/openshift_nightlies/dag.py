@@ -42,7 +42,7 @@ class OpenshiftNightlyDAG():
 
         tags.append(self.platform)
         tags.append(self.release_stream)
-        
+
         self.dag = DAG(
             self.release,
             default_args=self.metadata_args,
@@ -64,7 +64,7 @@ class OpenshiftNightlyDAG():
         return openshift.OpenshiftInstaller(self.dag, self.version, self.release_stream, self.platform, self.profile)
 
     def _get_e2e_benchmarks(self): 
-        return e2e.E2EBenchmarks(self.dag, self.version, self.platform, self.profile, self.metadata_args)
+        return e2e.E2EBenchmarks(self.dag, self.version, self.release_stream, self.platform, self.profile, self.metadata_args)
 
 
 

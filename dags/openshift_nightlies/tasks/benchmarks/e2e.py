@@ -17,7 +17,7 @@ from kubernetes.client import models as k8s
 
 
 class E2EBenchmarks():
-    def __init__(self, dag, version, platform, profile, default_args):
+    def __init__(self, dag, version, release_stream, platform, profile, default_args):
 
         self.exec_config = {
             "pod_override": k8s.V1Pod(
@@ -42,16 +42,18 @@ class E2EBenchmarks():
         self.dag = dag
         self.platform = platform  # e.g. aws
         self.version = version  # e.g. stable/.next/.future
+        self.release_stream = release_stream
         self.profile = profile  # e.g. default/ovn
         self.default_args = default_args
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
             task="benchmarks", version=version, platform=platform, profile=profile)
-        self.version_secrets = Variable.get(
-            f"openshift_install_{version}", deserialize_json=True)
+        self.release_stream_base_url = Variable.get("release_stream_base_url")
+        latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
+
         self.env = {
-            "OPENSHIFT_CLIENT_LOCATION": self.version_secrets["openshift_client_location"]
+            "OPENSHIFT_CLIENT_LOCATION": latest_release["openshift_client_location"]
         }
 
     def get_benchmarks(self):

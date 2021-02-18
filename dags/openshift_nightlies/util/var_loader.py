@@ -1,7 +1,16 @@
 import json
 from util import constants
+import requests
 
-
+def get_latest_release_from_stream(base_url, release_stream):
+    url = f"{base_url}/{release_stream}/latest"
+    payload = requests.get(url).json()
+    latest_accepted_release = payload["name"]
+    latest_accepted_release_url = payload["downloadURL"]
+    return {
+        "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}",
+        "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}"
+    }
 ### Task Variable Generator
 ### Grabs variables from appropriately placed JSON Files
 def build_task_vars(task="install", version="stable", platform="aws", profile="default"):
