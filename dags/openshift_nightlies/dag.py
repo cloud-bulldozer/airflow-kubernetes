@@ -22,9 +22,10 @@ handler.setLevel(logging.INFO)
 log.addHandler(handler)
 
 class OpenshiftNightlyDAG():
-    def __init__(self, version, platform, profile, tags):
+    def __init__(self, version, release_stream, platform, profile, tags):
         self.platform = platform
         self.version = version
+        self.release_stream = release_stream
         self.profile = profile
         self.release = f"{self.version}_{self.platform}_{self.profile}"
         self.metadata_args = {
@@ -38,6 +39,10 @@ class OpenshiftNightlyDAG():
             'release': self.release,
             'retry_delay': timedelta(minutes=5),
         }
+
+        tags.append(self.platform)
+        tags.append(self.release_stream)
+        
         self.dag = DAG(
             self.release,
             default_args=self.metadata_args,
@@ -56,7 +61,7 @@ class OpenshiftNightlyDAG():
         install_cluster >> benchmarks >> cleanup_cluster
 
     def _get_openshift_installer(self):
-        return openshift.OpenshiftInstaller(self.dag, self.version, self.platform, self.profile)
+        return openshift.OpenshiftInstaller(self.dag, self.version, self.release_stream, self.platform, self.profile)
 
     def _get_e2e_benchmarks(self): 
         return e2e.E2EBenchmarks(self.dag, self.version, self.platform, self.profile, self.metadata_args)
@@ -67,6 +72,6 @@ class OpenshiftNightlyDAG():
 release_manifest = manifest.Manifest(constants.root_dag_dir)
 for release in release_manifest.get_releases():
     print(release)
-    nightly = OpenshiftNightlyDAG(release['version'], release['platform'], release['profile'], release.get('tags', []))
+    nightly = OpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('tags', []))
     nightly.build()
     globals()[nightly.release] = nightly.dag
