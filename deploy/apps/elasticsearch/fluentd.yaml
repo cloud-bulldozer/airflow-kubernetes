@@ -21,7 +21,7 @@ spec:
           configMap: elasticsearch-output
           extraEnv:
           - name: ELASTICSEARCH_HOST
-            value: 172.30.42.249
+            value: quickstart-es-http.elastic.svc.cluster.local
           - name: ELASTICSEARCH_PORT
             value: "9200"
   syncPolicy:

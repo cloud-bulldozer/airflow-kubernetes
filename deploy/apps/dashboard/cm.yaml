@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap 
+metadata:
+  name: dashboard-config
+  namespace: perf-dashboard
+data:
+  ocpperf.toml: |
+    [elasticsearch]
+    url = ""
+    indice = "perf-scale-ci"
+    username = "admin"
+    password = ""
+
+    [ocp-server]
+    port = 8000

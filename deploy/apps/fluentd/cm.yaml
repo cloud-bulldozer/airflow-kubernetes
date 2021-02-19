@@ -57,6 +57,11 @@ data:
       include_tag_key true
       host "#{ENV['ELASTICSEARCH_HOST']}"
       port "#{ENV['ELASTICSEARCH_PORT']}"
+      user "elastic"
+      password ""
+      reconnect_on_error true
+      scheme https
+      ssl_verify false
       logstash_format true
 
       <buffer>

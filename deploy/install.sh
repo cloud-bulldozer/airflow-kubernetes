@@ -37,7 +37,7 @@ add_privileged_service_accounts(){
     oc -n airflow adm policy add-scc-to-user privileged -z airflow-worker
     oc -n airflow adm policy add-scc-to-user privileged -z builder
     oc -n airflow adm policy add-scc-to-user privileged -z deployer
-    oc -n airflow adm policy add-scc-to-user privileged -z default
+    oc -n fluentd adm policy add-scc-to-user privileged -z fluentd-forwarder
 }
 
 install_airflow_workaround(){

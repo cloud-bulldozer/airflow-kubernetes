@@ -2,7 +2,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: kibana
-  namespace: elastic-system
+  namespace: elastic
 spec:
   host: kibana.apps.keith-cluster.perfscale.devcluster.openshift.com
   port:
@@ -12,7 +12,7 @@ spec:
     termination: passthrough
   to:
     kind: Service
-    name: kibana-sample-kb-http
+    name: quickstart-kb-http
     weight: 100
   wildcardPolicy: None
 
