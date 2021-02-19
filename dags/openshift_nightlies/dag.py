@@ -48,7 +48,7 @@ class OpenshiftNightlyDAG():
             default_args=self.metadata_args,
             tags=tags,
             description=f"DAG for Openshift Nightly builds {self.release}",
-            schedule_interval=timedelta(days=1),
+            schedule_interval=timedelta(days=3),
         )
     
     def build(self):
