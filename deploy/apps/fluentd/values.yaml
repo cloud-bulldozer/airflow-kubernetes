@@ -6,7 +6,7 @@ aggregator:
   - name: ELASTICSEARCH_PORT
     value: "9200"
 forwarder:
-  configMap: newparser
+  configMap: custom-parser
   rbac:
     pspEnabled: true
   containerSecurityContext:

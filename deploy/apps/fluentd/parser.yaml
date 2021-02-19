@@ -1,41 +1,45 @@
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: apache-log-parser
-  namespace: fluentd
 data:
-  fluentd.conf: |
-
-    # Ignore fluentd own events
-    <match fluent.**>
-      @type null
-    </match>
-
+  fluentd-inputs.conf: |
     # HTTP input for the liveness and readiness probes
     <source>
       @type http
       port 9880
     </source>
-
+    # Get the logs from the containers running in the node
+    <source>
+      @type tail
+      path /var/log/containers/*.log
+      # exclude Fluentd logs
+      exclude_path /var/log/containers/*fluentd*.log
+      pos_file /opt/bitnami/fluentd/logs/buffers/fluentd-docker.pos
+      tag kubernetes.*
+      read_from_head true
+      <parse>
+        @type regexp
+        expression /^(?<time>.+) (?<stream>stdout|stderr)( (?<logtag>.))? (?<log>.*)$/
+      </parse>
+    </source>
+    # enrich with kubernetes metadata
+    # <filter kubernetes.var.log.containers.**>
+    #   @type parser
+    #   <parse>
+    #     @type json
+    #     json_parser jsonf
+    #   </parse>
+    #   replace_invalid_sequence true
+    #   emit_invalid_record_to_error false
+    #   key_name log
+    #   reserve_data true
+    # </filter>
+    <filter kubernetes.**>
+      @type kubernetes_metadata
+    </filter>
+  fluentd-output.conf: |
     # Throw the healthcheck to the standard output instead of forwarding it
     <match fluentd.healthcheck>
       @type stdout
     </match>
-
-    # Get the logs from the containers running in the cluster
-    # This block parses logs using an expression valid for the Apache log format
-    # Update this depending on your application log format
-    <source>
-      @type tail
-      path /var/log/containers/*.log
-      pos_file /opt/bitnami/fluentd/logs/buffers/fluentd-docker.pos
-      tag www.log
-      <parse>
-        @type regexp
-        expression /^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] \\"(?<method>\S+)(?: +(?<path>[^ ]*) +\S*)?\\" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$/
-        time_format %d/%b/%Y:%H:%M:%S %z
-      </parse>
-    </source>
 
     # Forward all logs to the aggregators
     <match **>
@@ -44,7 +48,6 @@ data:
         host fluentd-0.fluentd-headless.fluentd.svc.cluster.local
         port 24224
       </server>
-
       <buffer>
         @type file
         path /opt/bitnami/fluentd/logs/buffers/logs.buffer
@@ -52,3 +55,52 @@ data:
         flush_interval 5s
       </buffer>
     </match>
+  fluentd.conf: |
+    # Ignore fluentd own events
+    <match fluent.**>
+      @type null
+    </match>
+
+    @include fluentd-inputs.conf
+    @include fluentd-output.conf
+  metrics.conf: |
+    # Prometheus Exporter Plugin
+    # input plugin that exports metrics
+    <source>
+      @type prometheus
+      port 24231
+    </source>
+    # input plugin that collects metrics from MonitorAgent
+    <source>
+      @type prometheus_monitor
+      <labels>
+        host #{hostname}
+      </labels>
+    </source>
+    # input plugin that collects metrics for output plugin
+    <source>
+      @type prometheus_output_monitor
+      <labels>
+        host #{hostname}
+      </labels>
+    </source>
+    # input plugin that collects metrics for in_tail plugin
+    <source>
+      @type prometheus_tail_monitor
+      <labels>
+        host #{hostname}
+      </labels>
+    </source>
+kind: ConfigMap
+metadata:
+  annotations:
+    meta.helm.sh/release-name: fluentd
+    meta.helm.sh/release-namespace: fluentd
+  labels:
+    app.kubernetes.io/component: forwarder
+    app.kubernetes.io/instance: fluentd
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: fluentd
+    helm.sh/chart: fluentd-3.5.1
+  name: custom-parser
+  namespace: fluentd
