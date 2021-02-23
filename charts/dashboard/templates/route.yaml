@@ -1,0 +1,36 @@
+{{ if .Values.ingress.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "dashboard.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "dashboard.labels" . | nindent 4 }}
+spec:
+  host: {{ .Values.ingress.hostName }}.{{ .Values.ingress.hostedZone }}
+  port:
+    targetPort: 3000
+  to:
+    kind: Service
+    name: {{ include "dashboard.fullname" . }}
+    weight: 100
+  wildcardPolicy: None
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "dashboard.fullname" . }}-api
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "dashboard.labels" . | nindent 4 }}
+spec:
+  host: {{ .Values.ingress.hostName }}.{{ .Values.ingress.hostedZone }}
+  path: "/api"
+  port:
+    targetPort: 8000
+  to:
+    kind: Service
+    name: {{ include "dashboard.fullname" . }}
+    weight: 100
+  wildcardPolicy: None
+{{ end }}

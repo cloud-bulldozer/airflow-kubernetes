@@ -1,0 +1,14 @@
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: {{ include "elasticsearch.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "elasticsearch.labels" . | nindent 4 }}
+spec:
+  version: {{ .Values.version }}
+  count: {{ .Values.kibana.replicas }}
+  elasticsearchRef:
+    name: {{ include "elasticsearch.fullname" . }}
+
+  

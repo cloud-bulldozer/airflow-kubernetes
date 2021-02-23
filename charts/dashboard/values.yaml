@@ -1,0 +1,46 @@
+# Default values for dashboard.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "perf-dashboard"
+replicaCount: 1
+
+ingress:
+  enabled: true
+  hostName: dashboard
+  hostedZone: apps.keith-cluster.perfscale.devcluster.openshift.com
+
+elasticsearch:
+  # Use existing secret
+  existingSecretName: ""
+
+  # Otherwise create new secret with values
+  url: ""
+  indice: ""
+  username: ""
+  password: ""
+
+frontend:
+  image:
+    repository: quay.io/mleader/perf-dashboard
+    tag: front
+  resources: {}
+  securityContext:
+    privileged: true
+    allowPrivilegeEscalation: true
+
+backend: 
+  image:
+    repository: quay.io/mleader/perf-dashboard
+    tag: back
+  resources: {}
+  securityContext: {}
+  
+
+podAnnotations:
+  alpha.image.policy.openshift.io/resolve-names: '*'
+
+podSecurityContext: {}
+  # fsGroup: 2000
+

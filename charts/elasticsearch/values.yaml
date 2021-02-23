@@ -1,0 +1,39 @@
+nameOverride: ""
+fullnameOverride: ""
+version: 7.10.2
+
+
+ingress:
+  enabled: true
+  # DNS names will resolve as $hostName-(kibana | elastic).$hostedZone
+  hostName: kibana
+  hostedZone: apps.keith-cluster.perfscale.devcluster.openshift.com
+
+kibana:
+  replicas: 1
+
+elasticsearch:
+  nodeSets:
+  - name: default
+    count: 1
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 256Gi
+    config:
+      node.store.allow_mmap: false
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            limits:
+              memory: 8Gi
+          securityContext:
+            capabilities:
+              add: ["SYS_CHROOT"]

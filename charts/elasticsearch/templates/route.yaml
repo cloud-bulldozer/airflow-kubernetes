@@ -1,0 +1,23 @@
+{{ if .Values.ingress.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "elasticsearch.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "elasticsearch.labels" . | nindent 4 }}
+spec:
+  host: {{ .Values.ingress.hostName }}-kibana.apps.keith-cluster.perfscale.devcluster.openshift.com
+  port:
+    targetPort: https
+  tls:
+    insecureEdgeTerminationPolicy: Redirect 
+    termination: passthrough
+  to:
+    kind: Service
+    name: {{ include "elasticsearch.fullname" . }}-kb-http
+    weight: 100
+  wildcardPolicy: None
+{{ end }}
+
+  
