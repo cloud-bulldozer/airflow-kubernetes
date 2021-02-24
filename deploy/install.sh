@@ -58,7 +58,7 @@ create_namespaces(){
 }
 
 create_airflow_app(){
-    cat $GIT_ROOT/apps/airflow/airflow.yaml | \
+    cat $GIT_ROOT/deploy/apps/airflow/airflow.yaml | \
     yq w - 'spec.source.helm.parameters.(name==dags.gitSync.repo).value' https://github.com/$user/airflow-kubernetes.git | \
     yq w - 'spec.source.helm.parameters.(name==dags.gitSync.branch).value' $branch | \
     kubectl apply -f -
