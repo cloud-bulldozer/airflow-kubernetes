@@ -12,12 +12,29 @@ do
 done
 
 setup(){
+    # Generate a uuid
+    export UUID=$(uuidgen)
 
+    # Elasticsearch and jenkins credentials
+    export ES_SERVER=$ES_SERVER
+    export ES_INDEX=$ES_INDEX
+
+    # Timestamp
+    timestamp=`date +"%Y-%m-%dT%T.%3N"`
+
+    # Get OpenShift cluster details
+    cluster_name=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}')
+    platform=$(oc get infrastructure cluster -o jsonpath='{.status.platformStatus.type}')
+    masters=$(oc get nodes -l node-role.kubernetes.io/master --no-headers=true | wc -l)
+    workers=$(oc get nodes -l node-role.kubernetes.io/worker --no-headers=true | wc -l)
+    workload=$(oc get nodes -l node-role.kubernetes.io/workload --no-headers=true | wc -l)
+    infra=$(oc get nodes -l node-role.kubernetes.io/infra --no-headers=true | wc -l)
+    all=$(oc get nodes  --no-headers=true | wc -l)
 }
 
-4.6_aws_default
-	2021-02-22T19:44:45.631939+00:00
-
+get_task_states(){
+    task_states=$(airflow tasks states-for-dag-run $dag_id $execution_date -o json)
+}
 
 # Defaults
 if [[ -z $ES_SERVER ]]; then
@@ -25,11 +42,7 @@ if [[ -z $ES_SERVER ]]; then
   help
   exit 1
 fi
-if [[ -z $ES_USER ]]; then
-  export ES_USER=""
-else
-  export ES_USER="--user ${ES_USER}"
-fi
+
 if [[ -z $ES_INDEX ]]; then
   export ES_INDEX=perf_scale_ci
 fi
