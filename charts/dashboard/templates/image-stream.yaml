@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: image.openshift.io/v1
 kind: ImageStream
 metadata:
   name: {{ include "dashboard.fullname" . }}
@@ -9,15 +9,15 @@ spec:
   lookupPolicy:
     local: true
   tags:
-  - name: {{ .Values.frontend.tag }}
+  - name: {{ .Values.frontend.image.tag }}
     from:
       kind: DockerImage
-      name: {{ .Values.frontend.repository }} :{{ .Values.frontend.tag }} 
+      name: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }} 
     importPolicy:
       scheduled: true
-  - name: {{ .Values.backend.tag }}
+  - name: {{ .Values.backend.image.tag }}
     from:
       kind: DockerImage
-      name: {{ .Values.backend.repository }} :{{ .Values.backend.tag }} 
+      name: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }} 
     importPolicy:
       scheduled: true

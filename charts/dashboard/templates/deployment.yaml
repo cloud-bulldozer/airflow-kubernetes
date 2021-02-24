@@ -5,6 +5,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "dashboard.labels" . | nindent 4 }}
+  annotations:
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"{{ include "dashboard.fullname" . }}:{{ .Values.frontend.image.tag }}"},"fieldPath":"spec.template.spec.containers[?(@.name=="frontend")].image"},{"from":{"kind":"ImageStreamTag","name":"{{ include "dashboard.fullname" . }}:{{ .Values.backend.image.tag }}},"fieldPath":"spec.template.spec.containers[?(@.name=="backend")].image"}]'     
 spec:
   replicas: 1
   selector:
@@ -14,7 +16,6 @@ spec:
     metadata:
     {{- with .Values.podAnnotations }}
       annotations:
-        
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
@@ -28,7 +29,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: frontend
-          image: {{ include "dashboard.fullname" . }}:{{ .Values.frontend.tag }}
+          image: {{ include "dashboard.fullname" . }}:{{ .Values.frontend.image.tag }}
           imagePullPolicy: "Always"
           ports:
             - containerPort: 3000
@@ -38,7 +39,7 @@ spec:
           securityContext:
             {{- toYaml .Values.frontend.securityContext | nindent 12 }}
         - name: backend
-          image: {{ include "dashboard.fullname" . }}:{{ .Values.backend.tag }}
+          image: {{ include "dashboard.fullname" . }}:{{ .Values.backend.image.tag }}
           imagePullPolicy: "Always"
           securityContext:
             {{- toYaml .Values.backend.securityContext | nindent 12 }}
@@ -54,5 +55,5 @@ spec:
       volumes:
         - name: config
           secret:
-            secretName: {{ .Values.elasticsearch.existingSecretName | default include "dashboard.fullname" . }}
+            secretName: {{ .Values.elasticsearch.existingSecretName | default (printf "%s" (include "dashboard.fullname" .)) }}
 

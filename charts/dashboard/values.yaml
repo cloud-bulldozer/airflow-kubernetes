@@ -26,9 +26,7 @@ frontend:
     repository: quay.io/mleader/perf-dashboard
     tag: front
   resources: {}
-  securityContext:
-    privileged: true
-    allowPrivilegeEscalation: true
+  securityContext: {}
 
 backend: 
   image:
