@@ -41,8 +41,7 @@ add_privileged_service_accounts(){
 }
 
 install_airflow_workaround(){
-    git clone https://github.com/whitleykeith/airflow-kubernetes 
-    cd airflow-kubernetes/airflow
+    cd $GIT_ROOT/charts/airflow
     helm dep update
     
     helm upgrade airflow . --namespace airflow --install
@@ -68,13 +67,13 @@ create_routes(){
     airflow_route="airflow-k8.apps.$cluster_name.perfscale.devcluster.openshift.com"
     argo_route="argo.apps.$cluster_name.perfscale.devcluster.openshift.com"
 
-    cat $GIT_ROOT/apps/airflow/route.yaml | \
+    cat $GIT_ROOT/deploy/apps/airflow/route.yaml | \
     yq w - 'spec.host' $airflow_route | \
     kubectl apply -f -
 
     echo "Airflow route configured at $airflow_route"
 
-    cat $GIT_ROOT/apps/argocd/route.yaml | \
+    cat $GIT_ROOT/deploy/apps/argocd/route.yaml | \
     yq w - 'spec.host' $argo_route | \
     kubectl apply -f -
 
