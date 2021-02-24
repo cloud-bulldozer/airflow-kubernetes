@@ -10,8 +10,8 @@ class Manifest():
                 print(exc)
 
 
-    def get_defaults(self):
-        return self.yaml.get('defaults', {})
+    def get_indexing(self):
+        return self.yaml.get('indexing', {})
 
     def get_releases(self): 
         return self.yaml.get('releases', [])
