@@ -57,7 +57,7 @@ class E2EBenchmarks():
         }
 
         self.elasticsearch_config = Variable.get("elasticsearch_config", deserialize_json=True)
-        self.es_user = f"https://{self.elasticsearch_config['username']}:{self.elasticsearch_config['password']}@{self.elasticsearch_config['url']}"
+        self.es_user = f"http://{self.elasticsearch_config['username']}:{self.elasticsearch_config['password']}@{self.elasticsearch_config['url']}"
 
     def get_benchmarks(self):
         return self._get_benchmarks(self.vars["benchmarks"])
