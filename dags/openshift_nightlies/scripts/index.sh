@@ -78,8 +78,8 @@ index_task(){
 }
 
 index_tasks(){
-    AIRFLOW__LOGGING__LOGGING_LEVEL=ERROR 
-    task_states=$(airflow tasks states-for-dag-run $dag_id $execution_date -o json)
+    
+    task_states=$(AIRFLOW__LOGGING__LOGGING_LEVEL=ERROR  airflow tasks states-for-dag-run $dag_id $execution_date -o json)
     echo $task_states | jq -c '.[]' | 
     while IFS=$"\n" read -r c; do 
         index_task $c 
