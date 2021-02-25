@@ -63,7 +63,7 @@ class OpenshiftNightlyDAG():
         with TaskGroup("Index Results", prefix_group_id=False, dag=self.dag) as post_steps: 
             index_status_task = self._get_status_indexer().get_index_task()
 
-        install_cluster >> benchmarks >> post_steps >> cleanup_cluster
+        install_cluster >> benchmarks >> [post_steps, cleanup_cluster]
 
     def _get_openshift_installer(self):
         return openshift.OpenshiftInstaller(self.dag, self.version, self.release_stream, self.platform, self.profile)
