@@ -58,10 +58,7 @@ index_task(){
         duration=$(( $end_ts - $start_ts ))
     fi
 
-    # Epoch timings
-    end_ts=$(date -d $end_date +%s)
-    start_ts=$(date -d $start_date +%s)
-    duration=$(( $end_ts - $start_ts ))
+
 
     encoded_execution_date=$(python3 -c "import urllib.parse; print(urllib.parse.quote(input()))" <<< "$execution_date")
     build_url="${airflow_base_url}/task?dag_id=${dag_id}&execution_date=${encoded_execution_date}"
