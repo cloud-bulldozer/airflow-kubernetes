@@ -57,7 +57,8 @@ class StatusIndexer():
     def get_index_task(self):
         env = {
             **self.env, 
-            **{"ES_SERVER": var_loader.get_elastic_url()}
+            **{"ES_SERVER": var_loader.get_elastic_url()},
+            **environ
         }
 
         return BashOperator(
