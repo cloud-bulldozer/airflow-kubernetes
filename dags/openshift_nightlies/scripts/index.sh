@@ -39,15 +39,15 @@ setup(){
 index_task(){
     task_json=$1
     
-    state=$(echo $task_json | jq '.state')
-    task_id=$(echo $task_json | jq '.task_id')
+    state=$(echo $task_json | jq -r '.state')
+    task_id=$(echo $task_json | jq -r '.task_id')
 
     if [[ $task_id == "$AIRFLOW_CTX_TASK_ID" ]]; then
         echo "Index Task doesn't index itself, skipping."
         exit 0
     fi
-    start_date=$(echo $task_json | jq '.start_date')
-    end_date=$(echo $task_json | jq '.end_date')
+    start_date=$(echo $task_json | jq -r '.start_date')
+    end_date=$(echo $task_json | jq -r '.end_date')
 
     # Epoch timings
     end_ts=$(date -d $end_date +%s)
