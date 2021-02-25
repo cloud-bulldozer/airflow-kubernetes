@@ -27,8 +27,8 @@ setup(){
     export PATH=$PATH:/home/airflow/.local/bin:$(pwd)
 
     # Get OpenShift cluster details
-    cluster_name=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}')
-    platform=$(oc get infrastructure cluster -o jsonpath='{.status.platformStatus.type}')
+    cluster_name=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}') || "Cluster Install Failed"
+    platform=$(oc get infrastructure cluster -o jsonpath='{.status.platformStatus.type}') || "Cluster Install Failed"
     masters=$(oc get nodes -l node-role.kubernetes.io/master --no-headers=true | wc -l)
     workers=$(oc get nodes -l node-role.kubernetes.io/worker --no-headers=true | wc -l)
     workload=$(oc get nodes -l node-role.kubernetes.io/workload --no-headers=true | wc -l)
