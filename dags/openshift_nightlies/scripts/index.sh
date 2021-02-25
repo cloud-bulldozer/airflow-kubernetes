@@ -72,10 +72,10 @@ index_task(){
         "cluster_name": "'$cluster_name'",
         "build_tag": "'$task_id'",
         "node_name": "'$HOSTNAME'",
-        "job_status": '$state',
+        "job_status": "'$state'",
         "build_url": "'$build_url'",
         "upstream_job": "'$dag_id'",
-        "upstream_job_build": '$run_id',
+        "upstream_job_build": "'$run_id'",
         "job_duration": "'$duration'",
         "timestamp": "'$timestamp'"
         }' $ES_SERVER/$ES_INDEX/_doc/
