@@ -79,7 +79,8 @@ class OpenshiftInstaller():
             **self.install_secrets,
             **self.aws_creds,
             **playbook_operations,
-            **var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
+            **var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream),
+            **{ "es_server": var_loader.get_elastic_url() }
         }
 
         config['openshift_cluster_name'] = f"{self.version}-{self.platform}-{self.profile}"

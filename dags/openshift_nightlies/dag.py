@@ -13,6 +13,7 @@ from airflow.utils.task_group import TaskGroup
 sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
 from tasks.install import openshift
 from tasks.benchmarks import e2e
+from tasks.index import status
 from util import var_loader, manifest, constants
 
 # Set Task Logger to INFO for better task logs
@@ -58,7 +59,11 @@ class OpenshiftNightlyDAG():
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
-        install_cluster >> benchmarks >> cleanup_cluster
+
+        with TaskGroup("Post Steps", prefix_group_id=False, dag=self.dag) as post_steps: 
+            index_status_task = self._get_status_indexer().get_index_task()
+
+        install_cluster >> benchmarks >> cleanup_cluster >> post_steps
 
     def _get_openshift_installer(self):
         return openshift.OpenshiftInstaller(self.dag, self.version, self.release_stream, self.platform, self.profile)
@@ -66,6 +71,8 @@ class OpenshiftNightlyDAG():
     def _get_e2e_benchmarks(self): 
         return e2e.E2EBenchmarks(self.dag, self.version, self.release_stream, self.platform, self.profile, self.metadata_args)
 
+    def _get_status_indexer(self):
+        return status.StatusIndexer(self.dag, self.version, self.release_stream, self.platform, self.profile)
 
 
 

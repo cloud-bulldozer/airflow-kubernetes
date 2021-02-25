@@ -56,8 +56,6 @@ class E2EBenchmarks():
             "OPENSHIFT_CLIENT_LOCATION": latest_release["openshift_client_location"]
         }
 
-        self.elasticsearch_config = Variable.get("elasticsearch_config", deserialize_json=True)
-        self.es_user = f"http://{self.elasticsearch_config['username']}:{self.elasticsearch_config['password']}@{self.elasticsearch_config['url']}"
 
     def get_benchmarks(self):
         return self._get_benchmarks(self.vars["benchmarks"])
@@ -71,7 +69,7 @@ class E2EBenchmarks():
         return benchmarks
 
     def _get_benchmark(self, benchmark):
-        env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": self.es_user}}
+        env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}}
         return BashOperator(
             task_id=f"{benchmark['name']}",
             depends_on_past=False,

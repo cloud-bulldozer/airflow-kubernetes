@@ -1,6 +1,7 @@
 import json
 from util import constants
 import requests
+from airflow.models import Variable
 
 def get_latest_release_from_stream(base_url, release_stream):
     url = f"{base_url}/{release_stream}/latest"
@@ -11,6 +12,12 @@ def get_latest_release_from_stream(base_url, release_stream):
         "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}.tar.gz",
         "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}.tar.gz"
     }
+
+def get_elastic_url():
+    elasticsearch_config = Variable.get("elasticsearch_config", deserialize_json=True)
+    return f"http://{elasticsearch_config['username']}:{elasticsearch_config['password']}@{elasticsearch_config['url']}"
+
+
 ### Task Variable Generator
 ### Grabs variables from appropriately placed JSON Files
 def build_task_vars(task="install", version="stable", platform="aws", profile="default"):
