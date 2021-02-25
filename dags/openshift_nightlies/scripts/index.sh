@@ -27,13 +27,13 @@ setup(){
     export PATH=$PATH:/home/airflow/.local/bin:$(pwd)
 
     # Get OpenShift cluster details
-    cluster_name=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}' || echo "Cluster Install Failed")
-    platform=$(oc get infrastructure cluster -o jsonpath='{.status.platformStatus.type}' || echo "Cluster Install Failed")
-    masters=$(oc get nodes -l node-role.kubernetes.io/master --no-headers=true | wc -l || echo "Cluster Install Failed")
-    workers=$(oc get nodes -l node-role.kubernetes.io/worker --no-headers=true | wc -l || echo "Cluster Install Failed")
-    workload=$(oc get nodes -l node-role.kubernetes.io/workload --no-headers=true | wc -l || echo "Cluster Install Failed")
-    infra=$(oc get nodes -l node-role.kubernetes.io/infra --no-headers=true | wc -l || echo "Cluster Install Failed") 
-    all=$(oc get nodes  --no-headers=true | wc -l || echo "Cluster Install Failed")
+    cluster_name=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}')
+    platform=$(oc get infrastructure cluster -o jsonpath='{.status.platformStatus.type}')
+    masters=$(oc get nodes -l node-role.kubernetes.io/master --no-headers=true | wc -l)
+    workers=$(oc get nodes -l node-role.kubernetes.io/worker --no-headers=true | wc -l)
+    workload=$(oc get nodes -l node-role.kubernetes.io/workload --no-headers=true | wc -l)
+    infra=$(oc get nodes -l node-role.kubernetes.io/infra --no-headers=true | wc -l) 
+    all=$(oc get nodes  --no-headers=true | wc -l)
 }
 
 index_task(){
