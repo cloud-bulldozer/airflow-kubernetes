@@ -50,8 +50,7 @@ class StatusIndexer():
     # Create Airflow Task for Indexing Results into ElasticSearch
     def get_index_task(self):
         env = {
-            **{"ES_SERVER": var_loader.get_elastic_url()},
-            **self._insert_kube_env()
+            **{"ES_SERVER": var_loader.get_elastic_url()}
         }
 
         return BashOperator(
