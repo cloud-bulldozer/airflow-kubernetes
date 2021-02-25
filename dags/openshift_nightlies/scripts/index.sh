@@ -46,8 +46,17 @@ index_task(){
         echo "Index Task doesn't index itself, skipping."
         exit 0
     fi
+
     start_date=$(echo $task_json | jq -r '.start_date')
     end_date=$(echo $task_json | jq -r '.end_date')
+
+    if [[ -z $start_date || -z $end_date ]]; then
+        duration=0
+    else
+        end_ts=$(date -d $end_date +%s)
+        start_ts=$(date -d $start_date +%s)
+        duration=$(( $end_ts - $start_ts ))
+    fi
 
     # Epoch timings
     end_ts=$(date -d $end_date +%s)
