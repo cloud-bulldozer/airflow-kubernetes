@@ -29,11 +29,11 @@ setup(){
     # Get OpenShift cluster details
     cluster_name=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}') || echo "Cluster Install Failed"
     platform=$(oc get infrastructure cluster -o jsonpath='{.status.platformStatus.type}') || echo "Cluster Install Failed"
-    masters=$(oc get nodes -l node-role.kubernetes.io/master --no-headers=true | wc -l)
-    workers=$(oc get nodes -l node-role.kubernetes.io/worker --no-headers=true | wc -l)
-    workload=$(oc get nodes -l node-role.kubernetes.io/workload --no-headers=true | wc -l)
-    infra=$(oc get nodes -l node-role.kubernetes.io/infra --no-headers=true | wc -l) 
-    all=$(oc get nodes  --no-headers=true | wc -l)
+    masters=$(oc get nodes -l node-role.kubernetes.io/master --no-headers=true | wc -l) || true
+    workers=$(oc get nodes -l node-role.kubernetes.io/worker --no-headers=true | wc -l) || true
+    workload=$(oc get nodes -l node-role.kubernetes.io/workload --no-headers=true | wc -l) || true
+    infra=$(oc get nodes -l node-role.kubernetes.io/infra --no-headers=true | wc -l) || true 
+    all=$(oc get nodes  --no-headers=true | wc -l) || true
 }
 
 index_task(){
