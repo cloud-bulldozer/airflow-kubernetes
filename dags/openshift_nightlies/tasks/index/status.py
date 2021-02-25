@@ -45,11 +45,18 @@ class StatusIndexer():
         self.vars = var_loader.build_task_vars(
             task="index", version=version, platform=platform, profile=profile)
 
+        self.release_stream_base_url = Variable.get("release_stream_base_url")
+        latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
+
+        self.env = {
+            "OPENSHIFT_CLIENT_LOCATION": latest_release["openshift_client_location"]
+        }
 
 
     # Create Airflow Task for Indexing Results into ElasticSearch
     def get_index_task(self):
         env = {
+            **self.env, 
             **{"ES_SERVER": var_loader.get_elastic_url()}
         }
 

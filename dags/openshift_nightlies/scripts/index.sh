@@ -20,6 +20,12 @@ setup(){
     # Timestamp
     timestamp=`date +"%Y-%m-%dT%T.%3N"`
 
+    # Setup Kubeconfig
+    export KUBECONFIG=/home/airflow/.kube/config
+    curl -L $OPENSHIFT_CLIENT_LOCATION -o openshift-client.tar.gz
+    tar -xzf openshift-client.tar.gz
+    export PATH=$PATH:$(pwd)
+
     # Get OpenShift cluster details
     cluster_name=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}')
     platform=$(oc get infrastructure cluster -o jsonpath='{.status.platformStatus.type}')
