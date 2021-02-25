@@ -58,12 +58,10 @@ index_task(){
         duration=$(( $end_ts - $start_ts ))
     fi
 
-
-
     encoded_execution_date=$(python3 -c "import urllib.parse; print(urllib.parse.quote(input()))" <<< "$execution_date")
     build_url="${airflow_base_url}/task?dag_id=${dag_id}&execution_date=${encoded_execution_date}"
     
-    curl $ES_SERVER -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
+    curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
         "uuid" : "'$UUID'",
         "platform": "'$platform'",
         "master_count": '$masters',
@@ -76,7 +74,7 @@ index_task(){
         "node_name": "'$HOSTNAME'",
         "job_status": '$state',
         "build_url": "'$build_url'",
-        "upstream_job": '$dag_id',
+        "upstream_job": "'$dag_id'",
         "upstream_job_build": '$run_id',
         "job_duration": "'$duration'",
         "timestamp": "'$timestamp'"
