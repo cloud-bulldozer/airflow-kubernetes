@@ -1,4 +1,5 @@
 import json
+sys.path.insert(0, dirname(abspath(dirname(__file__))))
 from util import constants
 import requests
 from airflow.models import Variable
