@@ -25,11 +25,12 @@ class StatusIndexer():
                             image="quay.io/keithwhitley4/airflow-ansible:2.0.0",
                             image_pull_policy="Always",
                             volume_mounts=[
-                                kubeconfig.get_empty_dir_volume_mount()]
+                                kubeconfig.get_kubeconfig_volume_mount()]
 
                         )
                     ],
-                    volumes=[kubeconfig.get_empty_dir_volume_mount()]
+                    volumes=[kubeconfig.get_kubeconfig_volume(
+                        version, platform, profile)]
                 )
             )
         }
