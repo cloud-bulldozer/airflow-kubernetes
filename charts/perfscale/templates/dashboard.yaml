@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: perf-dashboard
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .Values.dashboard.syncWave | quote }}
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  destination: 
+    namespace: perf-dashboard
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: {{ .Values.global.repo.url }}
+    path: charts/dashboard
+    revision: {{ .Values.global.repo.branch }}
+    helm:
+      releaseName: airflow
+{{- with .Values.dashboard.values }}
+      values: |-
+{{- toYaml . | indent 8 }}
+{{- end }}        
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

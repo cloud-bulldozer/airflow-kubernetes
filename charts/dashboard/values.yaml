@@ -9,7 +9,7 @@ replicaCount: 1
 ingress:
   enabled: true
   hostName: dashboard
-  hostedZone: apps.keith-cluster.perfscale.devcluster.openshift.com
+  baseDomain: apps.keith-cluster.perfscale.devcluster.openshift.com
 
 elasticsearch:
   # Use existing secret
@@ -26,7 +26,9 @@ frontend:
     repository: quay.io/mleader/perf-dashboard
     tag: front
   resources: {}
-  securityContext: {}
+  securityContext:
+    privileged: true
+    allowPrivilegeEscalation: true
 
 backend: 
   image:

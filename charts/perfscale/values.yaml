@@ -1,3 +1,84 @@
-imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+
+global:
+  baseDomain: apps.keith-cluster.perfscale.devcluster.openshift.com
+  repo:
+    url: https://github.com/whitleykeith/airflow-kubernetes.git
+    branch: master
+
+
+airflow:
+  syncWave: 0
+  hostName: airflow
+  values: 
+    defaultAirflowTag: 2.0.0
+    env:
+    - name: AIRFLOW__KUBERNETES__DAGS_VOLUME_SUBPATH
+      value: repo/
+    - name: AIRFLOW__CORE__KILLED_TASK_CLEANUP_TIME
+      value: 604800
+    config:
+      logging:
+        colored_console_log: "True"
+        remote_logging: "True"
+      elasticsearch:
+        write_stdout: "True"
+      elasticsearch_configs:
+        use_ssl: "True"
+        verify_certs: "False"
+        ssl_show_warn: "False"
+      kubernetes:
+        delete_worker_pods: False
+      core:
+        DAGBAG_IMPORT_TIMEOUT: 300
+        killed_task_cleanup_time: 604800
+    dags:
+      gitSync:
+        enabled: true
+        subPath: dags
+        depth: 8
+    elasticsearch:
+      enabled: True
+      connection: 
+        user: elastic
+        pass: # REDACTED 
+        host: quickstart-es-http.elastic.svc.cluster.local
+        port: 9200
+
+
+argo:
+  syncWave: 1
+  hostName: argo
+  values: {}
+
+dashboard:
+  syncWave: 0
+  values: {}
+
+logging: 
+  syncWave: 0
+  fluentd:
+    values:
+      aggregator:
+        configMap: elasticsearch-output
+        extraEnv:
+        - name: ELASTICSEARCH_HOST
+          value: quickstart-es-http.elastic.svc.cluster.local
+        - name: ELASTICSEARCH_PORT
+          value: "9200"
+      forwarder:
+        configMap: custom-parser
+        rbac:
+          pspEnabled: true
+        containerSecurityContext:
+          privileged: true
+          allowPrivilegeEscalation: true
+        extraEnv:
+        - name: FLUENTD_UID
+          value: '0'
+  elastic:
+    values: {}
+
+
+elastic: {}

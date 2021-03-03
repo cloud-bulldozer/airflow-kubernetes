@@ -1,0 +1,106 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: airflow
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .Values.airflow.syncWave | quote }}
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  destination: 
+    namespace: airflow
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: {{ .Values.global.repo.url }}
+    path: charts/airflow
+    revision: {{ .Values.global.repo.branch }}
+    helm:
+      releaseName: airflow
+{{- with .Values.airflow.values }}
+      values: |-
+{{- toYaml . | indent 8 }}
+{{- end }}        
+      parameters:
+      - name: dags.gitSync.repo
+        value: {{ .Values.global.repo.url }}
+      - name: dags.gitSync.branch
+        value: {{ .Values.global.repo.branch }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: airflow
+  namespace: airflow
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .Values.airflow.syncWave | quote }}
+spec:
+  host: {{ .Values.airflow.hostName }}.{{ .Values.global.baseDomain }}
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: airflow-webserver
+    weight: 100
+  wildcardPolicy: None
+--- 
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pod-reader
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+# This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.
+kind: ClusterRoleBinding
+metadata:
+  name: pod-reader
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .Values.airflow.syncWave | quote }}
+subjects:
+- kind: ServiceAccount
+  name: airflow-webserver # Name is case sensitive
+  namespace: airflow
+- kind: ServiceAccount
+  name: airflow-worker # Name is case sensitive
+  namespace: airflow
+roleRef:
+  kind: ClusterRole
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: airflow-worker
+  namespace: airflow
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .Values.airflow.syncWave | quote }}
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["secrets", "configmaps", "pods"]
+  verbs:  ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: airflow-worker
+  namespace: airflow
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .Values.airflow.syncWave | quote }}
+subjects:
+- kind: ServiceAccount
+  name: airflow-worker
+  namespace: airflow
+roleRef:
+  kind: Role
+  name:  airflow-worker
+  apiGroup: rbac.authorization.k8s.io

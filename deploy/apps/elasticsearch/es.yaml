@@ -16,7 +16,7 @@ spec:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 8Gi
+            storage: 256Gi
   #       storageClassName: standard
     config:
       node.store.allow_mmap: false
@@ -24,6 +24,9 @@ spec:
       spec:
         containers:
         - name: elasticsearch
+          resources:
+            limits:
+              memory: 8Gi
           securityContext:
             capabilities:
               add: ["SYS_CHROOT"]

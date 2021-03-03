@@ -1,23 +1,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: perfscale
+  name: elastic-operator
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   destination: 
-    namespace: argocd
+    namespace: elastic-system
     server: https://kubernetes.default.svc
   source:
-    repoURL: https://github.com/whitleykeith/airflow-kubernetes
-    path: charts/perfscale
+    repoURL: https://github.com/elastic/cloud-on-k8s
+    path: deploy/eck-operator
     revision: HEAD
     helm:
-      releaseName: perfscale        
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-
+      releaseName: eck-operator
+      values: |-
+        image:
+          tag: 1.3.0

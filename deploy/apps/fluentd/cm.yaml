@@ -58,7 +58,7 @@ data:
       host "#{ENV['ELASTICSEARCH_HOST']}"
       port "#{ENV['ELASTICSEARCH_PORT']}"
       user "elastic"
-      password ""
+      password "REDACTED"
       reconnect_on_error true
       scheme https
       ssl_verify false

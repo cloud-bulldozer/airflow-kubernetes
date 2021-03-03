@@ -7,7 +7,7 @@ metadata:
   labels:
     {{- include "dashboard.labels" . | nindent 4 }}
 spec:
-  host: {{ .Values.ingress.hostName }}.{{ .Values.ingress.hostedZone }}
+  host: {{ .Values.ingress.hostName }}.{{ .Values.ingress.baseDomain }}
   port:
     targetPort: 3000
   to:
@@ -24,7 +24,7 @@ metadata:
   labels:
     {{- include "dashboard.labels" . | nindent 4 }}
 spec:
-  host: {{ .Values.ingress.hostName }}.{{ .Values.ingress.hostedZone }}
+  host: {{ .Values.ingress.hostName }}.{{ .Values.ingress.baseDomain }}
   path: "/api"
   port:
     targetPort: 8000

@@ -7,27 +7,15 @@ metadata:
     {{- include "elasticsearch.labels" . | nindent 4 }}
 
 spec:
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
   version: {{ .Values.version }}
 {{- with .Values.elasticsearch.nodeSets }}
   nodeSets:
   {{- toYaml . | nindent 2 }}
 {{- end }}
-  version: 7.10.2
-  nodeSets:
-  - name: default
-    count: 1
-    volumeClaimTemplates:
-    - metadata:
-        name: elasticsearch-data
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        resources:
-          requests:
-            storage: 256Gi
-  #       storageClassName: standard
-    config:
-      node.store.allow_mmap: false
     podTemplate:
       spec:
         containers:

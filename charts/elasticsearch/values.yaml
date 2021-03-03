@@ -1,20 +1,20 @@
 nameOverride: ""
-fullnameOverride: "elastic"
+fullnameOverride: "perf-results"
 version: 7.10.2
 
 
 ingress:
   enabled: true
   # DNS names will resolve as $hostName-(kibana | elastic).$hostedZone
-  hostName: kibana
-  hostedZone: apps.keith-cluster.perfscale.devcluster.openshift.com
+  hostName: perf-results
+  baseDomain: apps.keith-cluster.perfscale.devcluster.openshift.com
 
 kibana:
   replicas: 1
 
 elasticsearch:
   nodeSets:
-  - name: default
+  - name: default      
     count: 1
     volumeClaimTemplates:
     - metadata:

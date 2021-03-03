@@ -22,25 +22,33 @@ spec:
         - name: AIRFLOW__KUBERNETES__DAGS_VOLUME_SUBPATH
           value: repo/
         - name: AIRFLOW__CORE__KILLED_TASK_CLEANUP_TIME
-          value: 7200
+          value: 604800
         config:
           logging:
             colored_console_log: "True"
+            remote_logging: "True"
+          elasticsearch:
+            write_stdout: "True"
           elasticsearch_configs:
             use_ssl: "True"
-            verify_certs: "True"
+            verify_certs: "False"
             ssl_show_warn: "False"
           kubernetes:
             delete_worker_pods: False
+          core:
+            DAGBAG_IMPORT_TIMEOUT: 300
+            killed_task_cleanup_time: 604800
         dags:
           gitSync:
             enabled: true
             subPath: dags
             depth: 8
         elasticsearch:
-          enabled: False
+          enabled: True
           connection: 
-            host: elasticsearch.openshift-logging.svc.cluster.local
+            user: elastic
+            pass: 7Ast215U6yvch1ot5s6X91Fh
+            host: quickstart-es-http.elastic.svc.cluster.local
             port: 9200
       parameters:
       - name: dags.gitSync.repo
