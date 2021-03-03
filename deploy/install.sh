@@ -7,7 +7,6 @@ do
     case "${flag}" in
         u) user=${OPTARG};;
         b) branch=${OPTARG};;
-        c) cluster_name=${OPTARG};;
         *) usage;;
     esac
 done
@@ -64,26 +63,14 @@ create_airflow_app(){
 }
 
 create_routes(){
-    airflow_route="airflow-k8.apps.$cluster_name.perfscale.devcluster.openshift.com"
-    argo_route="argo.apps.$cluster_name.perfscale.devcluster.openshift.com"
-
-    cat $GIT_ROOT/deploy/apps/airflow/route.yaml | \
-    yq w - 'spec.host' $airflow_route | \
-    kubectl apply -f -
-
-    echo "Airflow route configured at $airflow_route"
-
-    cat $GIT_ROOT/deploy/apps/argocd/route.yaml | \
-    yq w - 'spec.host' $argo_route | \
-    kubectl apply -f -
-
-    echo "Argo route configured at $argo_route"
+    echo "Exposing the airflow-webserver and argo services by creating routes"
+    oc expose service airflow-webserver -n airflow
+    oc expose service argocd-server -n argocd
 }
 
 remove_airflow_workaround(){
     helm delete airflow -n airflow
 }
-
 
 install_helm
 install_yq
@@ -94,19 +81,8 @@ install_argo
 create_airflow_app
 create_routes
 
-
-
-
-
-
-
-
-
-
 argo_route=$(oc get routes -n argocd -o json | jq -r '.items[0].spec.host')
 airflow_route=$(oc get routes -n airflow -o json | jq -r '.items[0].spec.host')
 
 echo "Argo is setting up your Cluster, check the status here: $argo_route"
 echo "Airflow will be at $airflow_route, user/pass is admin/admin"
-
-
