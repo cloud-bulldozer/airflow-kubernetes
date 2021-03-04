@@ -9,6 +9,7 @@ metadata:
     image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"{{ include "dashboard.fullname" . }}:{{ .Values.frontend.image.tag }}"},"fieldPath":"spec.template.spec.containers[?(@.name=="frontend")].image"},{"from":{"kind":"ImageStreamTag","name":"{{ include "dashboard.fullname" . }}:{{ .Values.backend.image.tag }}},"fieldPath":"spec.template.spec.containers[?(@.name=="backend")].image"}]'     
 spec:
   replicas: 1
+  revisionHistoryLimit: 10
   selector:
     matchLabels:
       {{- include "dashboard.selectorLabels" . | nindent 6 }}
@@ -21,7 +22,6 @@ spec:
       labels:
         {{- include "dashboard.selectorLabels" . | nindent 8 }}   
     spec:
-      revisionHistoryLimit: 10
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
