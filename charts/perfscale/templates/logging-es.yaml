@@ -23,7 +23,7 @@ spec:
 {{- toYaml . | indent 8 }}
 {{- end }}        
       parameters:
-      - name: fullNameOverride
+      - name: fullnameOverride
         value: logging
       - name: ingress.hostName
         value: logging

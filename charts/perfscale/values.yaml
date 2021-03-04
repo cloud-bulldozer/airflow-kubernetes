@@ -62,11 +62,6 @@ logging:
     values:
       aggregator:
         configMap: elasticsearch-output
-        extraEnv:
-        - name: ELASTICSEARCH_HOST
-          value: quickstart-es-http.elastic.svc.cluster.local
-        - name: ELASTICSEARCH_PORT
-          value: "9200"
       forwarder:
         configMap: custom-parser
         rbac:

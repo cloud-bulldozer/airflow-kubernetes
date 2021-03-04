@@ -20,7 +20,7 @@ spec:
       releaseName: airflow
 {{- with .Values.airflow.values }}
       values: |-
-{{- toYaml . | indent 8 }}
+{{- toYaml . | nindent 8 }}
 {{- end }}        
       parameters:
       - name: dags.gitSync.repo

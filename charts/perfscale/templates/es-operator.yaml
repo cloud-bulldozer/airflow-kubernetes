@@ -6,6 +6,20 @@ metadata:
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
+  ignoreDifferences:
+  - group: admissionregistration.k8s.io
+    kind: ValidatingWebhookConfiguration
+    jsonPointers:
+      - /webhooks/0/clientConfig/caBundle
+      - /webhooks/1/clientConfig/caBundle
+      - /webhooks/2/clientConfig/caBundle
+      - /webhooks/3/clientConfig/caBundle
+      - /webhooks/4/clientConfig/caBundle
+      - /webhooks/5/clientConfig/caBundle
+      - /webhooks/6/clientConfig/caBundle
+      - /webhooks/7/clientConfig/caBundle
+      - /webhooks/8/clientConfig/caBundle
+      - /webhooks/9/clientConfig/caBundle
   project: default
   destination: 
     namespace: elastic-system
@@ -19,3 +33,7 @@ spec:
       values: |-
         image:
           tag: 1.3.0
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

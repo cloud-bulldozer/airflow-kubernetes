@@ -10,7 +10,7 @@ metadata:
 spec:
   project: default
   destination: 
-    namespace: perf-dashboard
+    namespace: perf-results
     server: https://kubernetes.default.svc
   source:
     repoURL: {{ .Values.global.repo.url }}

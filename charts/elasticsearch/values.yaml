@@ -27,6 +27,10 @@ elasticsearch:
             storage: 256Gi
     config:
       node.store.allow_mmap: false
+      xpack.security.authc:
+        anonymous:
+          username: anonymous_user
+          roles: superuser
     podTemplate:
       spec:
         containers:

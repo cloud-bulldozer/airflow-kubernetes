@@ -1,4 +1,40 @@
-
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: logging
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .Values.logging.syncWave | quote }}
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  destination: 
+    namespace: fluentd
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/bitnami/charts
+    path: bitnami/fluentd
+    revision: {{ .Values.global.repo.branch }}
+    helm:
+      releaseName: fluentd
+{{- with .Values.logging.fluentd.values }}
+      values: |-
+{{- toYaml . | indent 8 }}
+{{- end }}        
+      parameters:
+      - name: aggregator.extraEnv[0].name
+        value: ELASTICSEARCH_HOST
+      - name: aggregator.extraEnv[0].value
+        value: logging-es-http.logging.svc.cluster.local
+      - name: aggregator.extraEnv[1].name
+        value: ELASTICSEARCH_PORT
+      - name: aggregator.extraEnv[1].value
+        value: "9200"
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
 ---
 apiVersion: v1
 data:
@@ -166,8 +202,6 @@ data:
       include_tag_key true
       host "#{ENV['ELASTICSEARCH_HOST']}"
       port "#{ENV['ELASTICSEARCH_PORT']}"
-      user "elastic"
-      password "#REDACTED"
       reconnect_on_error true
       scheme https
       ssl_verify false
