@@ -8,6 +8,25 @@ metadata:
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
+  ignoreDifferences:
+  - group: image.openshift.io
+    kind: ImageStream
+    jsonPointers:
+      - /spec/tags/0/from/name
+      - /spec/tags/0/generation
+      - /spec/tags/0/annotations
+      - /spec/tags/0/name
+      - /spec/tags/0/referencyPolicy/type
+      - /spec/tags/1/from/name
+      - /spec/tags/1/generation
+      - /spec/tags/1/annotations
+      - /spec/tags/1/name
+      - /spec/tags/1/referencyPolicy/type
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+      - /spec/containers/0/image
+      - /spec/containers/1/image
   project: default
   destination: 
     namespace: perf-results
@@ -21,7 +40,10 @@ spec:
 {{- with .Values.results.dashboard.values }}
       values: |-
 {{- toYaml . | nindent 8 }}
-{{- end }}        
+{{- end }}  
+      parameters: 
+      - name: ingress.baseDomain
+        value: {{ .Values.global.baseDomain }}      
   syncPolicy:
     automated:
       prune: true

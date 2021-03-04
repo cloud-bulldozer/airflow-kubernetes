@@ -20,6 +20,7 @@ spec:
       releaseName: fluentd
       values: |-
         aggregator:
+          configMap: elasticsearch-output
           extraEnv:
           - name: ELASTICSEARCH_HOST
             value: logging-es-http.logging.svc.cluster.local
@@ -196,7 +197,7 @@ data:
       host "#{ENV['ELASTICSEARCH_HOST']}"
       port "#{ENV['ELASTICSEARCH_PORT']}"
       reconnect_on_error true
-      scheme https
+      scheme http
       ssl_verify false
       logstash_format true
 

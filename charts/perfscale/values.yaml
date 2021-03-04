@@ -2,7 +2,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 global:
-  baseDomain: apps.keith-cluster.perfscale.devcluster.openshift.com
+  baseDomain: ""
   repo:
     url: https://github.com/whitleykeith/airflow-kubernetes.git
     branch: master
@@ -25,7 +25,7 @@ airflow:
       elasticsearch:
         write_stdout: "True"
       elasticsearch_configs:
-        use_ssl: "True"
+        use_ssl: "False"
         verify_certs: "False"
         ssl_show_warn: "False"
       kubernetes:
@@ -43,6 +43,8 @@ airflow:
       connection: 
         host: logging-es-http.logging.svc.cluster.local
         port: 9200
+        user: ""
+        pass: ""
 
 
 argo:
@@ -63,8 +65,6 @@ logging:
   syncWave: 0
   fluentd:
     values:
-      aggregator:
-        configMap: elasticsearch-output
       forwarder:
         configMap: custom-parser
         rbac:
