@@ -20,7 +20,7 @@ spec:
       releaseName: logging
 {{- with .Values.logging.elastic.values }}
       values: |-
-{{- toYaml . | indent 8 }}
+{{- toYaml . | nindent 8 }}
 {{- end }}        
       parameters:
       - name: fullnameOverride

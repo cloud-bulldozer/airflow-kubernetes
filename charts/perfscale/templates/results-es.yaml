@@ -4,7 +4,7 @@ metadata:
   name: perf-results
   namespace: {{ .Release.Namespace }}
   annotations:
-    argocd.argoproj.io/sync-wave: {{ .Values.elastic.syncWave | quote }}
+    argocd.argoproj.io/sync-wave: {{ .Values.results.syncWave | quote }}
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
@@ -18,9 +18,9 @@ spec:
     revision: {{ .Values.global.repo.branch }}
     helm:
       releaseName: perf-results
-{{- with .Values.elastic.values }}
+{{- with .Values.results.elastic.values }}
       values: |-
-{{- toYaml . | indent 8 }}
+{{- toYaml . | nindent 8 }}
 {{- end }}
       parameters:
       - name: fullnameOverride

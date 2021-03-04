@@ -4,7 +4,7 @@ metadata:
   name: perf-dashboard
   namespace: {{ .Release.Namespace }}
   annotations:
-    argocd.argoproj.io/sync-wave: {{ .Values.dashboard.syncWave | quote }}
+    argocd.argoproj.io/sync-wave: {{ .Values.results.syncWave | quote }}
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
@@ -18,9 +18,9 @@ spec:
     revision: {{ .Values.global.repo.branch }}
     helm:
       releaseName: perf-dashboard
-{{- with .Values.dashboard.values }}
+{{- with .Values.results.dashboard.values }}
       values: |-
-{{- toYaml . | indent 8 }}
+{{- toYaml . | nindent 8 }}
 {{- end }}        
   syncPolicy:
     automated:

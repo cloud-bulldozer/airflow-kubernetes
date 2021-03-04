@@ -17,3 +17,4 @@ spec:
     name: argocd-server
     weight: 100
   wildcardPolicy: None
+

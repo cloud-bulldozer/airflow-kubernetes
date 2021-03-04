@@ -41,20 +41,23 @@ airflow:
     elasticsearch:
       enabled: True
       connection: 
-        user: elastic
-        pass: # REDACTED 
-        host: quickstart-es-http.elastic.svc.cluster.local
+        host: logging-es-http.logging.svc.cluster.local
         port: 9200
 
 
 argo:
-  syncWave: 1
+  syncWave: 0
   hostName: argo
   values: {}
 
-dashboard:
-  syncWave: 0
-  values: {}
+
+results:
+  syncWave: 1
+  dashboard:
+    values: {}
+  elastic:
+    values: {}
+
 
 logging: 
   syncWave: 0
@@ -74,6 +77,3 @@ logging:
           value: '0'
   elastic:
     values: {}
-
-
-elastic: {}

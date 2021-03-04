@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: logging
+  name: fluentd
   namespace: {{ .Release.Namespace }}
   annotations:
     argocd.argoproj.io/sync-wave: {{ .Values.logging.syncWave | quote }}
@@ -15,22 +15,19 @@ spec:
   source:
     repoURL: https://github.com/bitnami/charts
     path: bitnami/fluentd
-    revision: {{ .Values.global.repo.branch }}
+    revision: HEAD
     helm:
       releaseName: fluentd
-{{- with .Values.logging.fluentd.values }}
       values: |-
-{{- toYaml . | indent 8 }}
+        aggregator:
+          extraEnv:
+          - name: ELASTICSEARCH_HOST
+            value: logging-es-http.logging.svc.cluster.local
+          - name: ELASTICSEARCH_PORT
+            value: "9200"
+{{- with .Values.logging.fluentd.values }}
+{{- toYaml . | nindent 8 }}
 {{- end }}        
-      parameters:
-      - name: aggregator.extraEnv[0].name
-        value: ELASTICSEARCH_HOST
-      - name: aggregator.extraEnv[0].value
-        value: logging-es-http.logging.svc.cluster.local
-      - name: aggregator.extraEnv[1].name
-        value: ELASTICSEARCH_PORT
-      - name: aggregator.extraEnv[1].value
-        value: "9200"
   syncPolicy:
     automated:
       prune: true
@@ -132,14 +129,7 @@ data:
 kind: ConfigMap
 metadata:
   annotations:
-    meta.helm.sh/release-name: fluentd
-    meta.helm.sh/release-namespace: fluentd
-  labels:
-    app.kubernetes.io/component: forwarder
-    app.kubernetes.io/instance: fluentd
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: fluentd
-    helm.sh/chart: fluentd-3.5.1
+    argocd.argoproj.io/sync-wave: {{ .Values.logging.syncWave | quote }}
   name: custom-parser
   namespace: fluentd
 ---
@@ -147,6 +137,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: elasticsearch-output
+  namespace: fluentd
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .Values.logging.syncWave | quote }}
 data:
   fluentd.conf: |
     # Prometheus Exporter Plugin
