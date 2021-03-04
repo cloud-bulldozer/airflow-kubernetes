@@ -10,18 +10,25 @@ metadata:
 spec:
   project: default
   destination: 
-    namespace: elastic-logging
+    namespace: logging
     server: https://kubernetes.default.svc
   source:
     repoURL: {{ .Values.global.repo.url }}
     path: charts/elasticsearch
     revision: {{ .Values.global.repo.branch }}
     helm:
-      releaseName: airflow
+      releaseName: logging
 {{- with .Values.logging.elastic.values }}
       values: |-
 {{- toYaml . | indent 8 }}
 {{- end }}        
+      parameters:
+      - name: fullNameOverride
+        value: logging
+      - name: ingress.hostName
+        value: logging
+      - name: ingress.baseDomain
+        value: {{ .Values.global.baseDomain }}
   syncPolicy:
     automated:
       prune: true

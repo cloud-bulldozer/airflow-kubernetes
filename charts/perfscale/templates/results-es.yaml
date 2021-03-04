@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: results
+  name: perf-results
   namespace: {{ .Release.Namespace }}
   annotations:
     argocd.argoproj.io/sync-wave: {{ .Values.elastic.syncWave | quote }}
@@ -10,18 +10,25 @@ metadata:
 spec:
   project: default
   destination: 
-    namespace: elastic-results
+    namespace: perf-results
     server: https://kubernetes.default.svc
   source:
     repoURL: {{ .Values.global.repo.url }}
     path: charts/elasticsearch
     revision: {{ .Values.global.repo.branch }}
     helm:
-      releaseName: airflow
+      releaseName: perf-results
 {{- with .Values.elastic.values }}
       values: |-
 {{- toYaml . | indent 8 }}
-{{- end }}        
+{{- end }}
+      parameters:
+      - name: fullNameOverride
+        value: perf-results
+      - name: ingress.hostName
+        value: perf-results
+      - name: ingress.baseDomain
+        value: {{ .Values.global.baseDomain }}
   syncPolicy:
     automated:
       prune: true

@@ -17,7 +17,7 @@ spec:
     path: charts/dashboard
     revision: {{ .Values.global.repo.branch }}
     helm:
-      releaseName: airflow
+      releaseName: perf-dashboard
 {{- with .Values.dashboard.values }}
       values: |-
 {{- toYaml . | indent 8 }}
