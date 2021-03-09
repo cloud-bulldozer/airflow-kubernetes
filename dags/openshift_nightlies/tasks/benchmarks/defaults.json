@@ -13,7 +13,8 @@
             "workload": "scale-perf",
             "command": "./run_scale_fromgit.sh",
             "env": {
-                "SCALE": "25"
+                "SCALE": "25",
+                "METADATA_COLLECTION": "true"
             }
         },
         {
