@@ -84,6 +84,7 @@ class OpenshiftInstaller():
         }
 
         config['openshift_cluster_name'] = f"{self.version}-{self.platform}-{self.profile}"
+        config['dynamic_deploy_path'] = f"scale-ci-{self.version}-{self.platform}-{self.profile}-{self.platform}"
 
         config['kubeconfig_path'] = f"/root/scale-ci-{config['openshift_cluster_name']}-{self.platform}/auth/kubeconfig"
         # Required Environment Variables for Install script
