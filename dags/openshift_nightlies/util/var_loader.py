@@ -7,6 +7,14 @@ from util import constants
 import requests
 from airflow.models import Variable
 
+
+# Used to get the git user for the repo the dags live in. 
+def get_git_user():
+    git_repo = environ['GIT_REPO']
+    git_path = git_repo.split("https://github.com/")[1]
+    git_user = git_path.split('/')[0]
+    return git_user
+
 def get_latest_release_from_stream(base_url, release_stream):
     url = f"{base_url}/{release_stream}/latest"
     payload = requests.get(url).json()

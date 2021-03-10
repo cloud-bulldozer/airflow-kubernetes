@@ -45,7 +45,7 @@ run_ansible_playbook(){
 }
 
 post_install(){
-    ssh ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat /root/scale-ci-$OPENSHIFT_CLUSTER_NAME-$platform/.openshift_install.log"
+    ssh ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat /root/$DEPLOY_PATH/.openshift_install.log"
     printenv
     kubectl create secret generic ${KUBECONFIG_NAME} --from-file=config=/home/airflow/workspace/scale-ci-deploy/OCP-4.X/kubeconfig
 }
@@ -64,7 +64,6 @@ if [[ "$operation" == "install" ]]; then
 
 elif [[ "$operation" == "cleanup" ]]; then
     printf "Running Cleanup Steps"
-    cleanup
 fi
 
 

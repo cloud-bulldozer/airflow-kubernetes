@@ -13,11 +13,6 @@ airflow:
   hostName: airflow
   values: 
     defaultAirflowTag: 2.0.0
-    env:
-    - name: AIRFLOW__KUBERNETES__DAGS_VOLUME_SUBPATH
-      value: repo/
-    - name: AIRFLOW__CORE__KILLED_TASK_CLEANUP_TIME
-      value: 604800
     config:
       logging:
         colored_console_log: "True"
@@ -56,7 +51,10 @@ argo:
 results:
   syncWave: 1
   dashboard:
-    values: {}
+    values:
+      elasticsearch:
+        url: perf-results-es-http.perf-results.svc.cluster.local:9200
+        indice: perf_scale_ci 
   elastic:
     values: {}
 

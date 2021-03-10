@@ -83,16 +83,22 @@ class OpenshiftInstaller():
             **{ "es_server": var_loader.get_elastic_url() }
         }
 
-        config['openshift_cluster_name'] = f"{self.version}-{self.platform}-{self.profile}"
-        config['dynamic_deploy_path'] = f"scale-ci-{self.version}-{self.platform}-{self.profile}-{self.platform}"
+        
+        git_user = var_loader.get_git_user()
+        if git_user == 'cloud-bulldozer':
+            config['openshift_cluster_name'] = f"{self.version}-{self.platform}-{self.profile}"
+        else: 
+            config['openshift_cluster_name'] = f"{self.version}-{self.platform}-{self.profile}-{git_user}"
 
-        config['kubeconfig_path'] = f"/root/scale-ci-{config['openshift_cluster_name']}-{self.platform}/auth/kubeconfig"
+        config['dynamic_deploy_path'] = f"{config['openshift_cluster_name']}"
+        config['kubeconfig_path'] = f"/root/{config['dynamic_deploy_path']}/auth/kubeconfig"
         # Required Environment Variables for Install script
         env = {
             "SSHKEY_TOKEN": config['sshkey_token'],
             "ORCHESTRATION_HOST": config['orchestration_host'],
             "ORCHESTRATION_USER": config['orchestration_user'],
             "OPENSHIFT_CLUSTER_NAME": config['openshift_cluster_name'],
+            "DEPLOY_PATH": config['dynamic_deploy_path'],
             "KUBECONFIG_NAME": f"{self.version}-{self.platform}-{self.profile}-kubeconfig",
             **self._insert_kube_env()
         }
@@ -111,6 +117,7 @@ class OpenshiftInstaller():
             executor_config=self.exec_config,
             env=env
         )
+
 
     # This Helper Injects Airflow environment variables into the task execution runtime
     # This allows the task to interface with the Kubernetes cluster Airflow is hosted on.

@@ -27,9 +27,9 @@ spec:
         - name: AIRFLOW__CORE__KILLED_TASK_CLEANUP_TIME
           value: 604800
         - name: GIT_REPO
-          value: {{ .Values.global.repo.url }}
+          value: {{ $.Values.global.repo.url }}
         - name: GIT_BRANCH
-          value: {{ .Values.global.repo.branch }}
+          value: {{ $.Values.global.repo.branch }}
 {{- end }}        
       parameters:
       - name: dags.gitSync.repo
