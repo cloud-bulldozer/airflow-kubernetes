@@ -42,6 +42,12 @@ install_argo(){
 EOF
 }
 
+install_argo_cli(){
+    VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+    curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
+    chmod +x /usr/local/bin/argocd
+}
+
 create_namespaces(){
     kubectl create namespace argocd || true
     kubectl create namespace fluentd || true
@@ -63,10 +69,15 @@ install_perfscale(){
 
 }
 
+wait_for_apps_to_be_healthy(){
+    argocd login $(oc get route/argocd -o jsonpath='{.spec.host}' -n argocd) --username admin --password $(kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o jsonpath='{.items[].metadata.name}') --insecure
+    argocd app wait -l app.kubernetes.io/managed-by=Helm
+}
+
 output_info() {
     _argo_url=$(oc get route/argocd -o jsonpath='{.spec.host}' -n argocd)
     _argo_user="admin"
-    _argo_password=$(kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o jsonpath='{.items[].metadata.name'})
+    _argo_password=$(kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o jsonpath='{.items[].metadata.name}')
 
     printf "\n\n ArgoCD Configs"
     printf "\n Host: $_argo_url \n User: $_argo_user \n Password: $_argo_password"
@@ -103,9 +114,17 @@ output_info() {
 
 }
 
-install_helm
-create_namespaces
-add_privileged_service_accounts
-install_argo
+echo "Installing Dependencies"
+install_argo_cli > /dev/null 2>&1
+install_helm > /dev/null 2>&1
+echo "Creating Namespaces if they don't exist..."
+create_namespaces > /dev/null 2>&1
+echo "Creating services accounts"
+add_privileged_service_accounts > /dev/null 2>&1
+echo "Installing Argo"
+install_argo > /dev/null
+echo "Installing PerfScale Platform"
 install_perfscale
+echo "PerfScale Platform Creating, waiting for Applications to become healthy"
+wait_for_apps_to_be_healthy
 output_info
