@@ -26,8 +26,8 @@ kind: Job
 metadata:
   name: {{ .Release.Name }}-run-airflow-migrations
   annotations:
-    "argocd.argoproj.io/hook:": Sync
-    "argocd.argoproj.io/hook-delete-policy": BeforeHookCreation
+    "argocd.argoproj.io/hook": "Sync"
+    "argocd.argoproj.io/hook-delete-policy": "BeforeHookCreation"
   labels:
     tier: airflow
     component: run-airflow-migrations
