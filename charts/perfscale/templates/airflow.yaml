@@ -21,6 +21,15 @@ spec:
 {{- with .Values.airflow.values }}
       values: |-
 {{- toYaml . | nindent 8 }}
+        env:
+        - name: AIRFLOW__KUBERNETES__DAGS_VOLUME_SUBPATH
+          value: repo/
+        - name: AIRFLOW__CORE__KILLED_TASK_CLEANUP_TIME
+          value: 604800
+        - name: GIT_REPO
+          value: {{ .Values.global.repo.url }}
+        - name: GIT_BRANCH
+          value: {{ .Values.global.repo.branch }}
 {{- end }}        
       parameters:
       - name: dags.gitSync.repo
