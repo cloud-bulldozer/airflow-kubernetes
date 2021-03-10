@@ -5,9 +5,10 @@ set -exo pipefail
 export dag_id=${AIRFLOW_CTX_DAG_ID}
 export execution_date=${AIRFLOW_CTX_EXECUTION_DATE}
 export run_id=${AIRFLOW_CTX_DAG_RUN_ID}
+printenv
 
 # Hardcode this for now
-export airflow_base_url="http://airflow-k8.apps.keith-cluster.perfscale.devcluster.openshift.com"
+export airflow_base_url="http://airflow.apps.keith-cluster.perfscale.devcluster.openshift.com"
 
 setup(){
     # Generate a uuid
