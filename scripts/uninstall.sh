@@ -1,6 +1,9 @@
 #!/bin/bash
 
+kubectl delete application/perf-results -n argocd
+kubectl delete application/logging -n argocd
 helm delete perfscale -n argocd
+
 
 while [ $(kubectl get apps -A | wc -l) != "0" ];
 do 

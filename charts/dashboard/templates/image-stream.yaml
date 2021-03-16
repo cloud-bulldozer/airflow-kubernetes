@@ -3,6 +3,8 @@ kind: ImageStream
 metadata:
   name: {{ include "dashboard.fullname" . }}
   namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   labels:
     {{- include "dashboard.labels" . | nindent 4 }}
 spec:
