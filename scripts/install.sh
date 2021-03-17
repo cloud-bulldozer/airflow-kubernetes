@@ -124,7 +124,7 @@ echo "Creating services accounts"
 add_privileged_service_accounts > /dev/null 2>&1
 echo "Installing Argo"
 install_argo > /dev/null
-sleep 30
+sleep 60
 echo "Installing PerfScale Platform"
 install_perfscale
 echo "PerfScale Platform Creating, waiting for Applications to become healthy"
