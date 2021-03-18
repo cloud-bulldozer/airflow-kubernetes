@@ -1,20 +1,5 @@
 #!/bin/bash
- 
-usage() { printf "Usage: ./install.sh -u USER -b BRANCH \nUser/Branch should point to your fork of the airflow-kubernetes repository" 1>&2; exit 1; }
 GIT_ROOT=$(git rev-parse --show-toplevel)
-while getopts b:u:c: flag
-do
-    case "${flag}" in
-        u) user=${OPTARG};;
-        b) branch=${OPTARG};;
-        *) usage;;
-    esac
-done
-
-if [[ -z "$user" || -z $branch ]]; then 
-    usage
-fi
-
 install_helm(){
     HELM_VERSION=v3.4.2
     wget https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
@@ -66,7 +51,7 @@ add_privileged_service_accounts(){
 install_perfscale(){
     cluster_domain=$(oc get ingresses.config.openshift.io/cluster -o jsonpath='{.spec.domain}')
     cd $GIT_ROOT/charts/perfscale
-    helm upgrade perfscale . --install --namespace argocd --set global.baseDomain=$cluster_domain
+    helm upgrade perfscale . --install --namespace argocd --set global.baseDomain=$cluster_domain,global.repo.url=$(git config --get remote.origin.url),global.repo.branch=$(git branch --show-current)
 
 }
 

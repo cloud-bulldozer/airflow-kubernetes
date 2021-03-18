@@ -23,8 +23,7 @@ To install Airflow you simply need to fork the repo and run the following on a b
 ```bash
 # all commands are run at the root of your git repo
 # install the airflow stack and have it point to your fork of the dag code.
-# USER should be your github username, and BRANCH should be the branch of that repo. 
-./scripts/install.sh -u $USER -b $BRANCH
+./scripts/install.sh
 ```
 
 ### Getting Cluster Configuration
