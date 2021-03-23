@@ -15,7 +15,7 @@ spec:
   source:
     repoURL: {{ .Values.global.repo.url }}
     path: charts/airflow
-    revision: {{ .Values.global.repo.branch }}
+    targetRevision: {{ .Values.global.repo.branch }}
     helm:
       releaseName: airflow
 {{- with .Values.airflow.values }}
