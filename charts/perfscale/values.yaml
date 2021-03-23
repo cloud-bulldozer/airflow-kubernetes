@@ -24,7 +24,7 @@ airflow:
         verify_certs: "False"
         ssl_show_warn: "False"
       kubernetes:
-        delete_worker_pods: False
+        delete_worker_pods: True
       core:
         DAGBAG_IMPORT_TIMEOUT: 300
         killed_task_cleanup_time: 604800

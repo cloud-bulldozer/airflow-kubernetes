@@ -16,37 +16,23 @@
 # under the License.
 
 ################################
-## Airflow Worker KEDA Scaler
+## Airflow ConfigMap
 #################################
-{{- if and .Values.workers.keda.enabled (has .Values.executor (list "CeleryExecutor" "CeleryKubernetesExecutor")) }}
-apiVersion: keda.sh/v1alpha1
-kind: ScaledObject
+{{- if .Values.webserver.webserverConfig }}
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-worker
+  name: {{ .Release.Name }}-webserver-config
   labels:
     tier: airflow
-    component: worker-horizontalpodautoscaler
+    component: config
     release: {{ .Release.Name }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     heritage: {{ .Release.Service }}
-    deploymentName: {{ .Release.Name }}-worker
 {{- with .Values.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
-spec:
-  scaleTargetRef:
-    kind: {{ ternary "StatefulSet" "Deployment" .Values.workers.persistence.enabled }}
-    name: {{ .Release.Name }}-worker
-  pollingInterval:  {{ .Values.workers.keda.pollingInterval }}   # Optional. Default: 30 seconds
-  cooldownPeriod: {{ .Values.workers.keda.cooldownPeriod }}    # Optional. Default: 300 seconds
-  maxReplicaCount: {{ .Values.workers.keda.maxReplicaCount }}   # Optional. Default: 100
-  triggers:
-    - type: postgresql
-      metadata:
-        targetQueryValue: "1"
-        connectionFromEnv: AIRFLOW_CONN_AIRFLOW_DB
-        query: >-
-          SELECT ceil(COUNT(*)::decimal / {{ .Values.config.celery.worker_concurrency }})
-          FROM task_instance
-          WHERE state='running' OR state='queued'
+data:
+  webserver_config.py: |
+    {{- .Values.webserver.webserverConfig | nindent 4 }}
 {{- end }}

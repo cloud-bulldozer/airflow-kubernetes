@@ -25,9 +25,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ .Release.Name }}-run-airflow-migrations
-  annotations:
-    "argocd.argoproj.io/hook": "Sync"
-    "argocd.argoproj.io/hook-delete-policy": "BeforeHookCreation"
   labels:
     tier: airflow
     component: run-airflow-migrations
@@ -37,6 +34,9 @@ metadata:
 {{- with .Values.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
+  annotations:
+    "argocd.argoproj.io/hook": "Sync"
+    "argocd.argoproj.io/hook-delete-policy": "BeforeHookCreation"
 spec:
   template:
     metadata:
@@ -62,7 +62,7 @@ spec:
         - name: run-airflow-migrations
           image: {{ template "airflow_image" . }}
           imagePullPolicy: {{ .Values.images.airflow.pullPolicy }}
-          # Support running against 1.10.x and 2.0.0dev/master
+          # Support running against 1.10.x and 2.x
           args: ["bash", "-c", "airflow db upgrade || airflow upgradedb"]
           envFrom:
           {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
