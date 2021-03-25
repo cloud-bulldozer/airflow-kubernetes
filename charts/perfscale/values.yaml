@@ -24,10 +24,13 @@ airflow:
         verify_certs: "False"
         ssl_show_warn: "False"
       kubernetes:
-        delete_worker_pods: False
+        delete_worker_pods: True
       core:
         DAGBAG_IMPORT_TIMEOUT: 300
         killed_task_cleanup_time: 604800
+      scheduler:
+        scheduler_heartbeat_sec: 10
+        processor_poll_interval: 30
     dags:
       gitSync:
         enabled: true

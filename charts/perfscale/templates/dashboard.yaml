@@ -34,7 +34,7 @@ spec:
   source:
     repoURL: {{ .Values.global.repo.url }}
     path: charts/dashboard
-    revision: {{ .Values.global.repo.branch }}
+    targetRevision: {{ .Values.global.repo.branch }}
     helm:
       releaseName: perf-dashboard
 {{- with .Values.results.dashboard.values }}

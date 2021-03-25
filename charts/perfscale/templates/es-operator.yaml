@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: elastic-operator
+  name: eck-operator
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -27,7 +27,7 @@ spec:
   source:
     repoURL: https://github.com/elastic/cloud-on-k8s
     path: deploy/eck-operator
-    revision: HEAD
+    targetRevision: HEAD
     helm:
       releaseName: eck-operator
       values: |-

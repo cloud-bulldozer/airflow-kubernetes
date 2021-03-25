@@ -15,7 +15,7 @@ spec:
   source:
     repoURL: {{ .Values.global.repo.url }}
     path: charts/elasticsearch
-    revision: {{ .Values.global.repo.branch }}
+    targetRevision: {{ .Values.global.repo.branch }}
     helm:
       releaseName: logging
 {{- with .Values.logging.elastic.values }}

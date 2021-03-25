@@ -49,9 +49,14 @@ add_privileged_service_accounts(){
 
 
 install_perfscale(){
+    _remote_origin_url=$(git config --get remote.origin.url)
+    _branch=$(git branch --show-current)
+
+
+
     cluster_domain=$(oc get ingresses.config.openshift.io/cluster -o jsonpath='{.spec.domain}')
     cd $GIT_ROOT/charts/perfscale
-    helm upgrade perfscale . --install --namespace argocd --set global.baseDomain=$cluster_domain,global.repo.url=$(git config --get remote.origin.url),global.repo.branch=$(git branch --show-current)
+    helm upgrade perfscale . --install --namespace argocd --set global.baseDomain=$cluster_domain,global.repo.url=$_remote_origin_url,global.repo.branch=$_branch
 
 }
 
