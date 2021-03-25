@@ -1,0 +1,13 @@
+{
+    "benchmarks": [
+        {
+            "name": "upgrade",
+            "workload": "upgrade-perf",
+            "command": "./run_upgrade_fromgit.sh",
+            "env": {
+                "LATEST": "true",
+                "CHANNEL": ""               
+            }
+        }
+    ]
+}
