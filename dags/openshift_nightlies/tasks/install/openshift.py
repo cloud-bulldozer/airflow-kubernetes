@@ -88,9 +88,9 @@ class OpenshiftInstaller():
         
         git_user = var_loader.get_git_user()
         if git_user == 'cloud-bulldozer':
-            config['openshift_cluster_name'] = f"{self.version}-{self.platform}-{self.profile}"
+            config['openshift_cluster_name'] = f"openshift-{self.version}-{self.platform}-{self.profile}"
         else: 
-            config['openshift_cluster_name'] = f"{self.version}-{self.platform}-{self.profile}-{git_user}"
+            config['openshift_cluster_name'] = f"openshift-{self.version}-{self.platform}-{self.profile}-{git_user}"
 
         config['dynamic_deploy_path'] = f"{config['openshift_cluster_name']}"
         config['kubeconfig_path'] = f"/root/{config['dynamic_deploy_path']}/auth/kubeconfig"
