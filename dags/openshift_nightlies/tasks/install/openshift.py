@@ -54,7 +54,7 @@ class OpenshiftInstaller():
             f"openshift_install_config", deserialize_json=True)
         self.aws_creds = Variable.get("aws_creds", deserialize_json=True)
         self.gcp_creds = Variable.get("gcp_creds", deserialize_json=True)
-
+        self.azure_creds = Variable.get("azure_creds", deserialize_json=True)
 
     def get_install_task(self):
         return self._get_task(operation="install")
@@ -80,6 +80,7 @@ class OpenshiftInstaller():
             **self.install_secrets,
             **self.aws_creds,
             **self.gcp_creds,
+            **self.azure_creds,
             **playbook_operations,
             **var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream),
             **{ "es_server": var_loader.get_elastic_url() }

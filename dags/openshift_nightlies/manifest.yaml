@@ -1,7 +1,3 @@
-indexing:
-  enabled: true
-  elasticVariable: elasticsearch_config 
-
 releases:
   - version: 4.6
     releaseStream: 4.6.0-0.nightly
@@ -16,6 +12,12 @@ releases:
     tags:
       - stable
       - ovn
+  - version: 4.6
+    releaseStream: 4.6.0-0.nightly
+    platform: azure
+    profile: default
+    tags: 
+      - stable
   - version: 4.7
     releaseStream: 4.7.0-0.nightly
     platform: aws
