@@ -54,7 +54,8 @@ add_privileged_service_accounts(){
 
 install_perfscale(){
     cd $GIT_ROOT/charts/perfscale
-    helm upgrade perfscale . --install --namespace argocd --set global.baseDomain=$cluster_domain,global.repo.url=$_remote_origin_url,global.repo.branch=$_branch
+    echo $_cluster_domain
+    helm upgrade perfscale . --install --namespace argocd --set global.baseDomain=$_cluster_domain,global.repo.url=$_remote_origin_url,global.repo.branch=$_branch
 
 }
 
@@ -66,7 +67,7 @@ wait_for_apps_to_be_healthy(){
 connect_dashboard_to_results_elastic(){
     _results_elastic_password=$(kubectl get secret/perf-results-es-elastic-user -o jsonpath='{.data.elastic}' -n perf-results | base64 --decode)
     cd $GIT_ROOT/charts/perfscale
-    helm upgrade perfscale . --install --namespace argocd --set global.baseDomain=$cluster_domain,global.repo.url=$_remote_origin_url,global.repo.branch=$_branch,results.dashboard.values.elasticsearch.password=$_results_elastic_password
+    helm upgrade perfscale . --install --namespace argocd --set global.baseDomain=$_cluster_domain,global.repo.url=$_remote_origin_url,global.repo.branch=$_branch,results.dashboard.values.elasticsearch.password=$_results_elastic_password
 }
 
 output_info() {
