@@ -72,7 +72,7 @@ index_task(){
             "total_count": '$all',
             "cluster_name": "'$cluster_name'",
             "cluster_version": "'$cluster_version'",
-            "network_type": "'$netw'",
+            "network_type": "'$network_type'",
             "build_tag": "'$task_id'",
             "node_name": "'$HOSTNAME'",
             "job_status": "'$state'",
