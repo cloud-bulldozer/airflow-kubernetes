@@ -48,7 +48,7 @@ index_task(){
     if [[ $task_id == "$AIRFLOW_CTX_TASK_ID" ]]; then
         echo "Index Task doesn't index itself, skipping."
     else
-         start_date=$(echo $task_json | jq -r '.start_date')
+        start_date=$(echo $task_json | jq -r '.start_date')
         end_date=$(echo $task_json | jq -r '.end_date')
 
         if [[ -z $start_date || -z $end_date ]]; then
