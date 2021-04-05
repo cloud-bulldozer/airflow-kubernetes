@@ -29,6 +29,8 @@ setup(){
 
     # Get OpenShift cluster details
     cluster_name=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}') || echo "Cluster Install Failed"
+    cluster_version=$(oc version -o json | jq -r '.openshiftVersion') || echo "Cluster Install Failed"
+    network_type=$(oc get network.config/cluster -o jsonpath='{.status.networkType}') || echo "Cluster Install Failed"
     platform=$(oc get infrastructure cluster -o jsonpath='{.status.platformStatus.type}') || echo "Cluster Install Failed"
     masters=$(oc get nodes -l node-role.kubernetes.io/master --no-headers=true | wc -l) || true
     workers=$(oc get nodes -l node-role.kubernetes.io/worker --no-headers=true | wc -l) || true
