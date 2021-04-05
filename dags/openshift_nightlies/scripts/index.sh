@@ -77,7 +77,7 @@ index_task(){
             "node_name": "'$HOSTNAME'",
             "job_status": "'$state'",
             "build_url": "'$build_url'",
-            "upstream_job": "'$dag_id'/'$task_id'",
+            "upstream_job": "'$dag_id'",
             "upstream_job_build": "'$run_id'/'$task_id'",
             "job_duration": "'$duration'",
             "timestamp": "'$timestamp'"
