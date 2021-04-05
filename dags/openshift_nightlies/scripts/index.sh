@@ -66,7 +66,6 @@ index_task(){
     
     curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
         "uuid" : "'$UUID'",
-        "_id" : "'$run_id'",
         "platform": "'$platform'",
         "master_count": '$masters',
         "worker_count": '$workers',
@@ -75,7 +74,7 @@ index_task(){
         "total_count": '$all',
         "cluster_name": "'$cluster_name'",
         "cluster_version": "'$cluster_version'",
-        "network_type": "'$network_type'",
+        "network_type": "'$netw'",
         "build_tag": "'$task_id'",
         "node_name": "'$HOSTNAME'",
         "job_status": "'$state'",
