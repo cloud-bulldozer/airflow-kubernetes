@@ -83,7 +83,7 @@ index_task(){
         "upstream_job_build": "'$run_id'",
         "job_duration": "'$duration'",
         "timestamp": "'$timestamp'"
-        }' $ES_SERVER/$ES_INDEX/_doc/
+        }' $ES_SERVER/$ES_INDEX/_doc/ 2>&1
 }
 
 
@@ -93,7 +93,7 @@ index_tasks(){
     echo $task_states | jq -c '.[]' | 
     while IFS=$"\n" read -r c; do 
         index_task $c 
-    done 2>&1
+    done 
 }
 
 # Defaults
