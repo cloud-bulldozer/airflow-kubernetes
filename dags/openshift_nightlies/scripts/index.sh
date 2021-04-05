@@ -64,6 +64,7 @@ index_task(){
         
         curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
             "uuid" : "'$UUID'",
+            "_id": "'$run_id'",
             "platform": "'$platform'",
             "master_count": '$masters',
             "worker_count": '$workers',
@@ -81,7 +82,7 @@ index_task(){
             "upstream_job_build": "'$run_id'",
             "job_duration": "'$duration'",
             "timestamp": "'$timestamp'"
-            }' $ES_SERVER/$ES_INDEX/_doc/ 2>&1
+            }' $ES_SERVER/$ES_INDEX/_doc/
 
     fi
   
