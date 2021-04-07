@@ -80,7 +80,7 @@ index_task(){
             "upstream_job": "'$dag_id'",
             "upstream_job_build": "'$dag_id'/'$dag_run_id'/'$task_id'",
             "job_duration": "'$duration'",
-            "start_date" "'$start_date'", 
+            "start_date": "'$start_date'", 
             "end_date": "'$end_date'", 
             "timestamp": "'$start_date'"
             }' $ES_SERVER/$ES_INDEX/_doc/$dag_id%2F$dag_run_id%2F$task_id
