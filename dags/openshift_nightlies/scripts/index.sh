@@ -45,8 +45,8 @@ index_task(){
     state=$(echo $task_json | jq -r '.state')
     task_id=$(echo $task_json | jq -r '.task_id')
 
-    if [[ $task_id == "$AIRFLOW_CTX_TASK_ID" ]]; then
-        echo "Index Task doesn't index itself, skipping."
+    if [[ $task_id == "$AIRFLOW_CTX_TASK_ID" || $task_id == "cleanup" ]]; then
+        echo "Index Task doesn't index itself or cleanup step, skipping."
     else
         start_date=$(echo $task_json | jq -r '.start_date')
         end_date=$(echo $task_json | jq -r '.end_date')
@@ -80,6 +80,8 @@ index_task(){
             "upstream_job": "'$dag_id'",
             "upstream_job_build": "'$run_id'/'$task_id'",
             "job_duration": "'$duration'",
+            "start_date" "'$start_date'", 
+            "end_date": "'$end_date'", 
             "timestamp": "'$start_date'"
             }' $ES_SERVER/$ES_INDEX/_doc/$run_id-$task_id
 
