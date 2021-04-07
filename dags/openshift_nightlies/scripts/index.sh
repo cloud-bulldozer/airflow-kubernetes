@@ -4,7 +4,7 @@ set -exo pipefail
 
 export dag_id=${AIRFLOW_CTX_DAG_ID}
 export execution_date=${AIRFLOW_CTX_EXECUTION_DATE}
-export run_id=${AIRFLOW_CTX_DAG_RUN_ID}
+export dag_run_id=${AIRFLOW_CTX_DAG_RUN_ID}
 printenv
 
 # Hardcode this for now
@@ -78,12 +78,12 @@ index_task(){
             "job_status": "'$state'",
             "build_url": "'$build_url'",
             "upstream_job": "'$dag_id'",
-            "upstream_job_build": "'$run_id'/'$task_id'",
+            "upstream_job_build": "'$dag_id'/'$dag_run_id'/'$task_id'",
             "job_duration": "'$duration'",
             "start_date" "'$start_date'", 
             "end_date": "'$end_date'", 
             "timestamp": "'$start_date'"
-            }' $ES_SERVER/$ES_INDEX/_doc/$run_id-$task_id
+            }' $ES_SERVER/$ES_INDEX/_doc/$dag_id%2F$dag_run_id%2F$task_id
 
     fi
   
