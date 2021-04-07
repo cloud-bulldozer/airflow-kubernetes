@@ -4,8 +4,8 @@
     "openshift_base_domain": "ats.azure.devcluster.openshift.com",
     "openshift_host_prefix": "23",
     "openshift_network_type": "OpenShiftSDN",
-    "openshift_master_vm_size": "Standard_D8s_v3",
-    "openshift_worker_vm_size": "Standard_D2s_v3",
+    "openshift_master_vm_size": "Standard_D16s_v3",
+    "openshift_worker_vm_size": "Standard_D8s_v3",
     "openshift_master_root_volume_size": 1024,
     "openshift_worker_root_volume_size": 1024,
     "openshift_cidr": "10.128.0.0/14",
@@ -21,4 +21,4 @@
     "openshift_prometheus_storage_size": "500Gi",
     "openshift_alertmanager_storage_class": "managed-premium",
     "openshift_alertmanager_storage_size": "20Gi"
- }
+}
