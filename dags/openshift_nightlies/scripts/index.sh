@@ -78,7 +78,7 @@ index_task(){
             "job_status": "'$state'",
             "build_url": "'$build_url'",
             "upstream_job": "'$dag_id'",
-            "upstream_job_build": "'$dag_id'/'$dag_run_id'/'$task_id'",
+            "upstream_job_build": "'$dag_run_id'/'$task_id'",
             "job_duration": "'$duration'",
             "start_date": "'$start_date'", 
             "end_date": "'$end_date'", 
