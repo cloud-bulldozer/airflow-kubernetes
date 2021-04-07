@@ -79,6 +79,7 @@ index_task(){
             "build_url": "'$build_url'",
             "upstream_job": "'$dag_id'",
             "upstream_job_build": "'$dag_run_id'/'$task_id'",
+            "execution_date": "'$execution_date'",
             "job_duration": "'$duration'",
             "start_date": "'$start_date'", 
             "end_date": "'$end_date'", 
