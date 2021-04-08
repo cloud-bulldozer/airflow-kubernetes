@@ -6,7 +6,8 @@ metadata:
   labels:
     {{- include "dashboard.labels" . | nindent 4 }}
   annotations:
-    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"{{ include "dashboard.fullname" . }}:{{ .Values.frontend.image.tag }}"},"fieldPath":"spec.template.spec.containers[?(@.name==\"frontend\")].image"},{"from":{"kind":"ImageStreamTag","name":"{{ include "dashboard.fullname" . }}:{{ .Values.backend.image.tag }}},"fieldPath":"spec.template.spec.containers[?(@.name==\"backend\")].image"}]'     
+    image.openshift.io/triggers: >-
+      '[{"from":{"kind":"ImageStreamTag","name":"{{ include "dashboard.fullname" . }}:{{ .Values.frontend.image.tag }}"},"fieldPath":"spec.template.spec.containers[?(@.name=='frontend')].image"},{"from":{"kind":"ImageStreamTag","name":"{{ include "dashboard.fullname" . }}:{{ .Values.backend.image.tag }}},"fieldPath":"spec.template.spec.containers[?(@.name=='backend')].image"}]'     
 spec:
   replicas: 1
   revisionHistoryLimit: 10
