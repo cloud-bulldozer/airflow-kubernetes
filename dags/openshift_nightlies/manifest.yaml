@@ -46,10 +46,10 @@ releases:
   - version: 4.7
     releaseStream: 4.7.0-0.nightly
     platform: azure
-    profile: large-scale
+    profile: large
     tags: 
       - next
-      - large-scale
+      - large
   - version: 4.8
     releaseStream: 4.8.0-0.nightly
     platform: aws
