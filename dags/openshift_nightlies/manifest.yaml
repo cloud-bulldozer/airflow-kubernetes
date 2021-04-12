@@ -43,6 +43,13 @@ releases:
     profile: default
     tags: 
       - next
+  - version: 4.7
+    releaseStream: 4.7.0-0.nightly
+    platform: azure
+    profile: large-scale
+    tags: 
+      - next
+      - large-scale
   - version: 4.8
     releaseStream: 4.8.0-0.nightly
     platform: aws
