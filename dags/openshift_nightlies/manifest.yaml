@@ -50,6 +50,12 @@ releases:
     tags: 
       - next
       - large
+  - version: 4.7
+    releaseStream: 4.7.0-0.nightly
+    platform: gcp
+    profile: default
+    tags: 
+      - next
   - version: 4.8
     releaseStream: 4.8.0-0.nightly
     platform: aws
@@ -66,6 +72,12 @@ releases:
   - version: 4.8
     releaseStream: 4.8.0-0.nightly
     platform: azure
+    profile: default
+    tags: 
+      - future
+  - version: 4.8
+    releaseStream: 4.8.0-0.nightly
+    platform: gcp
     profile: default
     tags: 
       - future
