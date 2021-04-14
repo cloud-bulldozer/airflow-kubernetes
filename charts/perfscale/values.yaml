@@ -57,7 +57,8 @@ results:
     values:
       elasticsearch:
         url: perf-results-es-http.perf-results.svc.cluster.local:9200
-        indice: perf_scale_ci 
+        indice: perf_scale_ci
+        username: elastic
   elastic:
     values: {}
 

@@ -53,7 +53,8 @@ class OpenshiftInstaller():
         self.install_secrets = Variable.get(
             f"openshift_install_config", deserialize_json=True)
         self.aws_creds = Variable.get("aws_creds", deserialize_json=True)
-
+        self.gcp_creds = Variable.get("gcp_creds", deserialize_json=True)
+        self.azure_creds = Variable.get("azure_creds", deserialize_json=True)
 
     def get_install_task(self):
         return self._get_task(operation="install")
@@ -78,6 +79,8 @@ class OpenshiftInstaller():
             **self.ansible_orchestrator,
             **self.install_secrets,
             **self.aws_creds,
+            **self.gcp_creds,
+            **self.azure_creds,
             **playbook_operations,
             **var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream),
             **{ "es_server": var_loader.get_elastic_url() }
@@ -86,9 +89,9 @@ class OpenshiftInstaller():
         
         git_user = var_loader.get_git_user()
         if git_user == 'cloud-bulldozer':
-            config['openshift_cluster_name'] = f"{self.version}-{self.platform}-{self.profile}"
+            config['openshift_cluster_name'] = f"ci-{self.version}-{self.platform}-{self.profile}"
         else: 
-            config['openshift_cluster_name'] = f"{self.version}-{self.platform}-{self.profile}-{git_user}"
+            config['openshift_cluster_name'] = f"{git_user}-{self.version}-{self.platform}-{self.profile}"
 
         config['dynamic_deploy_path'] = f"{config['openshift_cluster_name']}"
         config['kubeconfig_path'] = f"/root/{config['dynamic_deploy_path']}/auth/kubeconfig"

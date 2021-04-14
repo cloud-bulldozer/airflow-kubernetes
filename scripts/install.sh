@@ -1,5 +1,9 @@
 #!/bin/bash
 GIT_ROOT=$(git rev-parse --show-toplevel)
+_remote_origin_url=$(git config --get remote.origin.url)
+_branch=$(git branch --show-current)
+_cluster_domain=$(oc get ingresses.config.openshift.io/cluster -o jsonpath='{.spec.domain}')
+
 install_helm(){
     HELM_VERSION=v3.4.2
     wget https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
@@ -49,17 +53,21 @@ add_privileged_service_accounts(){
 
 
 install_perfscale(){
-    _remote_origin_url=$(git config --get remote.origin.url)
-    _branch=$(git branch --show-current)
-    cluster_domain=$(oc get ingresses.config.openshift.io/cluster -o jsonpath='{.spec.domain}')
     cd $GIT_ROOT/charts/perfscale
-    helm upgrade perfscale . --install --namespace argocd --set global.baseDomain=$cluster_domain,global.repo.url=$_remote_origin_url,global.repo.branch=$_branch
+    echo $_cluster_domain
+    helm upgrade perfscale . --install --namespace argocd --set global.baseDomain=$_cluster_domain,global.repo.url=$_remote_origin_url,global.repo.branch=$_branch
 
 }
 
 wait_for_apps_to_be_healthy(){
     argocd login $(oc get route/argocd -o jsonpath='{.spec.host}' -n argocd) --username admin --password $(kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o jsonpath='{.items[].metadata.name}') --insecure
     argocd app wait -l app.kubernetes.io/managed-by=Helm
+}
+
+connect_dashboard_to_results_elastic(){
+    _results_elastic_password=$(kubectl get secret/perf-results-es-elastic-user -o jsonpath='{.data.elastic}' -n perf-results | base64 --decode)
+    cd $GIT_ROOT/charts/perfscale
+    helm upgrade perfscale . --install --namespace argocd --set global.baseDomain=$_cluster_domain,global.repo.url=$_remote_origin_url,global.repo.branch=$_branch,results.dashboard.values.elasticsearch.password=$_results_elastic_password
 }
 
 output_info() {
@@ -116,4 +124,5 @@ echo "Installing PerfScale Platform"
 install_perfscale
 echo "PerfScale Platform Creating, waiting for Applications to become healthy"
 wait_for_apps_to_be_healthy
+connect_dashboard_to_results_elastic
 output_info
