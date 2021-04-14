@@ -25,13 +25,13 @@ releases:
     tags: 
       - stable
   - version: 4.7
-    releaseStream: 4.7.0-0.nightly
+    releaseStream: 4-stable
     platform: aws
     profile: default
     tags:
       - next
   - version: 4.7
-    releaseStream: 4.7.0-0.nightly
+    releaseStream: 4-stable
     platform: aws
     profile: ovn
     tags:
@@ -58,7 +58,7 @@ releases:
       - next
       - xlarge
   - version: 4.7
-    releaseStream: 4.7.0-0.nightly
+    releaseStream: 4-stable
     platform: gcp
     profile: default
     tags: 
