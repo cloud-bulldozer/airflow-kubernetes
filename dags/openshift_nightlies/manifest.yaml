@@ -52,6 +52,13 @@ releases:
       - large
   - version: 4.7
     releaseStream: 4.7.0-0.nightly
+    platform: azure
+    profile: xlarge
+    tags: 
+      - next
+      - xlarge
+  - version: 4.7
+    releaseStream: 4.7.0-0.nightly
     platform: gcp
     profile: default
     tags: 
