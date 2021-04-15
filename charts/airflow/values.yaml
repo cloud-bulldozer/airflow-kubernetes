@@ -718,7 +718,7 @@ config:
     remote_logging: '{{- ternary "True" "False" .Values.elasticsearch.enabled }}'
   # Authentication backend used for the experimental API
   api:
-    auth_backend: airflow.api.auth.backend.default
+    auth_backend: airflow.api.auth.backend.basic_auth
   logging:
     remote_logging: '{{- ternary "True" "False" .Values.elasticsearch.enabled }}'
     colored_console_log: 'False'
