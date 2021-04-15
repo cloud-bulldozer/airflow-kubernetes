@@ -51,6 +51,10 @@ index_task(){
         start_date=$(echo $task_json | jq -r '.start_date')
         end_date=$(echo $task_json | jq -r '.end_date')
 
+        if [[ -z $start_date ]]; then 
+            start_date=$end_date        
+        fi
+
         if [[ -z $start_date || -z $end_date ]]; then
             duration=0
         else
