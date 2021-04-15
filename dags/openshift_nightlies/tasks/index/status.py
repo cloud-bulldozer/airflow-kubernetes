@@ -50,7 +50,8 @@ class StatusIndexer():
         latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
 
         self.env = {
-            "OPENSHIFT_CLIENT_LOCATION": latest_release["openshift_client_location"]
+            "OPENSHIFT_CLIENT_LOCATION": latest_release["openshift_client_location"],
+            "RELEASE_STREAM": self.release_stream
         }
 
 
