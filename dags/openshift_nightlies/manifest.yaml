@@ -39,17 +39,18 @@ releases:
       - ovn
   - version: 4.7
     releaseStream: 4.7.0-0.nightly
-    platform: azure
-    profile: default
-    tags: 
-      - next
-  - version: 4.7
-    releaseStream: 4.7.0-0.nightly
     platform: aws
     profile: large
     tags: 
       - next
       - large
+  - version: 4.7
+    releaseStream: 4.7.0-0.nightly
+    platform: azure
+    profile: default
+    tags: 
+      - next
+
   - version: 4.7
     releaseStream: 4.7.0-0.nightly
     platform: azure
