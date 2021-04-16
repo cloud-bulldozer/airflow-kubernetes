@@ -43,6 +43,7 @@ class OpenshiftNightlyDAG():
 
         tags.append(self.platform)
         tags.append(self.release_stream)
+        tags.append(self.profile)
 
         self.dag = DAG(
             self.release,
