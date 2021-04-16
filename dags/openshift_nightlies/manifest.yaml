@@ -45,7 +45,7 @@ releases:
       - next
   - version: 4.7
     releaseStream: 4.7.0-0.nightly
-    platform: azure
+    platform: aws
     profile: large
     tags: 
       - next
