@@ -53,6 +53,13 @@ releases:
   - version: 4.7
     releaseStream: 4.7.0-0.nightly
     platform: azure
+    profile: large
+    tags: 
+      - next
+      - large
+  - version: 4.7
+    releaseStream: 4.7.0-0.nightly
+    platform: azure
     profile: xlarge
     tags: 
       - next
