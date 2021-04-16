@@ -4,7 +4,7 @@ releases:
     platform: aws
     profile: default
     tags:
-      - stable
+      - test: stable
   - version: 4.6
     releaseStream: 4.6.0-0.nightly
     platform: aws
