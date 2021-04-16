@@ -3,96 +3,74 @@ releases:
     releaseStream: 4.6.0-0.nightly
     platform: aws
     profile: default
-    tags:
-      - stable
+    versionAlias: stable
   - version: 4.6
     releaseStream: 4.6.0-0.nightly
     platform: aws
     profile: ovn
-    tags:
-      - stable
-      - ovn
+    versionAlias: stable
   - version: 4.6
     releaseStream: 4.6.0-0.nightly
     platform: azure
     profile: default
-    tags: 
-      - stable
+    versionAlias: stable
   - version: 4.6
     releaseStream: 4.6.0-0.nightly
     platform: gcp
     profile: default
-    tags: 
-      - stable
+    versionAlias: stable
   - version: 4.7
     releaseStream: 4-stable
     platform: aws
     profile: default
-    tags:
-      - next
+    versionAlias: next
   - version: 4.7
     releaseStream: 4-stable
     platform: aws
     profile: ovn
-    tags:
-      - next
-      - ovn
+    versionAlias: next
   - version: 4.7
     releaseStream: 4.7.0-0.nightly
     platform: aws
     profile: large
-    tags: 
-      - next
-      - large
+    versionAlias: next
   - version: 4.7
     releaseStream: 4.7.0-0.nightly
     platform: azure
     profile: default
-    tags: 
-      - next
-
+    versionAlias: next
   - version: 4.7
     releaseStream: 4.7.0-0.nightly
     platform: azure
     profile: large
-    tags: 
-      - next
-      - large
+    versionAlias: next
   - version: 4.7
     releaseStream: 4.7.0-0.nightly
     platform: azure
     profile: xlarge
-    tags: 
-      - next
-      - xlarge
+    versionAlias: next
   - version: 4.7
     releaseStream: 4-stable
     platform: gcp
     profile: default
-    tags: 
-      - next
+    versionAlias: next
   - version: 4.8
     releaseStream: 4.8.0-0.nightly
     platform: aws
     profile: default
-    tags:
-      - future
+    versionAlias: future
   - version: 4.8
     releaseStream: 4.8.0-0.nightly
     platform: aws
     profile: ovn
-    tags:
-      - future
-      - ovn
+    versionAlias: future
   - version: 4.8
     releaseStream: 4.8.0-0.nightly
     platform: azure
     profile: default
-    tags: 
-      - future
+    versionAlias: future
   - version: 4.8
     releaseStream: 4.8.0-0.nightly
     platform: gcp
     profile: default
-    tags: 
-      - future
+    versionAlias: future
