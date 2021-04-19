@@ -54,7 +54,7 @@
             }
         },
 	{
-            "name": "scale",
+            "name": "scale_50",
             "workload": "scale-perf",
             "command": "./run_scale_fromgit.sh",
             "env": {
@@ -64,7 +64,7 @@
             }
         },
         {
-            "name": "cluster_density",
+            "name": "cluster_density_50",
             "workload": "kube-burner",
             "command": "./run_clusterdensity_test_fromgit.sh",
             "env": {

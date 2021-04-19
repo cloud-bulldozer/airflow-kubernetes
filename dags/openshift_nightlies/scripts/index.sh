@@ -37,6 +37,9 @@ setup(){
     workload=$(oc get nodes -l node-role.kubernetes.io/workload --no-headers=true | wc -l) || true
     infra=$(oc get nodes -l node-role.kubernetes.io/infra --no-headers=true | wc -l) || true 
     all=$(oc get nodes  --no-headers=true | wc -l) || true
+
+    # ReleaseStream is piped in via environment variables
+    release_stream=${RELEASE_STREAM}
 }
 
 index_task(){
@@ -51,6 +54,10 @@ index_task(){
         start_date=$(echo $task_json | jq -r '.start_date')
         end_date=$(echo $task_json | jq -r '.end_date')
 
+        if [[ -z $start_date ]]; then 
+            start_date=$end_date        
+        fi
+
         if [[ -z $start_date || -z $end_date ]]; then
             duration=0
         else
@@ -64,6 +71,7 @@ index_task(){
         
         curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
             "uuid" : "'$UUID'",
+            "release_stream", "'$RELEASE_STREAM'",
             "platform": "'$platform'",
             "master_count": '$masters',
             "worker_count": '$workers',

@@ -23,11 +23,12 @@ handler.setLevel(logging.INFO)
 log.addHandler(handler)
 
 class OpenshiftNightlyDAG():
-    def __init__(self, version, release_stream, platform, profile, tags):
+    def __init__(self, version, release_stream, platform, profile, version_alias, tags):
         self.platform = platform
         self.version = version
         self.release_stream = release_stream
         self.profile = profile
+        self.version_alias = version_alias
         self.release = f"{self.version}_{self.platform}_{self.profile}"
         self.metadata_args = {
             'owner': 'airflow',
@@ -43,6 +44,8 @@ class OpenshiftNightlyDAG():
 
         tags.append(self.platform)
         tags.append(self.release_stream)
+        tags.append(self.profile)
+        tags.append(self.version_alias)
 
         self.dag = DAG(
             self.release,
@@ -79,6 +82,6 @@ class OpenshiftNightlyDAG():
 release_manifest = manifest.Manifest(constants.root_dag_dir)
 for release in release_manifest.get_releases():
     print(release)
-    nightly = OpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('tags', []))
+    nightly = OpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'), release.get('tags', []))
     nightly.build()
     globals()[nightly.release] = nightly.dag
