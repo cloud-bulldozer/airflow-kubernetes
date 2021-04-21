@@ -14,7 +14,7 @@ from kubernetes.client import models as k8s
 
 # Defines Tasks for installation of Openshift Clusters
 class OpenshiftInstaller():
-    def __init__(self, dag, version, release_stream, platform, profile):
+    def __init__(self, dag, version, release_stream, latest_release, platform, profile):
 
         self.exec_config = {
             "pod_override": k8s.V1Pod(
@@ -39,6 +39,7 @@ class OpenshiftInstaller():
         self.platform = platform  # e.g. aws
         self.version = version  # e.g. 4.6/4.7, major.minor only
         self.release_stream = release_stream # true release stream to follow. Nightlies, CI, etc. 
+        self.latest_release = latest_release # latest relase from the release stream
         self.profile = profile  # e.g. default/ovn
 
         # Specific Task Configuration
@@ -49,7 +50,7 @@ class OpenshiftInstaller():
         self.ansible_orchestrator = Variable.get(
             "ansible_orchestrator", deserialize_json=True)
 
-        self.release_stream_base_url = Variable.get("release_stream_base_url")
+        
         self.install_secrets = Variable.get(
             f"openshift_install_config", deserialize_json=True)
         self.aws_creds = Variable.get("aws_creds", deserialize_json=True)
@@ -82,7 +83,7 @@ class OpenshiftInstaller():
             **self.gcp_creds,
             **self.azure_creds,
             **playbook_operations,
-            **var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream),
+            **self.latest_release,
             **{ "es_server": var_loader.get_elastic_url() }
         }
 
