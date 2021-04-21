@@ -67,19 +67,15 @@ class OpenshiftNightlyDAG():
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
 
-        with TaskGroup("Index Results", prefix_group_id=False, dag=self.dag) as post_steps: 
-            index_status_task = self._get_status_indexer().get_index_task()
+        
 
-        install_cluster >> benchmarks >> [post_steps, cleanup_cluster]
+        install_cluster >> benchmarks >> cleanup_cluster
 
     def _get_openshift_installer(self):
         return openshift.OpenshiftInstaller(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile)
 
     def _get_e2e_benchmarks(self): 
         return e2e.E2EBenchmarks(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, self.metadata_args)
-
-    def _get_status_indexer(self):
-        return status.StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, "results")
 
 
 

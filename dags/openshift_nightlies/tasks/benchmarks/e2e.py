@@ -12,6 +12,7 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.operators.subdag_operator import SubDagOperator
 from airflow.models import Variable
 from airflow.models import DAG
+from airflow.utils.task_group import TaskGroup
 from kubernetes.client import models as k8s
 
 
@@ -71,7 +72,7 @@ class E2EBenchmarks():
 
     def _get_benchmark(self, benchmark):
         env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}}
-        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, benchmark['name']).get_index_task() 
+
         benchmark = BashOperator(
             task_id=f"{benchmark['name']}",
             depends_on_past=False,
@@ -81,5 +82,10 @@ class E2EBenchmarks():
             env=env,
             executor_config=self.exec_config
         )
+
+        with TaskGroup("Index Results", prefix_group_id=False, dag=self.dag) as post_steps: 
+            indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, benchmark['name']).get_index_task() 
+        
+        
         benchmark >> indexer
         return benchmark
