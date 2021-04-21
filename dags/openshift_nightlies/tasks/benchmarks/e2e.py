@@ -60,7 +60,9 @@ class E2EBenchmarks():
 
 
     def get_benchmarks(self):
-        return self._get_benchmarks(self.vars["benchmarks"])
+        benchmarks = self._get_benchmarks(self.vars["benchmarks"])
+        indexers = self._add_indexers(benchmarks)
+        return benchmarks
 
     def _get_benchmarks(self, benchmarks):
         for index, benchmark in enumerate(benchmarks):
@@ -70,10 +72,22 @@ class E2EBenchmarks():
                 benchmarks[index] = self._get_benchmarks(benchmark)
         return benchmarks
 
+    def _add_indexers(self, benchmarks):
+        with TaskGroup("Index Results", prefix_group_id=False, dag=self.dag) as post_steps:
+            for index, benchmark in enumerate(benchmarks):
+                if isinstance(benchmark, dict):
+                    benchmarks[index] = self._add_indexer(benchmark)
+                elif isinstance(benchmark, list):
+                    benchmarks[index] = self._add_indexers(benchmark)
+        return benchmarks
+
+    def _add_indexer(self, benchmark): 
+        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, benchmark.task_id).get_index_task() 
+        benchmark >> indexer 
+
     def _get_benchmark(self, benchmark):
         env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}}
-
-        benchmark_task = BashOperator(
+        return BashOperator(
             task_id=f"{benchmark['name']}",
             depends_on_past=False,
             bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
@@ -82,10 +96,3 @@ class E2EBenchmarks():
             env=env,
             executor_config=self.exec_config
         )
-
-        
-        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, benchmark['name']).get_index_task() 
-        
-        
-        benchmark_task >> indexer
-        return benchmark_task
