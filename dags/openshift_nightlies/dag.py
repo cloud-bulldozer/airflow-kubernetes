@@ -75,7 +75,7 @@ class OpenshiftNightlyDAG():
         return e2e.E2EBenchmarks(self.dag, self.version, self.release_stream, self.platform, self.profile, self.metadata_args)
 
     def _get_status_indexer(self):
-        return status.StatusIndexer(self.dag, self.version, self.release_stream, self.platform, self.profile)
+        return status.StatusIndexer(self.dag, self.version, self.release_stream, self.platform, self.profile, "results")
 
 
 
