@@ -71,7 +71,7 @@ class E2EBenchmarks():
 
     def _get_benchmark(self, benchmark):
         env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}}
-        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.platform, self.profile, benchmark['name']).get_index_task() 
+        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, benchmark['name']).get_index_task() 
         benchmark = BashOperator(
             task_id=f"{benchmark['name']}",
             depends_on_past=False,
