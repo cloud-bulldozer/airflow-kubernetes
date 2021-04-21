@@ -83,8 +83,8 @@ class E2EBenchmarks():
             executor_config=self.exec_config
         )
 
-        with TaskGroup("Index Results", prefix_group_id=False, dag=self.dag) as post_steps: 
-            indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, benchmark['name']).get_index_task() 
+        
+        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, benchmark['name']).get_index_task() 
         
         
         benchmark_task >> indexer
