@@ -4,6 +4,7 @@ from os import environ
 
 sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
 from util import var_loader, kubeconfig, constants
+from tasks.index.status import StatusIndexer
 
 import json
 from datetime import timedelta
@@ -56,6 +57,8 @@ class E2EBenchmarks():
             "OPENSHIFT_CLIENT_LOCATION": latest_release["openshift_client_location"]
         }
 
+        
+
 
     def get_benchmarks(self):
         return self._get_benchmarks(self.vars["benchmarks"])
@@ -70,7 +73,8 @@ class E2EBenchmarks():
 
     def _get_benchmark(self, benchmark):
         env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}}
-        return BashOperator(
+        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.platform, self.profile, benchmark['name']).get_index_task() 
+        benchmark = BashOperator(
             task_id=f"{benchmark['name']}",
             depends_on_past=False,
             bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
@@ -79,3 +83,5 @@ class E2EBenchmarks():
             env=env,
             executor_config=self.exec_config
         )
+        benchmark >> indexer
+        return benchmark
