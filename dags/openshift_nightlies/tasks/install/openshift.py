@@ -4,6 +4,7 @@ from os import environ
 
 sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
 from util import var_loader, kubeconfig, constants
+from tasks.index.status import StatusIndexer
 
 import json
 import requests
@@ -58,7 +59,10 @@ class OpenshiftInstaller():
         self.azure_creds = Variable.get("azure_creds", deserialize_json=True)
 
     def get_install_task(self):
-        return self._get_task(operation="install")
+        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, "install").get_index_task() 
+        install_task = self._get_task(operation="install")
+        install_task >> indexer 
+        return install_task
 
     def get_cleanup_task(self):
         # trigger_rule = "all_done" means this task will run when every other task has finished, whether it fails or succeededs
