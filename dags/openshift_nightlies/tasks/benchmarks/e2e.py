@@ -18,7 +18,7 @@ from kubernetes.client import models as k8s
 
 
 class E2EBenchmarks():
-    def __init__(self, dag, version, release_stream, platform, profile, default_args):
+    def __init__(self, dag, version, release_stream, latest_release, platform, profile, default_args):
 
         self.exec_config = {
             "pod_override": k8s.V1Pod(
