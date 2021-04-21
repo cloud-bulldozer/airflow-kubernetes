@@ -69,7 +69,7 @@ class OpenshiftNightlyDAG():
 
         
 
-        install_cluster >> benchmarks >> cleanup_cluster
+        install_cluster >> benchmark_tasks[-1] >> cleanup_cluster
 
     def _get_openshift_installer(self):
         return openshift.OpenshiftInstaller(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile)
