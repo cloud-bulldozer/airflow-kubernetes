@@ -87,5 +87,5 @@ class E2EBenchmarks():
             indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, benchmark['name']).get_index_task() 
         
         
-        benchmark >> indexer
-        return benchmark
+        benchmark_task >> indexer
+        return benchmark_task
