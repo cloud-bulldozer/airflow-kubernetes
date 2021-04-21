@@ -73,7 +73,7 @@ class E2EBenchmarks():
     def _get_benchmark(self, benchmark):
         env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}}
 
-        benchmark = BashOperator(
+        benchmark_task = BashOperator(
             task_id=f"{benchmark['name']}",
             depends_on_past=False,
             bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
