@@ -76,10 +76,9 @@ class E2EBenchmarks():
         with TaskGroup("Index Results", prefix_group_id=False, dag=self.dag) as post_steps:
             for index, benchmark in enumerate(benchmarks):
                 if isinstance(benchmark, BashOperator):
-                    benchmarks[index] = self._add_indexer(benchmark)
+                    self._add_indexer(benchmark)
                 elif isinstance(benchmark, list):
-                    benchmarks[index] = self._add_indexers(benchmark)
-        return benchmarks
+                    self._add_indexers(benchmark)
 
     def _add_indexer(self, benchmark): 
         indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, benchmark.task_id).get_index_task() 
