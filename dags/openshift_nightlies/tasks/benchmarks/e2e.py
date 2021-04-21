@@ -75,7 +75,7 @@ class E2EBenchmarks():
     def _add_indexers(self, benchmarks):
         with TaskGroup("Index Results", prefix_group_id=False, dag=self.dag) as post_steps:
             for index, benchmark in enumerate(benchmarks):
-                if isinstance(benchmark, dict):
+                if isinstance(benchmark, BashOperator):
                     benchmarks[index] = self._add_indexer(benchmark)
                 elif isinstance(benchmark, list):
                     benchmarks[index] = self._add_indexers(benchmark)
