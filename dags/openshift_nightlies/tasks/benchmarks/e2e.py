@@ -70,7 +70,7 @@ class E2EBenchmarks():
             if 'benchmarks' not in benchmark:
                 benchmarks[index] = self._get_benchmark(benchmark)
             elif 'group' in benchmark:
-                with TaskGroup(group, prefix_group_id=False, dag=self.dag) as task_group:
+                with TaskGroup(benchmark['group'], prefix_group_id=False, dag=self.dag) as task_group:
                     benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
             else: 
                 benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
