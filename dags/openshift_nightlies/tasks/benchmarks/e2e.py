@@ -93,7 +93,7 @@ class E2EBenchmarks():
             task_id=f"{benchmark['name']}",
             depends_on_past=False,
             bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
-            retries=0,
+            retries=3,
             dag=self.dag,
             env=env,
             executor_config=self.exec_config
