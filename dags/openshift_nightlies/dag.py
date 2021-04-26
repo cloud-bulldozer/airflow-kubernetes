@@ -34,7 +34,7 @@ class OpenshiftNightlyDAG():
         self.metadata_args = {
             'owner': 'airflow',
             'depends_on_past': False,
-            'start_date': days_ago(3),
+            'start_date': datetime(2021, 1, 1),
             'email': ['airflow@example.com'],
             'email_on_failure': False,
             'email_on_retry': False,
@@ -56,7 +56,8 @@ class OpenshiftNightlyDAG():
             default_args=self.metadata_args,
             tags=tags,
             description=f"DAG for Openshift Nightly builds {self.release}",
-            schedule_interval=timedelta(days=3),
+            schedule_interval='0 12 * * 1,3,5',
+            catchup=False
         )
     
     def build(self):
