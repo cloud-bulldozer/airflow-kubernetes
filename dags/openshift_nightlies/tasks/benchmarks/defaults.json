@@ -1,6 +1,8 @@
 {
     "benchmarks": [
-        [
+        {
+            "group": "uperf",
+            "benchmarks": [
             {
                 "name": "host_network",
                 "workload": "network-perf",
@@ -24,8 +26,8 @@
                 "env": {
                     "COMPARE": "false"
                 }
-            }
-        ],
+            }]
+        },
         {
             "name": "scale",
             "workload": "scale-perf",

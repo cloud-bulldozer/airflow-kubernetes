@@ -67,10 +67,13 @@ class E2EBenchmarks():
 
     def _get_benchmarks(self, benchmarks):
         for index, benchmark in enumerate(benchmarks):
-            if isinstance(benchmark, dict):
+            if 'benchmarks' not in benchmark:
                 benchmarks[index] = self._get_benchmark(benchmark)
-            elif isinstance(benchmark, list):
-                benchmarks[index] = self._get_benchmarks(benchmark)
+            elif 'group' in benchmark:
+                with TaskGroup(group, prefix_group_id=False, dag=self.dag) as group:
+                    benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
+            else: 
+                benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
         return benchmarks
 
     def _add_indexers(self, benchmarks):
