@@ -11,6 +11,11 @@ ingress:
   hostName: dashboard
   baseDomain: apps.keith-cluster.perfscale.devcluster.openshift.com
 
+airflow:
+  url: "airflow-webserver.airflow.svc.cluster.local:8080"
+  username: ""
+  password: ""
+
 elasticsearch:
   # Use existing secret
   existingSecretName: ""
