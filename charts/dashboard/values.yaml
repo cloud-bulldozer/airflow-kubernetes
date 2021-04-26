@@ -12,7 +12,7 @@ ingress:
   baseDomain: apps.keith-cluster.perfscale.devcluster.openshift.com
 
 airflow:
-  url: "airflow-webserver.airflow.svc.cluster.local:8080"
+  url: "http://airflow-webserver.airflow.svc.cluster.local:8080"
   username: ""
   password: ""
 
