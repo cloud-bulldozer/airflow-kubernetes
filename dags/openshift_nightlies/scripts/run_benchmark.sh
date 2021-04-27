@@ -33,5 +33,9 @@ setup
 cd /home/airflow/workspace
 ls
 cd e2e-benchmarking/workloads/$workload
+
+if [[ $workload == "network-perf" ]]; then
+    pip3 install -r requirements.txt; 
+fi
 eval "$command"
 
