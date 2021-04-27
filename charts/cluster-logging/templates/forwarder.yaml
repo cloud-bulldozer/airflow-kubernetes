@@ -6,9 +6,13 @@ metadata:
   name: instance
   labels: {}
 spec:
+  outputs:
+    - name: elasticsearch-external
+      type: "elasticsearch"
+      url: http://logging-es-http.logging.svc.cluster.local:9200
   pipelines:
     - name: forward-logs
       inputRefs: 
         - application
       outputRefs:
-      - default
+      - elasticsearch-external

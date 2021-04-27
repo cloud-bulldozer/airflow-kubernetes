@@ -11,10 +11,11 @@ elasticsearch:
     requests:
       memory: 8Gi
   proxy:
-    limits:
-      memory: 256Mi
-    requests:
+    resources:
+      limits:
         memory: 256Mi
+      requests:
+          memory: 256Mi
   redundancyPolicy: SingleRedundancy
 
 
