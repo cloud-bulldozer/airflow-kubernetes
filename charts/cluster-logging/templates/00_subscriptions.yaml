@@ -1,0 +1,24 @@
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: "elasticsearch-operator"
+  namespace: "openshift-operators-redhat" 
+spec:
+  channel: {{ .Values.channel | quote }}
+  installPlanApproval: "Automatic"
+  source: "redhat-operators" 
+  sourceNamespace: "openshift-marketplace"
+  name: "elasticsearch-operator"
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: cluster-logging
+  namespace: openshift-logging 
+spec:
+  channel: {{ .Values.channel | quote }}
+  name: cluster-logging
+  source: redhat-operators 
+  sourceNamespace: openshift-marketplace

@@ -1,0 +1,32 @@
+---
+apiVersion: logging.openshift.io/v1
+kind: "ClusterLogging"
+metadata:
+  name: "instance"
+  namespace: "openshift-logging"
+spec:
+  managementState: "Managed"
+  logStore:
+    type: "elasticsearch"
+    retentionPolicy:
+      application:
+        maxAge: 30d
+      infra:
+        maxAge: 30d
+      audit:
+        maxAge: 30d
+    elasticsearch:
+{{- toYaml .Values.elasticsearch | nindent 6 }}
+  visualization:
+    type: "kibana"
+    kibana:
+      replicas: 1
+  curation:
+    type: "curator"
+    curator:
+      schedule: "30 3 * * *"
+  collection:
+    logs:
+      type: "fluentd"
+      fluentd:
+{{- toYaml .Values.fluentd | nindent 8 -}}

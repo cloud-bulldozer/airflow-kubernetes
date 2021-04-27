@@ -1,0 +1,27 @@
+
+
+channel: 4.6
+
+elasticsearch:
+  nodeCount: 3
+  storage:
+    storageClassName: gp2
+    size: 100G
+    resources:
+      requests:
+        memory: 8Gi
+    proxy:
+      limits:
+        memory: 256Mi
+      requests:
+          memory: 256Mi
+  redundancyPolicy: SingleRedundancy
+
+
+fluentd:
+  resources:
+    limits:
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi

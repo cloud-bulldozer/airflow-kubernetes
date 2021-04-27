@@ -14,7 +14,7 @@ done
 setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
-    git clone https://github.com/cloud-bulldozer/e2e-benchmarking
+    git clone -b touchstone-config-fix https://github.com/whitleykeith/e2e-benchmarking
     export KUBECONFIG=/home/airflow/.kube/config
     export BUILD_NUMBER=test
     export RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}/$AIRFLOW_CTX_TASK_ID
