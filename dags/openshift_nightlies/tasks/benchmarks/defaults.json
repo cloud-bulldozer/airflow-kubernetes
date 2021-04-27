@@ -6,7 +6,7 @@
                 {
                     "name": "host_network",
                     "workload": "network-perf",
-                    "command": "./run_hostnetwork_network_test_fromgit.sh test_cloud",
+                    "command": "pip3 install -r requirements.txt; ./run_hostnetwork_network_test_fromgit.sh test_cloud",
                     "env": {
                         "COMPARE": "false"
                     }
@@ -14,7 +14,7 @@
                 {
                     "name": "pod_network",
                     "workload": "network-perf",
-                    "command": "./run_pod_network_test_fromgit.sh test_cloud",
+                    "command": "pip3 install -r requirements.txt; ./run_pod_network_test_fromgit.sh test_cloud",
                     "env": {
                         "COMPARE": "false"
                     }
@@ -22,7 +22,7 @@
                 {
                     "name": "serviceip_network",
                     "workload": "network-perf",
-                    "command": "./run_serviceip_network_test_fromgit.sh test_cloud",
+                    "command": "pip3 install -r requirements.txt; ./run_serviceip_network_test_fromgit.sh test_cloud",
                     "env": {
                         "COMPARE": "false"
                     }
