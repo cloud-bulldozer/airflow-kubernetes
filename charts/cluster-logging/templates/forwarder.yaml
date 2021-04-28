@@ -9,7 +9,7 @@ spec:
   outputs:
     - name: elasticsearch-external
       type: "elasticsearch"
-      url: http://logging-es-http.logging.svc.cluster.local:9200
+      url: http://logging-es-http.openshift-logging.svc.cluster.local:9200
   pipelines:
     - name: forward-logs
       inputRefs: 

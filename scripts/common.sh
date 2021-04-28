@@ -10,9 +10,9 @@ output_info() {
 
     _airflow_url=$(oc get route/airflow -o jsonpath='{.spec.host}' -n airflow)
     _airflow_user="admin"
-    _airflow_password="admin"
+    _airflow_password="REDACTED"
 
-    printf "\n\n Airflow Configs"
+    printf "\n\n Airflow Configs (Password was user defined so this script doesn't know it!)"
     printf "\n Host: $_airflow_url \n User: $_airflow_user \n Password: $_airflow_password"
 
 

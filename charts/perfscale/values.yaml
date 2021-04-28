@@ -12,7 +12,7 @@ airflow:
   syncWave: 0
   hostName: airflow
   values: 
-    defaultAirflowTag: 2.0.0
+    defaultAirflowTag: 2.0.2
     config:
       logging:
         colored_console_log: "True"
@@ -39,10 +39,12 @@ airflow:
     elasticsearch:
       enabled: True
       connection: 
-        host: logging-es-http.logging.svc.cluster.local
+        host: logging-es-http.openshift-logging.svc.cluster.local
         port: 9200
         user: ""
         pass: ""
+    webserver:
+      replicas: 3
 
 
 argo:
@@ -66,16 +68,7 @@ results:
 logging: 
   syncWave: 0
   fluentd:
-    values:
-      forwarder:
-        configMap: custom-parser
-        rbac:
-          pspEnabled: true
-        containerSecurityContext:
-          privileged: true
-          allowPrivilegeEscalation: true
-        extraEnv:
-        - name: FLUENTD_UID
-          value: '0'
+    mergeJsonLogs: false
+    values: {}
   elastic:
     values: {}

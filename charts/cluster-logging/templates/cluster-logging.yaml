@@ -5,20 +5,7 @@ metadata:
   name: "instance"
   namespace: "openshift-logging"
 spec:
-  managementState: "Managed"
-  logStore:
-    type: "elasticsearch"
-    retentionPolicy:
-      application:
-        maxAge: 30d
-      infra:
-        maxAge: 30d
-      audit:
-        maxAge: 30d
-  curation:
-    type: "curator"
-    curator:
-      schedule: "30 3 * * *"
+  managementState: {{ .Values.managementState }}
   collection:
     logs:
       type: "fluentd"

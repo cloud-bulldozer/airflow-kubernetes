@@ -1,8 +1,24 @@
 #!/bin/bash
+
+usage() { echo "Usage: $0 [-p <string> (airflow password)]" 1>&2; exit 1; }
 GIT_ROOT=$(git rev-parse --show-toplevel)
+source $GIT_ROOT/scripts/common.sh
 _remote_origin_url=$(git config --get remote.origin.url)
 _branch=$(git branch --show-current)
 _cluster_domain=$(oc get ingresses.config.openshift.io/cluster -o jsonpath='{.spec.domain}')
+
+while getopts p: flag
+do
+    case "${flag}" in
+        p) password=${OPTARG};;
+        *) usage;;
+    esac
+done
+
+if [[ -z "$password" ]]; then 
+    usage
+fi
+
 
 install_helm(){
     HELM_VERSION=v3.4.2
@@ -38,13 +54,14 @@ install_argo_cli(){
     chmod +x /usr/local/bin/argocd
 }
 
-create_namespaces(){
+pre_install(){
     kubectl create namespace argocd || true
     kubectl create namespace fluentd || true
     kubectl create namespace airflow || true
-    kubectl create namespace logging || true
+    kubectl create namespace openshift-logging || true
     kubectl create namespace elastic-system || true
     kubectl create namespace perf-results || true
+    kubectl apply -f $GIT_ROOT/scripts/raw_manifests
 }
 
 add_privileged_service_accounts(){
@@ -55,7 +72,12 @@ add_privileged_service_accounts(){
 install_perfscale(){
     cd $GIT_ROOT/charts/perfscale
     echo $_cluster_domain
-    helm upgrade perfscale . --install --namespace argocd --set global.baseDomain=$_cluster_domain,global.repo.url=$_remote_origin_url,global.repo.branch=$_branch
+    helm upgrade perfscale . --install --namespace argocd \
+        --set global.baseDomain=$_cluster_domain \
+        --set global.repo.url=$_remote_origin_url \
+        --set global.repo.branch=$_branch \ 
+        --set airflow.values.webserver.defaultUser.password=$password \
+        --set results.dashboard.values.airflow.password=$password 
 
 }
 
@@ -64,57 +86,26 @@ wait_for_apps_to_be_healthy(){
     argocd app wait -l app.kubernetes.io/managed-by=Helm
 }
 
-connect_dashboard_to_results_elastic(){
+post_install(){
     _results_elastic_password=$(kubectl get secret/perf-results-es-elastic-user -o jsonpath='{.data.elastic}' -n perf-results | base64 --decode)
     cd $GIT_ROOT/charts/perfscale
-    helm upgrade perfscale . --install --namespace argocd --set global.baseDomain=$_cluster_domain,global.repo.url=$_remote_origin_url,global.repo.branch=$_branch,results.dashboard.values.elasticsearch.password=$_results_elastic_password
+    helm upgrade perfscale . --install --namespace argocd \
+        --set global.baseDomain=$_cluster_domain \
+        --set global.repo.url=$_remote_origin_url \
+        --set global.repo.branch=$_branch \ 
+        --set airflow.values.webserver.defaultUser.password=$password \
+        --set results.dashboard.values.airflow.password=$password \
+        --set results.dashboard.values.elasticsearch.password=$_results_elastic_password \
+        --set logging.fluentd.values.managementState=Unmanaged \
+        --set logging.fluentd.mergeJsonLogs=true
 }
 
-output_info() {
-    _argo_url=$(oc get route/argocd -o jsonpath='{.spec.host}' -n argocd)
-    _argo_user="admin"
-    _argo_password=$(kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o jsonpath='{.items[].metadata.name}')
-
-    printf "\n\n ArgoCD Configs"
-    printf "\n Host: $_argo_url \n User: $_argo_user \n Password: $_argo_password"
-
-    _airflow_url=$(oc get route/airflow -o jsonpath='{.spec.host}' -n airflow)
-    _airflow_user="admin"
-    _airflow_password="admin"
-
-    printf "\n\n Airflow Configs"
-    printf "\n Host: $_airflow_url \n User: $_airflow_user \n Password: $_airflow_password"
-
-
-    _logging_elastic_url=$(oc get route/logging-elastic -o jsonpath='{.spec.host}' -n logging)
-    _logging_kibana_url=$(oc get route/logging-kibana -o jsonpath='{.spec.host}' -n logging)
-    _logging_elastic_user="elastic"
-    _logging_elastic_password=$(kubectl get secret/logging-es-elastic-user -o jsonpath='{.data.elastic}' -n logging | base64 --decode)
-
-    printf "\n\n Logging Elasticsearch Configs"
-    printf "\n Elastic Host: $_logging_elastic_url \n Kibana Host: $_logging_kibana_url \n User: $_logging_elastic_user \n Password: $_logging_elastic_password"
-
-    _results_elastic_url=$(oc get route/perf-results-elastic -o jsonpath='{.spec.host}' -n perf-results)
-    _results_kibana_url=$(oc get route/perf-results-kibana -o jsonpath='{.spec.host}' -n perf-results)
-    _results_elastic_user="elastic"
-    _results_elastic_password=$(kubectl get secret/perf-results-es-elastic-user -o jsonpath='{.data.elastic}' -n perf-results | base64 --decode)
-
-    printf "\n\n Results Elasticsearch Configs"
-    printf "\n Elastic Host: $_results_elastic_url \n Kibana Host: $_results_kibana_url \n User: $_results_elastic_user \n Password: $_results_elastic_password"
-
-    _results_dashboard_url=$(oc get route/perf-dashboard -o jsonpath='{.spec.host}' -n perf-results)
-    _results_api_url=$(oc get route/perf-dashboard-api -o jsonpath='{.spec.host}' -n perf-results)
-
-    printf "\n\n Results Dashboard Configs"
-    printf "\n Dashboard URL: $_results_dashboard_url \n API Endpoint: $_results_api_url \n"
-
-}
 
 echo "Installing Dependencies"
 install_argo_cli > /dev/null 2>&1
 install_helm > /dev/null 2>&1
-echo "Creating Namespaces if they don't exist..."
-create_namespaces > /dev/null 2>&1
+echo "Creating Namespaces and other unconfigurable manifests if they don't exist..."
+pre_install > /dev/null 2>&1
 echo "Creating services accounts"
 add_privileged_service_accounts > /dev/null 2>&1
 echo "Installing Argo"
@@ -124,5 +115,5 @@ echo "Installing PerfScale Platform"
 install_perfscale
 echo "PerfScale Platform Creating, waiting for Applications to become healthy"
 wait_for_apps_to_be_healthy
-connect_dashboard_to_results_elastic
+post_install
 output_info

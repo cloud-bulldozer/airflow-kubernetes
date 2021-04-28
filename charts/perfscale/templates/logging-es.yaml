@@ -10,7 +10,7 @@ metadata:
 spec:
   project: default
   destination: 
-    namespace: logging
+    namespace: openshift-logging
     server: https://kubernetes.default.svc
   source:
     repoURL: {{ .Values.global.repo.url }}
