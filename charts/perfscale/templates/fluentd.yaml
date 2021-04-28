@@ -28,8 +28,10 @@ spec:
       selfHeal: true
 ---
 apiVersion: v1 
-name: fluentd
-namespace: openshift-logging                                                                                                     
+kind: ConfigMap
+metadata:
+  name: fluentd
+  namespace: openshift-logging                                                                                                     
 data:                                                                                                               
   fluent.conf: |+ 
     <system>                                                                                                        
@@ -262,14 +264,14 @@ data:
 
       <filter kubernetes.journal.**>
         @type parse_json_field
-        merge_json_log '{{ .Values.logging.fluentd.mergeJsonLogs | default "false" }}'
+        merge_json_log 'false'
         preserve_json_log 'true'
         json_fields 'log,MESSAGE'
       </filter>
 
       <filter kubernetes.var.log.containers.**>
         @type parse_json_field
-        merge_json_log 'false'
+        merge_json_log '{{ .Values.logging.fluentd.mergeJsonLogs | default "false" }}'
         preserve_json_log 'true'
         json_fields 'log,MESSAGE'
       </filter>

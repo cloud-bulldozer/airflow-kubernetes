@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -a
 usage() { echo "Usage: $0 [-p <string> (airflow password)]" 1>&2; exit 1; }
 GIT_ROOT=$(git rev-parse --show-toplevel)
 source $GIT_ROOT/scripts/common.sh
@@ -30,21 +30,6 @@ install_helm(){
 
 install_argo(){    
     kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-    cat << EOF | kubectl -n argocd apply -f -
-    apiVersion: v1
-    data:
-      repositories: |
-        - type: helm
-          url: https://charts.bitnami.com/bitnami
-          name: bitnami
-    kind: ConfigMap
-    metadata:
-      labels:
-        app.kubernetes.io/name: argocd-cm
-        app.kubernetes.io/part-of: argocd
-      name: argocd-cm
-      namespace: argocd
-EOF
 
 }
 
@@ -59,9 +44,10 @@ pre_install(){
     kubectl create namespace fluentd || true
     kubectl create namespace airflow || true
     kubectl create namespace openshift-logging || true
+    kubectl create namespace openshift-operators-redhat || true
     kubectl create namespace elastic-system || true
     kubectl create namespace perf-results || true
-    kubectl apply -f $GIT_ROOT/scripts/raw_manifests
+    kubectl apply -f $GIT_ROOT/scripts/raw_manifests/
 }
 
 add_privileged_service_accounts(){
@@ -71,33 +57,21 @@ add_privileged_service_accounts(){
 
 install_perfscale(){
     cd $GIT_ROOT/charts/perfscale
-    echo $_cluster_domain
-    helm upgrade perfscale . --install --namespace argocd \
-        --set global.baseDomain=$_cluster_domain \
-        --set global.repo.url=$_remote_origin_url \
-        --set global.repo.branch=$_branch \ 
-        --set airflow.values.webserver.defaultUser.password=$password \
-        --set results.dashboard.values.airflow.password=$password 
+    envsubst < $GIT_ROOT/scripts/values/install.yaml
+    envsubst < $GIT_ROOT/scripts/values/install.yaml | helm upgrade perfscale . --install --namespace argocd -f -
 
 }
 
 wait_for_apps_to_be_healthy(){
-    argocd login $(oc get route/argocd -o jsonpath='{.spec.host}' -n argocd) --username admin --password $(kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o jsonpath='{.items[].metadata.name}') --insecure
+    argocd login $(oc get route/argocd -o jsonpath='{.spec.host}' -n argocd) --username admin --password $(kubectl get secret/argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 --decode) --insecure
     argocd app wait -l app.kubernetes.io/managed-by=Helm
 }
 
 post_install(){
     _results_elastic_password=$(kubectl get secret/perf-results-es-elastic-user -o jsonpath='{.data.elastic}' -n perf-results | base64 --decode)
     cd $GIT_ROOT/charts/perfscale
-    helm upgrade perfscale . --install --namespace argocd \
-        --set global.baseDomain=$_cluster_domain \
-        --set global.repo.url=$_remote_origin_url \
-        --set global.repo.branch=$_branch \ 
-        --set airflow.values.webserver.defaultUser.password=$password \
-        --set results.dashboard.values.airflow.password=$password \
-        --set results.dashboard.values.elasticsearch.password=$_results_elastic_password \
-        --set logging.fluentd.values.managementState=Unmanaged \
-        --set logging.fluentd.mergeJsonLogs=true
+    envsubst < $GIT_ROOT/scripts/values/update.yaml | helm upgrade perfscale . --install --namespace argocd -f -
+    oc -n openshift-logging delete pod -l component=fluentd
 }
 
 
