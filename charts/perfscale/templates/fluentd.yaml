@@ -33,7 +33,7 @@ metadata:
   name: fluentd
   namespace: openshift-logging                                                                                                     
 data:                                                                                                               
-  fluent.conf: |+ 
+  fluent.conf: |
     <system>                                                                                                        
       log_level "#{ENV['LOG_LEVEL'] || 'warn'}" 
     </system>
@@ -438,7 +438,7 @@ data:
         <store>
           @type elasticsearch
           @id retry_elasticsearch_external
-          host logging-es-http.logging.svc.cluster.local
+          host logging-es-http.openshift-logging.svc.cluster.local
           port 9200
           verify_es_version_at_startup false
           scheme http
@@ -479,7 +479,7 @@ data:
         <store>
           @type elasticsearch
           @id elasticsearch_external
-          host logging-es-http.logging.svc.cluster.local
+          host logging-es-http.openshift-logging.svc.cluster.local
           port 9200
           verify_es_version_at_startup false
           scheme http
