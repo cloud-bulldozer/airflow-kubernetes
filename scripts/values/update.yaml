@@ -16,6 +16,8 @@ results:
     values: 
       airflow:
         password: $password
+      elasticsearch: 
+        password: $_results_elastic_password
 
 logging:
   fluentd:
