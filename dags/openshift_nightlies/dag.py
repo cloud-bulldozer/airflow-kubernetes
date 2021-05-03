@@ -11,7 +11,7 @@ from airflow.utils.task_group import TaskGroup
 
 # Configure Path to have the Python Module on it
 sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
-from tasks.install import openshift
+from tasks.install import jetpack, scale_ci_deploy, openshift_installer
 from tasks.benchmarks import e2e
 from tasks.index import status
 from util import var_loader, manifest, constants
@@ -69,7 +69,10 @@ class OpenshiftNightlyDAG():
         install_cluster >> benchmarks >> [post_steps, cleanup_cluster]
 
     def _get_openshift_installer(self):
-        return openshift.OpenshiftInstaller(self.dag, self.version, self.release_stream, self.platform, self.profile)
+        if self.platform == "openstack":
+            return jetpack(self.dag, self.version, self.release_stream, self.platform, self.profile)
+        else:
+            return scale_ci_deploy(self.dag, self.version, self.release_stream, self.platform, self.profile)
 
     def _get_e2e_benchmarks(self): 
         return e2e.E2EBenchmarks(self.dag, self.version, self.release_stream, self.platform, self.profile, self.metadata_args)
