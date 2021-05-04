@@ -57,6 +57,7 @@ class OpenshiftNightlyDAG():
             tags=tags,
             description=f"DAG for Openshift Nightly builds {self.release}",
             schedule_interval='0 12 * * 1,3,5',
+            max_active_runs=1,
             catchup=False
         )
     
