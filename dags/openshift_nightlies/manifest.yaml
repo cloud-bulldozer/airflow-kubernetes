@@ -20,12 +20,12 @@ releases:
     profile: default
     versionAlias: stable
   - version: 4.7
-    releaseStream: 4-stable
+    releaseStream: 4.7.0-0.nightly
     platform: aws
     profile: default
     versionAlias: next
   - version: 4.7
-    releaseStream: 4-stable
+    releaseStream: 4.7.0-0.nightly
     platform: aws
     profile: ovn
     versionAlias: next
@@ -50,7 +50,7 @@ releases:
     profile: xlarge
     versionAlias: next
   - version: 4.7
-    releaseStream: 4-stable
+    releaseStream: 4.7.0-0.nightly
     platform: gcp
     profile: default
     versionAlias: next
