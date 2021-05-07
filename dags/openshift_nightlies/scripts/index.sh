@@ -36,6 +36,10 @@ setup(){
     workers=$(oc get nodes -l node-role.kubernetes.io/worker --no-headers=true | wc -l) || true
     workload=$(oc get nodes -l node-role.kubernetes.io/workload --no-headers=true | wc -l) || true
     infra=$(oc get nodes -l node-role.kubernetes.io/infra --no-headers=true | wc -l) || true 
+    worker_type=$(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[].metadata.labels.beta\.kubernetes\.io/instance-type}') || true
+    infra_type=$(oc get nodes -l node-role.kubernetes.io/infra -o jsonpath='{.items[].metadata.labels.beta\.kubernetes\.io/instance-type}') || true
+    workload_type=$(oc get nodes -l node-role.kubernetes.io/workload -o jsonpath='{.items[].metadata.labels.beta\.kubernetes\.io/instance-type}') || true
+    master_type=$(oc get nodes -l node-role.kubernetes.io/master -o jsonpath='{.items[].metadata.labels.beta\.kubernetes\.io/instance-type}') || true
     all=$(oc get nodes  --no-headers=true | wc -l) || true
 
     # ReleaseStream is piped in via environment variables
@@ -71,12 +75,16 @@ index_task(){
         
         curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
             "uuid" : "'$UUID'",
-            "release_stream", "'$RELEASE_STREAM'",
+            "release_stream": "'$RELEASE_STREAM'",
             "platform": "'$platform'",
             "master_count": '$masters',
             "worker_count": '$workers',
             "infra_count": '$infra',
             "workload_count": '$workload',
+            "master_type": "'$master_type'",
+            "worker_type": "'$worker_type'",
+            "infra_type": "'$infra_type'",
+            "workload_type": "'$workload_type'",
             "total_count": '$all',
             "cluster_name": "'$cluster_name'",
             "cluster_version": "'$cluster_version'",
@@ -102,10 +110,9 @@ index_task(){
 index_tasks(){
     
     task_states=$(AIRFLOW__LOGGING__LOGGING_LEVEL=ERROR  airflow tasks states-for-dag-run $dag_id $execution_date -o json)
-    echo $task_states | jq -c '.[]' | 
-    while IFS=$"\n" read -r c; do 
-        index_task $c 
-    done 
+    task_json=$( echo $task_states | jq -c ".[] | select( .task_id == \"$TASK\")") 
+    index_task $task_json
+    
 }
 
 # Defaults

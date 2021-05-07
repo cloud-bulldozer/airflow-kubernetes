@@ -1,0 +1,13 @@
+---
+apiVersion: logging.openshift.io/v1
+kind: "ClusterLogging"
+metadata:
+  name: "instance"
+  namespace: "openshift-logging"
+spec:
+  managementState: {{ .Values.managementState }}
+  collection:
+    logs:
+      type: "fluentd"
+      fluentd:
+{{- toYaml .Values.fluentd | nindent 8 -}}

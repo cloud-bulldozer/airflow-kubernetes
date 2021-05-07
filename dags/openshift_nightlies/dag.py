@@ -5,6 +5,7 @@ import json
 from datetime import timedelta, datetime
 from airflow import DAG
 from airflow.utils.dates import days_ago
+from airflow.models import Variable
 from airflow.utils.helpers import chain
 from airflow.operators.bash_operator import BashOperator
 from airflow.utils.task_group import TaskGroup
@@ -33,7 +34,7 @@ class OpenshiftNightlyDAG():
         self.metadata_args = {
             'owner': 'airflow',
             'depends_on_past': False,
-            'start_date': days_ago(3),
+            'start_date': datetime(2021, 1, 1),
             'email': ['airflow@example.com'],
             'email_on_failure': False,
             'email_on_retry': False,
@@ -47,12 +48,17 @@ class OpenshiftNightlyDAG():
         tags.append(self.profile)
         tags.append(self.version_alias)
 
+        self.release_stream_base_url = Variable.get("release_stream_base_url")
+        self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
+
         self.dag = DAG(
             self.release,
             default_args=self.metadata_args,
             tags=tags,
             description=f"DAG for Openshift Nightly builds {self.release}",
-            schedule_interval=timedelta(days=3),
+            schedule_interval='0 12 * * 1,3,5',
+            max_active_runs=1,
+            catchup=False
         )
     
     def build(self):
@@ -62,20 +68,17 @@ class OpenshiftNightlyDAG():
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
+            benchmark_tasks[-1] >> cleanup_cluster
 
-        with TaskGroup("Index Results", prefix_group_id=False, dag=self.dag) as post_steps: 
-            index_status_task = self._get_status_indexer().get_index_task()
+        
 
-        install_cluster >> benchmarks >> [post_steps, cleanup_cluster]
+        install_cluster >> benchmarks
 
     def _get_openshift_installer(self):
-        return openshift.OpenshiftInstaller(self.dag, self.version, self.release_stream, self.platform, self.profile)
+        return openshift.OpenshiftInstaller(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile)
 
     def _get_e2e_benchmarks(self): 
-        return e2e.E2EBenchmarks(self.dag, self.version, self.release_stream, self.platform, self.profile, self.metadata_args)
-
-    def _get_status_indexer(self):
-        return status.StatusIndexer(self.dag, self.version, self.release_stream, self.platform, self.profile)
+        return e2e.E2EBenchmarks(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, self.metadata_args)
 
 
 

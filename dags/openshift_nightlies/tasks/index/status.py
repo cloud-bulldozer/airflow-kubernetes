@@ -14,7 +14,7 @@ from kubernetes.client import models as k8s
 
 # Defines Task for Indexing Task Status in ElasticSearch
 class StatusIndexer():
-    def __init__(self, dag, version, release_stream, platform, profile):
+    def __init__(self, dag, version, release_stream, latest_release, platform, profile, task):
 
         self.exec_config = {
             "pod_override": k8s.V1Pod(
@@ -40,18 +40,20 @@ class StatusIndexer():
         self.platform = platform  # e.g. aws
         self.version = version  # e.g. 4.6/4.7, major.minor only
         self.release_stream = release_stream # true release stream to follow. Nightlies, CI, etc. 
+        self.latest_release = latest_release # latest relase from the release stream
         self.profile = profile  # e.g. default/ovn
+
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
             task="index", version=version, platform=platform, profile=profile)
 
-        self.release_stream_base_url = Variable.get("release_stream_base_url")
-        latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
-
+        # Upstream task this is to index
+        self.task = task 
         self.env = {
-            "OPENSHIFT_CLIENT_LOCATION": latest_release["openshift_client_location"],
-            "RELEASE_STREAM": self.release_stream
+            "OPENSHIFT_CLIENT_LOCATION": self.latest_release["openshift_client_location"],
+            "RELEASE_STREAM": self.release_stream,
+            "TASK": self.task
         }
 
 
@@ -64,7 +66,7 @@ class StatusIndexer():
         }
 
         return BashOperator(
-            task_id=f"index_results",
+            task_id=f"index_{self.task}",
             depends_on_past=False,
             bash_command=f"{constants.root_dag_dir}/scripts/index.sh ",
             retries=3,

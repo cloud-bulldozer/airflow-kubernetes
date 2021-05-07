@@ -1,0 +1,12 @@
+
+
+channel: 4.6
+managementState: Managed
+
+fluentd:
+  resources:
+    limits:
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi

@@ -1,0 +1,18 @@
+---
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  namespace: openshift-logging
+  name: instance
+  labels: {}
+spec:
+  outputs:
+    - name: elasticsearch-external
+      type: "elasticsearch"
+      url: http://logging-es-http.openshift-logging.svc.cluster.local:9200
+  pipelines:
+    - name: forward-logs
+      inputRefs: 
+        - application
+      outputRefs:
+      - elasticsearch-external

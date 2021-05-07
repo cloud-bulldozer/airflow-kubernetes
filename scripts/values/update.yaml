@@ -1,0 +1,26 @@
+global:
+  baseDomain: $_cluster_domain
+  repo:
+    url: $_remote_origin_url
+    branch: $_branch
+
+airflow:
+  values:
+    webserver:
+      defaultUser:
+        password: $password
+
+
+results: 
+  dashboard:
+    values: 
+      airflow:
+        password: $password
+      elasticsearch: 
+        password: $_results_elastic_password
+
+logging:
+  fluentd:
+    mergeJsonLogs: true
+    values:
+      managementState: Unmanaged

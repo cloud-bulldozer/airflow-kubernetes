@@ -33,5 +33,6 @@ setup
 cd /home/airflow/workspace
 ls
 cd e2e-benchmarking/workloads/$workload
+
 eval "$command"
 
