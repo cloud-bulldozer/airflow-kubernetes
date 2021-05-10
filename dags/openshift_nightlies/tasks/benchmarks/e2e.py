@@ -29,7 +29,7 @@ class E2EBenchmarks():
                             env_from=[
                                 kubeconfig.get_kubeadmin_password(
                                     version, platform, profile)
-                            ]
+                            ],
                             volume_mounts=[
                                 kubeconfig.get_kubeconfig_volume_mount()]
 
