@@ -1,0 +1,98 @@
+{
+    "benchmarks": [
+        {
+            "name": "logging_single_node_100mps",
+            "workload": "logging",
+            "command": "./run_logging_test.sh",
+            "env": {
+                "TEST_CLEANUP": "true",
+                "CHANNEL": "5.0",
+                "MESSAGES_PER_SECOND": 100,
+                "MESSAGE_SIZE": 1024,
+                "DURATION": 60,
+                "POD_COUNT": 1
+            }
+
+        },
+        {
+            "name": "logging_single_node_500mps",
+            "workload": "logging",
+            "command": "./run_logging_test.sh",
+            "env": {
+                "TEST_CLEANUP": "true",
+                "CHANNEL": "5.0",
+                "MESSAGES_PER_SECOND": 500,
+                "MESSAGE_SIZE": 1024,
+                "DURATION": 60,
+                "POD_COUNT": 1
+            }
+
+        },
+        {
+            "name": "logging_single_node_1000mps",
+            "workload": "logging",
+            "command": "./run_logging_test.sh",
+            "env": {
+                "TEST_CLEANUP": "true",
+                "CHANNEL": "5.0",
+                "MESSAGES_PER_SECOND": 1000,
+                "MESSAGE_SIZE": 1024,
+                "DURATION": 60,
+                "POD_COUNT": 1
+            }
+
+        },
+        {
+            "name": "scale",
+            "workload": "scale-perf",
+            "command": "./run_scale_fromgit.sh",
+            "env": {
+                "SCALE": "250",
+                "METADATA_COLLECTION": "true",
+                "WORKLOAD_NODE_ROLE": "workload"
+            }
+        },
+        {
+            "name": "logging_250_nodes_100mps",
+            "workload": "logging",
+            "command": "./run_logging_test.sh",
+            "env": {
+                "TEST_CLEANUP": "true",
+                "CHANNEL": "5.0",
+                "MESSAGES_PER_SECOND": 100,
+                "MESSAGE_SIZE": 1024,
+                "DURATION": 60,
+                "POD_COUNT": 250
+            }
+
+        },
+        {
+            "name": "logging_250_nodes_500mps",
+            "workload": "logging",
+            "command": "./run_logging_test.sh",
+            "env": {
+                "TEST_CLEANUP": "true",
+                "CHANNEL": "5.0",
+                "MESSAGES_PER_SECOND": 500,
+                "MESSAGE_SIZE": 1024,
+                "DURATION": 60,
+                "POD_COUNT": 250
+            }
+
+        },
+        {
+            "name": "logging_250_nodes_1000mps",
+            "workload": "logging",
+            "command": "./run_logging_test.sh",
+            "env": {
+                "TEST_CLEANUP": "true",
+                "CHANNEL": "5.0",
+                "MESSAGES_PER_SECOND": 1000,
+                "MESSAGE_SIZE": 1024,
+                "DURATION": 60,
+                "POD_COUNT": 250
+            }
+        }
+        
+    ]
+}

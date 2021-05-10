@@ -108,6 +108,7 @@ class OpenshiftInstaller():
             "OPENSHIFT_CLUSTER_NAME": config['openshift_cluster_name'],
             "DEPLOY_PATH": config['dynamic_deploy_path'],
             "KUBECONFIG_NAME": f"{self.version}-{self.platform}-{self.profile}-kubeconfig",
+            "KUBEADMIN_NAME": f"{self.version}-{self.platform}-{self.profile}-kubeadmin",
             **self._insert_kube_env()
         }
 

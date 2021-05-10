@@ -47,6 +47,10 @@ run_ansible_playbook(){
 post_install(){
     ssh ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat /root/$DEPLOY_PATH/.openshift_install.log"
     printenv
+
+    _kubeadmin_password=$(ssh ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat /root/$DEPLOY_PATH/auth/kubeadmin-password")
+
+    kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=$_kubeadmin_password
     kubectl create secret generic ${KUBECONFIG_NAME} --from-file=config=/home/airflow/workspace/scale-ci-deploy/OCP-4.X/kubeconfig
 }
 
