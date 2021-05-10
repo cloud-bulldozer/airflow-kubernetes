@@ -92,7 +92,7 @@ class E2EBenchmarks():
         benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):
-        env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}}
+        env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
         return BashOperator(
             task_id=f"{benchmark['name']}",
             depends_on_past=False,
