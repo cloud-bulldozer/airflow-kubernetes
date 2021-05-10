@@ -7,10 +7,10 @@
             "env": {
                 "TEST_CLEANUP": "true",
                 "CHANNEL": "5.0",
-                "MESSAGES_PER_SECOND": 100,
-                "MESSAGE_SIZE": 1024,
-                "DURATION": 60,
-                "POD_COUNT": 1,
+                "MESSAGES_PER_SECOND": "100",
+                "MESSAGE_SIZE": "1024",
+                "DURATION": "60",
+                "POD_COUNT": "1",
                 "NODE_SELECTOR_KEY": "node-role.kubernetes.io/worker"
             }
 
@@ -22,10 +22,10 @@
             "env": {
                 "TEST_CLEANUP": "true",
                 "CHANNEL": "5.0",
-                "MESSAGES_PER_SECOND": 500,
-                "MESSAGE_SIZE": 1024,
-                "DURATION": 60,
-                "POD_COUNT": 1,
+                "MESSAGES_PER_SECOND": "500",
+                "MESSAGE_SIZE": "1024",
+                "DURATION": "60",
+                "POD_COUNT": "1",
                 "NODE_SELECTOR_KEY": "node-role.kubernetes.io/worker"
             }
 
@@ -37,10 +37,10 @@
             "env": {
                 "TEST_CLEANUP": "true",
                 "CHANNEL": "5.0",
-                "MESSAGES_PER_SECOND": 1000,
-                "MESSAGE_SIZE": 1024,
-                "DURATION": 60,
-                "POD_COUNT": 1,
+                "MESSAGES_PER_SECOND": "1000",
+                "MESSAGE_SIZE": "1024",
+                "DURATION": "60",
+                "POD_COUNT": "1",
                 "NODE_SELECTOR_KEY": "node-role.kubernetes.io/worker"
             }
 
@@ -62,10 +62,10 @@
             "env": {
                 "TEST_CLEANUP": "true",
                 "CHANNEL": "5.0",
-                "MESSAGES_PER_SECOND": 100,
-                "MESSAGE_SIZE": 1024,
-                "DURATION": 60,
-                "POD_COUNT": 250,
+                "MESSAGES_PER_SECOND": "100",
+                "MESSAGE_SIZE": "1024",
+                "DURATION": "60",
+                "POD_COUNT": "250",
                 "NODE_SELECTOR_KEY": "node-role.kubernetes.io/worker"
             }
 
@@ -77,10 +77,10 @@
             "env": {
                 "TEST_CLEANUP": "true",
                 "CHANNEL": "5.0",
-                "MESSAGES_PER_SECOND": 500,
-                "MESSAGE_SIZE": 1024,
-                "DURATION": 60,
-                "POD_COUNT": 250,
+                "MESSAGES_PER_SECOND": "500",
+                "MESSAGE_SIZE": "1024",
+                "DURATION": "60",
+                "POD_COUNT": "250",
                 "NODE_SELECTOR_KEY": "node-role.kubernetes.io/worker"
             }
 
@@ -92,10 +92,10 @@
             "env": {
                 "TEST_CLEANUP": "true",
                 "CHANNEL": "5.0",
-                "MESSAGES_PER_SECOND": 1000,
-                "MESSAGE_SIZE": 1024,
-                "DURATION": 60,
-                "POD_COUNT": 250,
+                "MESSAGES_PER_SECOND": "1000",
+                "MESSAGE_SIZE": "1024",
+                "DURATION": "60",
+                "POD_COUNT": "250",
                 "NODE_SELECTOR_KEY": "node-role.kubernetes.io/worker"
             }
         }
