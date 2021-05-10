@@ -2,6 +2,15 @@ from os import environ
 from kubernetes.client import models as k8s
 
 
+
+def get_kubeadmin_password(version, platform, profile): 
+    return k8s.V1EnvFromSource(
+        secret_ref=k8s.V1SecretEnvSource(
+            name=f"{version}-{platform}-{profile}-kubeadmin",
+            optional=True 
+        )
+    )
+
 def get_kubeconfig_volume(version, platform, profile):
     return k8s.V1Volume(
         name="kubeconfig",
