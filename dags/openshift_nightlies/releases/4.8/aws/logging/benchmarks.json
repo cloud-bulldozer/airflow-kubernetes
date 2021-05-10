@@ -46,7 +46,7 @@
 
         },
         {
-            "name": "scale",
+            "name": "scale_250",
             "workload": "scale-perf",
             "command": "./run_scale_fromgit.sh",
             "env": {
