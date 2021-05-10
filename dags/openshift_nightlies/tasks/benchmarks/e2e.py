@@ -29,7 +29,7 @@ class E2EBenchmarks():
                             name="base",
                             image="quay.io/keithwhitley4/airflow-ansible:2.0.0",
                             image_pull_policy="Always",
-                            env_from=[
+                            env=[
                                 kubeconfig.get_kubeadmin_password(
                         version, platform, profile)
                             ],

@@ -4,10 +4,13 @@ from kubernetes.client import models as k8s
 
 
 def get_kubeadmin_password(version, platform, profile): 
-    return k8s.V1EnvFromSource(
-        secret_ref=k8s.V1SecretEnvSource(
-            name=f"{version}-{platform}-{profile}-kubeadmin",
-            optional=True 
+    return k8s.V1EnvVar(
+        name="KUBEADMIN_PASSWORD",
+        value_from=k8s.V1EnvVarSource(
+            secret_key_ref= k8s.V1SecretKeySelector(
+                name=f"{version}-{platform}-{profile}-kubeadmin",
+                key="KUBEADMIN_PASSWORD"
+            )
         )
     )
 
