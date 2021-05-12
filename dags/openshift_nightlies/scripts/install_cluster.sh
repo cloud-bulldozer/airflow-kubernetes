@@ -55,6 +55,7 @@ post_install(){
 }
 
 cleanup(){
+    kubectl delete secret ${KUBEADMIN_NAME} || true
     kubectl delete secret ${KUBECONFIG_NAME} || true
 }
 
