@@ -62,7 +62,36 @@ results:
         indice: perf_scale_ci
         username: elastic
   elastic:
-    values: {}
+    values:
+      elasticsearch:
+        nodeSets:
+        - name: default      
+          count: 3
+          volumeClaimTemplates:
+          - metadata:
+              name: elasticsearch-data
+            spec:
+              accessModes:
+              - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 100Gi
+          config:
+            node.store.allow_mmap: false
+            xpack.security.authc:
+              anonymous:
+                username: anonymous_user
+                roles: superuser
+          podTemplate:
+            spec:
+              containers:
+              - name: elasticsearch
+                resources:
+                  limits:
+                    memory: 16Gi
+                securityContext:
+                  capabilities:
+                    add: ["SYS_CHROOT"]
 
 
 logging: 
@@ -71,4 +100,33 @@ logging:
     mergeJsonLogs: false
     values: {}
   elastic:
-    values: {}
+    values:
+      elasticsearch:
+        nodeSets:
+        - name: default      
+          count: 3
+          volumeClaimTemplates:
+          - metadata:
+              name: elasticsearch-data
+            spec:
+              accessModes:
+              - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 100Gi
+          config:
+            node.store.allow_mmap: false
+            xpack.security.authc:
+              anonymous:
+                username: anonymous_user
+                roles: superuser
+          podTemplate:
+            spec:
+              containers:
+              - name: elasticsearch
+                resources:
+                  limits:
+                    memory: 16Gi
+                securityContext:
+                  capabilities:
+                    add: ["SYS_CHROOT"]

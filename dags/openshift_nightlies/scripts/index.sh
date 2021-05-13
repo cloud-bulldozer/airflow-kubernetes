@@ -8,7 +8,7 @@ export dag_run_id=${AIRFLOW_CTX_DAG_RUN_ID}
 printenv
 
 # Hardcode this for now
-export airflow_base_url="http://airflow.apps.keith-cluster.perfscale.devcluster.openshift.com"
+export airflow_base_url="http://$(oc get route/airflow -n airflow -o jsonpath='{.spec.host}')"
 
 setup(){
     # Generate a uuid
