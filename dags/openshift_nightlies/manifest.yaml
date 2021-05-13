@@ -74,8 +74,3 @@ releases:
     platform: gcp
     profile: default
     versionAlias: future
-  - version: 4.8
-    releaseStream: 4.8.0-0.nightly
-    platform: aws
-    profile: logging
-    versionAlias: future
