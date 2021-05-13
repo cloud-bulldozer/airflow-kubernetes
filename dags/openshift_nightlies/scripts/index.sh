@@ -7,8 +7,7 @@ export execution_date=${AIRFLOW_CTX_EXECUTION_DATE}
 export dag_run_id=${AIRFLOW_CTX_DAG_RUN_ID}
 printenv
 
-# Hardcode this for now
-export airflow_base_url="http://$(oc get route/airflow -n airflow -o jsonpath='{.spec.host}')"
+
 
 setup(){
     # Generate a uuid
@@ -26,6 +25,9 @@ setup(){
     curl -L $OPENSHIFT_CLIENT_LOCATION -o openshift-client.tar.gz
     tar -xzf openshift-client.tar.gz
     export PATH=$PATH:/home/airflow/.local/bin:$(pwd)
+    
+    # Get Airflow URL
+    export airflow_base_url="http://$(oc get route/airflow -n airflow -o jsonpath='{.spec.host}')"
 
     # Get OpenShift cluster details
     cluster_name=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}') || echo "Cluster Install Failed"
