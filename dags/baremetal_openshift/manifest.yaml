@@ -1,0 +1,11 @@
+releases:
+  - version: 4.7
+    releaseStream: latest-4.7
+    platform: baremetal
+    profile: jetski
+    version_alias: dev
+  - version: 4.8
+    releaseStream: latest-4.8
+    platform: baremetal
+    profile: jetski
+    version_alias: dev
