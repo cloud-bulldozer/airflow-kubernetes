@@ -19,6 +19,10 @@
     "openshift_worker_scaleup_target": "5",
     "kubeconfig_path": "/home/kni/clusterconfigs/auth/kubeconfig",
     "webfuse_playbook": "webscale.yml",
-    "webfuse_skiptags": "bigip,cnf",
+    "webfuse_skiptags": "",
+    "label_node_values": [],
+    "local_storage_instances": [],
+    "openshift_prometheus_storage_class": "",
+    "kafka_storage": "ephemeral",
     "ansible_ssh_key": "/tmp/JetSki/perf-dept/ssh_keys/id_rsa_pbench_ec2"
  }

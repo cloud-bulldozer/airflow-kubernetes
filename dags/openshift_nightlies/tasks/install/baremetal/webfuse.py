@@ -4,7 +4,6 @@ from os import environ
 
 sys.path.insert(0, dirname(dirname(dirname(abspath(dirname(__file__))))))
 from util import var_loader, kubeconfig, constants
-from tasks.install.baremetal import webfuse
 
 import json
 
@@ -13,7 +12,7 @@ from airflow.models import Variable
 from kubernetes.client import models as k8s
 
 # Defines Tasks for installation of Openshift Clusters
-class BaremetalOpenshiftInstaller():
+class BaremetalWebfuseInstaller():
     def __init__(self, dag, version, release_stream, platform, profile, version_alias):
 
         self.exec_config = {
@@ -49,24 +48,12 @@ class BaremetalOpenshiftInstaller():
         self.install_secrets = Variable.get(
             f"baremetal_openshift_install_config", deserialize_json=True)
 
-    def get_install_task(self):
-        webfuse_installer = self._get_webfuse_installer()
-        install_cluster = self._get_task(operation="install")
-        deploy_webfuse = webfuse_installer.get_deploy_app_task()
-
-        install_cluster >> deploy_webfuse
-
-        return install_cluster
-
-    def get_scaleup_task(self):
-        return self._get_task(operation="scaleup")
-
-    def _get_webfuse_installer(self):
-        return webfuse.BaremetalWebfuseInstaller(self.dag, self.version, self.openshift_release, self.platform, self.profile, self.openshift_build)
+    def get_deploy_app_task(self):
+        return self._get_task()        
 
     # Create Airflow Task for Install/Cleanup steps
-    def _get_task(self, operation="install", trigger_rule="all_success"):
-        bash_script = ""
+    def _get_task(self, trigger_rule="all_success"):
+        bash_script = f"{constants.root_dag_dir}/scripts/install/baremetal_deploy_webfuse.sh"
 
         # Merge all variables, prioritizing Airflow Secrets over git based vars
         config = {
@@ -75,36 +62,28 @@ class BaremetalOpenshiftInstaller():
             **{ "es_server": var_loader.get_elastic_url() }
         }
         
-        config['pullsecret'] = json.dumps(config['openshift_install_pull_secret'])
         config['version'] = config['openshift_release']
         config['build'] = config['openshift_build']
         
         # Required Environment Variables for Install script
         env = {
             "SSHKEY_TOKEN": config['sshkey_token'],
-            "OPENSHIFT_WORKER_COUNT": config['openshift_worker_count'],
-            "BAREMETAL_NETWORK_CIDR": config['baremetal_network_cidr'],
-            "BAREMETAL_NETWORK_VLAN": config['baremetal_network_vlan'],
-            "OPENSHIFT_BASE_DOMAIN": config['openshift_base_domain'],
-            "KUBECONFIG_PATH": config['kubeconfig_path'],
+            "ORCHESTRATION_HOST": config['provisioner_hostname'],
+            "ORCHESTRATION_USER": config['provisioner_user'],
+            "WEBFUSE_SKIPTAGS": config['webfuse_skiptags'],
+            "WEBFUSE_PLAYBOOK": config['webfuse_playbook'],
             **self._insert_kube_env()
         }
 
-        if operation == "install":
-            config['worker_count'] = config['openshift_worker_count']
-            bash_script = f"{constants.root_dag_dir}/scripts/install/baremetal_install.sh"
-        else:
-            config['worker_count'] = config['openshift_worker_scaleup_target']
-            bash_script = f"{constants.root_dag_dir}/scripts/install/baremetal_scaleup.sh"
 
         # Dump all vars to json file for Ansible to pick up
-        with open(f"/tmp/{self.version}-{self.platform}-{self.profile}-{operation}-task.json", 'w') as json_file:
+        with open(f"/tmp/{self.version}-{self.platform}-{self.profile}-task.json", 'w') as json_file:
             json.dump(config, json_file, sort_keys=True, indent=4)
 
         return BashOperator(
-            task_id=f"{operation}-cluster",
+            task_id="deploy-webfuse",
             depends_on_past=False,
-            bash_command=f"{bash_script} -p {self.platform} -v {self.version} -j /tmp/{self.version}-{self.platform}-{self.profile}-{operation}-task.json -o {operation} ",
+            bash_command=f"{bash_script} -p {self.platform} -v {self.version} -j /tmp/{self.version}-{self.platform}-{self.profile}-task.json -o deploy_app ",
             retries=3,
             dag=self.dag,
             trigger_rule=trigger_rule,

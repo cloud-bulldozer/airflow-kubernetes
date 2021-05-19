@@ -16,7 +16,7 @@ done
 
 setup(){
     # Clone JetSki playbook
-    git clone --single-branch --branch ci_fix https://${SSHKEY_TOKEN}@github.com/mukrishn/JetSki.git /tmp/JetSki
+    git clone --single-branch --branch master https://${SSHKEY_TOKEN}@github.com/redhat-performance/JetSki.git /tmp/JetSki
     pushd /tmp/JetSki
 
     # Clone Perf private keys
@@ -29,10 +29,10 @@ setup(){
     pushd ansible-ipi-install
     if [ ${ROUTABLE_API} == true ]
     then
-            sed -i "/^extcidrnet/c extcidrnet=\"${BAREMETAL_NETWORK_CIDR}\"" inventory/jetski/hosts
-            sed -i "/^cluster_random=/c cluster_random=false" inventory/jetski/hosts
-            sed -i "/^cluster=/c cluster=\"${BAREMETAL_NETWORK_VLAN}\"" inventory/jetski/hosts
-            sed -i "/^domain=/c domain=\"${OPENSHIFT_BASE_DOMAIN}\"" inventory/jetski/hosts
+        sed -i "/^extcidrnet/c extcidrnet=\"${BAREMETAL_NETWORK_CIDR}\"" inventory/jetski/hosts
+        sed -i "/^cluster_random=/c cluster_random=false" inventory/jetski/hosts
+        sed -i "/^cluster=/c cluster=\"${BAREMETAL_NETWORK_VLAN}\"" inventory/jetski/hosts
+        sed -i "/^domain=/c domain=\"${OPENSHIFT_BASE_DOMAIN}\"" inventory/jetski/hosts
     fi
 }
 
