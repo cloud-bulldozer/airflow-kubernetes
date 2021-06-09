@@ -33,7 +33,7 @@ def get_elastic_url():
 ### Task Variable Generator
 ### Grabs variables from appropriately placed JSON Files
 def build_task_vars(task="install", version="stable", platform="aws", profile="default"):
-    default_task_vars = get_default_task_vars(task=task)
+    default_task_vars = get_default_task_vars(task=task, platform=platform)
     profile_vars = get_profile_task_vars(task=task, version=version, platform=platform, profile=profile)
     return { **default_task_vars, **profile_vars }
 
@@ -42,8 +42,14 @@ def get_profile_task_vars(task="install", version="stable", platform="aws", prof
     file_path = f"{constants.root_dag_dir}/releases/{version}/{platform}/{profile}/{task}.json"
     return get_json(file_path)
 
-def get_default_task_vars(task="install"):
-    file_path = f"{constants.root_dag_dir}/tasks/{task}/defaults.json"
+def get_default_task_vars(task="install", platform="aws"):
+    if task == "install":
+        if platform == "aws" or platform == "azure" or platform == "gcp":
+            file_path = f"{constants.root_dag_dir}/tasks/{task}/cloud/defaults.json"
+        else:
+            file_path = f"{constants.root_dag_dir}/tasks/{task}/{platform}/defaults.json"
+    else:
+        file_path = f"{constants.root_dag_dir}/tasks/{task}/defaults.json"
     return get_json(file_path)
 
 def get_manifest_vars():
