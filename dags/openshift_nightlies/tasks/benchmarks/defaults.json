@@ -1,6 +1,11 @@
 {
     "benchmarks": [
         {
+            "name": "baseline",
+            "workload": "baseline-performance",
+            "command": "./baseline_perf.sh"            
+        },        
+        {
             "group": "uperf",
             "benchmarks": [
                 {
