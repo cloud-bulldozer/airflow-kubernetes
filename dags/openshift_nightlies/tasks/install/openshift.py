@@ -91,8 +91,8 @@ class AbstractOpenshiftInstaller(ABC):
     def _setup_task(self, operation="install"):
         self.config = {**self.config, **self._get_playbook_operations(operation)}
         self.config['openshift_cluster_name'] = self._generate_cluster_name()
-        self.config['dynamic_deploy_path'] = f"{config['openshift_cluster_name']}"
-        self.config['kubeconfig_path'] = f"/root/{config['dynamic_deploy_path']}/auth/kubeconfig"
+        self.config['dynamic_deploy_path'] = f"{self.config['openshift_cluster_name']}"
+        self.config['kubeconfig_path'] = f"/root/{self.config['dynamic_deploy_path']}/auth/kubeconfig"
         self.env = {
             "SSHKEY_TOKEN": self.config['sshkey_token'],
             "ORCHESTRATION_HOST": self.config['orchestration_host'],
