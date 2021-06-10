@@ -106,7 +106,7 @@ class AbstractOpenshiftInstaller(ABC):
 
         # Dump all vars to json file for Ansible to pick up
         with open(f"/tmp/{self.version}-{self.platform}-{self.profile}-{operation}-task.json", 'w') as json_file:
-            json.dump(config, json_file, sort_keys=True, indent=4)   
+            json.dump(self.config, json_file, sort_keys=True, indent=4)   
 
     def _generate_cluster_name(self):
         git_user = var_loader.get_git_user()
