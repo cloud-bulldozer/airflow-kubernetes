@@ -18,6 +18,7 @@ from kubernetes.client import models as k8s
 class CloudOpenshiftInstaller(AbstractOpenshiftInstaller):
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", trigger_rule="all_success"):
+        self._setup_task(operation=operation)
         return BashOperator(
             task_id=f"{operation}",
             depends_on_past=False,
