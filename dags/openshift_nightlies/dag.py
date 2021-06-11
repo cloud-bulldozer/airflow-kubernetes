@@ -104,12 +104,12 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         
     def build(self):
         bm_installer = self._get_openshift_installer()
-        print(bm_installer)
         install_cluster = bm_installer.get_install_task()
         scaleup_cluster = bm_installer.get_scaleup_task()
         install_cluster >> scaleup_cluster
 
     def _get_openshift_installer(self):
+        print("getting installer")
         return jetski.BaremetalOpenshiftInstaller(self.dag, self.version, self.release_stream, self.platform, self.profile, self.build)
 
         
