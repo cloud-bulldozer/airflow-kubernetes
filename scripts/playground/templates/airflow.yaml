@@ -1,0 +1,147 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: $_remote_user-airflow
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  destination: 
+    namespace: $_airflow_namespace
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: $_remote_origin_url
+    path: charts/airflow
+    targetRevision: $_branch
+    helm:
+      releaseName: airflow
+      values: |-
+        defaultAirflowTag: 2.0.2
+        config:
+          logging:
+            colored_console_log: "True"
+            remote_logging: "True"
+          elasticsearch:
+            write_stdout: "True"
+          elasticsearch_configs:
+            use_ssl: "False"
+            verify_certs: "False"
+            ssl_show_warn: "False"
+          kubernetes:
+            delete_worker_pods: True
+          core:
+            DAGBAG_IMPORT_TIMEOUT: 300
+            killed_task_cleanup_time: 604800
+          scheduler:
+            scheduler_heartbeat_sec: 10
+            processor_poll_interval: 30
+        dags:
+          gitSync:
+            enabled: true
+            subPath: dags
+            depth: 8
+        elasticsearch:
+          enabled: True
+          connection: 
+            host: logging-es-http.openshift-logging.svc.cluster.local
+            port: 9200
+            user: ""
+            pass: ""
+        webserver:
+          replicas: 1
+          defaultUser:
+            password: $password
+        env:
+        - name: AIRFLOW__KUBERNETES__DAGS_VOLUME_SUBPATH
+          value: repo/
+        - name: AIRFLOW__CORE__KILLED_TASK_CLEANUP_TIME
+          value: 604800
+        - name: GIT_REPO
+          value: $_remote_origin_url
+        - name: GIT_BRANCH
+          value: $_branch      
+      parameters:
+      - name: dags.gitSync.repo
+        value: $_remote_origin_url
+      - name: dags.gitSync.branch
+        value: $_branch
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: airflow
+  namespace: $_airflow_namespace
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  host: $_airflow_namespace.$_cluster_domain
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: airflow-webserver
+    weight: 100
+  wildcardPolicy: None
+--- 
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: $_remote_user-pod-reader
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+# This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.
+kind: ClusterRoleBinding
+metadata:
+  name: $_remote_user-pod-reader
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+subjects:
+- kind: ServiceAccount
+  name: airflow-webserver # Name is case sensitive
+  namespace: $_airflow_namespace
+- kind: ServiceAccount
+  name: airflow-worker # Name is case sensitive
+  namespace: $_airflow_namespace
+roleRef:
+  kind: ClusterRole
+  name: $_remote_user-pod-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: airflow-worker
+  namespace: $_airflow_namespace
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["secrets", "configmaps", "pods"]
+  verbs:  ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: airflow-worker
+  namespace: $_airflow_namespace
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+subjects:
+- kind: ServiceAccount
+  name: airflow-worker
+  namespace: $_airflow_namespace
+roleRef:
+  kind: Role
+  name: airflow-worker
+  apiGroup: rbac.authorization.k8s.io

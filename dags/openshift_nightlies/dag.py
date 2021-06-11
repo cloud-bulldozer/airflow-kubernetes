@@ -86,7 +86,7 @@ class OpenshiftNightlyDAG():
         if self.platform == "baremetal":
             return jetski.BaremetalOpenshiftInstaller(self.dag, self.version, self.release_stream, self.platform, self.profile, self.version_alias)
         else:
-            return openshift.OpenshiftInstaller(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile)
+            return openshift.CloudOpenshiftInstaller(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile)
 
     def _get_e2e_benchmarks(self): 
         return e2e.E2EBenchmarks(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, self.metadata_args)
