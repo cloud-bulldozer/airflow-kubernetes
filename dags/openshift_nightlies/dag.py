@@ -125,4 +125,5 @@ for release in release_manifest.get_releases():
     
     print(nightly)
     nightly.build()
+    print(f'built release {nightly.release}')
     globals()[nightly.release] = nightly.dag
