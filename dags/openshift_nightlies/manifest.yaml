@@ -1,86 +1,60 @@
-releases:
-  - version: 4.6
-    releaseStream: 4.6.0-0.nightly
-    platform: aws
-    profile: default
-    versionAlias: stable
-  - version: 4.6
-    releaseStream: 4.6.0-0.nightly
-    platform: aws
-    profile: ovn
-    versionAlias: stable
-  - version: 4.6
-    releaseStream: 4.6.0-0.nightly
-    platform: azure
-    profile: default
-    versionAlias: stable
-  - version: 4.6
-    releaseStream: 4.6.0-0.nightly
-    platform: gcp
-    profile: default
-    versionAlias: stable
+versionAliases:
   - version: 4.7
-    releaseStream: 4.7.0-0.nightly
-    platform: aws
-    profile: default
-    versionAlias: next
-  - version: 4.7
-    releaseStream: 4.7.0-0.nightly
-    platform: aws
-    profile: ovn
-    versionAlias: next
-  - version: 4.7
-    releaseStream: 4.7.0-0.nightly
-    platform: aws
-    profile: large
-    versionAlias: next
-  - version: 4.7
-    releaseStream: 4.7.0-0.nightly
-    platform: azure
-    profile: default
-    versionAlias: next
-  - version: 4.7
-    releaseStream: 4.7.0-0.nightly
-    platform: azure
-    profile: large
-    versionAlias: next
-  - version: 4.7
-    releaseStream: 4.7.0-0.nightly
-    platform: azure
-    profile: xlarge
-    versionAlias: next
-  - version: 4.7
-    releaseStream: 4.7.0-0.nightly
-    platform: gcp
-    profile: default
-    versionAlias: next
-  - version: 4.7
-    releaseStream: latest-4.7
-    platform: baremetal
-    profile: jetski
-    version_alias: dev    
+    alias: stable
   - version: 4.8
-    releaseStream: 4.8.0-0.nightly
-    platform: aws
-    profile: default
-    versionAlias: future
-  - version: 4.8
-    releaseStream: 4.8.0-0.nightly
-    platform: aws
-    profile: ovn
-    versionAlias: future
-  - version: 4.8
-    releaseStream: 4.8.0-0.nightly
-    platform: azure
-    profile: default
-    versionAlias: future
-  - version: 4.8
-    releaseStream: 4.8.0-0.nightly
-    platform: gcp
-    profile: default
-    versionAlias: future
-  - version: 4.8
-    releaseStream: latest-4.8
-    platform: baremetal
-    profile: jetski
-    version_alias: dev
+    alias: next
+  - version: 4.9
+    alias: future
+
+platforms:
+  cloud: 
+    - version: 4.7
+      releaseStream: 4.7.0-0.nightly
+      providers:
+      - name: aws
+        profiles:
+        - default
+        - ovn
+      - name: azure
+        profiles:
+        - default
+      - name: gcp
+        profiles:
+        - default
+    - version: 4.8
+      releaseStream: 4.8.0-0.nightly
+      providers:
+      - name: aws
+        profiles:
+        - default
+        - ovn
+      - name: azure
+        profiles:
+        - default
+      - name: gcp
+        profiles:
+        - default
+    - version: 4.9
+      releaseStream: 4.9.0-0.nightly
+      providers:
+      - name: aws
+        profiles:
+        - default
+        - ovn
+      - name: azure
+        profiles:
+        - default
+      - name: gcp
+        profiles:
+        - default
+  baremetal: 
+    - version: 4.7
+      releaseStream: latest-4.7
+      build: dev
+      profiles:
+      - jetski
+    - version: 4.8
+      releaseStream: latest-4.8
+      build: dev
+      profiles:
+      - jetski
