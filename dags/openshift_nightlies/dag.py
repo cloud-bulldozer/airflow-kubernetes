@@ -100,7 +100,7 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def __init__(self, version, release_stream, platform, profile, version_alias, build):
         super().__init__(version, release_stream, platform, profile, version_alias)
-        self.build = build
+        self.openshift_build = build
         
     def build(self):
         bm_installer = self._get_openshift_installer()
@@ -109,8 +109,7 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         install_cluster >> scaleup_cluster
 
     def _get_openshift_installer(self):
-        print("getting installer")
-        return jetski.BaremetalOpenshiftInstaller(self.dag, self.version, self.release_stream, self.platform, self.profile, self.build)
+        return jetski.BaremetalOpenshiftInstaller(self.dag, self.version, self.release_stream, self.platform, self.profile, self.openshift_build)
 
         
 
@@ -118,7 +117,6 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 release_manifest = manifest.Manifest(constants.root_dag_dir)
 for release in release_manifest.get_releases():
     nightly = None
-    print(release)
     if release['platform'] == "baremetal":
         nightly = BaremetalOpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'), release['build'])
     else:
