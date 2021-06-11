@@ -116,7 +116,7 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 release_manifest = manifest.Manifest(constants.root_dag_dir)
 for release in release_manifest.get_releases():
     nightly = None
-    if release.platform == "baremetal":
+    if release['platform'] == "baremetal":
         nightly = BaremetalOpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'), release['build'])
     else:
         nightly = CloudOpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'), release['build'])
