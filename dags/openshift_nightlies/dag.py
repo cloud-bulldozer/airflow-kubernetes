@@ -78,7 +78,7 @@ class AbstractOpenshiftNightlyDAG(ABC):
 
 class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def __init__(self, version, release_stream, platform, profile, version_alias):
-        super().__init__()
+        super().__init__(self.version, self.release_stream, self.platform, self.profile, self.version_alias)
         self.release_stream_base_url = Variable.get("release_stream_base_url")
         self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
     
@@ -99,8 +99,9 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 
 class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def __init__(self, version, release_stream, platform, profile, version_alias, build):
+        super().__init__(self.version, self.release_stream, self.platform, self.profile, self.version_alias)
         self.build = build
-        super().__init__() 
+        
     def build(self):
         bm_installer = self._get_openshift_installer()
         install_cluster = bm_installer.get_install_task()
