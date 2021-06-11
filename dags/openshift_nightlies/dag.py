@@ -123,7 +123,7 @@ for release in release_manifest.get_releases():
     else:
         nightly = CloudOpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'))
     
-    print(nightly)
+    print(f'building release {nightly.release}')
     nightly.build()
     print(f'built release {nightly.release}')
     globals()[nightly.release] = nightly.dag
