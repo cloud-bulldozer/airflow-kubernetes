@@ -104,6 +104,7 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         
     def build(self):
         bm_installer = self._get_openshift_installer()
+        print(bm_installer)
         install_cluster = bm_installer.get_install_task()
         scaleup_cluster = bm_installer.get_scaleup_task()
         install_cluster >> scaleup_cluster
@@ -123,7 +124,5 @@ for release in release_manifest.get_releases():
     else:
         nightly = CloudOpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'))
     
-    print(f'building release {nightly.release}')
     nightly.build()
-    print(f'built release {nightly.release}')
     globals()[nightly.release] = nightly.dag
