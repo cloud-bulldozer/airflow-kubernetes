@@ -12,7 +12,8 @@ from airflow.utils.task_group import TaskGroup
 
 # Configure Path to have the Python Module on it
 sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
-from tasks.install import openshift
+from tasks.install.cloud import openshift
+from tasks.install.baremetal import jetski
 from tasks.benchmarks import e2e
 from tasks.index import status
 from util import var_loader, manifest, constants
@@ -48,8 +49,9 @@ class OpenshiftNightlyDAG():
         tags.append(self.profile)
         tags.append(self.version_alias)
 
-        self.release_stream_base_url = Variable.get("release_stream_base_url")
-        self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
+        if self.platform != "baremetal":
+            self.release_stream_base_url = Variable.get("release_stream_base_url")
+            self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
 
         self.dag = DAG(
             self.release,
@@ -62,20 +64,29 @@ class OpenshiftNightlyDAG():
         )
     
     def build(self):
-        installer = self._get_openshift_installer()
-        install_cluster = installer.get_install_task()
-        cleanup_cluster = installer.get_cleanup_task()
-        with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
-            benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
-            chain(*benchmark_tasks)
-            benchmark_tasks[-1] >> cleanup_cluster
+        if self.platform == "baremetal":
+            bm_installer = self._get_openshift_installer()
+            install_cluster = bm_installer.get_install_task()
+            scaleup_cluster = bm_installer.get_scaleup_task()
 
-        
+            install_cluster >> scaleup_cluster
 
-        install_cluster >> benchmarks
+        else:
+            installer = self._get_openshift_installer()
+            install_cluster = installer.get_install_task()
+            cleanup_cluster = installer.get_cleanup_task()
+            with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
+                benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
+                chain(*benchmark_tasks)
+                benchmark_tasks[-1] >> cleanup_cluster
+
+            install_cluster >> benchmarks
 
     def _get_openshift_installer(self):
-        return openshift.OpenshiftInstaller(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile)
+        if self.platform == "baremetal":
+            return jetski.BaremetalOpenshiftInstaller(self.dag, self.version, self.release_stream, self.platform, self.profile, self.version_alias)
+        else:
+            return openshift.CloudOpenshiftInstaller(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile)
 
     def _get_e2e_benchmarks(self): 
         return e2e.E2EBenchmarks(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, self.metadata_args)

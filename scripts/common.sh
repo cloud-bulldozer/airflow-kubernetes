@@ -1,5 +1,12 @@
 #!/bin/bash
 set -a
+
+install_argo_cli(){
+    VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+    curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
+    chmod +x /usr/local/bin/argocd
+}
+
 output_info() {
     _argo_url=$(oc get route/argocd -o jsonpath='{.spec.host}' -n argocd)
     _argo_user="admin"

@@ -23,7 +23,8 @@ To install Airflow you simply need to fork the repo and run the following on a b
 ```bash
 # all commands are run at the root of your git repo
 # install the airflow stack and have it point to your fork of the dag code.
-./scripts/install.sh
+# $PASSWORD refers to the password you would like to secure your airflow instance behind.
+./scripts/install.sh -p $PASSWORD
 ```
 
 ### Getting Cluster Configuration
@@ -33,3 +34,20 @@ To get URLs and login info for the cluster, you can run `./scripts/get_cluster_i
 ### Uninstalling
 
 To uninstall the stack, you can run `./scripts/uninstall.sh`.
+
+
+
+
+## Installing Airflow (Developer Playground)
+
+To install Airflow in a developer playground setting (i.e. in our baremetal cluster)
+
+```bash
+# all commands are run at the root of your git repo
+# install the airflow stack and have it point to your fork of the dag code.
+# $PASSWORD refers to the password you would like to secure your airflow instance with.
+./scripts/playground/build.sh -p $PASSWORD
+```
+
+## Cleaning up the Playground
+To uninstall the stack, you can run `./scripts/playground/cleanup.sh`.
