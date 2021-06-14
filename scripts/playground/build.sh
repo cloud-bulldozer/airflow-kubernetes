@@ -6,7 +6,7 @@ source $GIT_ROOT/scripts/common.sh
 _remote_origin_url=$(git config --get remote.origin.url)
 _remote_user=$(git config --get remote.origin.url | cut -d'/' -f4 | tr '[:upper:]' '[:lower:]')
 _branch=$(git branch --show-current | tr '[:upper:]' '[:lower:]')
-_airflow_namespace=$_remote_user-$_branch-airflow
+_airflow_namespace=$_remote_user-${_branch//_/-}-airflow
 _cluster_domain=$(oc get ingresses.config.openshift.io/cluster -o jsonpath='{.spec.domain}')
 
 
