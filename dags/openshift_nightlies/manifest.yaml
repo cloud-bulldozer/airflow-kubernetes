@@ -58,3 +58,9 @@ platforms:
       build: dev
       profiles:
       - jetski
+  openstack:
+    - version: 4.7
+      releaseStream: latest-4.7
+      profiles:
+        - default
+        - ovn
