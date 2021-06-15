@@ -63,4 +63,3 @@ platforms:
       releaseStream: latest-4.7
       profiles:
         - default
-        - ovn
