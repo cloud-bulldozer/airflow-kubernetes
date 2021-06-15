@@ -1,0 +1,26 @@
+{
+    "utils": [
+        {
+            "name": "prometheus",
+            "workload": "scale-ci-diagnosis",
+            "command": "./ocp_diagnosis.sh",
+            "env": {                
+                "PROMETHEUS_CAPTURE": "true",                  
+                "PROMETHEUS_CAPTURE_TYPE": "full",             
+                "OPENSHIFT_MUST_GATHER": "false",               
+                "STORAGE_MODE": "snappy"
+            }           
+        },        
+        {
+            "name": "must-gather",
+            "workload": "scale-ci-diagnosis",
+            "command": "./ocp_diagnosis.sh",
+            "env": {
+                "PROMETHEUS_CAPTURE": "false",                  
+                "PROMETHEUS_CAPTURE_TYPE": "full",             
+                "OPENSHIFT_MUST_GATHER": "true",               
+                "STORAGE_MODE": "snappy"
+            }
+        }
+    ]
+}

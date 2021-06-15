@@ -7,7 +7,7 @@ _remote_origin_url=$(git config --get remote.origin.url)
 _remote_user=$(git config --get remote.origin.url | cut -d'/' -f4 | tr '[:upper:]' '[:lower:]')
 _branch=$(git branch --show-current | tr '[:upper:]' '[:lower:]')
 _airflow_namespace=$_remote_user-${_branch//_/-}-airflow
-_cluster_domain=$(oc get ingresses.config.openshift.io/cluster -o jsonpath='{.spec.domain}')
+_cluster_domain=$(kubectl get ingresses.config.openshift.io/cluster -o jsonpath='{.spec.domain}')
 
 
 while getopts p: flag
