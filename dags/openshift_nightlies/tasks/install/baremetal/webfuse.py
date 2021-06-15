@@ -13,7 +13,7 @@ from kubernetes.client import models as k8s
 
 # Defines Tasks for installation of Openshift Clusters
 class BaremetalWebfuseInstaller():
-    def __init__(self, dag, version, release_stream, platform, profile, version_alias):
+    def __init__(self, dag, version, release_stream, platform, profile, build):
 
         self.exec_config = {
             "pod_override": k8s.V1Pod(
@@ -39,7 +39,7 @@ class BaremetalWebfuseInstaller():
         self.version = version  # e.g. 4.6/4.7, major.minor only
         self.openshift_release = release_stream # true release stream to follow. Nightlies, CI, etc. 
         self.profile = profile  # e.g. default/ovn
-        self.openshift_build = version_alias
+        self.openshift_build = build
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(

@@ -4,9 +4,9 @@ usage() { echo "Usage: $0 [-p <string> (airflow password)]" 1>&2; exit 1; }
 GIT_ROOT=$(git rev-parse --show-toplevel)
 source $GIT_ROOT/scripts/common.sh
 _remote_origin_url=$(git config --get remote.origin.url)
-_remote_user=$(git config --get remote.origin.url | cut -d'/' -f4)
-_airflow_namespace=$_remote_user-airflow
+_remote_user=$(git config --get remote.origin.url | cut -d'/' -f4 | tr '[:upper:]' '[:lower:]')
 _branch=$(git branch --show-current)
+_airflow_namespace=$_remote_user-${_branch//_/-}-airflow
 _cluster_domain=$(oc get ingresses.config.openshift.io/cluster -o jsonpath='{.spec.domain}')
 
 
