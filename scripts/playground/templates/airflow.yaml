@@ -15,7 +15,7 @@ spec:
   source:
     repoURL: $_remote_origin_url
     path: charts/airflow
-    targetRevision: $_branch
+    targetRevision: $_raw_branch
     helm:
       releaseName: airflow
       values: |-
@@ -62,12 +62,12 @@ spec:
         - name: GIT_REPO
           value: $_remote_origin_url
         - name: GIT_BRANCH
-          value: $_branch      
+          value: $_raw_branch      
       parameters:
       - name: dags.gitSync.repo
         value: $_remote_origin_url
       - name: dags.gitSync.branch
-        value: $_branch
+        value: $_raw_branch
   syncPolicy:
     automated:
       prune: true
