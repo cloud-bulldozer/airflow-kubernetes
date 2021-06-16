@@ -68,6 +68,7 @@ class Diagnosis():
     def _get_utils(self,utils):
         for index, util in enumerate(utils):
             utils[index] = self._get_util(util)
+        return utils 
 
     def _get_util(self, util):
         env = {**self.env, **util.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
