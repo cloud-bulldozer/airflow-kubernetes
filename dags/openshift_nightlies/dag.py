@@ -91,7 +91,7 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         cleanup_cluster = installer.get_cleanup_task()
         with TaskGroup("utils", prefix_group_id=False, dag=self.dag) as utils:
             utils_tasks=self._get_scale_ci_diagnosis().get_utils()
-            chain(*utils)
+            chain(*utils_tasks)
             utils_tasks[-1] >> cleanup_cluster
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
