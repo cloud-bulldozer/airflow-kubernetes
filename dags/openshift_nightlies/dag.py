@@ -98,7 +98,7 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
             chain(*benchmark_tasks)
             benchmark_tasks[-1] >> utils
 
-        install_cluster >> utils
+        install_cluster >> benchmarks
 
     def _get_openshift_installer(self):
         return openshift.CloudOpenshiftInstaller(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile)
