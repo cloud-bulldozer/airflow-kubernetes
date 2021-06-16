@@ -53,11 +53,19 @@ class E2EBenchmarks():
         self.profile = profile  # e.g. default/ovn
         self.default_args = default_args
 
+        # Airflow Variables
+        self.SNAPPY_DATA_SERVER_URL = Variable.get("SNAPPY_DATA_SERVER_URL")
+        self.SNAPPY_DATA_SERVER_USERNAME = Variable.get("SNAPPY_DATA_SERVER_USERNAME")
+        self.SNAPPY_DATA_SERVER_PASSWORD = Variable.get("SNAPPY_DATA_SERVER_PASSWORD")
+
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
             task="benchmarks", version=version, platform=platform, profile=profile)
         self.env = {
-            "OPENSHIFT_CLIENT_LOCATION": self.latest_release["openshift_client_location"]
+            "OPENSHIFT_CLIENT_LOCATION": self.latest_release["openshift_client_location"],
+            "SNAPPY_DATA_SERVER_URL": self.SNAPPY_DATA_SERVER_URL,
+            "SNAPPY_DATA_SERVER_USERNAME": self.SNAPPY_DATA_SERVER_USERNAME,
+            "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD
         }
 
         
