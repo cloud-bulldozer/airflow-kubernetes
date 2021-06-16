@@ -96,7 +96,7 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
-            benchmark_tasks[-1] >> utils_tasks[0]
+            benchmark_tasks[-1] >> utils
 
         install_cluster >> utils
 
