@@ -3,7 +3,7 @@ FROM apache/airflow:${AIRFLOW_VERSION}
 USER root
 
 RUN apt update -y
-RUN apt install jq git uuid-runtime gettext-base -y
+RUN apt install jq git uuid-runtime gettext-base xz-utils -y
 RUN yes | pip install ansible
 
 
