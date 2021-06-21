@@ -13,3 +13,4 @@ RUN mv ./kubectl /usr/local/bin/kubectl
 RUN ln -s /bin/bash /usr/bin/bash
 
 USER airflow
+RUN yes | pip install ansible
