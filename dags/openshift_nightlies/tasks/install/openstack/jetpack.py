@@ -21,7 +21,7 @@ class OpenstackJetpackInstaller(AbstractOpenshiftInstaller):
         return BashOperator(
             task_id=f"{operation}",
             depends_on_past=False,
-            bash_command=f"{constants.root_dag_dir}/scripts/install/jetpack.sh -j /tmp/{self.version}-{self.platform}-{self.profile}-{operation}-task.json -o {operation}",
+            bash_command=f"chmod +x {constants.root_dag_dir}/scripts/install/jetpack.sh; {constants.root_dag_dir}/scripts/install/jetpack.sh -j /tmp/{self.version}-{self.platform}-{self.profile}-{operation}-task.json -o {operation}",
             retries=3,
             dag=self.dag,
             trigger_rule=trigger_rule,
