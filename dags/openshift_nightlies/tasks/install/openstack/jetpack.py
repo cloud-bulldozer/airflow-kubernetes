@@ -14,7 +14,7 @@ from airflow.models import Variable
 from kubernetes.client import models as k8s
 
 # Defines Tasks for installation of Openshift Clusters
-class ShiftOnStackInstaller(AbstractOpenshiftInstaller):
+class OpenstackJetpackInstaller(AbstractOpenshiftInstaller):
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", trigger_rule="all_success"):
         self._setup_task(operation=operation)

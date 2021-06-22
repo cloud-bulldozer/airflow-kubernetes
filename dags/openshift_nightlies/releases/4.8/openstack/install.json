@@ -29,7 +29,7 @@
     "openstack_upload_image": "true",
     "openshift_base_domain": "rdu2.scalelab.redhat.com",
     "openshift_cluster_name": "vlan609",
-    "openshift_release": "4.7.12",
+    "openshift_release": "",
     "openshift_master_count": "3",
     "openshift_worker_count": "3",
     "openshift_master_instance_type": "m5.4xlarge",
