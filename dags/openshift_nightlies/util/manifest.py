@@ -46,8 +46,24 @@ class Manifest():
                     "versionAlias": version_alias,
                     "profile": profile
                 })
+            
+    def get_openstack_releases(self):
+        for version in self.yaml['platforms']['openstack']: 
+            version_number = version['version']
+            release_stream = version['releaseStream']
+            version_alias = self.get_version_alias(version_number)
+            for profile in version['profiles']:
+                self.releases.append({
+                    "version": version_number,
+                    "releaseStream": release_stream,
+                    "platform": "openstack",
+                    "versionAlias": version_alias,
+                    "profile": profile
+                })
+
 
     def get_releases(self):
         self.get_cloud_releases()
         self.get_baremetal_releases()
+        self.get_openstack_releases()
         return self.releases
