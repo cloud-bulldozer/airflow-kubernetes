@@ -62,8 +62,8 @@ platforms:
     - version: 4.7
       releaseStream: latest-4.7
       profiles:
-        - default
+      - default
     - version: 4.8
       releaseStream: latest-4.8
       profiles:
-        - default
+      - default
