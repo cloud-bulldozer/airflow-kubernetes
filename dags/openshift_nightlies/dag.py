@@ -118,8 +118,8 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
     def __init__(self, version, release_stream, platform, profile, version_alias):
         super().__init__(version, release_stream, platform, profile, version_alias)
-        #self.release_stream_base_url = Variable.get("release_stream_base_url")
-        #self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
+        self.release_stream_base_url = Variable.get("release_stream_base_url")
+        self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
 
     def build(self):
         installer = self._get_openshift_installer()
