@@ -52,7 +52,7 @@ add_privileged_service_accounts(){
 install_perfscale(){
     cd $GIT_ROOT/charts/perfscale
     envsubst < $GIT_ROOT/scripts/values/install.yaml
-    envsubst < $GIT_ROOT/scripts/values/install.yaml | helm upgrade perfscale . --install --namespace argocd -f -
+    envsubst < $GIT_ROOT/scripts/values/install.yaml | helm upgrade perfscale . --install --force --namespace argocd -f -
 
 }
 
@@ -64,7 +64,7 @@ wait_for_apps_to_be_healthy(){
 post_install(){
     _results_elastic_password=$(kubectl get secret/perf-results-es-elastic-user -o jsonpath='{.data.elastic}' -n perf-results | base64 --decode)
     cd $GIT_ROOT/charts/perfscale
-    envsubst < $GIT_ROOT/scripts/values/update.yaml | helm upgrade perfscale . --install --namespace argocd -f -
+    envsubst < $GIT_ROOT/scripts/values/update.yaml | helm upgrade perfscale . --install --force --namespace argocd -f -
     oc -n openshift-logging delete pod -l component=fluentd
 }
 

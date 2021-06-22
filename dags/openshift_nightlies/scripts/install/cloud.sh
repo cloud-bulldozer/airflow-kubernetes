@@ -16,7 +16,7 @@ done
 setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
-    git clone -b thanos https://github.com/whitleykeith/scale-ci-deploy
+    git clone https://github.com/cloud-bulldozer/scale-ci-deploy
     git clone https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git
     export PUBLIC_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
     export PRIVATE_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2 
@@ -41,7 +41,7 @@ setup(){
 }
 
 run_ansible_playbook(){
-    echo $PATH
+    echo $PATHZ
     /home/airflow/.local/bin/ansible-playbook -vv -i inventory OCP-4.X/deploy-cluster.yml -e platform="$platform" --extra-vars "@${json_file}"
 }
 
