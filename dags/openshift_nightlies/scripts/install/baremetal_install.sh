@@ -37,7 +37,7 @@ setup(){
 }
 
 run_ansible_playbook(){
-    time ansible-playbook -i inventory/jetski/hosts playbook-jetski.yml --extra-vars "@${json_file}"
+    time /home/airflow/.local/bin/ansible-playbook -i inventory/jetski/hosts playbook-jetski.yml --extra-vars "@${json_file}"
 }
 
 echo "Staring cluster installation..." 
