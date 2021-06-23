@@ -20,6 +20,7 @@ setup(){
     export KUBECONFIG=/home/airflow/workspace/kubeconfig
     export BUILD_NUMBER=test
     export RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}/$AIRFLOW_CTX_TASK_ID
+    export SNAPPY_RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}
 
     rm /tmp/uperf_$BUILD_NUMBER.status || true
     export BENCHMARK_STATUS_PATH=/tmp/uperf_$BUILD_NUMBER.status
