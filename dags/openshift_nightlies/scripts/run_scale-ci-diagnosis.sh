@@ -20,6 +20,7 @@ setup(){
     export KUBECONFIG=/home/airflow/workspace/kubeconfig
     export BUILD_NUMBER=test
     export RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}/$AIRFLOW_CTX_TASK_ID
+    export SNAPPY_RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}
 
     
     curl -L $OPENSHIFT_CLIENT_LOCATION -o openshift-client.tar.gz
