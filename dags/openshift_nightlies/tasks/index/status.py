@@ -22,7 +22,7 @@ class StatusIndexer():
                     containers=[
                         k8s.V1Container(
                             name="base",
-                            image="quay.io/keithwhitley4/airflow-ansible:2.0.0",
+                            image="quay.io/keithwhitley4/airflow-ansible:2.1.0",
                             image_pull_policy="Always",
                             volume_mounts=[
                                 kubeconfig.get_kubeconfig_volume_mount()]
