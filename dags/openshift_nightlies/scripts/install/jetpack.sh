@@ -51,13 +51,13 @@ run_jetpack(){
         printf "Running Cluster Install Steps Using Jetpack"
         if [ $INSTALL_OSP == true ]
         then
-            time /home/airflow/.local/bin/ansible-playbook -vvv main.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-install.timing
+            time /home/airflow/.local/bin/ansible-playbook -vv main.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-install.timing
             ssh-copy-id -i ${PUBLIC_KEY} ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST}
         else
             echo "[undercloud]" >> inventory
             echo "${ORCHESTRATION_HOST} ansible_user=${ORCHESTRATION_USER}" >> inventory
-            time /home/airflow/.local/bin/ansible-playbook -i inventory -vvv delete_single_ocp.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-delete-ocp.timing
-            time /home/airflow/.local/bin/ansible-playbook -i inventory -vvv ocp_on_osp.yml -e platform=osp --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-install-ocp.timing
+            time /home/airflow/.local/bin/ansible-playbook -i inventory -vv delete_single_ocp.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-delete-ocp.timing
+            time /home/airflow/.local/bin/ansible-playbook -i inventory -vv ocp_on_osp.yml -e platform=osp --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-install-ocp.timing
         fi
 
         printf "Running post-install Steps Using Scale-ci-deploy"
@@ -66,11 +66,11 @@ run_jetpack(){
         # disable openshift install as we already installed via jetpack
         export OPENSHIFT_INSTALL=false
         export DYNAMIC_DEPLOY_PATH=$OPENSHIFT_CLUSTER_NAME
-        time /home/airflow/.local/bin/ansible-playbook -i ../inventory -vvv OCP-4.X/install-on-osp.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-post-install.timing
+        time /home/airflow/.local/bin/ansible-playbook -i ../inventory -vv OCP-4.X/install-on-osp.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-post-install.timing
 
     elif [[ "$operation" == "cleanup" ]]; then
         printf "Running Cleanup Steps"
-        time /home/airflow/.local/bin/ansible-playbook -i inventory -vvv delete_single_ocp.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-delete-ocp.timing
+        time /home/airflow/.local/bin/ansible-playbook -i inventory -vv delete_single_ocp.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-delete-ocp.timing
     fi
 }
 
