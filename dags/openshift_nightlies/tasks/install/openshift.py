@@ -72,7 +72,6 @@ class AbstractOpenshiftInstaller(ABC):
             **self.azure_creds,
             **self.openstack_creds,
             **self.latest_release,
-            **self.ocp_pull_secret,
             **{ "es_server": var_loader.get_elastic_url() }
         }
         super().__init__()
@@ -105,7 +104,7 @@ class AbstractOpenshiftInstaller(ABC):
             "DEPLOY_PATH": self.config['dynamic_deploy_path'],
             "KUBECONFIG_NAME": f"{self.version}-{self.platform}-{self.profile}-kubeconfig",
             "KUBEADMIN_NAME": f"{self.version}-{self.platform}-{self.profile}-kubeadmin",
-            "OPENSHIFT_INSTALL_PULL_SECRET": self.config['ocp_pull_secret'],
+            "OPENSHIFT_INSTALL_PULL_SECRET": self.ocp_pull_secret,
             **self._insert_kube_env()
         }
 
