@@ -10,7 +10,7 @@
     "kubeconfig_path": "/home/stack/vlan609/auth/kubeconfig",
     "kubeconfig": "/home/stack/vlan609/auth/kubeconfig",
     "openshift_cleanup": "false",
-    "openshift_install": "true",
+    "openshift_install": "false",
     "ssh_key_file": "/home/stack/.ssh/id_rsa.pub",
     "openshift_post_install": "false",
     "openshift_post_config": "true",
