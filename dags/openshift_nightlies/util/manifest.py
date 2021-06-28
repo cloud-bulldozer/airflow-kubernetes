@@ -16,7 +16,7 @@ class Manifest():
         return [alias['alias'] for alias in aliases if alias['version'] == version][0]
 
     def get_cloud_releases(self):
-        for version in self.yaml['platforms']['cloud']: 
+        for version in self.yaml['platforms'].get('cloud', []): 
             version_number = version['version']
             release_stream = version['releaseStream']
             version_alias = self.get_version_alias(version_number)
@@ -32,7 +32,7 @@ class Manifest():
                     })
 
     def get_baremetal_releases(self):
-        for version in self.yaml['platforms']['baremetal']: 
+        for version in self.yaml['platforms'].get('baremetal', []): 
             version_number = version['version']
             release_stream = version['releaseStream']
             build = version['build']

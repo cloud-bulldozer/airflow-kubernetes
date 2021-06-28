@@ -23,8 +23,7 @@ setup(){
 
     # Setup Kubeconfig
     export KUBECONFIG=/home/airflow/.kube/config
-    curl -L $OPENSHIFT_CLIENT_LOCATION -o openshift-client.tar.gz
-    tar -xzf openshift-client.tar.gz
+    curl -sS https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xz oc
     export PATH=$PATH:/home/airflow/.local/bin:$(pwd)
     
     

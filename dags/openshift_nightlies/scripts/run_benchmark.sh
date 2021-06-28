@@ -26,8 +26,7 @@ setup(){
     export BENCHMARK_STATUS_PATH=/tmp/uperf_$BUILD_NUMBER.status
     echo "BENCHMARK_STATUS_FILE=$BENCHMARK_STATUS_PATH" > uperf.properties
 
-    curl -L $OPENSHIFT_CLIENT_LOCATION -o openshift-client.tar.gz
-    tar -xzf openshift-client.tar.gz
+    curl -sS https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xz oc
 
     export PATH=$PATH:$(pwd)
 

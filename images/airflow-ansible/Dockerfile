@@ -3,7 +3,7 @@ FROM apache/airflow:${AIRFLOW_VERSION}
 USER root
 
 RUN apt update -y
-RUN apt install jq git uuid-runtime gettext-base xz-utils -y
+RUN apt install jq git uuid-runtime gettext-base xz-utils sshpass -y
 RUN yes | pip install ansible
 
 
@@ -13,4 +13,4 @@ RUN mv ./kubectl /usr/local/bin/kubectl
 RUN ln -s /bin/bash /usr/bin/bash
 
 USER airflow
-RUN yes | pip install ansible
+RUN yes | pip install ansible netaddr

@@ -23,7 +23,7 @@ spec:
         config:
           logging:
             colored_console_log: "True"
-            remote_logging: "True"
+            remote_logging: "False"
           elasticsearch:
             write_stdout: "True"
           elasticsearch_configs:
@@ -31,7 +31,7 @@ spec:
             verify_certs: "False"
             ssl_show_warn: "False"
           kubernetes:
-            delete_worker_pods: True
+            delete_worker_pods: False
           core:
             DAGBAG_IMPORT_TIMEOUT: 300
             killed_task_cleanup_time: 604800
@@ -44,11 +44,7 @@ spec:
             subPath: dags
             depth: 8
         elasticsearch:
-          enabled: True
-          connection: 
-            host: logging-es-http.openshift-logging.svc.cluster.local
-            port: 9200
-            user: ""
+          enabled: False
             pass: ""
         webserver:
           replicas: 1

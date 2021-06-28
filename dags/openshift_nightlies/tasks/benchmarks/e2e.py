@@ -21,28 +21,7 @@ from kubernetes.client import models as k8s
 class E2EBenchmarks():
     def __init__(self, dag, version, release_stream, latest_release, platform, profile, default_args):
 
-        self.exec_config = {
-            "pod_override": k8s.V1Pod(
-                spec=k8s.V1PodSpec(
-                    containers=[
-                        k8s.V1Container(
-                            name="base",
-                            image="quay.io/keithwhitley4/airflow-ansible:2.1.0",
-                            image_pull_policy="Always",
-                            env=[
-                                kubeconfig.get_kubeadmin_password(
-                        version, platform, profile)
-                            ],
-                            volume_mounts=[
-                                kubeconfig.get_kubeconfig_volume_mount()]
-
-                        )
-                    ],
-                    volumes=[kubeconfig.get_kubeconfig_volume(
-                        version, platform, profile)]
-                )
-            )
-        }
+        self.exec_config = var_loader.get_executor_config_with_cluster_access(version, platform, profile)
 
         # General DAG Configuration
         self.dag = dag
