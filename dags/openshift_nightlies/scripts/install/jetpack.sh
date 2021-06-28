@@ -65,7 +65,7 @@ run_jetpack(){
         cd scale-ci-deploy
         # disable openshift install as we already installed via jetpack
         export OPENSHIFT_INSTALL=false
-        export DYNAMIC_DEPLOY_PATH=$OPENSHIFT_CLUSTER_NAME
+        export DYNAMIC_DEPLOY_PATH='vlan609'
         time /home/airflow/.local/bin/ansible-playbook -i ../inventory -vv OCP-4.X/install-on-osp.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-post-install.timing
 
     elif [[ "$operation" == "cleanup" ]]; then
