@@ -54,7 +54,7 @@ class OpenstackJetpackInstaller(AbstractOpenshiftInstaller):
     def _get_playbook_operations(self, operation):
         if operation == "install":
             return {"openshift_cleanup": True, "openshift_debug_config": False,
-                                   "openshift_install": False, "openshift_post_config": True, "openshift_post_install": True}
+                                   "openshift_install": False, "openshift_post_config": True, "openshift_post_install": False}
         else:
             return {"openshift_cleanup": True, "openshift_debug_config": False,
                                    "openshift_install": False, "openshift_post_config": False, "openshift_post_install": False}
