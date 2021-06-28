@@ -3,9 +3,10 @@ import sys
 from os.path import abspath, dirname
 from os import environ
 sys.path.insert(0, dirname(abspath(dirname(__file__))))
-from util import constants
+from util import constants, kubeconfig
 import requests
 from airflow.models import Variable
+from kubernetes.client import models as k8s
 
 
 # Used to get the git user for the repo the dags live in. 
@@ -27,7 +28,53 @@ def get_latest_release_from_stream(base_url, release_stream):
 
 def get_elastic_url():
     elasticsearch_config = Variable.get("elasticsearch_config", deserialize_json=True)
-    return f"http://{elasticsearch_config['username']}:{elasticsearch_config['password']}@{elasticsearch_config['url']}"
+    if 'username' in elasticsearch_config and 'password' in elasticsearch_config:
+        return f"http://{elasticsearch_config['username']}:{elasticsearch_config['password']}@{elasticsearch_config['url']}"
+    else:
+        return elasticsearch_config['url']
+
+def get_default_executor_config():
+    return {
+            "pod_override": k8s.V1Pod(
+                spec=k8s.V1PodSpec(
+                    containers=[
+                        k8s.V1Container(
+                            name="base",
+                            image="quay.io/keithwhitley4/airflow-ansible:2.1.0",
+                            image_pull_policy="Always",
+                            volume_mounts=[
+                                kubeconfig.get_empty_dir_volume_mount()]
+
+                        )
+                    ],
+                    volumes=[kubeconfig.get_empty_dir_volume_mount()]
+                )
+            )
+        }
+
+def get_executor_config_with_cluster_access(version, platform, profile):
+    return {
+            "pod_override": k8s.V1Pod(
+                spec=k8s.V1PodSpec(
+                    containers=[
+                        k8s.V1Container(
+                            name="base",
+                            image="quay.io/keithwhitley4/airflow-ansible:2.1.0",
+                            image_pull_policy="Always",
+                            env=[
+                                kubeconfig.get_kubeadmin_password(
+                        version, platform, profile)
+                            ],
+                            volume_mounts=[
+                                kubeconfig.get_kubeconfig_volume_mount()]
+
+                        )
+                    ],
+                    volumes=[kubeconfig.get_kubeconfig_volume(
+                        version, platform, profile)]
+                )
+            )
+        }
 
 
 ### Task Variable Generator
