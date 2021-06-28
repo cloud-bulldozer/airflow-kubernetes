@@ -84,7 +84,7 @@ class Diagnosis():
         return BashOperator(
             task_id=f"{util['name']}",
             depends_on_past=False,
-            bash_command=f"{constants.root_dag_dir}/scripts/run_scale-ci-diagnosis.sh -w {util['workload']} -c {util['command']} ",
+            bash_command=f"{constants.root_dag_dir}/scripts/utils/run_scale_ci_diagnosis.sh -w {util['workload']} -c {util['command']} ",
             retries=3,
             dag=self.dag,
             env=env,

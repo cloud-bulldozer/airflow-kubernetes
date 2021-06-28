@@ -15,7 +15,7 @@ sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
 from tasks.install.cloud import openshift
 from tasks.install.baremetal import jetski
 from tasks.benchmarks import e2e
-from tasks.utils import prom_mustgather
+from tasks.utils import scale_ci_diagnosis
 from tasks.index import status
 from util import var_loader, manifest, constants
 from abc import ABC, abstractmethod
@@ -76,7 +76,7 @@ class AbstractOpenshiftNightlyDAG(ABC):
         return e2e.E2EBenchmarks(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, self.metadata_args)
 
     def _get_scale_ci_diagnosis(self):
-        return prom_mustgather.Diagnosis(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, self.metadata_args)
+        return scale_ci_diagnosis.Diagnosis(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, self.metadata_args)
 
 
 class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
