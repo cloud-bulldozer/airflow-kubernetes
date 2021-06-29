@@ -65,7 +65,7 @@ run_jetpack(){
         cd scale-ci-deploy
         # disable openshift install as we already installed via jetpack
         export OPENSHIFT_INSTALL=false
-        export DYNAMIC_DEPLOY_PATH=/home/stack/vlan609
+        export DYNAMIC_DEPLOY_PATH=$DEPLOY_PATH
         time /home/airflow/.local/bin/ansible-playbook -i ../inventory -vv OCP-4.X/install-on-osp.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-post-install.timing
 
     elif [[ "$operation" == "cleanup" ]]; then
@@ -74,5 +74,30 @@ run_jetpack(){
     fi
 }
 
+post_install(){
+    ssh ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat $DEPLOY_PATH/.openshift_install.log"
+    printenv
+
+    _kubeadmin_password=$(ssh ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat $DEPLOY_PATH/auth/kubeadmin-password")
+
+    kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=$_kubeadmin_password
+    kubectl create secret generic ${KUBECONFIG_NAME} --from-file=config=$DEPLOY_PATH/auth/kubeconfig
+}
+
+cleanup(){
+    kubectl delete secret ${KUBEADMIN_NAME} || true
+    kubectl delete secret ${KUBECONFIG_NAME} || true
+}
+
+
 setup
-run_jetpack
+#run_jetpack
+
+if [[ "$operation" == "install" ]]; then
+    printf "Running Post Install Steps"
+    cleanup
+    post_install
+
+elif [[ "$operation" == "cleanup" ]]; then
+    printf "Running Cleanup Steps"
+fi
