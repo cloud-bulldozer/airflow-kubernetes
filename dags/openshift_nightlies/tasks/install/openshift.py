@@ -66,7 +66,7 @@ class AbstractOpenshiftInstaller(ABC):
     
 
     def get_install_task(self):
-        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, "install").get_index_task() 
+        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.platform, self.profile, "install").get_index_task() 
         install_task = self._get_task(operation="install")
         install_task >> indexer 
         return install_task

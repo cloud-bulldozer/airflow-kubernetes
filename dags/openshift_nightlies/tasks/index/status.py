@@ -14,14 +14,13 @@ from kubernetes.client import models as k8s
 
 # Defines Task for Indexing Task Status in ElasticSearch
 class StatusIndexer():
-    def __init__(self, dag, version, release_stream, latest_release, platform, profile, task):
+    def __init__(self, dag, version, release_stream, platform, profile, task):
         self.exec_config = var_loader.get_executor_config_with_cluster_access(version, platform, profile)
         # General DAG Configuration
         self.dag = dag
         self.platform = platform  # e.g. aws
         self.version = version  # e.g. 4.6/4.7, major.minor only
         self.release_stream = release_stream # true release stream to follow. Nightlies, CI, etc. 
-        self.latest_release = latest_release # latest relase from the release stream
         self.profile = profile  # e.g. default/ovn
 
 
@@ -32,7 +31,6 @@ class StatusIndexer():
         # Upstream task this is to index
         self.task = task 
         self.env = {
-            "OPENSHIFT_CLIENT_LOCATION": self.latest_release["openshift_client_location"],
             "RELEASE_STREAM": self.release_stream,
             "TASK": self.task
         }

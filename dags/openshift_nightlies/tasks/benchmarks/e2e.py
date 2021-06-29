@@ -19,7 +19,7 @@ from kubernetes.client import models as k8s
 
 
 class E2EBenchmarks():
-    def __init__(self, dag, version, release_stream, latest_release, platform, profile, default_args):
+    def __init__(self, dag, version, release_stream, platform, profile, default_args):
 
         self.exec_config = var_loader.get_executor_config_with_cluster_access(version, platform, profile)
 
@@ -28,7 +28,6 @@ class E2EBenchmarks():
         self.platform = platform  # e.g. aws
         self.version = version  # e.g. stable/.next/.future
         self.release_stream = release_stream
-        self.latest_release = latest_release # latest relase from the release stream
         self.profile = profile  # e.g. default/ovn
         self.default_args = default_args
 
@@ -41,7 +40,6 @@ class E2EBenchmarks():
         self.vars = var_loader.build_task_vars(
             task="benchmarks", version=version, platform=platform, profile=profile)
         self.env = {
-            "OPENSHIFT_CLIENT_LOCATION": self.latest_release["openshift_client_location"],
             "SNAPPY_DATA_SERVER_URL": self.SNAPPY_DATA_SERVER_URL,
             "SNAPPY_DATA_SERVER_USERNAME": self.SNAPPY_DATA_SERVER_USERNAME,
             "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD
@@ -75,7 +73,7 @@ class E2EBenchmarks():
                     self._add_indexers(benchmark)
 
     def _add_indexer(self, benchmark): 
-        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, benchmark.task_id).get_index_task() 
+        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.platform, self.profile, benchmark.task_id).get_index_task() 
         benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):
