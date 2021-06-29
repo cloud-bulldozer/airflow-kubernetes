@@ -77,7 +77,7 @@ class AbstractOpenshiftNightlyDAG(ABC):
         raise NotImplementedError()
 
     def _get_e2e_benchmarks(self): 
-        return e2e.E2EBenchmarks(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, self.metadata_args)
+        return e2e.E2EBenchmarks(self.dag, self.version, self.release_stream, self.platform, self.profile, self.metadata_args)
 
     def _get_scale_ci_diagnosis(self):
         return scale_ci_diagnosis.Diagnosis(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, self.metadata_args)
