@@ -48,7 +48,7 @@ class Manifest():
                 })
             
     def get_openstack_releases(self):
-        for version in self.yaml['platforms']['openstack']: 
+        for version in self.yaml['platforms'].get('openstack', []): 
             version_number = version['version']
             release_stream = version['releaseStream']
             version_alias = self.get_version_alias(version_number)
