@@ -48,17 +48,17 @@ setup(){
 run_jetpack(){
     if [[ "$operation" == "install" ]]; then
 
-        printf "Running Cluster Install Steps Using Jetpack"
-        if [ $INSTALL_OSP == true ]
-        then
-            time /home/airflow/.local/bin/ansible-playbook -vv main.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-install.timing
-            ssh-copy-id -i ${PUBLIC_KEY} ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST}
-        else
-            echo "[undercloud]" >> inventory
-            echo "${ORCHESTRATION_HOST} ansible_user=${ORCHESTRATION_USER}" >> inventory
-            time /home/airflow/.local/bin/ansible-playbook -i inventory -vv delete_single_ocp.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-delete-ocp.timing
-            time /home/airflow/.local/bin/ansible-playbook -i inventory -vv ocp_on_osp.yml -e platform=osp --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-install-ocp.timing
-        fi
+        # printf "Running Cluster Install Steps Using Jetpack"
+        # if [ $INSTALL_OSP == true ]
+        # then
+        #     time /home/airflow/.local/bin/ansible-playbook -vv main.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-install.timing
+        #     ssh-copy-id -i ${PUBLIC_KEY} ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST}
+        # else
+        #     echo "[undercloud]" >> inventory
+        #     echo "${ORCHESTRATION_HOST} ansible_user=${ORCHESTRATION_USER}" >> inventory
+        #     time /home/airflow/.local/bin/ansible-playbook -i inventory -vv delete_single_ocp.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-delete-ocp.timing
+        #     time /home/airflow/.local/bin/ansible-playbook -i inventory -vv ocp_on_osp.yml -e platform=osp --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-install-ocp.timing
+        # fi
 
         printf "Running post-install Steps Using Scale-ci-deploy"
         git clone --depth=1 https://github.com/cloud-bulldozer/scale-ci-deploy.git

@@ -33,7 +33,7 @@ class OpenstackJetpackInstaller(AbstractOpenshiftInstaller):
         self.config = {**self.config, **self._get_playbook_operations(operation)}
         self.config['openshift_cluster_name'] = self.openstack_creds["ocp_cluster_name"]
         self.config['dynamic_deploy_path'] = self.openstack_creds["ocp_cluster_name"]
-        self.config['kubeconfig_path'] = "home/stack/" + self.openstack_creds["ocp_cluster_name"] + "/auth/kubeconfig"
+        self.config['kubeconfig_path'] = "/home/stack/" + self.openstack_creds["ocp_cluster_name"] + "/auth/kubeconfig"
         self.env = {
             "SSHKEY_TOKEN": self.config['sshkey_token'],
             "ORCHESTRATION_HOST": self.config['orchestration_host'],
