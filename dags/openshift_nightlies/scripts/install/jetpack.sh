@@ -80,8 +80,11 @@ post_install(){
 
     _kubeadmin_password=$(ssh -o StrictHostKeyChecking=no ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat $DEPLOY_PATH/auth/kubeadmin-password")
 
+    # Copy kubeconfig on the pod
+    ssh -o StrictHostKeyChecking=no ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat $DEPLOY_PATH/auth/kubeconfig" > kubeconfig
+
     kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=$_kubeadmin_password
-    kubectl create secret generic ${KUBECONFIG_NAME} --from-file=config=$DEPLOY_PATH/auth/kubeconfig
+    kubectl create secret generic ${KUBECONFIG_NAME} --from-file=config=kubeconfig
 }
 
 cleanup(){
