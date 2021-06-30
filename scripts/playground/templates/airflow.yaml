@@ -45,7 +45,6 @@ spec:
             depth: 8
         elasticsearch:
           enabled: False
-            pass: ""
         webserver:
           replicas: 1
           defaultUser:
