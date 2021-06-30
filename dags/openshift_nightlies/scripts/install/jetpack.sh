@@ -78,7 +78,7 @@ post_install(){
     ssh ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat $DEPLOY_PATH/.openshift_install.log"
     printenv
 
-    _kubeadmin_password=$(ssh ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat $DEPLOY_PATH/auth/kubeadmin-password")
+    _kubeadmin_password=$(ssh StrictHostKeyChecking=no ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat $DEPLOY_PATH/auth/kubeadmin-password")
 
     kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=$_kubeadmin_password
     kubectl create secret generic ${KUBECONFIG_NAME} --from-file=config=$DEPLOY_PATH/auth/kubeconfig
