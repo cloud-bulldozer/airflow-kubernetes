@@ -75,8 +75,8 @@ run_jetpack(){
 }
 
 post_install(){
-    ssh -o StrictHostKeyChecking=no ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat $DEPLOY_PATH/.openshift_install.log"
-    printenv
+    # ssh -o StrictHostKeyChecking=no ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat $DEPLOY_PATH/.openshift_install.log"
+    # printenv
 
     _kubeadmin_password=$(ssh -o StrictHostKeyChecking=no ${ORCHESTRATION_USER}@${ORCHESTRATION_HOST} -i ${PRIVATE_KEY} "cat $DEPLOY_PATH/auth/kubeadmin-password")
 
