@@ -13,6 +13,7 @@ from airflow.utils.task_group import TaskGroup
 # Configure Path to have the Python Module on it
 sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
 from tasks.install.cloud import openshift
+from tasks.install.openstack import jetpack
 from tasks.install.baremetal import jetski
 from tasks.benchmarks import e2e
 from tasks.utils import scale_ci_diagnosis
@@ -104,6 +105,7 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         return openshift.CloudOpenshiftInstaller(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile)
 
 
+
 class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def __init__(self, version, release_stream, platform, profile, version_alias, build):
         super().__init__(version, release_stream, platform, profile, version_alias)
@@ -118,7 +120,28 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def _get_openshift_installer(self):
         return jetski.BaremetalOpenshiftInstaller(self.dag, self.version, self.release_stream, self.platform, self.profile, self.openshift_build)
 
-        
+
+
+class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
+    def __init__(self, version, release_stream, platform, profile, version_alias):
+        super().__init__(version, release_stream, platform, profile, version_alias)
+        self.release_stream_base_url = Variable.get("release_stream_base_url")
+        self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
+
+    def build(self):
+        installer = self._get_openshift_installer()
+        install_cluster = installer.get_install_task()
+        cleanup_cluster = installer.get_cleanup_task()
+        with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
+            benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
+            chain(*benchmark_tasks)
+            benchmark_tasks[-1] >> cleanup_cluster
+
+        install_cluster >> benchmarks
+
+    def _get_openshift_installer(self):
+        return jetpack.OpenstackJetpackInstaller(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile)
+
 
 
 release_manifest = manifest.Manifest(constants.root_dag_dir)
@@ -126,6 +149,8 @@ for release in release_manifest.get_releases():
     nightly = None
     if release['platform'] == "baremetal":
         nightly = BaremetalOpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'), release['build'])
+    elif release['platform'] == "openstack":
+        nightly = OpenstackNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'))
     else:
         nightly = CloudOpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'))
     
