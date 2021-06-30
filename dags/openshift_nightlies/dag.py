@@ -15,6 +15,7 @@ sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
 from tasks.install.cloud import openshift
 from tasks.install.baremetal import jetski
 from tasks.benchmarks import e2e
+from tasks.utils import scale_ci_diagnosis
 from tasks.index import status
 from util import var_loader, manifest, constants
 from abc import ABC, abstractmethod
@@ -74,6 +75,8 @@ class AbstractOpenshiftNightlyDAG(ABC):
     def _get_e2e_benchmarks(self): 
         return e2e.E2EBenchmarks(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, self.metadata_args)
 
+    def _get_scale_ci_diagnosis(self):
+        return scale_ci_diagnosis.Diagnosis(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, self.metadata_args)
 
 
 class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
@@ -86,10 +89,14 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         cleanup_cluster = installer.get_cleanup_task()
+        with TaskGroup("utils", prefix_group_id=False, dag=self.dag) as utils:
+            utils_tasks=self._get_scale_ci_diagnosis().get_utils()
+            chain(*utils_tasks)
+            utils_tasks[-1] >> cleanup_cluster
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
-            benchmark_tasks[-1] >> cleanup_cluster
+            benchmark_tasks[-1] >> utils
 
         install_cluster >> benchmarks
 

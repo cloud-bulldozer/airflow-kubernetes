@@ -22,10 +22,7 @@ setup(){
     export RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}/$AIRFLOW_CTX_TASK_ID
     export SNAPPY_RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}
 
-    rm /tmp/uperf_$BUILD_NUMBER.status || true
-    export BENCHMARK_STATUS_PATH=/tmp/uperf_$BUILD_NUMBER.status
-    echo "BENCHMARK_STATUS_FILE=$BENCHMARK_STATUS_PATH" > uperf.properties
-
+    
     curl -L $OPENSHIFT_CLIENT_LOCATION -o openshift-client.tar.gz
     tar -xzf openshift-client.tar.gz
 
@@ -39,7 +36,8 @@ setup(){
 setup
 cd /home/airflow/workspace
 ls
-cd e2e-benchmarking/workloads/$workload
+cd e2e-benchmarking/utils/$workload
+export OUTPUT_DIR=$PWD
 
 eval "$command"
 

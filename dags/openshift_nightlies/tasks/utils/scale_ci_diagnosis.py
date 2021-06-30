@@ -18,7 +18,7 @@ from kubernetes.client import models as k8s
 
 
 
-class E2EBenchmarks():
+class Diagnosis():
     def __init__(self, dag, version, release_stream, latest_release, platform, profile, default_args):
 
         self.exec_config = {
@@ -60,53 +60,35 @@ class E2EBenchmarks():
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
-            task="benchmarks", version=version, platform=platform, profile=profile)
+            task="utils", version=version, platform=platform, profile=profile)
         self.env = {
             "OPENSHIFT_CLIENT_LOCATION": self.latest_release["openshift_client_location"],
             "SNAPPY_DATA_SERVER_URL": self.SNAPPY_DATA_SERVER_URL,
             "SNAPPY_DATA_SERVER_USERNAME": self.SNAPPY_DATA_SERVER_USERNAME,
             "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD
+
         }
 
         
+    def get_utils(self):
+        utils = self._get_utils(self.vars["utils"])
+        return utils
 
+    def _get_utils(self,utils):
+        for index, util in enumerate(utils):
+            utils[index] = self._get_util(util)
+        return utils 
 
-    def get_benchmarks(self):
-        benchmarks = self._get_benchmarks(self.vars["benchmarks"])
-        with TaskGroup("Index Results", prefix_group_id=False, dag=self.dag) as post_steps:
-            indexers = self._add_indexers(benchmarks)
-        return benchmarks
-
-    def _get_benchmarks(self, benchmarks):
-        for index, benchmark in enumerate(benchmarks):
-            if 'benchmarks' not in benchmark:
-                benchmarks[index] = self._get_benchmark(benchmark)
-            elif 'group' in benchmark:
-                with TaskGroup(benchmark['group'], prefix_group_id=False, dag=self.dag) as task_group:
-                    benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
-            else: 
-                benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
-        return benchmarks
-
-    def _add_indexers(self, benchmarks):
-            for index, benchmark in enumerate(benchmarks):
-                if isinstance(benchmark, BashOperator):
-                    self._add_indexer(benchmark)
-                elif isinstance(benchmark, list):
-                    self._add_indexers(benchmark)
-
-    def _add_indexer(self, benchmark): 
-        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, benchmark.task_id).get_index_task() 
-        benchmark >> indexer 
-
-    def _get_benchmark(self, benchmark):
-        env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
+    def _get_util(self, util):
+        env = {**self.env, **util.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
         return BashOperator(
-            task_id=f"{benchmark['name']}",
+            task_id=f"{util['name']}",
             depends_on_past=False,
-            bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
+            bash_command=f"{constants.root_dag_dir}/scripts/utils/run_scale_ci_diagnosis.sh -w {util['workload']} -c {util['command']} ",
             retries=3,
             dag=self.dag,
             env=env,
             executor_config=self.exec_config
         )
+
+
