@@ -110,5 +110,7 @@ def get_json(file_path):
     try: 
         with open(file_path) as json_file:
             return json.load(json_file)
-    except IOError as e: 
+    except IOError as e:
         return {}
+    except Exception as e:
+        raise Exception(f"json file {file_path} failed to parse") 
