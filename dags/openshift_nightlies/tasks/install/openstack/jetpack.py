@@ -31,13 +31,13 @@ class OpenstackJetpackInstaller(AbstractOpenshiftInstaller):
         self.config["openshift_cluster_name"] = self.openstack_creds["ocp_cluster_name"]
         self.config["dynamic_deploy_path"] = (
             "/home/"
-            + self.openstack_creds["orchestration_user"]
+            + self.openstack_creds["osp_orchestration_user"]
             + "/"
             + self.openstack_creds["ocp_cluster_name"]  # noqa
         )
         self.config["kubeconfig_path"] = (
             "/home/"
-            + self.openstack_creds["orchestration_user"]
+            + self.openstack_creds["osp_orchestration_user"]
             + "/"
             + self.openstack_creds["ocp_cluster_name"]
             + "/auth/kubeconfig"  # noqa
