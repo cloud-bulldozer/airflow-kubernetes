@@ -19,14 +19,14 @@ spec:
     helm:
       releaseName: airflow
       values: |-
-        defaultAirflowTag: 2.1.0-python3.8
+        defaultAirflowTag: 2.1.1rc1-python3.8
         config:
           logging:
             colored_console_log: "True"
             remote_logging: "True"
           elasticsearch:
             write_stdout: "True"
-            frontend: logging-kibana.apps.sailplane.perf.lab.eng.rdu2.redhat.com/{log_id}
+            frontend: logging-kibana.apps.sailplane.perf.lab.eng.rdu2.redhat.com/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))&_a=(columns:!(_source),filters:!(),index:a16f10f0-cf86-11eb-a0b9-a32be872b9a2,interval:auto,query:(language:kuery,query:'log_id:{log_id}'),sort:!())
           elasticsearch_configs:
             use_ssl: "False"
             verify_certs: "False"

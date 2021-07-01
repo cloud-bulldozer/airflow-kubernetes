@@ -36,6 +36,8 @@ spec:
         value: {{ .Values.global.repo.url }}
       - name: dags.gitSync.branch
         value: {{ .Values.global.repo.branch }}
+      - name: config.elasticsearch.frontend
+        value: logging-kibana.{{ .Values.global.baseDomain }}/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_a=(columns:!(message),filters:!(),index:a16f10f0-cf86-11eb-a0b9-a32be872b9a2,interval:auto,query:(language:kuery,query:'log_id:{log_id}'),sort:!())
   syncPolicy:
     automated:
       prune: true
