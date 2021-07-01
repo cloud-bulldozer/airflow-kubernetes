@@ -51,3 +51,17 @@ To install Airflow in a developer playground setting (i.e. in our baremetal clus
 
 ## Cleaning up the Playground
 To uninstall the stack, you can run `./scripts/playground/cleanup.sh`.
+
+
+## CodeStyling and Linting
+We use [pre-commit](https://pre-commit.com) framework to maintain the code linting and python code styling.
+The CI would run the pre-commit check on each pull request.
+We encourage our contributors to follow the same pattern, while contributing to the code.
+
+The pre-commit configuration file is present in the repository `.pre-commit-config.yaml`
+It contains the different code styling and linting guide which we use for the application.
+
+Following command can be used to run the pre-commit:
+`pre-commit run --all-files`
+
+If pre-commit is not installed in your system, it can be install with : `pip install pre-commit`
