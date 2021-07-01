@@ -26,7 +26,7 @@ spec:
             remote_logging: "True"
           elasticsearch:
             write_stdout: "True"
-            frontend: http://logging-kibana.apps.sailplane.perf.lab.eng.rdu2.redhat.com/{log_id}
+            frontend: logging-kibana.apps.sailplane.perf.lab.eng.rdu2.redhat.com/{log_id}
           elasticsearch_configs:
             use_ssl: "False"
             verify_certs: "False"
@@ -40,7 +40,10 @@ spec:
             scheduler_heartbeat_sec: 10
             processor_poll_interval: 30
           webserver:
+            base_url: http://$_airflow_namespace.$_cluster_domain
             instance_name: $_remote_user
+            expose_config: True
+            default_ui_timezone: America/New_York
         dags:
           gitSync:
             enabled: true
