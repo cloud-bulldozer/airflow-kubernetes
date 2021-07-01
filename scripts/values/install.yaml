@@ -6,6 +6,12 @@ global:
 
 airflow:
   values:
+    config:
+      webserver:
+        base_url: http://airflow.$_cluster_domain
+        instance_name: Performance and Scale
+        expose_config: True
+        default_ui_timezone: America/New_York
     defaultAirflowTag: 2.1.1rc1-python3.8
     webserver:
       defaultUser:
