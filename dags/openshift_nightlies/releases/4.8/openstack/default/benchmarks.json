@@ -1,0 +1,127 @@
+{
+    "benchmarks": [
+        {
+            "name": "baseline",
+            "workload": "baseline-performance",
+            "command": "./baseline_perf.sh"            
+        },        
+        {
+            "group": "uperf",
+            "benchmarks": [
+                {
+                    "name": "host_network",
+                    "workload": "network-perf",
+                    "command": "./run_hostnetwork_network_test_fromgit.sh test_cloud",
+                    "env": {
+                        "COMPARE": "false",
+                        "ENABLE_SNAPPY_BACKUP": "true",
+                        "MULTI_AZ": "false"
+                    }
+                },
+                {
+                    "name": "pod_network",
+                    "workload": "network-perf",
+                    "command": "./run_pod_network_test_fromgit.sh test_cloud",
+                    "env": {
+                        "COMPARE": "false",
+                        "ENABLE_SNAPPY_BACKUP": "true",
+                        "MULTI_AZ": "false"
+                    }
+                },
+                {
+                    "name": "serviceip_network",
+                    "workload": "network-perf",
+                    "command": "./run_serviceip_network_test_fromgit.sh test_cloud",
+                    "env": {
+                        "COMPARE": "false",
+                        "ENABLE_SNAPPY_BACKUP": "true",
+                        "MULTI_AZ": "false"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "scale",
+            "workload": "scale-perf",
+            "command": "./run_scale_fromgit.sh",
+            "env": {
+                "SCALE": "25",
+                "METADATA_COLLECTION": "true",
+                "WORKLOAD_NODE_ROLE": "workload"
+            }
+        },
+        {
+            "name": "cluster_density",
+            "workload": "kube-burner",
+            "command": "./run_clusterdensity_test_fromgit.sh",
+            "env": {
+                "JOB_ITERATIONS": "500",
+                "JOB_TIMEOUT": "18000",
+                "STEP_SIZE": "30s",
+                "QPS": "20",
+                "BURST": "20",
+                "METRICS_PROFILE": "metrics-aggregated.yaml",
+                "LOG_LEVEL": "info",
+                "LOG_STREAMING": "true",
+                "CLEANUP_WHEN_FINISH": "true",
+                "CLEANUP": "true"
+            }
+        },
+        {
+            "name": "node_density",
+            "workload": "kube-burner",
+            "command": "./run_nodedensity_test_fromgit.sh",
+            "env": {
+                "PODS_PER_NODE": "250",
+                "NODE_COUNT": "25",
+                "JOB_TIMEOUT": "18000",
+                "QPS": "20",
+                "BURST": "20",
+                "STEP_SIZE": "30s",
+                "METRICS_PROFILE": "metrics.yaml",
+                "LOG_LEVEL": "info",
+                "LOG_STREAMING": "true",
+                "CLEANUP_WHEN_FINISH": "true",
+                "CLEANUP": "true"
+            }
+        },
+        {
+            "name": "scale_50",
+            "workload": "scale-perf",
+            "command": "./run_scale_fromgit.sh",
+            "env": {
+                "SCALE": "50",
+                "METADATA_COLLECTION": "true",
+                "WORKLOAD_NODE_ROLE": "workload"
+            }
+        },
+        {
+            "name": "cluster_density_50",
+            "workload": "kube-burner",
+            "command": "./run_clusterdensity_test_fromgit.sh",
+            "env": {
+                "JOB_ITERATIONS": "1000",
+                "JOB_TIMEOUT": "18000",
+                "STEP_SIZE": "30s",
+                "QPS": "20",
+                "BURST": "20",
+                "METRICS_PROFILE": "metrics-aggregated.yaml",
+                "LOG_LEVEL": "info",
+                "LOG_STREAMING": "true",
+                "CLEANUP_WHEN_FINISH": "false",
+                "CLEANUP": "true"
+            }
+        },
+        {
+            "name": "upgrades",
+            "workload": "upgrade-perf",
+            "command": "./run_upgrade_fromgit.sh",
+            "env": {
+                "LATEST": "true",
+                "CHANNEL": "nightlies",
+                "TIMEOUT": "400",
+                "POLL_INTERVAL": "10"
+            }
+        }
+    ]
+}
