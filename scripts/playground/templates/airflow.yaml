@@ -39,6 +39,8 @@ spec:
           scheduler:
             scheduler_heartbeat_sec: 10
             processor_poll_interval: 30
+          webserver:
+            instance_name: $_remote_user
         dags:
           gitSync:
             enabled: true
