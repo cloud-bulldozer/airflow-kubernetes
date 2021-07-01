@@ -47,7 +47,7 @@ images:
   airflow:
     repository: ~
     tag: ~
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   pod_template:
     repository: ~
     tag: ~
