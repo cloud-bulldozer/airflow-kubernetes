@@ -6,6 +6,7 @@ global:
 
 airflow:
   values:
+    defaultAirflowTag: 2.1.1rc1-python3.8
     webserver:
       defaultUser:
         password: $password
@@ -14,6 +15,14 @@ airflow:
 results: 
   dashboard:
     values: 
+      backend:
+        image:
+          repository: quay.io/keithwhitley4/perf-dashboard
+          tag: backend
+      frontend:
+        image:
+          repository: quay.io/keithwhitley4/perf-dashboard
+          tag: frontend
       airflow:
         password: $password
       elasticsearch: 
