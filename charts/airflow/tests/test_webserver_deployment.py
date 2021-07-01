@@ -44,11 +44,11 @@ class WebserverDeploymentTest(unittest.TestCase):
 
         assert (
             jmespath.search("spec.template.spec.containers[0].livenessProbe.httpGet.path", docs[0])
-            == "/mypath/path/health"
+            == "/mypath/path/health"  # noqa
         )
         assert (
             jmespath.search("spec.template.spec.containers[0].readinessProbe.httpGet.path", docs[0])
-            == "/mypath/path/health"
+            == "/mypath/path/health"  # noqa
         )
 
     def test_should_not_contain_host_header_if_host_empty_string(self):

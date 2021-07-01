@@ -5,12 +5,10 @@ from os import environ
 sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
 from util import var_loader, kubeconfig, constants
 
-import json
-import requests
 
 from airflow.operators.bash_operator import BashOperator
-from airflow.models import Variable
 from kubernetes.client import models as k8s
+
 
 # Defines Task for Indexing Task Status in ElasticSearch
 class StatusIndexer:

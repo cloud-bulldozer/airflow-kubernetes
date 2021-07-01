@@ -4,15 +4,9 @@ from os import environ
 
 sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
 from util import var_loader, kubeconfig, constants
-from tasks.index.status import StatusIndexer
 
-import json
-from datetime import timedelta
 from airflow.operators.bash_operator import BashOperator
-from airflow.operators.subdag_operator import SubDagOperator
 from airflow.models import Variable
-from airflow.models import DAG
-from airflow.utils.task_group import TaskGroup
 from kubernetes.client import models as k8s
 
 
@@ -80,7 +74,7 @@ class Diagnosis:
         return BashOperator(
             task_id=f"{util['name']}",
             depends_on_past=False,
-            bash_command=f"{constants.root_dag_dir}/scripts/utils/run_scale_ci_diagnosis.sh -w {util['workload']} -c {util['command']} ",
+            bash_command=f"{constants.root_dag_dir}/scripts/utils/run_scale_ci_diagnosis.sh -w {util['workload']} -c {util['command']} ",  # noqa
             retries=3,
             dag=self.dag,
             env=env,

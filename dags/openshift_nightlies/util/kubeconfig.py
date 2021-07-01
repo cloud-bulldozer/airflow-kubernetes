@@ -1,4 +1,3 @@
-from os import environ
 from kubernetes.client import models as k8s
 
 

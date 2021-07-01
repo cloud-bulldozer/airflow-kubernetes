@@ -1,18 +1,15 @@
 import sys
-import abc
 from os.path import abspath, dirname
 from os import environ
 
 
 sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
-from util import var_loader, kubeconfig, constants
+from util import var_loader, kubeconfig
 from tasks.index.status import StatusIndexer
 
 import json
-import requests
 from abc import ABC, abstractmethod
 
-from airflow.operators.bash_operator import BashOperator
 from airflow.models import Variable
 from kubernetes.client import models as k8s
 
@@ -92,7 +89,7 @@ class AbstractOpenshiftInstaller(ABC):
         return install_task
 
     def get_cleanup_task(self):
-        # trigger_rule = "all_done" means this task will run when every other task has finished, whether it fails or succeededs
+        # trigger_rule = "all_done" means this task will run when every other task has finished, whether it fails or succeededs # noqa
         return self._get_task(operation="cleanup")
 
     def _setup_task(self, operation="install"):

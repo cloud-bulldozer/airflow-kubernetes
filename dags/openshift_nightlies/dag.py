@@ -1,13 +1,10 @@
 import sys
 import os
 import logging
-import json
 from datetime import timedelta, datetime
 from airflow import DAG
-from airflow.utils.dates import days_ago
 from airflow.models import Variable
 from airflow.utils.helpers import chain
-from airflow.operators.bash_operator import BashOperator
 from airflow.utils.task_group import TaskGroup
 
 # Configure Path to have the Python Module on it
@@ -17,7 +14,6 @@ from tasks.install.openstack import jetpack
 from tasks.install.baremetal import jetski
 from tasks.benchmarks import e2e
 from tasks.utils import scale_ci_diagnosis
-from tasks.index import status
 from util import var_loader, manifest, constants
 from abc import ABC, abstractmethod
 
@@ -26,6 +22,7 @@ log = logging.getLogger("airflow.task.operators")
 handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(logging.INFO)
 log.addHandler(handler)
+
 
 # This Applies to all DAGs
 class AbstractOpenshiftNightlyDAG(ABC):

@@ -1,17 +1,14 @@
 import sys
 from os.path import abspath, dirname
-from os import environ
 
 sys.path.insert(0, dirname(dirname(dirname(abspath(dirname(__file__))))))
-from util import var_loader, kubeconfig, constants
+from util import constants
 from tasks.install.openshift import AbstractOpenshiftInstaller
 
 import json
-import requests
 
 from airflow.operators.bash_operator import BashOperator
-from airflow.models import Variable
-from kubernetes.client import models as k8s
+
 
 # Defines Tasks for installation of Openshift Clusters
 class OpenstackJetpackInstaller(AbstractOpenshiftInstaller):
@@ -21,7 +18,7 @@ class OpenstackJetpackInstaller(AbstractOpenshiftInstaller):
         return BashOperator(
             task_id=f"{operation}",
             depends_on_past=False,
-            bash_command=f"{constants.root_dag_dir}/scripts/install/jetpack.sh -j /tmp/{self.version}-{self.platform}-{self.profile}-{operation}-task.json -o {operation}",
+            bash_command=f"{constants.root_dag_dir}/scripts/install/jetpack.sh -j /tmp/{self.version}-{self.platform}-{self.profile}-{operation}-task.json -o {operation}",  # noqa
             retries=3,
             dag=self.dag,
             trigger_rule=trigger_rule,
@@ -36,14 +33,14 @@ class OpenstackJetpackInstaller(AbstractOpenshiftInstaller):
             "/home/"
             + self.openstack_creds["orchestration_user"]
             + "/"
-            + self.openstack_creds["ocp_cluster_name"]
+            + self.openstack_creds["ocp_cluster_name"]  # noqa
         )
         self.config["kubeconfig_path"] = (
             "/home/"
             + self.openstack_creds["orchestration_user"]
             + "/"
             + self.openstack_creds["ocp_cluster_name"]
-            + "/auth/kubeconfig"
+            + "/auth/kubeconfig"  # noqa
         )
         self.env = {
             "SSHKEY_TOKEN": self.config["osp_sshkey_token"],

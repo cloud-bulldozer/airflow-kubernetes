@@ -12,6 +12,7 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.models import Variable
 from kubernetes.client import models as k8s
 
+
 # Defines Tasks for installation of Openshift Clusters
 class BaremetalOpenshiftInstaller:
     def __init__(self, dag, version, release_stream, platform, profile, build):
@@ -102,7 +103,7 @@ class BaremetalOpenshiftInstaller:
         return BashOperator(
             task_id=f"{operation}-cluster",
             depends_on_past=False,
-            bash_command=f"{bash_script} -p {self.platform} -v {self.version} -j /tmp/{self.version}-{self.platform}-{self.profile}-{operation}-task.json -o {operation} ",
+            bash_command=f"{bash_script} -p {self.platform} -v {self.version} -j /tmp/{self.version}-{self.platform}-{self.profile}-{operation}-task.json -o {operation} ",  # noqa
             retries=3,
             dag=self.dag,
             trigger_rule=trigger_rule,

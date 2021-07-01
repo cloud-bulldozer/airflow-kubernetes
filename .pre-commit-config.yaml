@@ -27,4 +27,4 @@ repos:
       - id: flake8
         additional_dependencies: ['pep8-naming']
         # Ignore all format-related checks as Black takes care of those.
-        args: ['--ignore', 'E123,E125', '--select', 'E,W,F,N', '--max-line-length=110']
+        args: ['--ignore', 'E123,E125,E231,E402,W503', '--select', 'E,W,F,N', '--max-line-length=110']
