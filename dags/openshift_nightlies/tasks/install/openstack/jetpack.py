@@ -50,12 +50,3 @@ class OpenstackJetpackInstaller(AbstractOpenshiftInstaller):
         with open(f"/tmp/{self.version}-{self.platform}-{self.profile}-{operation}-task.json", 'w') as json_file:
             json.dump(self.config, json_file, sort_keys=True, indent=4)   
 
-
-    def _get_playbook_operations(self, operation):
-        if operation == "install":
-            return {"openshift_cleanup": True, "openshift_debug_config": False,
-                                   "openshift_install": False, "openshift_post_config": True, "openshift_post_install": False}
-        else:
-            return {"openshift_cleanup": True, "openshift_debug_config": False,
-                                   "openshift_install": False, "openshift_post_config": False, "openshift_post_install": False}
-    
