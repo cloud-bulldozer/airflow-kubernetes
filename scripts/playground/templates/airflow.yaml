@@ -23,7 +23,7 @@ spec:
         config:
           logging:
             colored_console_log: "True"
-            remote_logging: "False"
+            remote_logging: "True"
           elasticsearch:
             write_stdout: "True"
           elasticsearch_configs:
@@ -44,7 +44,12 @@ spec:
             subPath: dags
             depth: 8
         elasticsearch:
-          enabled: False
+          enabled: True
+          connection: 
+            host: logging-es-http.openshift-logging.svc.cluster.local
+            port: 9200
+            user: ""
+            pass: ""
         webserver:
           replicas: 1
           defaultUser:
