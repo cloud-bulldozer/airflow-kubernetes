@@ -31,7 +31,7 @@ setup(){
 
     export PATH=$PATH:$(pwd)
 
-    if [[ ! -z "$KUBEADMIN_PASSWORD" ]]; then 
+    if [[ ! -z "$KUBEADMIN_PASSWORD" ]]; then
         oc login -u kubeadmin -p $KUBEADMIN_PASSWORD
     fi
 }
@@ -42,4 +42,3 @@ ls
 cd e2e-benchmarking/workloads/$workload
 
 eval "$command"
-

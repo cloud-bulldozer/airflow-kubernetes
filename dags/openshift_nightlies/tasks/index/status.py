@@ -13,7 +13,7 @@ from airflow.models import Variable
 from kubernetes.client import models as k8s
 
 # Defines Task for Indexing Task Status in ElasticSearch
-class StatusIndexer():
+class StatusIndexer:
     def __init__(self, dag, version, release_stream, latest_release, platform, profile, task):
 
         self.exec_config = {
@@ -24,13 +24,10 @@ class StatusIndexer():
                             name="base",
                             image="quay.io/keithwhitley4/airflow-ansible:2.1.0",
                             image_pull_policy="Always",
-                            volume_mounts=[
-                                kubeconfig.get_kubeconfig_volume_mount()]
-
+                            volume_mounts=[kubeconfig.get_kubeconfig_volume_mount()],
                         )
                     ],
-                    volumes=[kubeconfig.get_kubeconfig_volume(
-                        version, platform, profile)]
+                    volumes=[kubeconfig.get_kubeconfig_volume(version, platform, profile)],
                 )
             )
         }
@@ -39,31 +36,26 @@ class StatusIndexer():
         self.dag = dag
         self.platform = platform  # e.g. aws
         self.version = version  # e.g. 4.6/4.7, major.minor only
-        self.release_stream = release_stream # true release stream to follow. Nightlies, CI, etc. 
-        self.latest_release = latest_release # latest relase from the release stream
+        self.release_stream = release_stream  # true release stream to follow. Nightlies, CI, etc.
+        self.latest_release = latest_release  # latest relase from the release stream
         self.profile = profile  # e.g. default/ovn
-
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
-            task="index", version=version, platform=platform, profile=profile)
+            task="index", version=version, platform=platform, profile=profile
+        )
 
         # Upstream task this is to index
-        self.task = task 
+        self.task = task
         self.env = {
             "OPENSHIFT_CLIENT_LOCATION": self.latest_release["openshift_client_location"],
             "RELEASE_STREAM": self.release_stream,
-            "TASK": self.task
+            "TASK": self.task,
         }
-
 
     # Create Airflow Task for Indexing Results into ElasticSearch
     def get_index_task(self):
-        env = {
-            **self.env, 
-            **{"ES_SERVER": var_loader.get_elastic_url()},
-            **environ
-        }
+        env = {**self.env, **{"ES_SERVER": var_loader.get_elastic_url()}, **environ}
 
         return BashOperator(
             task_id=f"index_{self.task}",
@@ -73,6 +65,5 @@ class StatusIndexer():
             dag=self.dag,
             trigger_rule="all_done",
             executor_config=self.exec_config,
-            env=env
+            env=env,
         )
-

@@ -25,10 +25,7 @@ from tests.helm_template_generator import render_chart
 
 class MigrateDatabaseJobTest(unittest.TestCase):
     def test_should_run_by_default(self):
-        docs = render_chart(
-            values={},
-            show_only=["templates/migrate-database-job.yaml"],
-        )
+        docs = render_chart(values={}, show_only=["templates/migrate-database-job.yaml"],)
 
         assert re.search("Job", docs[0]["kind"])
         assert "run-airflow-migrations" == jmespath.search("spec.template.spec.containers[0].name", docs[0])

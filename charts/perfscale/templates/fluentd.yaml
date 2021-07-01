@@ -9,7 +9,7 @@ metadata:
   - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-  destination: 
+  destination:
     namespace: openshift-logging
     server: https://kubernetes.default.svc
   source:
@@ -21,21 +21,21 @@ spec:
 {{- with .Values.logging.fluentd.values }}
       values: |-
 {{- toYaml . | nindent 8 }}
-{{- end }}        
+{{- end }}
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
 ---
-apiVersion: v1 
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: fluentd
-  namespace: openshift-logging                                                                                                     
-data:                                                                                                               
+  namespace: openshift-logging
+data:
   fluent.conf: |
-    <system>                                                                                                        
-      log_level "#{ENV['LOG_LEVEL'] || 'warn'}" 
+    <system>
+      log_level "#{ENV['LOG_LEVEL'] || 'warn'}"
     </system>
 
     # In each section below, pre- and post- includes don't include anything initially;

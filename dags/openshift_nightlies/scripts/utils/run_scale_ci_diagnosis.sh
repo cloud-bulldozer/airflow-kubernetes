@@ -22,13 +22,13 @@ setup(){
     export RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}/$AIRFLOW_CTX_TASK_ID
     export SNAPPY_RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}
 
-    
+
     curl -L $OPENSHIFT_CLIENT_LOCATION -o openshift-client.tar.gz
     tar -xzf openshift-client.tar.gz
 
     export PATH=$PATH:$(pwd)
 
-    if [[ ! -z "$KUBEADMIN_PASSWORD" ]]; then 
+    if [[ ! -z "$KUBEADMIN_PASSWORD" ]]; then
         oc login -u kubeadmin -p $KUBEADMIN_PASSWORD
     fi
 }
@@ -40,4 +40,3 @@ cd e2e-benchmarking/utils/$workload
 export OUTPUT_DIR=$PWD
 
 eval "$command"
-

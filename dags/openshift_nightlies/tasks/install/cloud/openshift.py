@@ -27,5 +27,5 @@ class CloudOpenshiftInstaller(AbstractOpenshiftInstaller):
             dag=self.dag,
             trigger_rule=trigger_rule,
             executor_config=self.exec_config,
-            env=self.env
+            env=self.env,
         )

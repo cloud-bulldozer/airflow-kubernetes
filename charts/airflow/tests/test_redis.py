@@ -96,11 +96,7 @@ class RedisTest(unittest.TestCase):
     def test_redis_by_chart_default(self, executor):
         k8s_objects = render_chart(
             RELEASE_NAME_REDIS,
-            {
-                "executor": executor,
-                "networkPolicies": {"enabled": True},
-                "redis": {"enabled": True},
-            },
+            {"executor": executor, "networkPolicies": {"enabled": True}, "redis": {"enabled": True},},
         )
         k8s_obj_by_key = prepare_k8s_lookup_dict(k8s_objects)
 
@@ -145,10 +141,7 @@ class RedisTest(unittest.TestCase):
                 RELEASE_NAME_REDIS,
                 {
                     "executor": executor,
-                    "redis": {
-                        "enabled": True,
-                        "passwordSecretName": "test-redis-password-secret-name",
-                    },
+                    "redis": {"enabled": True, "passwordSecretName": "test-redis-password-secret-name",},
                 },
             )
 
@@ -161,10 +154,7 @@ class RedisTest(unittest.TestCase):
                 "executor": executor,
                 "networkPolicies": {"enabled": True},
                 "data": {"brokerUrlSecretName": expected_broker_url_secret_name},
-                "redis": {
-                    "enabled": True,
-                    "passwordSecretName": "test-redis-password-secret-name",
-                },
+                "redis": {"enabled": True, "passwordSecretName": "test-redis-password-secret-name",},
             },
         )
         k8s_obj_by_key = prepare_k8s_lookup_dict(k8s_objects)
@@ -188,9 +178,7 @@ class RedisTest(unittest.TestCase):
             {
                 "executor": executor,
                 "networkPolicies": {"enabled": True},
-                "data": {
-                    "brokerUrl": "redis://redis-user:password@redis-host:6379/0",
-                },
+                "data": {"brokerUrl": "redis://redis-user:password@redis-host:6379/0",},
                 "redis": {"enabled": False},
             },
         )

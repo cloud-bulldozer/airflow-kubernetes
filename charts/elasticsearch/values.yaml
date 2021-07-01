@@ -14,7 +14,7 @@ kibana:
 
 elasticsearch:
   nodeSets:
-  - name: default      
+  - name: default
     count: 3
     volumeClaimTemplates:
     - metadata:

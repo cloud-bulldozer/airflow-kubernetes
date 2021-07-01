@@ -26,20 +26,16 @@ from tests.helm_template_generator import render_chart
 class PodLauncherTest(unittest.TestCase):
     @parameterized.expand(
         [
-            ("CeleryKubernetesExecutor", True, True, ['scheduler', 'worker']),
-            ("KubernetesExecutor", True, True, ['scheduler', 'worker']),
-            ("CeleryExecutor", True, True, ['worker']),
-            ("LocalExecutor", True, True, ['scheduler']),
+            ("CeleryKubernetesExecutor", True, True, ["scheduler", "worker"]),
+            ("KubernetesExecutor", True, True, ["scheduler", "worker"]),
+            ("CeleryExecutor", True, True, ["worker"]),
+            ("LocalExecutor", True, True, ["scheduler"]),
             ("LocalExecutor", False, False, []),
         ]
     )
     def test_pod_launcher_role(self, executor, rbac, allow, expected_accounts):
         docs = render_chart(
-            values={
-                "rbacEnabled": rbac,
-                "allowPodLaunching": allow,
-                "executor": executor,
-            },
+            values={"rbacEnabled": rbac, "allowPodLaunching": allow, "executor": executor,},
             show_only=["templates/rbac/pod-launcher-rolebinding.yaml"],
         )
         if expected_accounts:

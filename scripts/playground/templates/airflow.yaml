@@ -9,7 +9,7 @@ metadata:
   - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-  destination: 
+  destination:
     namespace: $_airflow_namespace
     server: https://kubernetes.default.svc
   source:
@@ -45,7 +45,7 @@ spec:
             depth: 8
         elasticsearch:
           enabled: True
-          connection: 
+          connection:
             host: logging-es-http.openshift-logging.svc.cluster.local
             port: 9200
             user: ""
@@ -62,7 +62,7 @@ spec:
         - name: GIT_REPO
           value: $_remote_origin_url
         - name: GIT_BRANCH
-          value: $_raw_branch      
+          value: $_raw_branch
       parameters:
       - name: dags.gitSync.repo
         value: $_remote_origin_url
@@ -89,7 +89,7 @@ spec:
     name: airflow-webserver
     weight: 100
   wildcardPolicy: None
---- 
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:

@@ -11,12 +11,12 @@ airflow:
         password: $password
 
 
-results: 
+results:
   dashboard:
-    values: 
+    values:
       airflow:
         password: $password
-      elasticsearch: 
+      elasticsearch:
         password: $_results_elastic_password
 
 logging:

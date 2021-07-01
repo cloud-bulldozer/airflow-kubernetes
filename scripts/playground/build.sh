@@ -19,7 +19,7 @@ do
     esac
 done
 
-if [[ -z "$password" ]]; then 
+if [[ -z "$password" ]]; then
     usage
 fi
 

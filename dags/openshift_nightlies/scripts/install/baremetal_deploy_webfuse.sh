@@ -44,7 +44,7 @@ run_ansible_playbook(){
 
 }
 
-echo "Staring to scaleup cluster..." 
+echo "Staring to scaleup cluster..."
 date
 echo "-------------------------------"
 setup
@@ -52,4 +52,3 @@ run_ansible_playbook
 echo "Finished cluster scaleup"
 date
 echo "-------------------------------"
-

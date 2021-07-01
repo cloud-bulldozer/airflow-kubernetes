@@ -1,5 +1,5 @@
 ARG AIRFLOW_VERSION=latest
-FROM apache/airflow:${AIRFLOW_VERSION} 
+FROM apache/airflow:${AIRFLOW_VERSION}
 USER root
 
 RUN apt update -y

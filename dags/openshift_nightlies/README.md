@@ -9,5 +9,3 @@ This directory contains all tasks, scripts, and default vars for openshift night
 * `releases`: Defines variables for releases in the `manifest.yaml`
 * `util`: Contains utility functions for Airflow
 * `files`: Contains miscellaneous files
-
-

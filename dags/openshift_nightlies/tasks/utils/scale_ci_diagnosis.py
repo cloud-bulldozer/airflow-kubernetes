@@ -16,9 +16,7 @@ from airflow.utils.task_group import TaskGroup
 from kubernetes.client import models as k8s
 
 
-
-
-class Diagnosis():
+class Diagnosis:
     def __init__(self, dag, version, release_stream, latest_release, platform, profile, default_args):
 
         self.exec_config = {
@@ -29,17 +27,11 @@ class Diagnosis():
                             name="base",
                             image="quay.io/keithwhitley4/airflow-ansible:2.1.0",
                             image_pull_policy="Always",
-                            env=[
-                                kubeconfig.get_kubeadmin_password(
-                        version, platform, profile)
-                            ],
-                            volume_mounts=[
-                                kubeconfig.get_kubeconfig_volume_mount()]
-
+                            env=[kubeconfig.get_kubeadmin_password(version, platform, profile)],
+                            volume_mounts=[kubeconfig.get_kubeconfig_volume_mount()],
                         )
                     ],
-                    volumes=[kubeconfig.get_kubeconfig_volume(
-                        version, platform, profile)]
+                    volumes=[kubeconfig.get_kubeconfig_volume(version, platform, profile)],
                 )
             )
         }
@@ -49,7 +41,7 @@ class Diagnosis():
         self.platform = platform  # e.g. aws
         self.version = version  # e.g. stable/.next/.future
         self.release_stream = release_stream
-        self.latest_release = latest_release # latest relase from the release stream
+        self.latest_release = latest_release  # latest relase from the release stream
         self.profile = profile  # e.g. default/ovn
         self.default_args = default_args
 
@@ -60,27 +52,31 @@ class Diagnosis():
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
-            task="utils", version=version, platform=platform, profile=profile)
+            task="utils", version=version, platform=platform, profile=profile
+        )
         self.env = {
             "OPENSHIFT_CLIENT_LOCATION": self.latest_release["openshift_client_location"],
             "SNAPPY_DATA_SERVER_URL": self.SNAPPY_DATA_SERVER_URL,
             "SNAPPY_DATA_SERVER_USERNAME": self.SNAPPY_DATA_SERVER_USERNAME,
-            "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD
-
+            "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD,
         }
 
-        
     def get_utils(self):
         utils = self._get_utils(self.vars["utils"])
         return utils
 
-    def _get_utils(self,utils):
+    def _get_utils(self, utils):
         for index, util in enumerate(utils):
             utils[index] = self._get_util(util)
-        return utils 
+        return utils
 
     def _get_util(self, util):
-        env = {**self.env, **util.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
+        env = {
+            **self.env,
+            **util.get("env", {}),
+            **{"ES_SERVER": var_loader.get_elastic_url()},
+            **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")},
+        }
         return BashOperator(
             task_id=f"{util['name']}",
             depends_on_past=False,
@@ -88,7 +84,5 @@ class Diagnosis():
             retries=3,
             dag=self.dag,
             env=env,
-            executor_config=self.exec_config
+            executor_config=self.exec_config,
         )
-
-

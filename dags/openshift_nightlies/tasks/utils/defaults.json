@@ -5,9 +5,9 @@
             "workload": "scale-ci-diagnosis",
             "command": "./ocp_diagnosis.sh",
             "env": {
-                "PROMETHEUS_CAPTURE": "false",                  
-                "PROMETHEUS_CAPTURE_TYPE": "full",             
-                "OPENSHIFT_MUST_GATHER": "true",               
+                "PROMETHEUS_CAPTURE": "false",
+                "PROMETHEUS_CAPTURE_TYPE": "full",
+                "OPENSHIFT_MUST_GATHER": "true",
                 "STORAGE_MODE": "snappy"
             }
         }

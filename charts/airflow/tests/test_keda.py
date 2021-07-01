@@ -23,17 +23,11 @@ from tests.helm_template_generator import render_chart
 class TestKeda:
     def test_keda_disabled_by_default(self):
         """disabled by default"""
-        docs = render_chart(
-            values={},
-            show_only=["templates/workers/worker-kedaautoscaler.yaml"],
-        )
+        docs = render_chart(values={}, show_only=["templates/workers/worker-kedaautoscaler.yaml"],)
         assert docs == []
 
     @parameterized.expand(
-        [
-            ('CeleryExecutor', True),
-            ('CeleryKubernetesExecutor', True),
-        ]
+        [("CeleryExecutor", True), ("CeleryKubernetesExecutor", True),]
     )
     def test_keda_enabled(self, executor, is_created):
         """
@@ -42,7 +36,7 @@ class TestKeda:
         docs = render_chart(
             values={
                 "workers": {"keda": {"enabled": True}, "persistence": {"enabled": False}},
-                'executor': executor,
+                "executor": executor,
             },
             show_only=["templates/workers/worker-kedaautoscaler.yaml"],
         )
@@ -78,20 +72,17 @@ class TestKeda:
         assert jmespath.search("spec.triggers[0].metadata.query", docs[0]) == expected_query
 
     @parameterized.expand(
-        [
-            ('enabled', 'StatefulSet'),
-            ('not_enabled', 'Deployment'),
-        ]
+        [("enabled", "StatefulSet"), ("not_enabled", "Deployment"),]
     )
     def test_persistence(self, enabled, kind):
         """
         If worker persistence is enabled, scaleTargetRef should be StatefulSet else Deployment.
         """
-        is_enabled = enabled == 'enabled'
+        is_enabled = enabled == "enabled"
         docs = render_chart(
             values={
                 "workers": {"keda": {"enabled": True}, "persistence": {"enabled": is_enabled}},
-                'executor': 'CeleryExecutor',
+                "executor": "CeleryExecutor",
             },
             show_only=["templates/workers/worker-kedaautoscaler.yaml"],
         )

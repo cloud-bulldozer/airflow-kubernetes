@@ -39,10 +39,7 @@ class PodTemplateFileTest(unittest.TestCase):
         remove(ROOT_FOLDER + "/templates/pod-template-file.yaml")
 
     def test_should_work(self):
-        docs = render_chart(
-            values={},
-            show_only=["templates/pod-template-file.yaml"],
-        )
+        docs = render_chart(values={}, show_only=["templates/pod-template-file.yaml"],)
 
         assert re.search("Pod", docs[0]["kind"])
         assert jmespath.search("spec.containers[0].image", docs[0]) is not None
@@ -203,20 +200,17 @@ class PodTemplateFileTest(unittest.TestCase):
         assert "base" == jmespath.search("spec.containers[0].name", docs[0])
 
     def test_mount_airflow_cfg(self):
-        docs = render_chart(
-            values={},
-            show_only=["templates/pod-template-file.yaml"],
-        )
+        docs = render_chart(values={}, show_only=["templates/pod-template-file.yaml"],)
 
         assert re.search("Pod", docs[0]["kind"])
-        assert {'configMap': {'name': 'RELEASE-NAME-airflow-config'}, 'name': 'config'} == jmespath.search(
+        assert {"configMap": {"name": "RELEASE-NAME-airflow-config"}, "name": "config"} == jmespath.search(
             "spec.volumes[1]", docs[0]
         )
         assert {
-            'name': 'config',
-            'mountPath': '/opt/airflow/airflow.cfg',
-            'subPath': 'airflow.cfg',
-            'readOnly': True,
+            "name": "config",
+            "mountPath": "/opt/airflow/airflow.cfg",
+            "subPath": "airflow.cfg",
+            "readOnly": True,
         } == jmespath.search("spec.containers[0].volumeMounts[1]", docs[0])
 
     def test_should_create_valid_affinity_and_node_selector(self):
@@ -226,11 +220,7 @@ class PodTemplateFileTest(unittest.TestCase):
                     "nodeAffinity": {
                         "requiredDuringSchedulingIgnoredDuringExecution": {
                             "nodeSelectorTerms": [
-                                {
-                                    "matchExpressions": [
-                                        {"key": "foo", "operator": "In", "values": ["true"]},
-                                    ]
-                                }
+                                {"matchExpressions": [{"key": "foo", "operator": "In", "values": ["true"]},]}
                             ]
                         }
                     }
@@ -252,11 +242,5 @@ class PodTemplateFileTest(unittest.TestCase):
             "key",
             docs[0],
         )
-        assert "ssd" == jmespath.search(
-            "spec.nodeSelector.diskType",
-            docs[0],
-        )
-        assert "dynamic-pods" == jmespath.search(
-            "spec.tolerations[0].key",
-            docs[0],
-        )
+        assert "ssd" == jmespath.search("spec.nodeSelector.diskType", docs[0],)
+        assert "dynamic-pods" == jmespath.search("spec.tolerations[0].key", docs[0],)

@@ -22,7 +22,7 @@ setup(){
     # Clone Perf private keys
     git clone https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git
     export PUBLIC_KEY=/tmp/JetSki/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
-    export PRIVATE_KEY=/tmp/JetSki/perf-dept/ssh_keys/id_rsa_pbench_ec2 
+    export PRIVATE_KEY=/tmp/JetSki/perf-dept/ssh_keys/id_rsa_pbench_ec2
     export ANSIBLE_FORCE_COLOR=true
     chmod 600 ${PRIVATE_KEY}
 
@@ -34,7 +34,7 @@ run_ansible_playbook(){
     time /home/airflow/.local/bin/ansible-playbook -i inventory/jetski/hosts playbook-jetski-scaleup.yml --extra-vars "@${json_file}"
 }
 
-echo "Staring to scaleup cluster..." 
+echo "Staring to scaleup cluster..."
 date
 echo "-------------------------------"
 setup
@@ -42,4 +42,3 @@ run_ansible_playbook
 echo "Finished cluster scaleup"
 date
 echo "-------------------------------"
-

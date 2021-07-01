@@ -11,7 +11,7 @@ global:
 airflow:
   syncWave: 0
   hostName: airflow
-  values: 
+  values:
     defaultAirflowTag: 2.1.0-python3.8
     config:
       logging:
@@ -38,7 +38,7 @@ airflow:
         depth: 8
     elasticsearch:
       enabled: True
-      connection: 
+      connection:
         host: logging-es-http.openshift-logging.svc.cluster.local
         port: 9200
         user: ""
@@ -65,7 +65,7 @@ results:
     values:
       elasticsearch:
         nodeSets:
-        - name: default      
+        - name: default
           count: 3
           volumeClaimTemplates:
           - metadata:
@@ -94,7 +94,7 @@ results:
                     add: ["SYS_CHROOT"]
 
 
-logging: 
+logging:
   syncWave: 0
   fluentd:
     mergeJsonLogs: false
@@ -103,7 +103,7 @@ logging:
     values:
       elasticsearch:
         nodeSets:
-        - name: default      
+        - name: default
           count: 3
           volumeClaimTemplates:
           - metadata:

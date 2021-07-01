@@ -28,57 +28,51 @@ OBJECT_COUNT_IN_BASIC_DEPLOYMENT = 22
 class TestBaseChartTest(unittest.TestCase):
     def test_basic_deployments(self):
         k8s_objects = render_chart(
-            "TEST-BASIC",
-            values={
-                "chart": {
-                    'metadata': 'AA',
-                },
-                'labels': {"TEST-LABEL": "TEST-VALUE"},
-            },
+            "TEST-BASIC", values={"chart": {"metadata": "AA",}, "labels": {"TEST-LABEL": "TEST-VALUE"},},
         )
         list_of_kind_names_tuples = [
-            (k8s_object['kind'], k8s_object['metadata']['name']) for k8s_object in k8s_objects
+            (k8s_object["kind"], k8s_object["metadata"]["name"]) for k8s_object in k8s_objects
         ]
         assert list_of_kind_names_tuples == [
-            ('ServiceAccount', 'TEST-BASIC-scheduler'),
-            ('ServiceAccount', 'TEST-BASIC-webserver'),
-            ('ServiceAccount', 'TEST-BASIC-worker'),
-            ('Secret', 'TEST-BASIC-postgresql'),
-            ('Secret', 'TEST-BASIC-airflow-metadata'),
-            ('Secret', 'TEST-BASIC-airflow-result-backend'),
-            ('ConfigMap', 'TEST-BASIC-airflow-config'),
-            ('Role', 'TEST-BASIC-pod-launcher-role'),
-            ('Role', 'TEST-BASIC-pod-log-reader-role'),
-            ('RoleBinding', 'TEST-BASIC-pod-launcher-rolebinding'),
-            ('RoleBinding', 'TEST-BASIC-pod-log-reader-rolebinding'),
-            ('Service', 'TEST-BASIC-postgresql-headless'),
-            ('Service', 'TEST-BASIC-postgresql'),
-            ('Service', 'TEST-BASIC-statsd'),
-            ('Service', 'TEST-BASIC-webserver'),
-            ('Deployment', 'TEST-BASIC-scheduler'),
-            ('Deployment', 'TEST-BASIC-statsd'),
-            ('Deployment', 'TEST-BASIC-webserver'),
-            ('StatefulSet', 'TEST-BASIC-postgresql'),
-            ('Secret', 'TEST-BASIC-fernet-key'),
-            ('Job', 'TEST-BASIC-create-user'),
-            ('Job', 'TEST-BASIC-run-airflow-migrations'),
+            ("ServiceAccount", "TEST-BASIC-scheduler"),
+            ("ServiceAccount", "TEST-BASIC-webserver"),
+            ("ServiceAccount", "TEST-BASIC-worker"),
+            ("Secret", "TEST-BASIC-postgresql"),
+            ("Secret", "TEST-BASIC-airflow-metadata"),
+            ("Secret", "TEST-BASIC-airflow-result-backend"),
+            ("ConfigMap", "TEST-BASIC-airflow-config"),
+            ("Role", "TEST-BASIC-pod-launcher-role"),
+            ("Role", "TEST-BASIC-pod-log-reader-role"),
+            ("RoleBinding", "TEST-BASIC-pod-launcher-rolebinding"),
+            ("RoleBinding", "TEST-BASIC-pod-log-reader-rolebinding"),
+            ("Service", "TEST-BASIC-postgresql-headless"),
+            ("Service", "TEST-BASIC-postgresql"),
+            ("Service", "TEST-BASIC-statsd"),
+            ("Service", "TEST-BASIC-webserver"),
+            ("Deployment", "TEST-BASIC-scheduler"),
+            ("Deployment", "TEST-BASIC-statsd"),
+            ("Deployment", "TEST-BASIC-webserver"),
+            ("StatefulSet", "TEST-BASIC-postgresql"),
+            ("Secret", "TEST-BASIC-fernet-key"),
+            ("Job", "TEST-BASIC-create-user"),
+            ("Job", "TEST-BASIC-run-airflow-migrations"),
         ]
         assert OBJECT_COUNT_IN_BASIC_DEPLOYMENT == len(k8s_objects)
         for k8s_object in k8s_objects:
-            labels = jmespath.search('metadata.labels', k8s_object) or {}
-            if 'postgresql' in labels.get('chart'):
+            labels = jmespath.search("metadata.labels", k8s_object) or {}
+            if "postgresql" in labels.get("chart"):
                 continue
-            k8s_name = k8s_object['kind'] + ":" + k8s_object['metadata']['name']
-            assert 'TEST-VALUE' == labels.get(
+            k8s_name = k8s_object["kind"] + ":" + k8s_object["metadata"]["name"]
+            assert "TEST-VALUE" == labels.get(
                 "TEST-LABEL"
             ), f"Missing label TEST-LABEL on {k8s_name}. Current labels: {labels}"
 
     def test_basic_deployment_without_default_users(self):
-        k8s_objects = render_chart("TEST-BASIC", {"webserver": {'defaultUser': {'enabled': False}}})
+        k8s_objects = render_chart("TEST-BASIC", {"webserver": {"defaultUser": {"enabled": False}}})
         list_of_kind_names_tuples = [
-            (k8s_object['kind'], k8s_object['metadata']['name']) for k8s_object in k8s_objects
+            (k8s_object["kind"], k8s_object["metadata"]["name"]) for k8s_object in k8s_objects
         ]
-        assert ('Job', 'TEST-BASIC-create-user') not in list_of_kind_names_tuples
+        assert ("Job", "TEST-BASIC-create-user") not in list_of_kind_names_tuples
         assert OBJECT_COUNT_IN_BASIC_DEPLOYMENT - 1 == len(k8s_objects)
 
     def test_network_policies_are_valid(self):
@@ -91,17 +85,17 @@ class TestBaseChartTest(unittest.TestCase):
             },
         )
         kind_names_tuples = {
-            (k8s_object['kind'], k8s_object['metadata']['name']) for k8s_object in k8s_objects
+            (k8s_object["kind"], k8s_object["metadata"]["name"]) for k8s_object in k8s_objects
         }
 
         expected_kind_names = [
-            ('NetworkPolicy', 'TEST-BASIC-redis-policy'),
-            ('NetworkPolicy', 'TEST-BASIC-flower-policy'),
-            ('NetworkPolicy', 'TEST-BASIC-pgbouncer-policy'),
-            ('NetworkPolicy', 'TEST-BASIC-scheduler-policy'),
-            ('NetworkPolicy', 'TEST-BASIC-statsd-policy'),
-            ('NetworkPolicy', 'TEST-BASIC-webserver-policy'),
-            ('NetworkPolicy', 'TEST-BASIC-worker-policy'),
+            ("NetworkPolicy", "TEST-BASIC-redis-policy"),
+            ("NetworkPolicy", "TEST-BASIC-flower-policy"),
+            ("NetworkPolicy", "TEST-BASIC-pgbouncer-policy"),
+            ("NetworkPolicy", "TEST-BASIC-scheduler-policy"),
+            ("NetworkPolicy", "TEST-BASIC-statsd-policy"),
+            ("NetworkPolicy", "TEST-BASIC-webserver-policy"),
+            ("NetworkPolicy", "TEST-BASIC-worker-policy"),
         ]
         for kind_name in expected_kind_names:
             assert kind_name in kind_names_tuples
@@ -137,10 +131,7 @@ class TestBaseChartTest(unittest.TestCase):
     def test_unsupported_executor(self):
         with self.assertRaises(CalledProcessError) as ex_ctx:
             render_chart(
-                "TEST-BASIC",
-                {
-                    "executor": "SequentialExecutor",
-                },
+                "TEST-BASIC", {"executor": "SequentialExecutor",},
             )
         assert (
             'executor must be one of the following: "LocalExecutor", "CeleryExecutor", '

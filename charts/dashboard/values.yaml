@@ -35,17 +35,16 @@ frontend:
     privileged: true
     allowPrivilegeEscalation: true
 
-backend: 
+backend:
   image:
     repository: quay.io/mleader/perf-dashboard
     tag: back
   resources: {}
   securityContext: {}
-  
+
 
 podAnnotations:
   alpha.image.policy.openshift.io/resolve-names: '*'
 
 podSecurityContext: {}
   # fsGroup: 2000
-

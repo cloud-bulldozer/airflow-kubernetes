@@ -21,7 +21,7 @@ spec:
       - /webhooks/8/clientConfig/caBundle
       - /webhooks/9/clientConfig/caBundle
   project: default
-  destination: 
+  destination:
     namespace: elastic-system
     server: https://kubernetes.default.svc
   source:

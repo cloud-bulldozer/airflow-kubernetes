@@ -14,12 +14,12 @@ spec:
   - name: {{ .Values.frontend.image.tag }}
     from:
       kind: DockerImage
-      name: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }} 
+      name: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
     importPolicy:
       scheduled: true
   - name: {{ .Values.backend.image.tag }}
     from:
       kind: DockerImage
-      name: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }} 
+      name: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
     importPolicy:
       scheduled: true

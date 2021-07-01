@@ -48,7 +48,7 @@
     "slack_integration": false,
     "slack_api_token": "",
     "slack_channel": "",
-    "watcher_slack_id": "{Monday: , Tuesday: , Wednesday: , Thursday: , Friday: , Saturday: , Sunday: }", 
+    "watcher_slack_id": "{Monday: , Tuesday: , Wednesday: , Thursday: , Friday: , Saturday: , Sunday: }",
     "slack_team_alias": "",
     "iterations": 5,
     "sleep_time": 30,

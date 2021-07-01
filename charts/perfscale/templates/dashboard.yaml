@@ -28,7 +28,7 @@ spec:
       - /spec/template/spec/containers/0/image
       - /spec/template/spec/containers/1/image
   project: default
-  destination: 
+  destination:
     namespace: perf-results
     server: https://kubernetes.default.svc
   source:
@@ -40,10 +40,10 @@ spec:
 {{- with .Values.results.dashboard.values }}
       values: |-
 {{- toYaml . | nindent 8 }}
-{{- end }}  
-      parameters: 
+{{- end }}
+      parameters:
       - name: ingress.baseDomain
-        value: {{ .Values.global.baseDomain }}      
+        value: {{ .Values.global.baseDomain }}
   syncPolicy:
     automated:
       prune: true

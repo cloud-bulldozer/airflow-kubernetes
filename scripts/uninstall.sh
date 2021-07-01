@@ -6,7 +6,7 @@ helm delete perfscale -n argocd
 
 
 while [ $(kubectl get apps -A | wc -l) != "0" ];
-do 
+do
     sleep 5
 done
 

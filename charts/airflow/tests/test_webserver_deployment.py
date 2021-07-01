@@ -25,11 +25,7 @@ from tests.helm_template_generator import render_chart
 class WebserverDeploymentTest(unittest.TestCase):
     def test_should_add_host_header_to_liveness_and_readiness_probes(self):
         docs = render_chart(
-            values={
-                "config": {
-                    "webserver": {"base_url": "https://example.com:21222/mypath/path"},
-                }
-            },
+            values={"config": {"webserver": {"base_url": "https://example.com:21222/mypath/path"},}},
             show_only=["templates/webserver/webserver-deployment.yaml"],
         )
 
@@ -42,11 +38,7 @@ class WebserverDeploymentTest(unittest.TestCase):
 
     def test_should_add_path_to_liveness_and_readiness_probes(self):
         docs = render_chart(
-            values={
-                "config": {
-                    "webserver": {"base_url": "https://example.com:21222/mypath/path"},
-                }
-            },
+            values={"config": {"webserver": {"base_url": "https://example.com:21222/mypath/path"},}},
             show_only=["templates/webserver/webserver-deployment.yaml"],
         )
 
@@ -60,10 +52,7 @@ class WebserverDeploymentTest(unittest.TestCase):
         )
 
     def test_should_not_contain_host_header_if_host_empty_string(self):
-        docs = render_chart(
-            values={},
-            show_only=["templates/webserver/webserver-deployment.yaml"],
-        )
+        docs = render_chart(values={}, show_only=["templates/webserver/webserver-deployment.yaml"],)
 
         assert (
             jmespath.search("spec.template.spec.containers[0].livenessProbe.httpGet.httpHeaders", docs[0])
@@ -76,11 +65,7 @@ class WebserverDeploymentTest(unittest.TestCase):
 
     def test_should_not_contain_host_header_if_base_url_not_set(self):
         docs = render_chart(
-            values={
-                "config": {
-                    "webserver": {"base_url": ""},
-                }
-            },
+            values={"config": {"webserver": {"base_url": ""},}},
             show_only=["templates/webserver/webserver-deployment.yaml"],
         )
 
@@ -94,9 +79,7 @@ class WebserverDeploymentTest(unittest.TestCase):
         )
 
     def test_should_not_contain_host_header_by_default(self):
-        docs = render_chart(
-            show_only=["templates/webserver/webserver-deployment.yaml"],
-        )
+        docs = render_chart(show_only=["templates/webserver/webserver-deployment.yaml"],)
 
         assert (
             jmespath.search("spec.template.spec.containers[0].livenessProbe.httpGet.httpHeaders", docs[0])

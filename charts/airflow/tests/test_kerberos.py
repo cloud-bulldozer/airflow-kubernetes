@@ -25,7 +25,7 @@ from tests.helm_template_generator import render_chart
 
 class KerberosTest(unittest.TestCase):
     def test_kerberos_not_mentioned_in_render_if_disabled(self):
-        k8s_objects = render_chart(name="NO-KERBEROS", values={"kerberos": {'enabled': False}})
+        k8s_objects = render_chart(name="NO-KERBEROS", values={"kerberos": {"enabled": False}})
         # ignore airflow config map
         k8s_objects_to_consider = [
             obj for obj in k8s_objects if obj["metadata"]["name"] != "NO-KERBEROS-airflow-config"
@@ -37,12 +37,7 @@ class KerberosTest(unittest.TestCase):
         docs = render_chart(
             values={
                 "executor": "CeleryExecutor",
-                "workers": {
-                    "kerberosSidecar": {"enabled": True},
-                    "persistence": {
-                        "enabled": True,
-                    },
-                },
+                "workers": {"kerberosSidecar": {"enabled": True}, "persistence": {"enabled": True,},},
                 "kerberos": {
                     "enabled": True,
                     "configPath": "/etc/krb5.conf",
@@ -68,14 +63,8 @@ class KerberosTest(unittest.TestCase):
                     "kerberosSidecar": {
                         "enabled": True,
                         "resources": {
-                            "requests": {
-                                "cpu": "200m",
-                                "memory": "200Mi",
-                            },
-                            "limits": {
-                                "cpu": "201m",
-                                "memory": "201Mi",
-                            },
+                            "requests": {"cpu": "200m", "memory": "200Mi",},
+                            "limits": {"cpu": "201m", "memory": "201Mi",},
                         },
                     },
                 },

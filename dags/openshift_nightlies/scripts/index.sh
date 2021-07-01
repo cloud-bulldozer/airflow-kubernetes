@@ -26,8 +26,8 @@ setup(){
     curl -L $OPENSHIFT_CLIENT_LOCATION -o openshift-client.tar.gz
     tar -xzf openshift-client.tar.gz
     export PATH=$PATH:/home/airflow/.local/bin:$(pwd)
-    
-    
+
+
 
     # Get OpenShift cluster details
     cluster_name=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}') || echo "Cluster Install Failed"
@@ -37,7 +37,7 @@ setup(){
     masters=$(oc get nodes -l node-role.kubernetes.io/master --no-headers=true | wc -l) || true
     workers=$(oc get nodes -l node-role.kubernetes.io/worker --no-headers=true | wc -l) || true
     workload=$(oc get nodes -l node-role.kubernetes.io/workload --no-headers=true | wc -l) || true
-    infra=$(oc get nodes -l node-role.kubernetes.io/infra --no-headers=true | wc -l) || true 
+    infra=$(oc get nodes -l node-role.kubernetes.io/infra --no-headers=true | wc -l) || true
     worker_type=$(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[].metadata.labels.beta\.kubernetes\.io/instance-type}') || true
     infra_type=$(oc get nodes -l node-role.kubernetes.io/infra -o jsonpath='{.items[].metadata.labels.beta\.kubernetes\.io/instance-type}') || true
     workload_type=$(oc get nodes -l node-role.kubernetes.io/workload -o jsonpath='{.items[].metadata.labels.beta\.kubernetes\.io/instance-type}') || true
@@ -50,7 +50,7 @@ setup(){
 
 index_task(){
     task_json=$1
-    
+
     state=$(echo $task_json | jq -r '.state')
     task_id=$(echo $task_json | jq -r '.task_id')
 
@@ -60,8 +60,8 @@ index_task(){
         start_date=$(echo $task_json | jq -r '.start_date')
         end_date=$(echo $task_json | jq -r '.end_date')
 
-        if [[ -z $start_date ]]; then 
-            start_date=$end_date        
+        if [[ -z $start_date ]]; then
+            start_date=$end_date
         fi
 
         if [[ -z $start_date || -z $end_date ]]; then
@@ -74,7 +74,7 @@ index_task(){
 
         encoded_execution_date=$(python3 -c "import urllib.parse; print(urllib.parse.quote(input()))" <<< "$execution_date")
         build_url="${airflow_base_url}/task?dag_id=${dag_id}&task_id=${task_id}&execution_date=${encoded_execution_date}"
-        
+
         curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
             "uuid" : "'$UUID'",
             "release_stream": "'$RELEASE_STREAM'",
@@ -99,22 +99,22 @@ index_task(){
             "upstream_job_build": "'$dag_run_id'",
             "execution_date": "'$execution_date'",
             "job_duration": "'$duration'",
-            "start_date": "'$start_date'", 
-            "end_date": "'$end_date'", 
+            "start_date": "'$start_date'",
+            "end_date": "'$end_date'",
             "timestamp": "'$start_date'"
             }' $ES_SERVER/$ES_INDEX/_doc/$dag_id%2F$dag_run_id%2F$task_id
 
     fi
-  
+
 }
 
 
 index_tasks(){
-    
+
     task_states=$(AIRFLOW__LOGGING__LOGGING_LEVEL=ERROR  airflow tasks states-for-dag-run $dag_id $execution_date -o json)
-    task_json=$( echo $task_states | jq -c ".[] | select( .task_id == \"$TASK\")") 
+    task_json=$( echo $task_states | jq -c ".[] | select( .task_id == \"$TASK\")")
     index_task $task_json
-    
+
 }
 
 # Defaults

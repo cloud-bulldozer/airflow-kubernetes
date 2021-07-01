@@ -19,7 +19,7 @@ setup(){
     git clone https://github.com/cloud-bulldozer/scale-ci-deploy
     git clone https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git
     export PUBLIC_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
-    export PRIVATE_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2 
+    export PRIVATE_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2
     export ANSIBLE_FORCE_COLOR=true
     export AWS_REGION=us-west-2
     chmod 600 ${PRIVATE_KEY}
@@ -70,5 +70,3 @@ if [[ "$operation" == "install" ]]; then
 elif [[ "$operation" == "cleanup" ]]; then
     printf "Running Cleanup Steps"
 fi
-
-

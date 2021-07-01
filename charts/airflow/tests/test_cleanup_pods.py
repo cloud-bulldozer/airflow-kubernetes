@@ -25,10 +25,7 @@ from tests.helm_template_generator import render_chart
 class CleanupPodsTest(unittest.TestCase):
     def test_should_create_cronjob_for_enabled_cleanup(self):
         docs = render_chart(
-            values={
-                "cleanup": {"enabled": True},
-            },
-            show_only=["templates/cleanup/cleanup-cronjob.yaml"],
+            values={"cleanup": {"enabled": True},}, show_only=["templates/cleanup/cleanup-cronjob.yaml"],
         )
 
         assert "airflow-cleanup-pods" == jmespath.search(

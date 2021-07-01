@@ -28,27 +28,15 @@ RELEASE_NAME = "TEST-EXTRA-ENV-ENV-FROM"
 
 # Test Params: k8s object key and paths with expected env / envFrom
 PARAMS = [
-    (
-        ("Job", f"{RELEASE_NAME}-create-user"),
-        ("spec.template.spec.containers[0]",),
-    ),
-    (
-        ("Job", f"{RELEASE_NAME}-run-airflow-migrations"),
-        ("spec.template.spec.containers[0]",),
-    ),
+    (("Job", f"{RELEASE_NAME}-create-user"), ("spec.template.spec.containers[0]",),),
+    (("Job", f"{RELEASE_NAME}-run-airflow-migrations"), ("spec.template.spec.containers[0]",),),
     (
         ("Deployment", f"{RELEASE_NAME}-scheduler"),
-        (
-            "spec.template.spec.initContainers[0]",
-            "spec.template.spec.containers[0]",
-        ),
+        ("spec.template.spec.initContainers[0]", "spec.template.spec.containers[0]",),
     ),
     (
         ("StatefulSet", f"{RELEASE_NAME}-worker"),
-        (
-            "spec.template.spec.initContainers[0]",
-            "spec.template.spec.containers[0]",
-        ),
+        ("spec.template.spec.initContainers[0]", "spec.template.spec.containers[0]",),
     ),
     (
         ("Deployment", f"{RELEASE_NAME}-webserver"),

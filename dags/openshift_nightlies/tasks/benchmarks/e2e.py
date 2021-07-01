@@ -16,9 +16,7 @@ from airflow.utils.task_group import TaskGroup
 from kubernetes.client import models as k8s
 
 
-
-
-class E2EBenchmarks():
+class E2EBenchmarks:
     def __init__(self, dag, version, release_stream, latest_release, platform, profile, default_args):
 
         self.exec_config = {
@@ -29,17 +27,11 @@ class E2EBenchmarks():
                             name="base",
                             image="quay.io/keithwhitley4/airflow-ansible:2.1.0",
                             image_pull_policy="Always",
-                            env=[
-                                kubeconfig.get_kubeadmin_password(
-                        version, platform, profile)
-                            ],
-                            volume_mounts=[
-                                kubeconfig.get_kubeconfig_volume_mount()]
-
+                            env=[kubeconfig.get_kubeadmin_password(version, platform, profile)],
+                            volume_mounts=[kubeconfig.get_kubeconfig_volume_mount()],
                         )
                     ],
-                    volumes=[kubeconfig.get_kubeconfig_volume(
-                        version, platform, profile)]
+                    volumes=[kubeconfig.get_kubeconfig_volume(version, platform, profile)],
                 )
             )
         }
@@ -49,7 +41,7 @@ class E2EBenchmarks():
         self.platform = platform  # e.g. aws
         self.version = version  # e.g. stable/.next/.future
         self.release_stream = release_stream
-        self.latest_release = latest_release # latest relase from the release stream
+        self.latest_release = latest_release  # latest relase from the release stream
         self.profile = profile  # e.g. default/ovn
         self.default_args = default_args
 
@@ -60,16 +52,14 @@ class E2EBenchmarks():
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
-            task="benchmarks", version=version, platform=platform, profile=profile)
+            task="benchmarks", version=version, platform=platform, profile=profile
+        )
         self.env = {
             "OPENSHIFT_CLIENT_LOCATION": self.latest_release["openshift_client_location"],
             "SNAPPY_DATA_SERVER_URL": self.SNAPPY_DATA_SERVER_URL,
             "SNAPPY_DATA_SERVER_USERNAME": self.SNAPPY_DATA_SERVER_USERNAME,
-            "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD
+            "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD,
         }
-
-        
-
 
     def get_benchmarks(self):
         benchmarks = self._get_benchmarks(self.vars["benchmarks"])
@@ -79,28 +69,41 @@ class E2EBenchmarks():
 
     def _get_benchmarks(self, benchmarks):
         for index, benchmark in enumerate(benchmarks):
-            if 'benchmarks' not in benchmark:
+            if "benchmarks" not in benchmark:
                 benchmarks[index] = self._get_benchmark(benchmark)
-            elif 'group' in benchmark:
-                with TaskGroup(benchmark['group'], prefix_group_id=False, dag=self.dag) as task_group:
-                    benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
-            else: 
-                benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
+            elif "group" in benchmark:
+                with TaskGroup(benchmark["group"], prefix_group_id=False, dag=self.dag) as task_group:
+                    benchmarks[index] = self._get_benchmarks(benchmark["benchmarks"])
+            else:
+                benchmarks[index] = self._get_benchmarks(benchmark["benchmarks"])
         return benchmarks
 
     def _add_indexers(self, benchmarks):
-            for index, benchmark in enumerate(benchmarks):
-                if isinstance(benchmark, BashOperator):
-                    self._add_indexer(benchmark)
-                elif isinstance(benchmark, list):
-                    self._add_indexers(benchmark)
+        for index, benchmark in enumerate(benchmarks):
+            if isinstance(benchmark, BashOperator):
+                self._add_indexer(benchmark)
+            elif isinstance(benchmark, list):
+                self._add_indexers(benchmark)
 
-    def _add_indexer(self, benchmark): 
-        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, benchmark.task_id).get_index_task() 
-        benchmark >> indexer 
+    def _add_indexer(self, benchmark):
+        indexer = StatusIndexer(
+            self.dag,
+            self.version,
+            self.release_stream,
+            self.latest_release,
+            self.platform,
+            self.profile,
+            benchmark.task_id,
+        ).get_index_task()
+        benchmark >> indexer
 
     def _get_benchmark(self, benchmark):
-        env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
+        env = {
+            **self.env,
+            **benchmark.get("env", {}),
+            **{"ES_SERVER": var_loader.get_elastic_url()},
+            **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")},
+        }
         return BashOperator(
             task_id=f"{benchmark['name']}",
             depends_on_past=False,
@@ -108,5 +111,5 @@ class E2EBenchmarks():
             retries=3,
             dag=self.dag,
             env=env,
-            executor_config=self.exec_config
+            executor_config=self.exec_config,
         )

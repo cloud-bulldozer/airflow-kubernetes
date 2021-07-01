@@ -10,5 +10,3 @@ spec:
   count: {{ .Values.kibana.replicas }}
   elasticsearchRef:
     name: {{ include "elasticsearch.fullname" . }}
-
-  

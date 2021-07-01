@@ -35,7 +35,7 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "dashboard.selectorLabels" . | nindent 8 }}   
+        {{- include "dashboard.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -65,11 +65,10 @@ spec:
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
           volumeMounts:
-            - name: config 
+            - name: config
               mountPath: /backend/ocpperf.toml
               subPath: ocpperf.toml
       volumes:
         - name: config
           secret:
             secretName: {{ .Values.elasticsearch.existingSecretName | default (printf "%s" (include "dashboard.fullname" .)) }}
-

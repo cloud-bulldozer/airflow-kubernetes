@@ -7,7 +7,7 @@ versionAliases:
     alias: future
 
 platforms:
-  cloud: 
+  cloud:
     - version: 4.7
       releaseStream: 4.7.0-0.nightly
       providers:
@@ -47,7 +47,7 @@ platforms:
       - name: gcp
         profiles:
         - default
-  baremetal: 
+  baremetal:
     - version: 4.7
       releaseStream: latest-4.7
       build: dev

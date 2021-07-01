@@ -57,28 +57,25 @@ class TestFlower:
         assert "AIRFLOW__CELERY__FLOWER_BASIC_AUTH" == jmespath.search(
             "spec.template.spec.containers[0].env[0].name", docs[0]
         )
-        assert ['curl', '--user', '$AIRFLOW__CELERY__FLOWER_BASIC_AUTH', 'localhost:7777'] == jmespath.search(
+        assert ["curl", "--user", "$AIRFLOW__CELERY__FLOWER_BASIC_AUTH", "localhost:7777"] == jmespath.search(
             "spec.template.spec.containers[0].livenessProbe.exec.command", docs[0]
         )
-        assert ['curl', '--user', '$AIRFLOW__CELERY__FLOWER_BASIC_AUTH', 'localhost:7777'] == jmespath.search(
+        assert ["curl", "--user", "$AIRFLOW__CELERY__FLOWER_BASIC_AUTH", "localhost:7777"] == jmespath.search(
             "spec.template.spec.containers[0].readinessProbe.exec.command", docs[0]
         )
 
     def test_should_create_flower_deployment_without_authorization(self):
         docs = render_chart(
-            values={
-                "executor": "CeleryExecutor",
-                "ports": {"flowerUI": 7777},
-            },
+            values={"executor": "CeleryExecutor", "ports": {"flowerUI": 7777},},
             show_only=["templates/flower/flower-deployment.yaml"],
         )
 
         assert "AIRFLOW__CORE__FERNET_KEY" == jmespath.search(
             "spec.template.spec.containers[0].env[0].name", docs[0]
         )
-        assert ['curl', 'localhost:7777'] == jmespath.search(
+        assert ["curl", "localhost:7777"] == jmespath.search(
             "spec.template.spec.containers[0].livenessProbe.exec.command", docs[0]
         )
-        assert ['curl', 'localhost:7777'] == jmespath.search(
+        assert ["curl", "localhost:7777"] == jmespath.search(
             "spec.template.spec.containers[0].readinessProbe.exec.command", docs[0]
         )

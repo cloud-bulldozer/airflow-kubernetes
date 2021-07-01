@@ -9,7 +9,7 @@ metadata:
   - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-  destination: 
+  destination:
     namespace: airflow
     server: https://kubernetes.default.svc
   source:
@@ -30,7 +30,7 @@ spec:
           value: {{ $.Values.global.repo.url }}
         - name: GIT_BRANCH
           value: {{ $.Values.global.repo.branch }}
-{{- end }}        
+{{- end }}
       parameters:
       - name: dags.gitSync.repo
         value: {{ .Values.global.repo.url }}
@@ -57,7 +57,7 @@ spec:
     name: airflow-webserver
     weight: 100
   wildcardPolicy: None
---- 
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:

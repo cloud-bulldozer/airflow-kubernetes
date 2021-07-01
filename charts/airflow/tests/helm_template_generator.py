@@ -33,7 +33,7 @@ api_client = ApiClient()
 BASE_URL_SPEC = "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.14.0"
 
 crd_lookup = {
-    'keda.sh/v1alpha1::ScaledObject': 'https://raw.githubusercontent.com/kedacore/keda/v2.0.0/config/crd/bases/keda.sh_scaledobjects.yaml',  # noqa: E501 # pylint: disable=line-too-long
+    "keda.sh/v1alpha1::ScaledObject": "https://raw.githubusercontent.com/kedacore/keda/v2.0.0/config/crd/bases/keda.sh_scaledobjects.yaml",  # noqa: E501 # pylint: disable=line-too-long
 }
 
 
@@ -41,12 +41,12 @@ def get_schema_k8s(api_version, kind):
     api_version = api_version.lower()
     kind = kind.lower()
 
-    if '/' in api_version:
+    if "/" in api_version:
         ext, _, api_version = api_version.partition("/")
         ext = ext.split(".")[0]
-        url = f'{BASE_URL_SPEC}/{kind}-{ext}-{api_version}.json'
+        url = f"{BASE_URL_SPEC}/{kind}-{ext}-{api_version}.json"
     else:
-        url = f'{BASE_URL_SPEC}/{kind}-{api_version}.json'
+        url = f"{BASE_URL_SPEC}/{kind}-{api_version}.json"
     request = requests.get(url)
     request.raise_for_status()
     schema = request.json()
@@ -58,7 +58,7 @@ def get_schema_crd(api_version, kind):
     if not url:
         return None
     response = requests.get(url)
-    yaml_schema = response.content.decode('utf-8')
+    yaml_schema = response.content.decode("utf-8")
     schema = yaml.safe_load(StringIO(yaml_schema))
     return schema
 
@@ -76,7 +76,7 @@ def create_validator(api_version, kind):
 def validate_k8s_object(instance):
     # Skip PostgresSQL chart
     chart = jmespath.search("metadata.labels.chart", instance)
-    if chart and 'postgresql' in chart:
+    if chart and "postgresql" in chart:
         return
 
     validate = create_validator(instance.get("apiVersion"), instance.get("kind"))
@@ -92,7 +92,7 @@ def render_chart(name="RELEASE-NAME", values=None, show_only=None):
         content = yaml.dump(values)
         tmp_file.write(content.encode())
         tmp_file.flush()
-        command = ["helm", "template", name, sys.path[0], '--values', tmp_file.name]
+        command = ["helm", "template", name, sys.path[0], "--values", tmp_file.name]
         if show_only:
             for i in show_only:
                 command.extend(["--show-only", i])

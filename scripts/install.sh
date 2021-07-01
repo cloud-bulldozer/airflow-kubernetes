@@ -15,7 +15,7 @@ do
     esac
 done
 
-if [[ -z "$password" ]]; then 
+if [[ -z "$password" ]]; then
     usage
 fi
 
@@ -25,10 +25,10 @@ install_helm(){
     wget https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
     tar -zxf helm-${HELM_VERSION}-linux-amd64.tar.gz
     mv linux-amd64/helm /usr/bin/helm
-    helm repo add stable https://charts.helm.sh/stable/   
+    helm repo add stable https://charts.helm.sh/stable/
 }
 
-install_argo(){    
+install_argo(){
     kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 }
