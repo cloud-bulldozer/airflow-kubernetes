@@ -39,14 +39,21 @@ class E2EBenchmarks():
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
             task="benchmarks", version=version, platform=platform, profile=profile)
+        self.git_name=self._git_name()
         self.env = {
             "SNAPPY_DATA_SERVER_URL": self.SNAPPY_DATA_SERVER_URL,
             "SNAPPY_DATA_SERVER_USERNAME": self.SNAPPY_DATA_SERVER_USERNAME,
-            "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD
+            "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD,
+            "SNAPPY_USER_FOLDER": self.git_name
         }
 
         
-
+    def _git_name(self):
+        git_username = var_loader.get_git_user()
+        if git_username == 'cloud-bulldozer':
+            return f"perf-ci"
+        else: 
+            return f"{git_username}"
 
     def get_benchmarks(self):
         benchmarks = self._get_benchmarks(self.vars["benchmarks"])
