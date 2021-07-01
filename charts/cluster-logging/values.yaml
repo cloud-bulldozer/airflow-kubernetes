@@ -6,7 +6,7 @@ managementState: Managed
 fluentd:
   resources:
     limits:
-      memory: 1Gi
+      memory: 4Gi
     requests:
       cpu: 500m
       memory: 1Gi
