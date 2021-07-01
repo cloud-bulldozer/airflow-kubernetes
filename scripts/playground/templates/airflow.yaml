@@ -26,6 +26,7 @@ spec:
             remote_logging: "True"
           elasticsearch:
             write_stdout: "True"
+            frontend: http://logging-kibana.apps.sailplane.perf.lab.eng.rdu2.redhat.com/{log_id}
           elasticsearch_configs:
             use_ssl: "False"
             verify_certs: "False"

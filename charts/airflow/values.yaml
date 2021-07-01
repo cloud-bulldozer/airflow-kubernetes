@@ -897,7 +897,7 @@ config:
   logging:
     remote_logging: '{{- ternary "True" "False" .Values.elasticsearch.enabled }}'
     colored_console_log: 'True'
-    logging_level: DEBUG
+    logging_level: INFO
   metrics:
     statsd_on: '{{ ternary "True" "False" .Values.statsd.enabled }}'
     statsd_port: 9125
@@ -919,7 +919,7 @@ config:
     run_duration: 41460
   elasticsearch:
     json_format: 'True'
-    log_id_template: "{{ .Release.Namespace }}_{dag_id}_{task_id}_{execution_date}_{try_number}"
+    log_id_template: "{{ .Release.Namespace }}-{dag_id}-{task_id}-{execution_date}-{try_number}"
   elasticsearch_configs:
     max_retries: 3
     timeout: 30
