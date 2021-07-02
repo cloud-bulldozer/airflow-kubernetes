@@ -32,12 +32,12 @@ class OpenstackJetpackInstaller(AbstractOpenshiftInstaller):
     def _setup_task(self, operation="install"):
         self.config = {**self.config, **self._get_playbook_operations(operation)}
         self.config['openshift_cluster_name'] = self.openstack_creds["ocp_cluster_name"]
-        self.config['dynamic_deploy_path'] = "/home/" + self.openstack_creds["orchestration_user"] + "/" + self.openstack_creds["ocp_cluster_name"]
-        self.config['kubeconfig_path'] = "/home/" + self.openstack_creds["orchestration_user"] + "/" + self.openstack_creds["ocp_cluster_name"] + "/auth/kubeconfig"
+        self.config['dynamic_deploy_path'] = "/home/" + self.openstack_creds["osp_orchestration_user"] + "/" + self.openstack_creds["ocp_cluster_name"]
+        self.config['kubeconfig_path'] = "/home/" + self.openstack_creds["osp_orchestration_user"] + "/" + self.openstack_creds["ocp_cluster_name"] + "/auth/kubeconfig"
         self.env = {
-            "SSHKEY_TOKEN": self.config['sshkey_token'],
-            "ORCHESTRATION_HOST": self.config['orchestration_host'],
-            "ORCHESTRATION_USER": self.config['orchestration_user'],
+            "SSHKEY_TOKEN": self.config['osp_sshkey_token'],
+            "ORCHESTRATION_HOST": self.config['osp_orchestration_host'],
+            "ORCHESTRATION_USER": self.config['osp_orchestration_user'],
             "OPENSHIFT_CLUSTER_NAME": self.config['openshift_cluster_name'],
             "DEPLOY_PATH": self.config['dynamic_deploy_path'],
             "KUBECONFIG_NAME": f"{self.version}-{self.platform}-{self.profile}-kubeconfig",

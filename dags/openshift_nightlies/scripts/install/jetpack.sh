@@ -94,7 +94,7 @@ cleanup(){
 
 
 setup
-#run_jetpack
+run_jetpack
 
 if [[ "$operation" == "install" ]]; then
     printf "Running Post Install Steps"

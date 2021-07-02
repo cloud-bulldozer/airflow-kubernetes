@@ -29,7 +29,7 @@ log.addHandler(handler)
 
 # This Applies to all DAGs
 class AbstractOpenshiftNightlyDAG(ABC):
-    def __init__(self, version, release_stream, platform, profile, version_alias):
+    def __init__(self, version, release_stream, platform, profile, version_alias, schedule_interval=None):
         self.platform = platform
         self.version = version
         self.release_stream = release_stream
@@ -53,12 +53,15 @@ class AbstractOpenshiftNightlyDAG(ABC):
         tags.append(self.profile)
         tags.append(self.version_alias)
 
+        if schedule_interval is None:
+            schedule_interval='0 12 * * 1,3,5'
+
         self.dag = DAG(
             self.release,
             default_args=self.metadata_args,
             tags=tags,
             description=f"DAG for Openshift Nightly builds {self.release}",
-            schedule_interval='0 12 * * 1,3,5',
+            schedule_interval=schedule_interval,
             max_active_runs=1,
             catchup=False
         )
@@ -124,7 +127,8 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 
 class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
     def __init__(self, version, release_stream, platform, profile, version_alias):
-        super().__init__(version, release_stream, platform, profile, version_alias)
+        schedule_interval = '0 12 * * 1-6'
+        super().__init__(version, release_stream, platform, profile, version_alias, schedule_interval)
         self.release_stream_base_url = Variable.get("release_stream_base_url")
         self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
 
