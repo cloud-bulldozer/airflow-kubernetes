@@ -20,6 +20,7 @@ class Manifest():
             version_number = version['version']
             release_stream = version['releaseStream']
             version_alias = self.get_version_alias(version_number)
+            schedule = self._get_schedule_for_platform('cloud')
             for cloud_provider in version['providers']:
                 platform_name = cloud_provider['name']
                 for profile in cloud_provider['profiles']:
@@ -28,7 +29,8 @@ class Manifest():
                         "releaseStream": release_stream,
                         "platform": platform_name,
                         "versionAlias": version_alias,
-                        "profile": profile
+                        "profile": profile,
+                        "scheduleInterval": schedule
                     })
 
     def get_baremetal_releases(self):
@@ -36,6 +38,7 @@ class Manifest():
             version_number = version['version']
             release_stream = version['releaseStream']
             build = version['build']
+            schedule = self._get_schedule_for_platform('baremetal')
             version_alias = self.get_version_alias(version_number)
             for profile in version['profiles']:
                 self.releases.append({
@@ -44,7 +47,8 @@ class Manifest():
                     "platform": "baremetal",
                     "build": build,
                     "versionAlias": version_alias,
-                    "profile": profile
+                    "profile": profile,
+                    "scheduleInterval": schedule
                 })
             
     def get_openstack_releases(self):
@@ -52,13 +56,15 @@ class Manifest():
             version_number = version['version']
             release_stream = version['releaseStream']
             version_alias = self.get_version_alias(version_number)
+            schedule = self._get_schedule_for_platform('openstack')
             for profile in version['profiles']:
                 self.releases.append({
                     "version": version_number,
                     "releaseStream": release_stream,
                     "platform": "openstack",
                     "versionAlias": version_alias,
-                    "profile": profile
+                    "profile": profile,
+                    "scheduleInterval": schedule
                 })
 
 
@@ -67,3 +73,11 @@ class Manifest():
         self.get_baremetal_releases()
         self.get_openstack_releases()
         return self.releases
+
+    
+    def _get_schedule_for_platform(self, platform):
+        schedules = self.yaml['schedules']
+        if bool(schedules.get("enabled", False)):
+            return schedules.get(platform, schedules['default'])
+        else:
+            return None

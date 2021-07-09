@@ -53,9 +53,6 @@ class AbstractOpenshiftNightlyDAG(ABC):
         tags.append(self.profile)
         tags.append(self.version_alias)
 
-        if schedule_interval is None:
-            schedule_interval='0 12 * * 1,3,5'
-
         self.dag = DAG(
             self.release,
             default_args=self.metadata_args,
@@ -84,8 +81,8 @@ class AbstractOpenshiftNightlyDAG(ABC):
 
 
 class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
-    def __init__(self, version, release_stream, platform, profile, version_alias):
-        super().__init__(version, release_stream, platform, profile, version_alias)
+    def __init__(self, version, release_stream, platform, profile, version_alias, schedule_interval):
+        super().__init__(version, release_stream, platform, profile, version_alias, schedule_interval)
         self.release_stream_base_url = Variable.get("release_stream_base_url")
         self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
     
@@ -110,8 +107,8 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 
 
 class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
-    def __init__(self, version, release_stream, platform, profile, version_alias, build):
-        super().__init__(version, release_stream, platform, profile, version_alias)
+    def __init__(self, version, release_stream, platform, profile, version_alias, build, schedule_interval):
+        super().__init__(version, release_stream, platform, profile, version_alias, schedule_interval)
         self.openshift_build = build
         
     def build(self):
@@ -126,8 +123,7 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 
 
 class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
-    def __init__(self, version, release_stream, platform, profile, version_alias):
-        schedule_interval = '0 12 * * 1-6'
+    def __init__(self, version, release_stream, platform, profile, version_alias, schedule_interval):
         super().__init__(version, release_stream, platform, profile, version_alias, schedule_interval)
         self.release_stream_base_url = Variable.get("release_stream_base_url")
         self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
@@ -152,11 +148,11 @@ release_manifest = manifest.Manifest(constants.root_dag_dir)
 for release in release_manifest.get_releases():
     nightly = None
     if release['platform'] == "baremetal":
-        nightly = BaremetalOpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'), release['build'])
+        nightly = BaremetalOpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'), release['build'], release['scheduleInterval'])
     elif release['platform'] == "openstack":
-        nightly = OpenstackNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'))
+        nightly = OpenstackNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'), release['scheduleInterval'])
     else:
-        nightly = CloudOpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'))
+        nightly = CloudOpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'), release['scheduleInterval'])
     
     nightly.build()
     globals()[nightly.release] = nightly.dag
