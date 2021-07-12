@@ -4,6 +4,7 @@ from os.path import abspath, dirname
 from os import environ
 sys.path.insert(0, dirname(abspath(dirname(__file__))))
 from util import constants, kubeconfig
+from models.release import OpenshiftRelease
 import requests
 from airflow.models import Variable
 from kubernetes.client import models as k8s
@@ -52,7 +53,7 @@ def get_default_executor_config():
             )
         }
 
-def get_executor_config_with_cluster_access(version, platform, profile):
+def get_executor_config_with_cluster_access(release: OpenshiftRelease):
     return {
             "pod_override": k8s.V1Pod(
                 spec=k8s.V1PodSpec(
@@ -62,16 +63,14 @@ def get_executor_config_with_cluster_access(version, platform, profile):
                             image="quay.io/keithwhitley4/airflow-ansible:2.1.0",
                             image_pull_policy="Always",
                             env=[
-                                kubeconfig.get_kubeadmin_password(
-                        version, platform, profile)
+                                kubeconfig.get_kubeadmin_password(release)
                             ],
                             volume_mounts=[
                                 kubeconfig.get_kubeconfig_volume_mount()]
 
                         )
                     ],
-                    volumes=[kubeconfig.get_kubeconfig_volume(
-                        version, platform, profile)]
+                    volumes=[kubeconfig.get_kubeconfig_volume(release)]
                 )
             )
         }
@@ -79,22 +78,22 @@ def get_executor_config_with_cluster_access(version, platform, profile):
 
 ### Task Variable Generator
 ### Grabs variables from appropriately placed JSON Files
-def build_task_vars(task="install", version="stable", platform="aws", profile="default"):
-    default_task_vars = get_default_task_vars(task=task, platform=platform)
-    profile_vars = get_profile_task_vars(task=task, version=version, platform=platform, profile=profile)
+def build_task_vars(release: OpenshiftRelease, task="install"):
+    default_task_vars = get_default_task_vars(release=release, task=task)
+    profile_vars = get_profile_task_vars(release=release, task=task)
     return { **default_task_vars, **profile_vars }
 
 ### Json File Loads
-def get_profile_task_vars(task="install", version="stable", platform="aws", profile="default"):
-    file_path = f"{constants.root_dag_dir}/releases/{version}/{platform}/{profile}/{task}.json"
+def get_profile_task_vars(release: OpenshiftRelease, task="install"):
+    file_path = f"{constants.root_dag_dir}/releases/{release.version}/{release.platform}/{release.profile}/{task}.json"
     return get_json(file_path)
 
-def get_default_task_vars(task="install", platform="aws"):
+def get_default_task_vars(release: OpenshiftRelease, task="install"):
     if task == "install":
-        if platform == "aws" or platform == "azure" or platform == "gcp":
+        if release.platform == "aws" or release.platform == "azure" or release.platform == "gcp":
             file_path = f"{constants.root_dag_dir}/tasks/{task}/cloud/defaults.json"
         else:
-            file_path = f"{constants.root_dag_dir}/tasks/{task}/{platform}/defaults.json"
+            file_path = f"{constants.root_dag_dir}/tasks/{task}/{release.platform}/defaults.json"
     else:
         file_path = f"{constants.root_dag_dir}/tasks/{task}/defaults.json"
     return get_json(file_path)

@@ -5,6 +5,7 @@ from os import environ
 sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
 from util import var_loader, kubeconfig, constants
 from tasks.index.status import StatusIndexer
+from models.release import OpenshiftRelease
 
 import json
 from datetime import timedelta
@@ -19,17 +20,13 @@ from kubernetes.client import models as k8s
 
 
 class E2EBenchmarks():
-    def __init__(self, dag, version, release_stream, platform, profile, default_args):
-
-        self.exec_config = var_loader.get_executor_config_with_cluster_access(version, platform, profile)
-
+    def __init__(self, dag, release: OpenshiftRelease):
         # General DAG Configuration
         self.dag = dag
-        self.platform = platform  # e.g. aws
-        self.version = version  # e.g. stable/.next/.future
-        self.release_stream = release_stream
-        self.profile = profile  # e.g. default/ovn
-        self.default_args = default_args
+        self.release = release
+        self.exec_config = var_loader.get_executor_config_with_cluster_access(self.release)
+
+        
 
         # Airflow Variables
         self.SNAPPY_DATA_SERVER_URL = Variable.get("SNAPPY_DATA_SERVER_URL")
@@ -38,7 +35,7 @@ class E2EBenchmarks():
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
-            task="benchmarks", version=version, platform=platform, profile=profile)
+            release=self.release, task="benchmarks")
         self.git_name=self._git_name()
         self.env = {
             "SNAPPY_DATA_SERVER_URL": self.SNAPPY_DATA_SERVER_URL,
@@ -48,18 +45,20 @@ class E2EBenchmarks():
         }
 
         
-    def _git_name(self):
-        git_username = var_loader.get_git_user()
-        if git_username == 'cloud-bulldozer':
-            return f"perf-ci"
-        else: 
-            return f"{git_username}"
+    
 
     def get_benchmarks(self):
         benchmarks = self._get_benchmarks(self.vars["benchmarks"])
         with TaskGroup("Index Results", prefix_group_id=False, dag=self.dag) as post_steps:
             indexers = self._add_indexers(benchmarks)
         return benchmarks
+
+    def _git_name(self):
+        git_username = var_loader.get_git_user()
+        if git_username == 'cloud-bulldozer':
+            return f"perf-ci"
+        else: 
+            return f"{git_username}"
 
     def _get_benchmarks(self, benchmarks):
         for index, benchmark in enumerate(benchmarks):
@@ -80,7 +79,7 @@ class E2EBenchmarks():
                     self._add_indexers(benchmark)
 
     def _add_indexer(self, benchmark): 
-        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.platform, self.profile, benchmark.task_id).get_index_task() 
+        indexer = StatusIndexer(self.dag, self.release, benchmark.task_id).get_index_task() 
         benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):

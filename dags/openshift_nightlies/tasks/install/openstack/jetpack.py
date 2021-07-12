@@ -21,7 +21,7 @@ class OpenstackJetpackInstaller(AbstractOpenshiftInstaller):
         return BashOperator(
             task_id=f"{operation}",
             depends_on_past=False,
-            bash_command=f"{constants.root_dag_dir}/scripts/install/jetpack.sh -j /tmp/{self.version}-{self.platform}-{self.profile}-{operation}-task.json -o {operation}",
+            bash_command=f"{constants.root_dag_dir}/scripts/install/jetpack.sh -j /tmp/{self.release_name}-{operation}-task.json -o {operation}",
             retries=3,
             dag=self.dag,
             trigger_rule=trigger_rule,
@@ -40,13 +40,13 @@ class OpenstackJetpackInstaller(AbstractOpenshiftInstaller):
             "ORCHESTRATION_USER": self.config['osp_orchestration_user'],
             "OPENSHIFT_CLUSTER_NAME": self.config['openshift_cluster_name'],
             "DEPLOY_PATH": self.config['dynamic_deploy_path'],
-            "KUBECONFIG_NAME": f"{self.version}-{self.platform}-{self.profile}-kubeconfig",
-            "KUBEADMIN_NAME": f"{self.version}-{self.platform}-{self.profile}-kubeadmin",
+            "KUBECONFIG_NAME": f"{self.release_name}-kubeconfig",
+            "KUBEADMIN_NAME": f"{self.release_name}-kubeadmin",
             "OPENSHIFT_INSTALL_PULL_SECRET": self.ocp_pull_secret,
             **self._insert_kube_env()
         }
 
         # Dump all vars to json file for Ansible to pick up
-        with open(f"/tmp/{self.version}-{self.platform}-{self.profile}-{operation}-task.json", 'w') as json_file:
+        with open(f"/tmp/{self.release_name}-{operation}-task.json", 'w') as json_file:
             json.dump(self.config, json_file, sort_keys=True, indent=4)   
 

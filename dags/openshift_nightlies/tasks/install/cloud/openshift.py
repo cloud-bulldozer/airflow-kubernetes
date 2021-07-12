@@ -22,7 +22,7 @@ class CloudOpenshiftInstaller(AbstractOpenshiftInstaller):
         return BashOperator(
             task_id=f"{operation}",
             depends_on_past=False,
-            bash_command=f"{constants.root_dag_dir}/scripts/install/cloud.sh -p {self.platform} -v {self.version} -j /tmp/{self.version}-{self.platform}-{self.profile}-{operation}-task.json -o {operation}",
+            bash_command=f"{constants.root_dag_dir}/scripts/install/cloud.sh -p {self.release.platform} -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}",
             retries=3,
             dag=self.dag,
             trigger_rule=trigger_rule,

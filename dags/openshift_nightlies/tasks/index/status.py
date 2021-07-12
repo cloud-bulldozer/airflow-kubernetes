@@ -4,6 +4,7 @@ from os import environ
 
 sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
 from util import var_loader, kubeconfig, constants
+from models.release import OpenshiftRelease
 
 import json
 import requests
@@ -14,24 +15,20 @@ from kubernetes.client import models as k8s
 
 # Defines Task for Indexing Task Status in ElasticSearch
 class StatusIndexer():
-    def __init__(self, dag, version, release_stream, platform, profile, task):
-        self.exec_config = var_loader.get_executor_config_with_cluster_access(version, platform, profile)
+    def __init__(self, dag, release: OpenshiftRelease, task):
+        
         # General DAG Configuration
         self.dag = dag
-        self.platform = platform  # e.g. aws
-        self.version = version  # e.g. 4.6/4.7, major.minor only
-        self.release_stream = release_stream # true release stream to follow. Nightlies, CI, etc. 
-        self.profile = profile  # e.g. default/ovn
-
-
+        self.release = release
+        self.exec_config = var_loader.get_executor_config_with_cluster_access(release)
+    
         # Specific Task Configuration
-        self.vars = var_loader.build_task_vars(
-            task="index", version=version, platform=platform, profile=profile)
+        self.vars = var_loader.build_task_vars(release, task="index")
 
         # Upstream task this is to index
         self.task = task 
         self.env = {
-            "RELEASE_STREAM": self.release_stream,
+            "RELEASE_STREAM": self.release.release_stream,
             "TASK": self.task
         }
         self.git_user = var_loader.get_git_user()
