@@ -42,6 +42,7 @@ class AbstractOpenshiftInstaller(ABC):
         self.azure_creds = Variable.get("azure_creds", deserialize_json=True)
         self.ocp_pull_secret = Variable.get("osp_ocp_pull_creds")
         self.openstack_creds = Variable.get("openstack_creds", deserialize_json=True)
+        self.release_stream_base_url = Variable.get("release_stream_base_url")
 
         # Merge all variables, prioritizing Airflow Secrets over git based vars
         self.config = {
@@ -52,7 +53,7 @@ class AbstractOpenshiftInstaller(ABC):
             **self.gcp_creds,
             **self.azure_creds,
             **self.openstack_creds,
-            **self.release.get_latest_release(),
+            **self.release.get_latest_release(self.release_stream_base_url),
             **{ "es_server": var_loader.get_elastic_url() }
         }
         super().__init__()

@@ -3,7 +3,6 @@ from os.path import abspath, dirname
 from dataclasses import dataclass
 from typing import Optional
 sys.path.insert(0, dirname(abspath(dirname(__file__))))
-from util import var_loader
 
 @dataclass
 class OpenshiftRelease:
@@ -20,8 +19,16 @@ class OpenshiftRelease:
     def get_release_name(self, delimiter) -> str:
         return f"{self.version}{delimiter}{self.platform}{delimiter}{self.profile}"
 
-    def get_latest_release(self) -> dict: 
-        return var_loader.get_latest_release_from_stream(self.release_stream)
+    def get_latest_release(self, base_url) -> dict: 
+        url = f"{base_url}/{self.release_stream}/latest"
+        payload = requests.get(url).json()
+        latest_accepted_release = payload["name"]
+        latest_accepted_release_url = payload["downloadURL"]
+        return {
+            "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}.tar.gz",
+            "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}.tar.gz"
+        }
+    
 
 @dataclass
 class BaremetalRelease(OpenshiftRelease):

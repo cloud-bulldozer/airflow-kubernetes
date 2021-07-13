@@ -70,11 +70,6 @@ class AbstractOpenshiftNightlyDAG(ABC):
 
 
 class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
-    def __init__(self, release: OpenshiftRelease, config: DagConfig):
-        super().__init__(self, release, config)
-        self.release_stream_base_url = Variable.get("release_stream_base_url")
-        self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release.release_stream)
-    
     def build(self):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
@@ -95,10 +90,7 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 
 
 
-class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
-    def __init__(self, release: BaremetalRelease, config: DagConfig):
-        super().__init__(release, config)
-        
+class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):   
     def build(self):
         bm_installer = self._get_openshift_installer()
         install_cluster = bm_installer.get_install_task()
@@ -111,11 +103,6 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 
 
 class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
-    def __init__(self, release: OpenshiftRelease, config: DagConfig):
-        super().__init__(release, config)
-        self.release_stream_base_url = Variable.get("release_stream_base_url")
-        self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release.release_stream)
-
     def build(self):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
