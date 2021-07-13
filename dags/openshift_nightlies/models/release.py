@@ -34,7 +34,7 @@ class BaremetalRelease(OpenshiftRelease):
     build: str
 
     # Baremetal doesn't get it's release from a release stream
-    def get_latest_release(self) -> dict:
+    def get_latest_release(self, base_url) -> dict:
         return {}
 
 
