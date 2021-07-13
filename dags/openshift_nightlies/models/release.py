@@ -1,4 +1,5 @@
 import sys
+import requests
 from os.path import abspath, dirname
 from dataclasses import dataclass
 from typing import Optional
