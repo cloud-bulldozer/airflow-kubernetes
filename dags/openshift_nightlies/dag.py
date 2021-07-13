@@ -98,7 +98,7 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         install_cluster >> scaleup_cluster
 
     def _get_openshift_installer(self):
-        return jetski.BaremetalOpenshiftInstaller(self.dag, release)
+        return jetski.BaremetalOpenshiftInstaller(self.dag, self.release)
 
 
 
@@ -115,7 +115,7 @@ class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
         install_cluster >> benchmarks
 
     def _get_openshift_installer(self):
-        return jetpack.OpenstackJetpackInstaller(self.dag, release)
+        return jetpack.OpenstackJetpackInstaller(self.dag, self.release)
 
 
 
