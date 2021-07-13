@@ -5,6 +5,7 @@ from os import environ
 sys.path.insert(0, dirname(dirname(dirname(abspath(dirname(__file__))))))
 from util import var_loader, kubeconfig, constants
 from tasks.install.baremetal import webfuse
+from tasks.install.openshift import AbstractOpenshiftInstaller
 from models.release import BaremetalRelease
 
 import json
