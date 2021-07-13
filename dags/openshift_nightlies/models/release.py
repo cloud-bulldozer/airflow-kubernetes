@@ -12,11 +12,8 @@ class OpenshiftRelease:
     release_stream: str # The actual release stream to pull from (nightly/stable/ci)
     profile: str # e.g. default/ovn
     version_alias: Optional[str] # e.g. stable/.next/.future
-
-    def get_release_name(self) -> str: 
-        return f"{self.version}_{self.platform}_{self.profile}"
     
-    def get_release_name(self, delimiter) -> str:
+    def get_release_name(self, delimiter="_") -> str:
         return f"{self.version}{delimiter}{self.platform}{delimiter}{self.profile}"
 
     def get_latest_release(self, base_url) -> dict: 
