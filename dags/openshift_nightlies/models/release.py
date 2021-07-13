@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 sys.path.insert(0, dirname(abspath(dirname(__file__))))
 from utils import var_loader
 

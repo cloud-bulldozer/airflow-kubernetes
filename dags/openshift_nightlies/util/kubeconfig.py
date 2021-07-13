@@ -1,3 +1,4 @@
+import sys
 from os import environ
 from kubernetes.client import models as k8s
 sys.path.insert(0, dirname(abspath(dirname(__file__))))

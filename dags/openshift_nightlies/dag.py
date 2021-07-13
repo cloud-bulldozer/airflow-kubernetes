@@ -71,7 +71,7 @@ class AbstractOpenshiftNightlyDAG(ABC):
 
 class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def __init__(self, release: OpenshiftRelease, config: DagConfig):
-        super().__init__(self, release: OpenshiftRelease, config: DagConfig)
+        super().__init__(self, release, config)
         self.release_stream_base_url = Variable.get("release_stream_base_url")
         self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release.release_stream)
     

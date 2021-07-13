@@ -1,4 +1,5 @@
 import yaml
+import sys
 sys.path.insert(0, dirname(abspath(dirname(__file__))))
 from models.dag_config import DagConfig
 from models.release import OpenshiftRelease, BaremetalRelease
