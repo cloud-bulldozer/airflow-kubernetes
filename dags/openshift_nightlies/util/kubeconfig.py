@@ -1,5 +1,6 @@
 import sys
-from os.path import abspath, dirname, environ
+from os.path import abspath, dirname
+from os import environ
 from kubernetes.client import models as k8s
 sys.path.insert(0, dirname(abspath(dirname(__file__))))
 from models.release import OpenshiftRelease
