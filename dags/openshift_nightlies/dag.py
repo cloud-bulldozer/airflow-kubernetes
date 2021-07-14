@@ -73,17 +73,20 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
-        cleanup_cluster = installer.get_cleanup_task()
+        
         with TaskGroup("utils", prefix_group_id=False, dag=self.dag) as utils:
             utils_tasks=self._get_scale_ci_diagnosis().get_utils()
             chain(*utils_tasks)
-            utils_tasks[-1] >> cleanup_cluster
+
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
-            benchmark_tasks[-1] >> utils
-
-        install_cluster >> benchmarks
+            
+        if self.config.cleanup_on_success:
+            cleanup_cluster = installer.get_cleanup_task()
+            install_cluster >> benchmarks >> utils >> cleanup_cluster
+        else: 
+            install_cluster >> benchmarks >> utils
 
     def _get_openshift_installer(self):
         return openshift.CloudOpenshiftInstaller(self.dag, self.release)
@@ -110,9 +113,12 @@ class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
-            benchmark_tasks[-1] >> cleanup_cluster
 
-        install_cluster >> benchmarks
+        if self.config.cleanup_on_success:
+            cleanup_cluster = installer.get_cleanup_task()
+            install_cluster >> benchmarks >> cleanup_cluster
+        else: 
+            install_cluster >> benchmarks
 
     def _get_openshift_installer(self):
         return jetpack.OpenstackJetpackInstaller(self.dag, self.release)

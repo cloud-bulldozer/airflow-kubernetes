@@ -4,6 +4,7 @@ from os.path import abspath, dirname
 sys.path.insert(0, dirname(abspath(dirname(__file__))))
 from models.dag_config import DagConfig
 from models.release import OpenshiftRelease, BaremetalRelease
+from util import var_loader
 
 class Manifest():
     def __init__(self, root_dag_dir):
@@ -34,9 +35,7 @@ class Manifest():
                         profile=profile,
                         version_alias=version_alias
                     )
-                    dag_config = DagConfig(
-                        schedule_interval=schedule
-                    )
+                    dag_config = self._build_dag_config(schedule)
 
                     self.releases.append(
                         {
@@ -61,9 +60,7 @@ class Manifest():
                     version_alias=version_alias,
                     build=build
                 )
-                dag_config = DagConfig(
-                    schedule_interval=schedule
-                )
+                dag_config = self._build_dag_config(schedule)
 
                 self.releases.append(
                     {
@@ -86,9 +83,7 @@ class Manifest():
                     profile=profile,
                     version_alias=version_alias
                 )
-                dag_config = DagConfig(
-                    schedule_interval=schedule
-                )
+                dag_config = self._build_dag_config(schedule)
 
                 self.releases.append(
                     {
@@ -104,8 +99,15 @@ class Manifest():
         return self.releases
 
     def _get_schedule_for_platform(self, platform):
-        schedules = self.yaml['schedules']
-        if bool(schedules.get("enabled", False)):
+        schedules = self.yaml['dagConfig']['schedules']
+        if bool(schedules.get("enabled", False) and var_loader.get_git_user() == "cloud-bulldozer"):
             return schedules.get(platform, schedules['default'])
         else:
             return None
+    
+    def _build_dag_config(schedule_interval):
+
+        return DagConfig(
+            schedule_interval=schedule_interval,
+            cleanup_on_success=bool(self.yaml['dagConfig']['cleanupOnSuccess'])
+        )

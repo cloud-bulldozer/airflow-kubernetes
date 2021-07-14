@@ -7,6 +7,7 @@ from datetime import timedelta, datetime
 @dataclass
 class DagConfig:
     schedule_interval: Optional[str] = None
+    cleanup_on_success: Optional[bool] = True
     default_args: Optional[dict] = field(default_factory=lambda: {
             'owner': 'airflow',
             'depends_on_past': False,
