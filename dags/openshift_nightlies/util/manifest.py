@@ -105,8 +105,7 @@ class Manifest():
         else:
             return None
     
-    def _build_dag_config(schedule_interval):
-
+    def _build_dag_config(self, schedule_interval):
         return DagConfig(
             schedule_interval=schedule_interval,
             cleanup_on_success=bool(self.yaml['dagConfig']['cleanupOnSuccess'])
