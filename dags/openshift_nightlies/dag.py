@@ -109,7 +109,6 @@ class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
-        cleanup_cluster = installer.get_cleanup_task()
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
