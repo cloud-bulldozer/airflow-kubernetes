@@ -1,24 +1,28 @@
+import sys
+from os.path import abspath, dirname
 from os import environ
 from kubernetes.client import models as k8s
+sys.path.insert(0, dirname(abspath(dirname(__file__))))
+from models.release import OpenshiftRelease
 
 
 
-def get_kubeadmin_password(version, platform, profile): 
+def get_kubeadmin_password(release: OpenshiftRelease): 
     return k8s.V1EnvVar(
         name="KUBEADMIN_PASSWORD",
         value_from=k8s.V1EnvVarSource(
             secret_key_ref= k8s.V1SecretKeySelector(
-                name=f"{version}-{platform}-{profile}-kubeadmin",
+                name=f"{release.version}-{release.platform}-{release.profile}-kubeadmin",
                 key="KUBEADMIN_PASSWORD"
             )
         )
     )
 
-def get_kubeconfig_volume(version, platform, profile):
+def get_kubeconfig_volume(release: OpenshiftRelease):
     return k8s.V1Volume(
         name="kubeconfig",
         secret=k8s.V1SecretVolumeSource(
-            secret_name=f"{version}-{platform}-{profile}-kubeconfig"
+            secret_name=f"{release.version}-{release.platform}-{release.profile}-kubeconfig"
         )
     )
 

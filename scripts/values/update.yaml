@@ -12,6 +12,8 @@ airflow:
         instance_name: Performance and Scale
         expose_config: True
         default_ui_timezone: America/New_York
+      elasticsearch:
+        frontend: logging-kibana.$_cluster_domain/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_a=(columns:!(message),filters:!(),index:a16f10f0-cf86-11eb-a0b9-a32be872b9a2,interval:auto,query:(language:kuery,query:'log_id:"{log_id}"'),sort:!())
     defaultAirflowTag: 2.1.1rc1-python3.8
     webserver:
       defaultUser:

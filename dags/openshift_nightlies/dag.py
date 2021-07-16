@@ -12,6 +12,8 @@ from airflow.utils.task_group import TaskGroup
 
 # Configure Path to have the Python Module on it
 sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
+from models.dag_config import DagConfig
+from models.release import OpenshiftRelease, BaremetalRelease
 from tasks.install.cloud import openshift
 from tasks.install.openstack import jetpack
 from tasks.install.baremetal import jetski
@@ -29,39 +31,23 @@ log.addHandler(handler)
 
 # This Applies to all DAGs
 class AbstractOpenshiftNightlyDAG(ABC):
-    def __init__(self, version, release_stream, platform, profile, version_alias, schedule_interval=None):
-        self.platform = platform
-        self.version = version
-        self.release_stream = release_stream
-        self.profile = profile
-        self.version_alias = version_alias
-        self.release = f"{self.version}_{self.platform}_{self.profile}"
-        self.metadata_args = {
-            'owner': 'airflow',
-            'depends_on_past': False,
-            'start_date': datetime(2021, 1, 1),
-            'email': ['airflow@example.com'],
-            'email_on_failure': False,
-            'email_on_retry': False,
-            'retries': 1,
-            'release': self.release,
-            'retry_delay': timedelta(minutes=5),
-        }
-        tags = []
-        tags.append(self.platform)
-        tags.append(self.release_stream)
-        tags.append(self.profile)
-        tags.append(self.version_alias)
+    def __init__(self, release: OpenshiftRelease, config: DagConfig):
+        self.release = release
+        self.config = config
+        self.release_name = release.get_release_name()
 
-        if schedule_interval is None:
-            schedule_interval='0 12 * * 1,3,5'
+        tags = []
+        tags.append(self.release.platform)
+        tags.append(self.release.release_stream)
+        tags.append(self.release.profile)
+        tags.append(self.release.version_alias)
 
         self.dag = DAG(
-            self.release,
-            default_args=self.metadata_args,
+            self.release_name,
+            default_args=self.config.default_args,
             tags=tags,
-            description=f"DAG for Openshift Nightly builds {self.release}",
-            schedule_interval=schedule_interval,
+            description=f"DAG for Openshift Nightly builds {self.release_name}",
+            schedule_interval=self.config.schedule_interval,
             max_active_runs=1,
             catchup=False
         )
@@ -77,43 +63,37 @@ class AbstractOpenshiftNightlyDAG(ABC):
         raise NotImplementedError()
 
     def _get_e2e_benchmarks(self): 
-        return e2e.E2EBenchmarks(self.dag, self.version, self.release_stream, self.platform, self.profile, self.metadata_args)
+        return e2e.E2EBenchmarks(self.dag, self.release)
 
     def _get_scale_ci_diagnosis(self):
-        return scale_ci_diagnosis.Diagnosis(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, self.metadata_args)
+        return scale_ci_diagnosis.Diagnosis(self.dag, self.release)
 
 
 class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
-    def __init__(self, version, release_stream, platform, profile, version_alias):
-        super().__init__(version, release_stream, platform, profile, version_alias)
-        self.release_stream_base_url = Variable.get("release_stream_base_url")
-        self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
-    
     def build(self):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
-        cleanup_cluster = installer.get_cleanup_task()
+        
         with TaskGroup("utils", prefix_group_id=False, dag=self.dag) as utils:
             utils_tasks=self._get_scale_ci_diagnosis().get_utils()
             chain(*utils_tasks)
-            utils_tasks[-1] >> cleanup_cluster
+
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
-            benchmark_tasks[-1] >> utils
-
-        install_cluster >> benchmarks
+            
+        if self.config.cleanup_on_success:
+            cleanup_cluster = installer.get_cleanup_task()
+            install_cluster >> benchmarks >> utils >> cleanup_cluster
+        else: 
+            install_cluster >> benchmarks >> utils
 
     def _get_openshift_installer(self):
-        return openshift.CloudOpenshiftInstaller(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile)
+        return openshift.CloudOpenshiftInstaller(self.dag, self.release)
 
 
 
-class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
-    def __init__(self, version, release_stream, platform, profile, version_alias, build):
-        super().__init__(version, release_stream, platform, profile, version_alias)
-        self.openshift_build = build
-        
+class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):   
     def build(self):
         bm_installer = self._get_openshift_installer()
         install_cluster = bm_installer.get_install_task()
@@ -121,42 +101,40 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         install_cluster >> scaleup_cluster
 
     def _get_openshift_installer(self):
-        return jetski.BaremetalOpenshiftInstaller(self.dag, self.version, self.release_stream, self.platform, self.profile, self.openshift_build)
+        return jetski.BaremetalOpenshiftInstaller(self.dag, self.release)
 
 
 
 class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
-    def __init__(self, version, release_stream, platform, profile, version_alias):
-        schedule_interval = '0 12 * * 1-6'
-        super().__init__(version, release_stream, platform, profile, version_alias, schedule_interval)
-        self.release_stream_base_url = Variable.get("release_stream_base_url")
-        self.latest_release = var_loader.get_latest_release_from_stream(self.release_stream_base_url, self.release_stream)
-
     def build(self):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
-        cleanup_cluster = installer.get_cleanup_task()
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
-            benchmark_tasks[-1] >> cleanup_cluster
 
-        install_cluster >> benchmarks
+        if self.config.cleanup_on_success:
+            cleanup_cluster = installer.get_cleanup_task()
+            install_cluster >> benchmarks >> cleanup_cluster
+        else: 
+            install_cluster >> benchmarks
 
     def _get_openshift_installer(self):
-        return jetpack.OpenstackJetpackInstaller(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile)
+        return jetpack.OpenstackJetpackInstaller(self.dag, self.release)
 
 
 
 release_manifest = manifest.Manifest(constants.root_dag_dir)
 for release in release_manifest.get_releases():
+    openshift_release = release["release"]
+    dag_config = release["config"]
     nightly = None
-    if release['platform'] == "baremetal":
-        nightly = BaremetalOpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'), release['build'])
-    elif release['platform'] == "openstack":
-        nightly = OpenstackNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'))
+    if openshift_release.platform == "baremetal":
+        nightly = BaremetalOpenshiftNightlyDAG(openshift_release, dag_config)
+    elif openshift_release.platform == "openstack":
+        nightly = OpenstackNightlyDAG(openshift_release, dag_config)
     else:
-        nightly = CloudOpenshiftNightlyDAG(release['version'], release['releaseStream'], release['platform'], release['profile'], release.get('versionAlias', 'none'))
+        nightly = CloudOpenshiftNightlyDAG(openshift_release, dag_config)
     
     nightly.build()
-    globals()[nightly.release] = nightly.dag
+    globals()[nightly.release_name] = nightly.dag

@@ -23,8 +23,7 @@ setup(){
     export SNAPPY_RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}
 
     
-    curl -L $OPENSHIFT_CLIENT_LOCATION -o openshift-client.tar.gz
-    tar -xzf openshift-client.tar.gz
+    curl -sS https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xz oc
 
     export PATH=$PATH:$(pwd)
 
