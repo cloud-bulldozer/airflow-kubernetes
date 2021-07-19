@@ -42,6 +42,11 @@ platforms:
         profiles:
         - default
   baremetal: 
+    - version: 4.7
+      releaseStream: latest-4.7
+      build: dev
+      profiles:
+      - jetski    
     - version: 4.8
       releaseStream: latest-4.8
       build: dev
