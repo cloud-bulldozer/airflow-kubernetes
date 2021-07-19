@@ -12,8 +12,6 @@
     "ansible_ssh_pass": "",
     "openshift_base_domain": "rdu2.scalelab.redhat.com",
     "openshift_cluster_name": "",
-    "openshift_release": "latest-4.8",
-    "openshift_build": "dev",
     "openshift_install_pull_secret": "",
     "openshift_worker_count": "3",
     "openshift_worker_scaleup_target": "5",

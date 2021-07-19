@@ -43,6 +43,27 @@ def get_default_executor_config():
             )
         }
 
+
+def get_jetski_executor_config():
+    return {
+            "pod_override": k8s.V1Pod(
+                spec=k8s.V1PodSpec(
+                    containers=[
+                        k8s.V1Container(
+                            name="base",
+                            image="quay.io/mukrishn/jetski:2.1",
+                            image_pull_policy="Always",
+                            volume_mounts=[
+                                kubeconfig.get_empty_dir_volume_mount()]
+
+                        )
+                    ],
+                    volumes=[kubeconfig.get_empty_dir_volume_mount()]
+                )
+            )
+        }
+
+
 def get_executor_config_with_cluster_access(release: OpenshiftRelease):
     return {
             "pod_override": k8s.V1Pod(
