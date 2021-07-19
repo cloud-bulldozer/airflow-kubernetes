@@ -36,7 +36,7 @@ class BaremetalWebfuseInstaller(AbstractOpenshiftInstaller):
             **{ "es_server": var_loader.get_elastic_url() }
         }
         
-        config['version'] = config['openshift_release']
+        config['version'] = self.release.release_stream
         config['build'] = self.release.build
         
         # Required Environment Variables for Install script
