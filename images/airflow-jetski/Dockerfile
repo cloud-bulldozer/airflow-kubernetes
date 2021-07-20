@@ -3,7 +3,7 @@ FROM quay.io/centos/centos:8
 ENV DISABLE_PODMAN=true
 
 RUN dnf -y install python3.8 gcc platform-python-devel epel-release --nodocs
-RUN dnf --enablerepo=epel -y install sudo sshpass openssh-clients git ipmitool ansible --nodocs
+RUN dnf --enablerepo=epel -y install sudo sshpass openssh-clients git ipmitool ansible python3-dns python3-netaddr ipmitool --nodocs
 
 RUN pip3.8 install update
 RUN pip3.8 install click==7.1.2 idna==2.10 kubernetes==11.0.0 openshift==0.11.2 # due to apacke-airflow dependency version limit

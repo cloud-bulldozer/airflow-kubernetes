@@ -16,7 +16,7 @@ from models.dag_config import DagConfig
 from models.release import OpenshiftRelease, BaremetalRelease
 from tasks.install.cloud import openshift
 from tasks.install.openstack import jetpack
-from tasks.install.baremetal import jetski
+from tasks.install.baremetal import jetski, webfuse
 from tasks.benchmarks import e2e
 from tasks.utils import scale_ci_diagnosis
 from tasks.index import status
@@ -96,14 +96,19 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):   
     def build(self):
         bm_installer = self._get_openshift_installer()
+        webfuse_installer = self._get_webfuse_installer()
+
         install_cluster = bm_installer.get_install_task()
+        deploy_webfuse = webfuse_installer.get_deploy_app_task()
         scaleup_cluster = bm_installer.get_scaleup_task()
-        install_cluster >> scaleup_cluster
+        
+        install_cluster >> deploy_webfuse >> scaleup_cluster
 
     def _get_openshift_installer(self):
         return jetski.BaremetalOpenshiftInstaller(self.dag, self.release)
 
-
+    def _get_webfuse_installer(self):
+        return webfuse.BaremetalWebfuseInstaller(self.dag, self.release)
 
 class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):

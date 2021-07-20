@@ -4,7 +4,6 @@ from os import environ
 
 sys.path.insert(0, dirname(dirname(dirname(abspath(dirname(__file__))))))
 from util import var_loader, kubeconfig, constants
-from tasks.install.baremetal import webfuse
 from tasks.install.openshift import AbstractOpenshiftInstaller
 from models.release import BaremetalRelease
 
@@ -17,26 +16,21 @@ from kubernetes.client import models as k8s
 # Defines Tasks for installation of Openshift Clusters
 class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
     def __init__(self, dag, release: BaremetalRelease):
-        self.baremetal_exec_config = var_loader.get_jetski_executor_config()
+        self.baremetal_exec_config = var_loader.get_jetski_executor_config(release)
+
+        # Specific Task Configuration
+        self.vars = var_loader.build_task_vars(
+            release, task="install")
 
         self.baremetal_install_secrets = Variable.get(
             f"baremetal_openshift_install_config", deserialize_json=True)
         super().__init__(dag, release)
 
     def get_install_task(self):
-        webfuse_installer = self._get_webfuse_installer()
-        install_cluster = self._get_task(operation="install")
-        deploy_webfuse = webfuse_installer.get_deploy_app_task()
-
-        install_cluster >> deploy_webfuse
-
-        return install_cluster
+        return self._get_task(operation="install")
 
     def get_scaleup_task(self):
         return self._get_task(operation="scaleup")
-
-    def _get_webfuse_installer(self):
-        return webfuse.BaremetalWebfuseInstaller(self.dag, self.release)
 
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", trigger_rule="all_success"):

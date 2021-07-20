@@ -16,7 +16,11 @@ from kubernetes.client import models as k8s
 # Defines Tasks for installation of Openshift Clusters
 class BaremetalWebfuseInstaller(AbstractOpenshiftInstaller):
     def __init__(self, dag, release: BaremetalRelease): 
-        self.baremetal_exec_config = var_loader.get_jetski_executor_config()
+        self.baremetal_exec_config = var_loader.get_jetski_executor_config(release)
+
+        # Specific Task Configuration
+        self.vars = var_loader.build_task_vars(
+            release, task="install")
 
         self.baremetal_install_secrets = Variable.get(
             f"baremetal_openshift_install_config", deserialize_json=True)
