@@ -16,7 +16,7 @@ done
 
 setup(){
     # Clone JetSki playbook
-    git clone --single-branch --branch master https://${SSHKEY_TOKEN}@github.com/redhat-performance/JetSki.git /tmp/JetSki
+    git clone --single-branch --branch af_patch https://${SSHKEY_TOKEN}@github.com/mukrishn/JetSki.git /tmp/JetSki
     pushd /tmp/JetSki
 
     # Clone Perf private keys

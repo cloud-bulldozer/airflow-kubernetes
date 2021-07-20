@@ -51,7 +51,7 @@ def get_jetski_executor_config():
                     containers=[
                         k8s.V1Container(
                             name="base",
-                            image="quay.io/mukrishn/jetski:2.1",
+                            image="quay.io/mukrishn/jetski:latest",
                             image_pull_policy="Always",
                             volume_mounts=[
                                 kubeconfig.get_empty_dir_volume_mount()]
