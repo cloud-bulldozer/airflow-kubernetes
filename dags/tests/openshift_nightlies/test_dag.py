@@ -9,6 +9,9 @@ from airflow.utils import dag_cycle_tester
 def variable_patch(name, deserialize_json=False):
     if deserialize_json:
         return {
+            "rosa_token_staging": "stub",
+            "aws_access_key_id": "stub",
+            "aws_secret_access_key": "stub",
             "aws_region_for_openshift": "stub",
             "server": "stub",
             "username": "stub",

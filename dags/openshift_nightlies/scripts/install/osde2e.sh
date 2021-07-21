@@ -36,6 +36,7 @@ setup(){
     export ROSA_ENVIRONMENT=$(cat ${json_file} | jq -r .rosa_environment)
     export OCM_ENVIRONMENT=$(cat ${json_file} | jq -r .ocm_environment)
     export EXPIRATION_TIME=$(cat ${json_file} | jq -r .rosa_expiration_time)
+    export CLUSTER_HEALTH_CHECKS_TIMEOUT="4h"
     export ROSA_TOKEN=$(cat ${json_file} | jq -r .rosa_token_${ROSA_ENVIRONMENT})
     export CLUSTER_NAME=$(cat ${json_file} | jq -r .openshift_cluster_name)
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .openshift_worker_count)
@@ -76,6 +77,9 @@ postinstall(){
     _download_kubeconfig $(_get_cluster_id ${CLUSTER_NAME}) ./kubeconfig
     kubectl delete secret ${KUBECONFIG_NAME} || true
     kubectl create secret generic ${KUBECONFIG_NAME} --from-file=config=./kubeconfig
+    PASSWORD=$(rosa create admin -c $(_get_cluster_id ${CLUSTER_NAME}) -y 2>/dev/null | grep "oc login" | awk '{print $7}')
+    kubectl delete secret ${KUBEADMIN_NAME} || true
+    kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=${PASSWORD}
 }
 
 cleanup(){

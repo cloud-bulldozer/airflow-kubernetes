@@ -51,10 +51,16 @@ install(){
 }
 
 postinstall(){
+    export WORKLOAD_TYPE=$(cat ${json_file} | jq -r .openshift_workload_node_instance_type)
     export EXPIRATION_TIME=$(cat ${json_file} | jq -r .rosa_expiration_time)
     _download_kubeconfig $(_get_cluster_id ${CLUSTER_NAME}) ./kubeconfig
     kubectl delete secret ${KUBECONFIG_NAME} || true
     kubectl create secret generic ${KUBECONFIG_NAME} --from-file=config=./kubeconfig
+    PASSWORD=$(rosa create admin -c $(_get_cluster_id ${CLUSTER_NAME}) -y 2>/dev/null | grep "oc login" | awk '{print $7}')
+    kubectl delete secret ${KUBEADMIN_NAME} || true
+    kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=${PASSWORD}
+    # create machinepool for workload nodes
+    rosa create machinepool -c ${CLUSTER_NAME} --instance-type ${WORKLOAD_TYPE} --name workload --labels node-role.kubernetes.io/workload= --taints role=workload:NoSchedule --replicas 3
     # set expiration to 24h
     rosa edit cluster -c $(_get_cluster_id ${CLUSTER_NAME}) --expiration=${EXPIRATION_TIME}
 }
