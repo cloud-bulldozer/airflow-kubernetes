@@ -39,6 +39,16 @@ run_ansible_playbook(){
     time ansible-playbook -i inventory/jetski/hosts playbook-jetski.yml --extra-vars "@${json_file}"
 }
 
+post_install(){
+    kubectl delete secret ${KUBEADMIN_NAME} --ignore-not-found=true
+    kubectl delete secret ${KUBECONFIG_NAME} --ignore-not-found=true
+
+    _kubeadmin_password=$(cat /tmp/kubeadmin-password)
+
+    kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=$_kubeadmin_password
+    kubectl create secret generic ${KUBECONFIG_NAME} --from-file=config=/tmp/kubeconfig
+}
+
 echo "Staring cluster installation..." 
 date
 echo "-------------------------------"
@@ -46,5 +56,7 @@ setup
 run_ansible_playbook
 echo "Finished cluster installation" 
 date
+echo "Creating secrets"
+post_install
 echo "-------------------------------"
 

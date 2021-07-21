@@ -54,13 +54,11 @@ def get_jetski_executor_config(release: OpenshiftRelease):
                             image="quay.io/mukrishn/jetski:latest",
                             image_pull_policy="Always",
                             volume_mounts=[
-                                kubeconfig.get_kubeconfig_volume_mount(),
                                 kubeconfig.get_empty_dir_volume_mount()
                                 ]
                         )
                     ],
                     volumes=[
-                        kubeconfig.get_kubeconfig_volume(release),
                         kubeconfig.get_empty_dir_volume()
                         ]
                 )
