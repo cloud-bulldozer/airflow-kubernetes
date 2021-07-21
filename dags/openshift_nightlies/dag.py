@@ -1,6 +1,6 @@
 import sys
 import os
-import logging 
+import logging
 import json
 from datetime import timedelta, datetime
 from airflow import DAG
@@ -17,6 +17,7 @@ from openshift_nightlies.models.release import OpenshiftRelease, BaremetalReleas
 from openshift_nightlies.tasks.install.cloud import openshift
 from openshift_nightlies.tasks.install.openstack import jetpack
 from openshift_nightlies.tasks.install.baremetal import jetski
+from openshift_nightlies.tasks.install.rosa import rosa
 from openshift_nightlies.tasks.benchmarks import e2e
 from openshift_nightlies.tasks.utils import scale_ci_diagnosis
 from openshift_nightlies.tasks.index import status
@@ -30,6 +31,8 @@ handler.setLevel(logging.INFO)
 log.addHandler(handler)
 
 # This Applies to all DAGs
+
+
 class AbstractOpenshiftNightlyDAG(ABC):
     def __init__(self, release: OpenshiftRelease, config: DagConfig):
         self.release = release
@@ -62,7 +65,7 @@ class AbstractOpenshiftNightlyDAG(ABC):
     def _get_openshift_installer(self):
         raise NotImplementedError()
 
-    def _get_e2e_benchmarks(self): 
+    def _get_e2e_benchmarks(self):
         return e2e.E2EBenchmarks(self.dag, self.release)
 
     def _get_scale_ci_diagnosis(self):
@@ -73,27 +76,26 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
-        
+
         with TaskGroup("utils", prefix_group_id=False, dag=self.dag) as utils:
-            utils_tasks=self._get_scale_ci_diagnosis().get_utils()
+            utils_tasks = self._get_scale_ci_diagnosis().get_utils()
             chain(*utils_tasks)
 
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
-            
+
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
             install_cluster >> benchmarks >> utils >> cleanup_cluster
-        else: 
+        else:
             install_cluster >> benchmarks >> utils
 
     def _get_openshift_installer(self):
         return openshift.CloudOpenshiftInstaller(self.dag, self.release)
 
 
-
-class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):   
+class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):
         bm_installer = self._get_openshift_installer()
         install_cluster = bm_installer.get_install_task()
@@ -102,7 +104,6 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 
     def _get_openshift_installer(self):
         return jetski.BaremetalOpenshiftInstaller(self.dag, self.release)
-
 
 
 class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
@@ -116,12 +117,26 @@ class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
             install_cluster >> benchmarks >> cleanup_cluster
-        else: 
+        else:
             install_cluster >> benchmarks
 
     def _get_openshift_installer(self):
         return jetpack.OpenstackJetpackInstaller(self.dag, self.release)
 
+
+class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
+    def build(self):
+        installer = self._get_openshift_installer()
+        install_cluster = installer.get_install_task()
+
+        if self.config.cleanup_on_success:
+            cleanup_cluster = installer.get_cleanup_task()
+            install_cluster >> cleanup_cluster
+        else:
+            install_cluster
+
+    def _get_openshift_installer(self):
+        return rosa.RosaInstaller(self.dag, self.release)
 
 
 release_manifest = manifest.Manifest(constants.root_dag_dir)
@@ -133,8 +148,10 @@ for release in release_manifest.get_releases():
         nightly = BaremetalOpenshiftNightlyDAG(openshift_release, dag_config)
     elif openshift_release.platform == "openstack":
         nightly = OpenstackNightlyDAG(openshift_release, dag_config)
+    elif openshift_release.platform == "rosa":
+        nightly = RosaNightlyDAG(openshift_release, dag_config)
     else:
         nightly = CloudOpenshiftNightlyDAG(openshift_release, dag_config)
-    
+
     nightly.build()
     globals()[nightly.release_name] = nightly.dag
