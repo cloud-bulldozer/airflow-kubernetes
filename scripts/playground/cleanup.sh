@@ -13,4 +13,4 @@ _cluster_domain=$(kubectl get ingresses.config.openshift.io/cluster -o jsonpath=
 
 
 envsubst < $GIT_ROOT/scripts/playground/templates/airflow.yaml | kubectl delete -f -
-kubectl delete namespace $_airflow_namespace || true
+oc delete project/$_airflow_namespace || true

@@ -24,5 +24,5 @@ if [[ -z "$password" ]]; then
 fi
 
 
-kubectl create namespace $_airflow_namespace || true
+oc new-project $_airflow_namespace || true
 envsubst < $GIT_ROOT/scripts/playground/templates/airflow.yaml | kubectl apply -f -

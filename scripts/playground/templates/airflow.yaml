@@ -97,9 +97,10 @@ spec:
   wildcardPolicy: None
 --- 
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: Role
 metadata:
   name: $_remote_user-$_branch-pod-reader
+  namespace: $_airflow_namespace
 rules:
 - apiGroups: [""] # "" indicates the core API group
   resources: ["pods", "pods/log"]
@@ -107,9 +108,10 @@ rules:
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 # This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.
-kind: ClusterRoleBinding
+kind: RoleBinding
 metadata:
   name: $_remote_user-$_branch-pod-reader
+  namespace: $_airflow_namespace
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 subjects:
@@ -120,7 +122,7 @@ subjects:
   name: airflow-worker # Name is case sensitive
   namespace: $_airflow_namespace
 roleRef:
-  kind: ClusterRole
+  kind: Role
   name: $_remote_user-$_branch-pod-reader
   apiGroup: rbac.authorization.k8s.io
 ---
