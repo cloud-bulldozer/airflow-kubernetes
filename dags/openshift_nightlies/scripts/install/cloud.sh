@@ -21,6 +21,7 @@ setup(){
     export PUBLIC_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
     export PRIVATE_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2 
     export AWS_REGION=${AWS_REGION:-us-west-2}
+    export WORKLOAD_AWS_AZ_SUFFIX=${WORKLOAD_AWS_AZ_SUFFIX:-d}
     chmod 600 ${PRIVATE_KEY}
 
 

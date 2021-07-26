@@ -88,6 +88,7 @@ class AbstractOpenshiftInstaller(ABC):
             "KUBEADMIN_NAME": f"{self.release_name}-kubeadmin",
             "OPENSHIFT_INSTALL_PULL_SECRET": self.ocp_pull_secret,
             "AWS_REGION": self.config['aws_region_for_openshift'],
+            "WORKLOAD_AWS_AZ_SUFFIX": self.config.get('workload_aws_az_suffix',''),
             **self._insert_kube_env()
         }
 
