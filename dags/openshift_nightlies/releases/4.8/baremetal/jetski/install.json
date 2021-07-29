@@ -22,7 +22,7 @@
     "local_storage_instances": [],
     "openshift_prometheus_storage_class": "",
     "kafka_storage": "ephemeral",
-    "bigip_worker:": ["worker000-740xd", "worker001-740xd"],
+    "bigip_worker": ["worker000-740xd", "worker001-740xd"],
     "bigip_sriov_int": "ens7f0",
     "bigip_bridge_int": "ens7f0",
     "ansible_ssh_key": "/tmp/JetSki/perf-dept/ssh_keys/id_rsa_pbench_ec2"
