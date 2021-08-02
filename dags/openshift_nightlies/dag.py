@@ -102,7 +102,11 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         deploy_webfuse = webfuse_installer.get_deploy_app_task()
         scaleup_cluster = bm_installer.get_scaleup_task()
         
-        install_cluster >> deploy_webfuse >> scaleup_cluster
+        with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
+            benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
+            chain(*benchmark_tasks)
+
+        install_cluster >> benchmarks >> deploy_webfuse >> benchmarks >> scaleup_cluster >> benchmarks
 
     def _get_openshift_installer(self):
         return jetski.BaremetalOpenshiftInstaller(self.dag, self.release)

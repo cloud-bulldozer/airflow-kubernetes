@@ -41,10 +41,27 @@ class E2EBenchmarks():
             "SNAPPY_DATA_SERVER_URL": self.SNAPPY_DATA_SERVER_URL,
             "SNAPPY_DATA_SERVER_USERNAME": self.SNAPPY_DATA_SERVER_USERNAME,
             "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD,
-            "SNAPPY_USER_FOLDER": self.git_name
+            "SNAPPY_USER_FOLDER": self.git_name,
+            "PLATFORM": self.release.platform
         }
 
-        
+        if self.release.platform == "baremetal":
+            self.install_vars = var_loader.build_task_vars(
+                release, task="install")
+            self.baremetal_install_secrets = Variable.get(
+            f"baremetal_openshift_install_config", deserialize_json=True)
+
+            self.config = {
+                **self.install_vars,
+                **self.baremetal_install_secrets
+            }
+
+            self.env = {
+                **self.env,
+                "SSHKEY_TOKEN": self.config['sshkey_token'],
+                "ORCHESTRATION_HOST": self.config['provisioner_user'],
+                "ORCHESTRATION_USER": self.config['provisioner_hostname']
+            }
     
 
     def get_benchmarks(self):
