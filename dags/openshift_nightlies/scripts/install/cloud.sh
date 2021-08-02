@@ -16,10 +16,21 @@ done
 setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
-    git clone https://github.com/cloud-bulldozer/scale-ci-deploy
     git clone https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git
-    export PUBLIC_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
-    export PRIVATE_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2 
+    git clone https://github.com/cloud-bulldozer/scale-ci-deploy
+    if [ ! -z "$JH_SSH_PUB_KEY" -a ! -z "$JH_SSH_PVT_KEY" ]; then
+        echo "Local SSH keys found, using those instead of cloning from GitHub"
+        mkdir ssh_keys
+        pushd ssh_keys
+        echo $JH_SSH_PUB_KEY > id_rsa.pub
+        echo $JH_SSH_PVT_KEY | base64 -d > id_rsa
+        export PUBLIC_KEY=/home/airflow/workspace/ssh_keys/id_rsa.pub
+        export PRIVATE_KEY=/home/airflow/workspace/ssh_keys/id_rsa
+        popd
+    else
+        export PUBLIC_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
+        export PRIVATE_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2
+    fi
     export AWS_REGION=${AWS_REGION:-us-west-2}
     chmod 600 ${PRIVATE_KEY}
 

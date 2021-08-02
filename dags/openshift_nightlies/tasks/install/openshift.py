@@ -40,6 +40,7 @@ class AbstractOpenshiftInstaller(ABC):
         self.aws_creds = Variable.get("aws_creds", deserialize_json=True)
         self.gcp_creds = Variable.get("gcp_creds", deserialize_json=True)
         self.azure_creds = Variable.get("azure_creds", deserialize_json=True)
+        self.jh_ssh_keys = Variable.get("jh_ssh_keys", deserialize_json=True)
         self.ocp_pull_secret = Variable.get("osp_ocp_pull_creds")
         self.openstack_creds = Variable.get("openstack_creds", deserialize_json=True)
         self.release_stream_base_url = Variable.get("release_stream_base_url")
@@ -52,6 +53,7 @@ class AbstractOpenshiftInstaller(ABC):
             **self.aws_creds,
             **self.gcp_creds,
             **self.azure_creds,
+            **self.jh_ssh_keys,
             **self.openstack_creds,
             **self.release.get_latest_release(self.release_stream_base_url),
             **{ "es_server": var_loader.get_elastic_url() }
@@ -88,6 +90,8 @@ class AbstractOpenshiftInstaller(ABC):
             "KUBEADMIN_NAME": f"{self.release_name}-kubeadmin",
             "OPENSHIFT_INSTALL_PULL_SECRET": self.ocp_pull_secret,
             "AWS_REGION": self.config['aws_region_for_openshift'],
+            "JH_SSH_PUB_KEY": self.config.get("jh_ssh_pub_key",""),
+            "JH_SSH_PVT_KEY": self.config.get("jh_ssh_pvt_key_base64",""),
             **self._insert_kube_env()
         }
 
