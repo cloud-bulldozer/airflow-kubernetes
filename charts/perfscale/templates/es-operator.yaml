@@ -20,6 +20,10 @@ spec:
       - /webhooks/7/clientConfig/caBundle
       - /webhooks/8/clientConfig/caBundle
       - /webhooks/9/clientConfig/caBundle
+  - group: apiextensions.k8s.io
+    kind: CustomResourceDefinition
+    jsonPointers:
+      - /spec/versions/2/schema/openAPIV3Schema/properties
   project: default
   destination: 
     namespace: elastic-system
