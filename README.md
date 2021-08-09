@@ -16,7 +16,9 @@ Look at [tasks](./dags/openshift_nightlies/docs/tasks.md) to see more about crea
 Look at [variables](./dags/openshift_nightlies/docs/variables.md) to see how variables are handled in these DAGs
 
 
-## Installing Airflow
+## Installing Airflow [Standalone]
+
+> Note: This requires you to have your own openshift cluster. If you wish to install this inside the Performance and Scale Baremetal Cluster (sailplane), please see the [Developer Playground](#-installing-airflow-developer-playground)
 
 To install Airflow you simply need to fork the repo and run the following on a box that has access to an openshift cluster:
 
@@ -39,6 +41,8 @@ To uninstall the stack, you can run `./scripts/uninstall.sh`.
 
 
 ## Installing Airflow (Developer Playground)
+
+> Note: This currently only works if you clone the repo using https!
 
 To install Airflow in a developer playground setting (i.e. in our baremetal cluster)
 
