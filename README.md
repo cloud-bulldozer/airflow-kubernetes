@@ -10,12 +10,6 @@ This Repo defines Airflow Tasks used in running our nightly performance builds f
 * `charts` - Helm Charts for the Airflow Stack (includes Airflow, an EFK Stack for logging, Elastic/Kibana Cluster for results, and an instance of the perf-dashboard)
 * `scripts` - Install/Uninstall scripts for the Airflow stack
 
-## Docs
-
-Look at [tasks](./dags/openshift_nightlies/docs/tasks.md) to see more about creating tasks
-Look at [variables](./dags/openshift_nightlies/docs/variables.md) to see how variables are handled in these DAGs
-
-
 ## Installing Airflow [Standalone]
 
 > Note: This requires you to have your own openshift cluster. If you wish to install this inside the Performance and Scale Baremetal Cluster (sailplane), please see the [Developer Playground](#installing-airflow-developer-playground)
