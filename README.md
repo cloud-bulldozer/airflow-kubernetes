@@ -18,7 +18,7 @@ Look at [variables](./dags/openshift_nightlies/docs/variables.md) to see how var
 
 ## Installing Airflow [Standalone]
 
-> Note: This requires you to have your own openshift cluster. If you wish to install this inside the Performance and Scale Baremetal Cluster (sailplane), please see the [Developer Playground](#-installing-airflow-developer-playground)
+> Note: This requires you to have your own openshift cluster. If you wish to install this inside the Performance and Scale Baremetal Cluster (sailplane), please see the [Developer Playground](#installing-airflow-developer-playground)
 
 To install Airflow you simply need to fork the repo and run the following on a box that has access to an openshift cluster:
 
