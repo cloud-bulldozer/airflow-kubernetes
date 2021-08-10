@@ -26,7 +26,7 @@ class Diagnosis():
         self.dag = dag
         self.release = release
         self.exec_config = var_loader.get_executor_config_with_cluster_access(release)
-        self.snappy_creds = Variable.get("snappy_creds")
+        self.snappy_creds = Variable.get("snappy_creds", deserialize_json=True)
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
