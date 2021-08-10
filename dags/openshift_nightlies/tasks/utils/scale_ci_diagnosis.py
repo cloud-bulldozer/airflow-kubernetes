@@ -26,21 +26,16 @@ class Diagnosis():
         self.dag = dag
         self.release = release
         self.exec_config = var_loader.get_executor_config_with_cluster_access(release)
-
-
-        # Airflow Variables
-        self.SNAPPY_DATA_SERVER_URL = Variable.get("SNAPPY_DATA_SERVER_URL")
-        self.SNAPPY_DATA_SERVER_USERNAME = Variable.get("SNAPPY_DATA_SERVER_USERNAME")
-        self.SNAPPY_DATA_SERVER_PASSWORD = Variable.get("SNAPPY_DATA_SERVER_PASSWORD")
+        self.snappy_creds = Variable.get("snappy_creds")
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
             release=self.release, task="utils")
         self.git_name=self._git_name()
         self.env = {
-            "SNAPPY_DATA_SERVER_URL": self.SNAPPY_DATA_SERVER_URL,
-            "SNAPPY_DATA_SERVER_USERNAME": self.SNAPPY_DATA_SERVER_USERNAME,
-            "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD,
+            "SNAPPY_DATA_SERVER_URL": self.snappy_creds['server'],
+            "SNAPPY_DATA_SERVER_USERNAME": self.snappy_creds['username'],
+            "SNAPPY_DATA_SERVER_PASSWORD": self.snappy_creds['password'],
             "SNAPPY_USER_FOLDER": self.git_name
 
         }
