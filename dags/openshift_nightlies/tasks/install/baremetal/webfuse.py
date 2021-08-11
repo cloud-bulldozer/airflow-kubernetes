@@ -3,7 +3,7 @@ from os.path import abspath, dirname
 from os import environ
 
 sys.path.insert(0, dirname(dirname(dirname(abspath(dirname(__file__))))))
-from util import var_loader, kubeconfig, constants
+from util import var_loader, executor, constants
 from models.release import BaremetalRelease
 from tasks.install.openshift import AbstractOpenshiftInstaller
 
