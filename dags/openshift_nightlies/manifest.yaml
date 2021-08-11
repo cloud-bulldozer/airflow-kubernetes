@@ -48,8 +48,8 @@ platforms:
       profiles:
       - jetski    
     - version: 4.8
-      releaseStream: latest-4.8
-      build: dev
+      releaseStream: 4.8.2
+      build: ga
       profiles:
       - jetski
   openstack:
