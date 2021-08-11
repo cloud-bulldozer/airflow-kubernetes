@@ -19,9 +19,8 @@ Strictly speaking, a `release` is actually a unique combination of three variabl
 
 
 This data is used to generate a dag and load in the variables defined in the `releases` directory accordingly. Airflow also names the dag based off of it. Adding a second release with the same values for all three of these parameters would essentialy create duplicate DAGs, so you don't want to do that. 
-### Platform vs. Providers
 
-In the manifest, all cloud releases are underneath a "cloud" umbrella platform. However, each cloud version also has a "providers" key which determines the Cloud provider to install OpenShift on. In this case, the Provider is used as the platform. 
+> Note: In the manifest, all cloud releases are underneath a "cloud" umbrella platform. However, each cloud version also has a "providers" key which determines the Cloud provider to install OpenShift on. In this case, the Provider is used as the platform. Currently we support 'aws', 'gcp', and 'azure' cloud providers.
 
 
 

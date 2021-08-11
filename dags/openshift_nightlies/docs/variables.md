@@ -31,13 +31,11 @@ releases
 
 If using the `util.var_loader` module functions to load task variables, this pattern will automatically load the task defaults as well as the release specific configurations and apply them properly. 
 
-> Note: We *highly* recommend task developers to use the `util.var_loader.build_task_vars()` function to load your variables into your module. This has been tested to appropriately provide your module with a JSON-Compliant Dictionary with your configurations. 
+> Note: We require task developers to use the `util.var_loader.build_task_vars()` function to load your variables into your module. This has been tested to appropriately provide your module with a JSON-Compliant Dictionary with your configurations. 
 
 ## Airflow/Secret Variables
 
-Airflow variables can be defined inside Airflow and pulled through the Airflow SDK. You can parameterize those as well so long as they are parameterized off of 1 or more of the above 3 variables. Variables containing sensitive information should be stored here. 
-
-> TODO: We need to have a more robust way of defining Secret Variables. For now, please ensure you aren't using a variable name already being used in another DAG. And try to make yours unique enough to not cause future conflicts. 
+[See this page for more info on Secrets](./secrets.md)
 
 ## Task Variables
 
