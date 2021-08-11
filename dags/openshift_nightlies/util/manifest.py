@@ -1,7 +1,6 @@
 import yaml
 import sys
 from os.path import abspath, dirname
-sys.path.insert(0, dirname(abspath(dirname(__file__))))
 from models.dag_config import DagConfig
 from models.release import OpenshiftRelease, BaremetalRelease
 from util import var_loader

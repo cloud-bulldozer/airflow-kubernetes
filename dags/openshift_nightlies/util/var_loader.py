@@ -2,7 +2,6 @@ import json
 import sys
 from os.path import abspath, dirname
 from os import environ
-sys.path.insert(0, dirname(abspath(dirname(__file__))))
 from util import constants, executor
 from models.release import OpenshiftRelease
 import requests
