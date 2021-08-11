@@ -65,6 +65,7 @@ results:
         indice: perf_scale_ci
         username: elastic
   elastic:
+    enabled: false 
     values:
       elasticsearch:
         nodeSets:

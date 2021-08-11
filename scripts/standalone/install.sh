@@ -3,9 +3,7 @@ set -a
 usage() { echo "Usage: $0 [-p <string> (airflow password)]" 1>&2; exit 1; }
 GIT_ROOT=$(git rev-parse --show-toplevel)
 source $GIT_ROOT/scripts/common.sh
-_remote_origin_url=$(git config --get remote.origin.url)
-_branch=$(git branch --show-current)
-_cluster_domain=$(oc get ingresses.config.openshift.io/cluster -o jsonpath='{.spec.domain}')
+_airflow_namespace=airflow
 
 while getopts p: flag
 do
@@ -20,17 +18,9 @@ if [[ -z "$password" ]]; then
 fi
 
 
-install_helm(){
-    HELM_VERSION=v3.4.2
-    wget https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
-    tar -zxf helm-${HELM_VERSION}-linux-amd64.tar.gz
-    mv linux-amd64/helm /usr/bin/helm
-    helm repo add stable https://charts.helm.sh/stable/   
-}
 
 install_argo(){    
     kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-
 }
 
 pre_install(){
