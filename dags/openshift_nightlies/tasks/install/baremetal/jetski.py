@@ -5,12 +5,16 @@ from os import environ
 sys.path.insert(0, dirname(dirname(dirname(abspath(dirname(__file__))))))
 from util import var_loader, kubeconfig, constants
 from tasks.install.openshift import AbstractOpenshiftInstaller
+from tasks.benchmarks import e2e
 from models.release import BaremetalRelease
 
 import json
 
 from airflow.operators.bash_operator import BashOperator
 from airflow.models import Variable
+from airflow.utils.task_group import TaskGroup
+from airflow.utils.helpers import chain
+
 from kubernetes.client import models as k8s
 
 # Defines Tasks for installation of Openshift Clusters
@@ -23,11 +27,28 @@ class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
         super().__init__(dag, release)
 
     def get_install_task(self):
-        return self._get_task(operation="install")
+        benchmarks = self._add_benchmarks(task_group="install-bench")
+        install = self._get_task(operation="install")
+        install >> benchmarks
+
+        return install
 
     def get_scaleup_task(self):
-        return self._get_task(operation="scaleup")
+        benchmarks = self._add_benchmarks(task_group="scaleup-bench")
+        scaleup = self._get_task(operation="scaleup")
+        scaleup >> benchmarks
 
+        return scaleup
+        
+    def _add_benchmarks(self, task_group):
+        with TaskGroup(task_group, prefix_group_id=True, dag=self.dag) as benchmarks:
+            benchmark_tasks = self._get_e2e_benchmarks(task_group).get_benchmarks()
+            chain(*benchmark_tasks)
+        return benchmarks
+
+    def _get_e2e_benchmarks(self, task_group):
+        return e2e.E2EBenchmarks(self.dag, self.release, task_group)
+        
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", trigger_rule="all_success"):
         bash_script = ""

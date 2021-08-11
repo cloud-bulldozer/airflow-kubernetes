@@ -20,10 +20,11 @@ from kubernetes.client import models as k8s
 
 
 class E2EBenchmarks():
-    def __init__(self, dag, release: OpenshiftRelease):
+    def __init__(self, dag, release: OpenshiftRelease, task_group="benchmarks"):
         # General DAG Configuration
         self.dag = dag
         self.release = release
+        self.task_group = task_group
         self.exec_config = var_loader.get_executor_config_with_cluster_access(self.release)
 
         
@@ -35,14 +36,15 @@ class E2EBenchmarks():
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
-            release=self.release, task="benchmarks")
+            release=self.release, task=self.task_group)
         self.git_name=self._git_name()
         self.env = {
             "SNAPPY_DATA_SERVER_URL": self.SNAPPY_DATA_SERVER_URL,
             "SNAPPY_DATA_SERVER_USERNAME": self.SNAPPY_DATA_SERVER_USERNAME,
             "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD,
             "SNAPPY_USER_FOLDER": self.git_name,
-            "PLATFORM": self.release.platform
+            "PLATFORM": self.release.platform,
+            "TASK_GROUP": self.task_group
         }
 
         if self.release.platform == "baremetal":
@@ -59,8 +61,8 @@ class E2EBenchmarks():
             self.env = {
                 **self.env,
                 "SSHKEY_TOKEN": self.config['sshkey_token'],
-                "ORCHESTRATION_HOST": self.config['provisioner_user'],
-                "ORCHESTRATION_USER": self.config['provisioner_hostname']
+                "ORCHESTRATION_USER": self.config['provisioner_user'],
+                "ORCHESTRATION_HOST": self.config['provisioner_hostname']
             }
     
 
@@ -102,7 +104,7 @@ class E2EBenchmarks():
     def _get_benchmark(self, benchmark):
         env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
         return BashOperator(
-            task_id=f"{benchmark['name']}",
+            task_id=f"{self.task_group}_{benchmark['name']}",
             depends_on_past=False,
             bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
             retries=3,

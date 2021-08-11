@@ -1,7 +1,7 @@
 {
     "provisioner_user": "kni",
-    "provisioner_hostname": "e24-h37-740xd.alias.bos.scalelab.redhat.com",
-    "cloud_name": "cloud16",
+    "provisioner_hostname": "e24-h27-740xd.alias.bos.scalelab.redhat.com",
+    "cloud_name": "cloud06",
     "lab_name": "alias",
     "routable_api": false,
     "jumbo_mtu": true,
@@ -13,7 +13,7 @@
     "openshift_base_domain": "rdu2.scalelab.redhat.com",
     "openshift_cluster_name": "",
     "openshift_install_pull_secret": "",
-    "openshift_worker_count": "2",
+    "openshift_worker_count": "0",
     "openshift_worker_scaleup_target": "2",
     "kubeconfig_path": "/home/kni/clusterconfigs/auth/kubeconfig",
     "webfuse_playbook": "webscale.yml",

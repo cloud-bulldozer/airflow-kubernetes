@@ -5,12 +5,16 @@ from os import environ
 sys.path.insert(0, dirname(dirname(dirname(abspath(dirname(__file__))))))
 from util import var_loader, kubeconfig, constants
 from models.release import BaremetalRelease
+from tasks.benchmarks import e2e
 from tasks.install.openshift import AbstractOpenshiftInstaller
 
 import json
 
 from airflow.operators.bash_operator import BashOperator
 from airflow.models import Variable
+from airflow.utils.task_group import TaskGroup
+from airflow.utils.helpers import chain
+
 from kubernetes.client import models as k8s
 
 # Defines Tasks for installation of Openshift Clusters
@@ -23,7 +27,20 @@ class BaremetalWebfuseInstaller(AbstractOpenshiftInstaller):
         super().__init__(dag, release)
 
     def get_deploy_app_task(self):
-        return self._get_task()        
+        benchmarks = self._add_benchmarks(task_group="webfuse-bench")
+        webfuse = self._get_task()
+        webfuse >> benchmarks
+
+        return webfuse
+
+    def _add_benchmarks(self, task_group):
+        with TaskGroup(task_group, prefix_group_id=True, dag=self.dag) as benchmarks:
+            benchmark_tasks = self._get_e2e_benchmarks(task_group).get_benchmarks()
+            chain(*benchmark_tasks)
+        return benchmarks
+
+    def _get_e2e_benchmarks(self, task_group):
+        return e2e.E2EBenchmarks(self.dag, self.release, task_group)
 
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, trigger_rule="all_success"):
