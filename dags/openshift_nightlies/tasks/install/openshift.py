@@ -20,7 +20,7 @@ from kubernetes.client import models as k8s
 
 class AbstractOpenshiftInstaller(ABC):
     def __init__(self, dag, release: OpenshiftRelease):
-        self.exec_config = var_loader.get_default_executor_config()
+        self.exec_config = executor.get_default_executor_config()
 
         # General DAG Configuration
         self.dag = dag
@@ -32,17 +32,17 @@ class AbstractOpenshiftInstaller(ABC):
             release, task="install")
 
         # Airflow Variables
-        self.ansible_orchestrator = Variable.get(
+        self.ansible_orchestrator = var_loader.get_secret(
             "ansible_orchestrator", deserialize_json=True)
 
-        self.install_secrets = Variable.get(
+        self.install_secrets = var_loader.get_secret(
             f"openshift_install_config", deserialize_json=True)
-        self.aws_creds = Variable.get("aws_creds", deserialize_json=True)
-        self.gcp_creds = Variable.get("gcp_creds", deserialize_json=True)
-        self.azure_creds = Variable.get("azure_creds", deserialize_json=True)
-        self.ocp_pull_secret = Variable.get("osp_ocp_pull_creds")
-        self.openstack_creds = Variable.get("openstack_creds", deserialize_json=True)
-        self.release_stream_base_url = Variable.get("release_stream_base_url")
+        self.aws_creds = var_loader.get_secret("aws_creds", deserialize_json=True)
+        self.gcp_creds = var_loader.get_secret("gcp_creds", deserialize_json=True)
+        self.azure_creds = var_loader.get_secret("azure_creds", deserialize_json=True)
+        self.ocp_pull_secret = var_loader.get_secret("osp_ocp_pull_creds")
+        self.openstack_creds = var_loader.get_secret("openstack_creds", deserialize_json=True)
+        self.release_stream_base_url = var_loader.get_secret("release_stream_base_url")
 
         # Merge all variables, prioritizing Airflow Secrets over git based vars
         self.config = {
@@ -54,7 +54,7 @@ class AbstractOpenshiftInstaller(ABC):
             **self.azure_creds,
             **self.openstack_creds,
             **self.release.get_latest_release(self.release_stream_base_url),
-            **{ "es_server": var_loader.get_elastic_url() }
+            **{ "es_server": var_loader.get_secret('elasticsearch') }
         }
         super().__init__()
 

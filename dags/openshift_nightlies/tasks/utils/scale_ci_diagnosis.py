@@ -25,8 +25,8 @@ class Diagnosis():
         # General DAG Configuration
         self.dag = dag
         self.release = release
-        self.exec_config = var_loader.get_executor_config_with_cluster_access(release)
-        self.snappy_creds = Variable.get("snappy_creds", deserialize_json=True)
+        self.exec_config = executor.get_executor_config_with_cluster_access(release)
+        self.snappy_creds = var_loader.get_secret("snappy_creds", deserialize_json=True)
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
@@ -58,7 +58,7 @@ class Diagnosis():
         return utils 
 
     def _get_util(self, util):
-        env = {**self.env, **util.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
+        env = {**self.env, **util.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch')}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
         return BashOperator(
             task_id=f"{util['name']}",
             depends_on_past=False,

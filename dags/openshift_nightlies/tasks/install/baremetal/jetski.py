@@ -17,7 +17,7 @@ from kubernetes.client import models as k8s
 # Defines Tasks for installation of Openshift Clusters
 class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
     def __init__(self, dag, release: BaremetalRelease):
-        self.baremetal_install_secrets = Variable.get(
+        self.baremetal_install_secrets = var_loader.get_secret(
             f"baremetal_openshift_install_config", deserialize_json=True)
         super().__init__(dag, release)
 
@@ -44,7 +44,7 @@ class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
         config = {
             **self.vars,
             **self.baremetal_install_secrets,
-            **{ "es_server": var_loader.get_elastic_url() }
+            **{ "es_server": var_loader.get_secret('elasticsearch') }
         }
         
         config['pullsecret'] = json.dumps(config['openshift_install_pull_secret'])
