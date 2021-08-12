@@ -1,1 +1,1 @@
-sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
+sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
