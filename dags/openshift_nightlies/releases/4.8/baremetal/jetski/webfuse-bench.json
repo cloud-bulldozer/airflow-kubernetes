@@ -9,6 +9,14 @@
                 "ENABLE_SNAPPY_BACKUP": "false",
                 "MULTI_AZ": "false"
             }
-        }
+        },
+        {
+            "name": "upgrade-cluster",
+            "workload": "upgrade-perf",
+            "command": "./run_upgrade_fromgit.sh test_cloud",
+            "env": {
+                "VERSION": "4.8.3"
+            }
+        }        
     ]
 }
