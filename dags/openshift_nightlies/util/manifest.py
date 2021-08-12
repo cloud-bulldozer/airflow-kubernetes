@@ -1,10 +1,7 @@
 import yaml
-import sys
-from os.path import abspath, dirname
-sys.path.insert(0, dirname(abspath(dirname(__file__))))
-from models.dag_config import DagConfig
-from models.release import OpenshiftRelease, BaremetalRelease
-from util import var_loader
+from openshift_nightlies.models.dag_config import DagConfig
+from openshift_nightlies.models.release import OpenshiftRelease, BaremetalRelease
+from openshift_nightlies.util import var_loader
 
 class Manifest():
     def __init__(self, root_dag_dir):

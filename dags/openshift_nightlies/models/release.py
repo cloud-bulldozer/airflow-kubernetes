@@ -1,9 +1,6 @@
-import sys
 import requests
-from os.path import abspath, dirname
 from dataclasses import dataclass
 from typing import Optional
-sys.path.insert(0, dirname(abspath(dirname(__file__))))
 
 @dataclass
 class OpenshiftRelease:

@@ -1,10 +1,8 @@
-import sys
-from os.path import abspath, dirname
 from os import environ
 
-sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
-from util import var_loader, kubeconfig, constants
-from models.release import OpenshiftRelease
+
+from openshift_nightlies.util import var_loader, executor, constants
+from openshift_nightlies.models.release import OpenshiftRelease
 
 import json
 import requests
@@ -20,7 +18,7 @@ class StatusIndexer():
         # General DAG Configuration
         self.dag = dag
         self.release = release
-        self.exec_config = var_loader.get_executor_config_with_cluster_access(release)
+        self.exec_config = executor.get_executor_config_with_cluster_access(release)
     
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(release, task="index")
@@ -42,7 +40,7 @@ class StatusIndexer():
     def get_index_task(self):
         env = {
             **self.env, 
-            **{"ES_SERVER": var_loader.get_elastic_url()},
+            **{"ES_SERVER": var_loader.get_secret('elasticsearch')},
             **environ
         }
 

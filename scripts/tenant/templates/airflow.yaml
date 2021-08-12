@@ -1,12 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: $_remote_user-$_branch_display_name-airflow
+  name: $_remote_user-airflow
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
   labels:
-    mode: playground
+    mode: tenant
+    tenant: $_remote_user
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:

@@ -11,16 +11,16 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.utils.task_group import TaskGroup
 
 # Configure Path to have the Python Module on it
-sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
-from models.dag_config import DagConfig
-from models.release import OpenshiftRelease, BaremetalRelease
-from tasks.install.cloud import openshift
-from tasks.install.openstack import jetpack
-from tasks.install.baremetal import jetski
-from tasks.benchmarks import e2e
-from tasks.utils import scale_ci_diagnosis
-from tasks.index import status
-from util import var_loader, manifest, constants
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+from openshift_nightlies.models.dag_config import DagConfig
+from openshift_nightlies.models.release import OpenshiftRelease, BaremetalRelease
+from openshift_nightlies.tasks.install.cloud import openshift
+from openshift_nightlies.tasks.install.openstack import jetpack
+from openshift_nightlies.tasks.install.baremetal import jetski
+from openshift_nightlies.tasks.benchmarks import e2e
+from openshift_nightlies.tasks.utils import scale_ci_diagnosis
+from openshift_nightlies.tasks.index import status
+from openshift_nightlies.util import var_loader, manifest, constants
 from abc import ABC, abstractmethod
 
 # Set Task Logger to INFO for better task logs

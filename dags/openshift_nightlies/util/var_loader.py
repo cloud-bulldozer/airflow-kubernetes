@@ -1,10 +1,8 @@
 import json
-import sys
-from os.path import abspath, dirname
 from os import environ
-sys.path.insert(0, dirname(abspath(dirname(__file__))))
-from util import constants, kubeconfig
-from models.release import OpenshiftRelease
+from openshift_nightlies.util import constants, executor
+from openshift_nightlies.models.release import OpenshiftRelease
+
 import requests
 from airflow.models import Variable
 from kubernetes.client import models as k8s
@@ -17,53 +15,19 @@ def get_git_user():
     git_user = git_path.split('/')[0]
     return git_user.lower()
 
-def get_elastic_url():
-    elasticsearch_config = Variable.get("elasticsearch_config", deserialize_json=True)
-    if 'username' in elasticsearch_config and 'password' in elasticsearch_config:
-        return f"http://{elasticsearch_config['username']}:{elasticsearch_config['password']}@{elasticsearch_config['url']}"
-    else:
-        return elasticsearch_config['url']
+def get_secret(name, deserialize_json=False):
+    overrides = get_overrides()
+    if name in overrides:
+        return overrides[name]
+    return Variable.get(name, deserialize_json=deserialize_json)
 
-def get_default_executor_config():
-    return {
-            "pod_override": k8s.V1Pod(
-                spec=k8s.V1PodSpec(
-                    containers=[
-                        k8s.V1Container(
-                            name="base",
-                            image="quay.io/keithwhitley4/airflow-ansible:2.1.0",
-                            image_pull_policy="Always",
-                            volume_mounts=[
-                                kubeconfig.get_empty_dir_volume_mount()]
-
-                        )
-                    ],
-                    volumes=[kubeconfig.get_empty_dir_volume_mount()]
-                )
-            )
-        }
-
-def get_executor_config_with_cluster_access(release: OpenshiftRelease):
-    return {
-            "pod_override": k8s.V1Pod(
-                spec=k8s.V1PodSpec(
-                    containers=[
-                        k8s.V1Container(
-                            name="base",
-                            image="quay.io/keithwhitley4/airflow-ansible:2.1.0",
-                            image_pull_policy="Always",
-                            env=[
-                                kubeconfig.get_kubeadmin_password(release)
-                            ],
-                            volume_mounts=[
-                                kubeconfig.get_kubeconfig_volume_mount()]
-
-                        )
-                    ],
-                    volumes=[kubeconfig.get_kubeconfig_volume(release)]
-                )
-            )
-        }
+def get_overrides():
+    try:
+        return Variable.get("overrides", deserialize_json=True)
+    except KeyError as e: 
+        print(e)
+    return {}
+    
 
 
 ### Task Variable Generator
@@ -87,12 +51,6 @@ def get_default_task_vars(release: OpenshiftRelease, task="install"):
     else:
         file_path = f"{constants.root_dag_dir}/tasks/{task}/defaults.json"
     return get_json(file_path)
-
-def get_manifest_vars():
-    file_path = f"{constants.root_dag_dir}/manifest.json"
-    return get_json(file_path)
-
-
 
 
 def get_json(file_path):
