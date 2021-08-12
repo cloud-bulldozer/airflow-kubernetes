@@ -1,11 +1,9 @@
-import sys
-from os.path import abspath, dirname
 from os import environ
 
-from util import var_loader, executor, constants
-from tasks.install.baremetal import webfuse
-from tasks.install.openshift import AbstractOpenshiftInstaller
-from models.release import BaremetalRelease
+from openshift_nightlies.util import var_loader, executor, constants
+from openshift_nightlies.tasks.install.baremetal import webfuse
+from openshift_nightlies.tasks.install.openshift import AbstractOpenshiftInstaller
+from openshift_nightlies.models.release import BaremetalRelease
 
 import json
 

@@ -1,9 +1,7 @@
-import sys
-from os.path import abspath, dirname
 from os import environ
-from util import var_loader, executor, constants
-from tasks.index.status import StatusIndexer
-from models.release import OpenshiftRelease
+from openshift_nightlies.util import var_loader, executor, constants
+from openshift_nightlies.tasks.index.status import StatusIndexer
+from openshift_nightlies.models.release import OpenshiftRelease
 
 import json
 from datetime import timedelta
