@@ -11,7 +11,7 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.utils.task_group import TaskGroup
 
 # Configure Path to have the Python Module on it
-sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from models.dag_config import DagConfig
 from models.release import OpenshiftRelease, BaremetalRelease
 from tasks.install.cloud import openshift

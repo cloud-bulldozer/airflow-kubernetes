@@ -1,3 +1,9 @@
 secrets.json
 local_secrets.json
 local
+airflow.cfg
+airflow.db
+logs/
+__pycache__
+unittests.cfg
+webserver_config.py
