@@ -3,6 +3,7 @@ from openshift_nightlies.util import var_loader, executor, constants
 from openshift_nightlies.tasks.index.status import StatusIndexer
 from openshift_nightlies.models.release import OpenshiftRelease
 
+from os import environ
 import json
 import requests
 from abc import ABC, abstractmethod
