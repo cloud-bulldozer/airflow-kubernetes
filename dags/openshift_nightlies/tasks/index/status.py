@@ -2,7 +2,8 @@ import sys
 from os.path import abspath, dirname
 from os import environ
 
-from util import var_loader, executor, constants
+
+from util import var_loader, kubeconfig, constants
 from models.release import OpenshiftRelease
 
 import json
