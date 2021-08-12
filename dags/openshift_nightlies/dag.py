@@ -139,19 +139,24 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
         return rosa.RosaInstaller(self.dag, self.release)
 
 
-release_manifest = manifest.Manifest(constants.root_dag_dir)
-for release in release_manifest.get_releases():
-    openshift_release = release["release"]
-    dag_config = release["config"]
-    nightly = None
-    if openshift_release.platform == "baremetal":
-        nightly = BaremetalOpenshiftNightlyDAG(openshift_release, dag_config)
-    elif openshift_release.platform == "openstack":
-        nightly = OpenstackNightlyDAG(openshift_release, dag_config)
-    elif openshift_release.platform == "rosa":
-        nightly = RosaNightlyDAG(openshift_release, dag_config)
-    else:
-        nightly = CloudOpenshiftNightlyDAG(openshift_release, dag_config)
 
-    nightly.build()
-    globals()[nightly.release_name] = nightly.dag
+def build_releases():
+    release_manifest = manifest.Manifest(constants.root_dag_dir)
+    for release in release_manifest.get_releases():
+        openshift_release = release["release"]
+        dag_config = release["config"]
+        nightly = None
+        if openshift_release.platform == "baremetal":
+            nightly = BaremetalOpenshiftNightlyDAG(openshift_release, dag_config)
+        elif openshift_release.platform == "openstack":
+            nightly = OpenstackNightlyDAG(openshift_release, dag_config)
+        elif openshift_release.platform == "rosa":
+            nightly = RosaNightlyDAG(openshift_release, dag_config)
+        else:
+            nightly = CloudOpenshiftNightlyDAG(openshift_release, dag_config)
+
+        nightly.build()
+        globals()[nightly.release_name] = nightly.dag
+
+if __name__ == '__main__':
+    build_releases()
