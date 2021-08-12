@@ -1,9 +1,6 @@
 import json
-import sys
-from os.path import abspath, dirname
-from os import environ
-from util import constants, executor
-from models.release import OpenshiftRelease
+from openshift_nightlies.util import constants, executor
+from openshift_nightlies.models.release import OpenshiftRelease
 import requests
 from airflow.models import Variable
 from kubernetes.client import models as k8s

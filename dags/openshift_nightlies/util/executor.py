@@ -1,8 +1,5 @@
-import sys
-from os.path import abspath, dirname
-from os import environ
 from kubernetes.client import models as k8s
-from models.release import OpenshiftRelease
+from openshift_nightlies.models.release import OpenshiftRelease
 
 
 def get_default_executor_config():
