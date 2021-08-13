@@ -71,6 +71,7 @@ class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
             "BAREMETAL_NETWORK_CIDR": config['baremetal_network_cidr'],
             "BAREMETAL_NETWORK_VLAN": config['baremetal_network_vlan'],
             "OPENSHIFT_BASE_DOMAIN": config['openshift_base_domain'],
+            "JETSKI_SKIPTAGS": config['jetski_skiptags'],
             "KUBECONFIG_PATH": config['kubeconfig_path'],
             "KUBECONFIG_NAME": f"{self.release_name}-kubeconfig",
             "KUBEADMIN_NAME": f"{self.release_name}-kubeadmin",            

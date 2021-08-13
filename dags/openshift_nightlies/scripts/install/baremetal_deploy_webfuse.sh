@@ -16,7 +16,7 @@ done
 
 setup(){
     # Clone webfuse
-    git clone --single-branch --branch to_speedup https://${SSHKEY_TOKEN}@github.com/mukrishn/webfuse.git /tmp/webfuse
+    git clone --single-branch --branch patch_4.6 https://${SSHKEY_TOKEN}@github.com/mukrishn/webfuse.git /tmp/webfuse
     pushd /tmp/webfuse
 
     # Clone Perf private keys

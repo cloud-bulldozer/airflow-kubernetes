@@ -36,7 +36,11 @@ setup(){
 }
 
 run_ansible_playbook(){
-    time ansible-playbook -i inventory/jetski/hosts playbook-jetski.yml --extra-vars "@${json_file}"
+    if [ -z ${JETSKI_SKIPTAGS} ]; then
+        time ansible-playbook -i inventory/jetski/hosts playbook-jetski.yml --extra-vars "@${json_file}"
+    else
+        time ansible-playbook -i inventory/jetski/hosts playbook-jetski.yml --skip-tags ${JETSKI_SKIPTAGS}  --extra-vars "@${json_file}"
+    fi    
 }
 
 post_install(){

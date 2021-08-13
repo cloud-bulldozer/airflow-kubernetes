@@ -16,6 +16,7 @@
     "openshift_worker_count": "",
     "openshift_worker_scaleup_target": "",
     "kubeconfig_path": "",
+    "jetski_skiptags": "",
     "webfuse_playbook": "webscale.yml",
     "webfuse_skiptags": "",
     "label_node_values": [],
@@ -25,5 +26,7 @@
     "bigip_worker": [],
     "bigip_sriov_int": "",
     "bigip_bridge_int": "",    
+    "bigip_password": "",
+    "ontap_password": "",
     "ansible_ssh_key": ""
  }
