@@ -50,11 +50,11 @@ run_baremetal_benchmark(){
     echo "Starting e2e script $workload..."
     ssh -t -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -i ${PRIVATE_KEY} root@${ORCHESTRATION_HOST} << EOF
 
-    source /tmp/environment_new.txt
     export KUBECONFIG=/home/kni/clusterconfigs/auth/kubeconfig
     export BENCHMARK=${TASK_GROUP}
+    while read line; do export \$line; done < /tmp/environment_new.txt
     # clean up the temporary environment file
-    rm -rf /tmp/environment.txt
+    rm -rf /tmp/environment_new.txt
     rm -rf /home/kni/ci_${TASK_GROUP}_workspace
     mkdir /home/kni/ci_${TASK_GROUP}_workspace
     pushd /home/kni/ci_${TASK_GROUP}_workspace
