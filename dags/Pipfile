@@ -6,6 +6,13 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+requests-mock = "*"
+pytest = "*"
+kubernetes = "*"
+yaml = "*"
+apache-airflow = "*"
+airflow = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.8"
