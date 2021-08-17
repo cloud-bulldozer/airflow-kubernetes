@@ -7,3 +7,4 @@ logs/
 __pycache__
 unittests.cfg
 webserver_config.py
+Pipfile.lock
