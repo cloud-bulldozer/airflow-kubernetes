@@ -158,5 +158,5 @@ def build_releases():
         nightly.build()
         globals()[nightly.release_name] = nightly.dag
 
-if __name__ == '__main__':
-    build_releases()
+
+build_releases()
