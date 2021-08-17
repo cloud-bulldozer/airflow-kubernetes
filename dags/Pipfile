@@ -13,6 +13,7 @@ yaml = "*"
 apache-airflow = "*"
 airflow = "*"
 pytest-mock = "*"
+pytest-env = "*"
 
 [requires]
 python_version = "3.8"
