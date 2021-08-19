@@ -24,11 +24,6 @@ from openshift_nightlies.tasks.index import status
 from openshift_nightlies.util import var_loader, manifest, constants
 from abc import ABC, abstractmethod
 
-# Set Task Logger to INFO for better task logs
-log = logging.getLogger("airflow.task.operators")
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.INFO)
-log.addHandler(handler)
 
 # This Applies to all DAGs
 

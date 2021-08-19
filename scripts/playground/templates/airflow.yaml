@@ -28,6 +28,7 @@ spec:
             remote_logging: "True"
           elasticsearch:
             write_stdout: "True"
+            end_of_log_mark = end_of_log
             frontend: logging-kibana.$_cluster_domain/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_a=(columns:!(message),filters:!(),index:a16f10f0-cf86-11eb-a0b9-a32be872b9a2,interval:auto,query:(language:kuery,query:'log_id:"{log_id}"'),sort:!())
           elasticsearch_configs:
             use_ssl: "False"
