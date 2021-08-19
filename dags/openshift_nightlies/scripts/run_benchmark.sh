@@ -14,6 +14,8 @@ done
 setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
+    virtualenv venv --system-site-packages 
+    source ./venv/bin/activate
     git clone -b use-ripsaw-cli https://github.com/whitleykeith/e2e-benchmarking
 
     cp /home/airflow/.kube/config /home/airflow/workspace/kubeconfig
