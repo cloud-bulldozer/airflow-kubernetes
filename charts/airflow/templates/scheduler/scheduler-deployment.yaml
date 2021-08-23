@@ -178,14 +178,6 @@ spec:
 {{- if .Values.dags.gitSync.enabled }}
         {{- include "git_sync_container" . | indent 8 }}
 {{- end }}
-        # Always start the garbage collector sidecar.
-        - name: scheduler-gc
-          image: {{ template "airflow_image" . }}
-          imagePullPolicy: {{ .Values.images.airflow.pullPolicy }}
-          args: ["bash", "/clean-logs"]
-          volumeMounts:
-            - name: logs
-              mountPath: {{ template "airflow_logs" . }}
 {{- if .Values.scheduler.extraContainers }}
 {{- toYaml .Values.scheduler.extraContainers | nindent 8 }}
 {{- end }}
