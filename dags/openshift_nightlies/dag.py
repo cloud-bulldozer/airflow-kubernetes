@@ -9,6 +9,7 @@ from airflow.models import Variable
 from airflow.utils.helpers import chain
 from airflow.operators.bash_operator import BashOperator
 from airflow.utils.task_group import TaskGroup
+from airflow.config_templates.airflow_local_settings import LOG_FORMAT
 
 # Configure Path to have the Python Module on it
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
@@ -27,7 +28,9 @@ from abc import ABC, abstractmethod
 # Set Task Logger to INFO for better task logs
 log = logging.getLogger("airflow.task")
 handler = logging.StreamHandler(sys.stdout)
+formatter = logging.Formatter(LOG_FORMAT)
 handler.setLevel(logging.INFO)
+handler.setFormatter(formatter)
 log.addHandler(handler)
 
 
