@@ -1,6 +1,6 @@
 QUAY_ACCOUNT=quay.io/keithwhitley4
 IMAGE_BUILDER ?= podman
-AIRFLOW_VERSION ?= 2.1.2
+AIRFLOW_VERSION ?= 2.1.3
 AIRFLOW_PYTHON_VERSION ?= python3.8
 AIRFLOW_IMAGE_TAG ?= $(AIRFLOW_VERSION)-$(AIRFLOW_PYTHON_VERSION)
 IMAGE_TAG ?= $(AIRFLOW_VERSION)
@@ -12,8 +12,8 @@ BASE_IMAGE ?= $(QUAY_ACCOUNT)/airflow-base:$(IMAGE_TAG)
 all: build push
 
 
-build-base-image: 
-	$(IMAGE_BUILDER) build images/airflow-base --build-arg AIRFLOW_IMAGE_TAG=$(AIRFLOW_IMAGE_TAG) -t $(QUAY_ACCOUNT)/airflow-base:$(IMAGE_TAG)
+build-airflow-image: 
+	$(IMAGE_BUILDER) build images/airflow --build-arg AIRFLOW_IMAGE_TAG=$(AIRFLOW_IMAGE_TAG) -t $(QUAY_ACCOUNT)/airflow:$(IMAGE_TAG)
 
 build-executor-image:
 	$(IMAGE_BUILDER) build images/$(image) --build-arg AIRFLOW_VERSION=$(AIRFLOW_VERSION) -t $(QUAY_ACCOUNT)/$(image):$(IMAGE_TAG)

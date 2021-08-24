@@ -10,4 +10,7 @@ RUN ln -s /bin/bash /usr/bin/bash
 RUN apt update -y
 RUN apt install jq git build-essential uuid-runtime gettext-base xz-utils sshpass -y
 
+ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6
+
 USER airflow
+RUN pip install apache-airflow-providers-elasticsearch apache-airflow-providers-cncf-kubernetes --upgrade
