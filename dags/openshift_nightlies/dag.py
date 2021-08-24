@@ -30,6 +30,8 @@ handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(logging.INFO)
 log.addHandler(handler)
 
+os.environ["AIRFLOW__LOGGING__LOGGING_CONFIG_CLASS"] = "openshift_nightlies.util.logging.LOGGING_CONFIG"
+
 # This Applies to all DAGs
 
 
