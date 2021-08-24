@@ -33,15 +33,6 @@ spec:
             remote_logging: "True"
             remote_base_log_folder: s3://perfscale-airflow-logs/$_remote_user
             remote_log_conn_id: S3Logs
-          elasticsearch:
-            json_format: "False"
-            write_stdout: "False"
-            end_of_log_mark: end_of_log
-            frontend: logging-kibana.$_cluster_domain/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_a=(columns:!(message),filters:!(),index:a16f10f0-cf86-11eb-a0b9-a32be872b9a2,interval:auto,query:(language:kuery,query:'log_id:"{log_id}"'),sort:!())
-          elasticsearch_configs:
-            use_ssl: "False"
-            verify_certs: "False"
-            ssl_show_warn: "False"
           kubernetes:
             delete_worker_pods: False
           core:
@@ -63,13 +54,6 @@ spec:
             enabled: true
             subPath: dags
             depth: 8
-        elasticsearch:
-          enabled: False
-          connection: 
-            host: logging-es-http.openshift-logging.svc.cluster.local
-            port: 9200
-            user: ""
-            pass: ""
         webserver:
           replicas: 1
           defaultUser:
