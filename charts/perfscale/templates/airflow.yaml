@@ -13,9 +13,9 @@ spec:
     namespace: airflow
     server: https://kubernetes.default.svc
   source:
-    repoURL: {{ .Values.global.repo.url }}
-    path: charts/airflow
-    targetRevision: {{ .Values.global.repo.branch }}
+    repoURL: https://airflow.apache.org
+    chart: airflow
+    targetRevision: {{ .Values.airflow.chartVersion }}
     helm:
       releaseName: airflow
 {{- with .Values.airflow.values }}

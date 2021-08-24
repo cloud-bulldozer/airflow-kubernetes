@@ -11,8 +11,12 @@ global:
 airflow:
   syncWave: 0
   hostName: airflow
+  chartVersion: 1.1.0
   values: 
-    defaultAirflowTag: 2.1.0-python3.8
+    executor: KubernetesExecutor
+    defaultAirflowRepository: quay.io/cloud-bulldozer/airflow
+    defaultAirflowTag: 2.1.3
+    airflowVersion: 2.1.3
     config:
       logging:
         colored_console_log: "False"
@@ -37,6 +41,13 @@ airflow:
         depth: 8
     webserver:
       replicas: 3
+    migrateDatabaseJob:
+      jobAnnotations:
+        "argocd.argoproj.io/hook": "Sync"
+        "argocd.argoproj.io/hook-delete-policy": "BeforeHookCreation"
+        "helm.sh/hook": "pre-install"
+        "helm.sh/hook-weight": ""
+        "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 
 
 argo:
