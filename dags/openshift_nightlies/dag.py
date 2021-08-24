@@ -25,12 +25,11 @@ from openshift_nightlies.util import var_loader, manifest, constants
 from abc import ABC, abstractmethod
 
 # Set Task Logger to INFO for better task logs
-log = logging.getLogger("airflow.task.operators")
+log = logging.getLogger("airflow.task")
 handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(logging.INFO)
 log.addHandler(handler)
 
-os.environ["AIRFLOW__LOGGING__LOGGING_CONFIG_CLASS"] = "openshift_nightlies.util.logging.LOGGING_CONFIG"
 
 # This Applies to all DAGs
 
