@@ -11,17 +11,8 @@ BASE_IMAGE ?= $(QUAY_ACCOUNT)/airflow-base:$(IMAGE_TAG)
 .PHONY: all
 all: build push
 
-
-build-airflow-image: 
-	$(IMAGE_BUILDER) build images/airflow --build-arg AIRFLOW_IMAGE_TAG=$(AIRFLOW_IMAGE_TAG) -t $(QUAY_ACCOUNT)/airflow:$(IMAGE_TAG)
-
-build-executor-image:
-	$(IMAGE_BUILDER) build images/$(image) --build-arg AIRFLOW_VERSION=$(AIRFLOW_VERSION) -t $(QUAY_ACCOUNT)/$(image):$(IMAGE_TAG)
-
-
-.PHONY: build
-build-images:
-	$(IMAGE_BUILDER) build images/airflow-ansible --build-arg AIRFLOW_VERSION=$(AIRFLOW_VERSION) -t $(QUAY_ACCOUNT)/$(IMAGE_NAME):$(IMAGE_TAG)
+build:
+	QUAY_ACCOUNT=$(QUAY_ACCOUNT) IMAGE_TAG=$(IMAGE_TAG) AIRFLOW_IMAGE_TAG=$(AIRFLOW_IMAGE_TAG) $(IMAGE_BUILDER)-compose build 
 
 push:
-	$(IMAGE_BUILDER) push $(QUAY_ACCOUNT)/$(IMAGE_NAME):$(IMAGE_TAG)
+	QUAY_ACCOUNT=$(QUAY_ACCOUNT) IMAGE_TAG=$(IMAGE_TAG) AIRFLOW_IMAGE_TAG=$(AIRFLOW_IMAGE_TAG) $(IMAGE_BUILDER)-compose push 
