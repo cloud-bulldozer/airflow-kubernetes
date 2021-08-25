@@ -6,8 +6,7 @@ from openshift_nightlies.models.release import OpenshiftRelease
 
 import json
 from datetime import timedelta
-from airflow.operators.bash_operator import BashOperator
-from airflow.operators.subdag_operator import SubDagOperator
+from airflow.operators.bash import BashOperator
 from airflow.models import Variable
 from airflow.models import DAG
 from airflow.utils.task_group import TaskGroup
