@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - ci
     tags:
       - "*" # triggers only if push new tag version
 
@@ -12,7 +11,7 @@ jobs:
     name: Build and Push Airflow images
     runs-on: ubuntu-latest
     env:
-      QUAY_ACCOUNT: quay.io/keithwhitley4
+      QUAY_ACCOUNT: quay.io/cloud-bulldozer
 
     steps:
       - name: Install podman
