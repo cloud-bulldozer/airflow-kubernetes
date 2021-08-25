@@ -17,5 +17,5 @@ RUN tar xzvf openshift-client-linux.tar.gz
 RUN mv oc kubectl /usr/local/bin/
 COPY --from=build /osde2e/out/osde2e* /usr/local/bin/
 
-RUN ln -s /bin/bash /usr/bin/bash
+
 USER airflow
