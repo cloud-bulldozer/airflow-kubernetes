@@ -12,3 +12,5 @@ Pipfile.lock
 *.egg-info
 .tox
 .coverage
+coverage.xml
+.coverage.*
