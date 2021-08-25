@@ -1,0 +1,37 @@
+name: Release Airflow container images
+on:
+  push:
+    branches:
+      - master
+      - ci
+    tags:
+      - "*" # triggers only if push new tag version
+
+jobs:
+  containers:
+    name: Build container images
+    runs-on: ubuntu-latest
+    env:
+      QUAY_ACCOUNT: quay.io/keithwhitley4
+
+    steps:
+      - name: Install podman
+        run: sudo apt-get install podman -y
+      
+      - name: Install podman-compose
+        run: pip install podman-compose
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Login in quay
+        run: podman login quay.io -u ${QUAY_USER} -p ${QUAY_TOKEN}
+        env:
+          QUAY_USER: ${{ secrets.QUAY_USER }}
+          QUAY_TOKEN: ${{ secrets.QUAY_TOKEN }}
+
+      - name: Build Airflow Images
+        run: make build
+
+      - name: Push Airflow Images
+        run: make push

@@ -1,4 +1,4 @@
-QUAY_ACCOUNT=quay.io/keithwhitley4
+QUAY_ACCOUNT ?= quay.io/cloud-bulldozer
 IMAGE_BUILDER ?= podman
 AIRFLOW_VERSION ?= 2.1.3
 AIRFLOW_PYTHON_VERSION ?= python3.8
