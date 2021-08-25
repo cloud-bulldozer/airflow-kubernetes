@@ -2,10 +2,10 @@ import sys
 from os.path import abspath, dirname
 from os import environ
 
-sys.path.insert(0, dirname(dirname(dirname(abspath(dirname(__file__))))))
-from util import var_loader, kubeconfig, constants
-from tasks.index.status import StatusIndexer
-from tasks.install.openshift import AbstractOpenshiftInstaller
+from openshift_nightlies.util import var_loader, kubeconfig, constants, executor
+from openshift_nightlies.tasks.install.openshift import AbstractOpenshiftInstaller
+from openshift_nightlies.models.dag_config import DagConfig
+from openshift_nightlies.models.release import OpenshiftRelease
 
 from hashlib import md5
 import requests
@@ -19,6 +19,9 @@ import json
 # Defines Tasks for installation of Openshift Clusters
 
 class RosaInstaller(AbstractOpenshiftInstaller):
+    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease):
+        super().__init__(dag, config, release)
+        self.exec_config = self.exec_config = executor.get_default_executor_config(self.dag_config, executor_image="airflow-managed-services")
 
     def _generate_cluster_name(self):
         cluster_name = super()._generate_cluster_name()

@@ -70,10 +70,10 @@ class AbstractOpenshiftNightlyDAG(ABC):
         raise NotImplementedError()
 
     def _get_e2e_benchmarks(self):
-        return e2e.E2EBenchmarks(self.dag, self.release)
+        return e2e.E2EBenchmarks(self.dag, self.config, self.release)
 
     def _get_scale_ci_diagnosis(self):
-        return scale_ci_diagnosis.Diagnosis(self.dag, self.release)
+        return scale_ci_diagnosis.Diagnosis(self.dag, self.config, self.release)
 
 
 class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
@@ -96,7 +96,7 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
             install_cluster >> benchmarks >> utils
 
     def _get_openshift_installer(self):
-        return openshift.CloudOpenshiftInstaller(self.dag, self.release)
+        return openshift.CloudOpenshiftInstaller(self.dag, self.config, self.release)
 
 
 class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
@@ -107,7 +107,7 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         install_cluster >> scaleup_cluster
 
     def _get_openshift_installer(self):
-        return jetski.BaremetalOpenshiftInstaller(self.dag, self.release)
+        return jetski.BaremetalOpenshiftInstaller(self.dag, self.config, self.release)
 
 
 class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
@@ -125,7 +125,7 @@ class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
             install_cluster >> benchmarks
 
     def _get_openshift_installer(self):
-        return jetpack.OpenstackJetpackInstaller(self.dag, self.release)
+        return jetpack.OpenstackJetpackInstaller(self.dag, self.config, self.release)
 
 
 class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
@@ -140,7 +140,7 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
             install_cluster
 
     def _get_openshift_installer(self):
-        return rosa.RosaInstaller(self.dag, self.release)
+        return rosa.RosaInstaller(self.dag, self.config, self.release)
 
 
 

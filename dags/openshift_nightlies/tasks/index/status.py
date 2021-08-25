@@ -3,6 +3,7 @@ from os import environ
 
 from openshift_nightlies.util import var_loader, executor, constants
 from openshift_nightlies.models.release import OpenshiftRelease
+from openshift_nightlies.models.dag_config import DagConfig
 
 import json
 import requests
@@ -13,12 +14,13 @@ from kubernetes.client import models as k8s
 
 # Defines Task for Indexing Task Status in ElasticSearch
 class StatusIndexer():
-    def __init__(self, dag, release: OpenshiftRelease, task):
+    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease, task):
         
         # General DAG Configuration
         self.dag = dag
         self.release = release
-        self.exec_config = executor.get_executor_config_with_cluster_access(release)
+        self.config = config
+        self.exec_config = executor.get_executor_config_with_cluster_access(self.config, self.release)
     
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(release, task="index")
