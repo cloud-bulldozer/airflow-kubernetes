@@ -2,14 +2,14 @@ from kubernetes.client import models as k8s
 from openshift_nightlies.models.release import OpenshiftRelease
 
 
-def get_default_executor_config():
+def get_default_executor_config(executor_image='quay.io/keithwhitley4/airflow-ansible:2.1.0'):
     return {
             "pod_override": k8s.V1Pod(
                 spec=k8s.V1PodSpec(
                     containers=[
                         k8s.V1Container(
                             name="base",
-                            image="quay.io/keithwhitley4/airflow-ansible:2.1.0",
+                            image=executor_image,
                             image_pull_policy="Always",
                             volume_mounts=[
                                 get_empty_dir_volume_mount()]
@@ -21,14 +21,14 @@ def get_default_executor_config():
             )
         }
 
-def get_executor_config_with_cluster_access(release: OpenshiftRelease):
+def get_executor_config_with_cluster_access(release: OpenshiftRelease, executor_image='quay.io/keithwhitley4/airflow-ansible:2.1.0'):
     return {
             "pod_override": k8s.V1Pod(
                 spec=k8s.V1PodSpec(
                     containers=[
                         k8s.V1Container(
                             name="base",
-                            image="quay.io/keithwhitley4/airflow-ansible:2.1.0",
+                            image=executor_image,
                             image_pull_policy="Always",
                             env=[
                                 get_kubeadmin_password(release)
