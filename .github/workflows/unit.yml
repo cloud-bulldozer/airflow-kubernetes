@@ -1,5 +1,5 @@
  
-name: CLI Unit Tests
+name: DAG Unit Tests
 on:
   push:
     paths:
