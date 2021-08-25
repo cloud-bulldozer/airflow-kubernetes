@@ -8,7 +8,7 @@ from openshift_nightlies.tasks.install.openshift import AbstractOpenshiftInstall
 
 import json
 
-from airflow.operators.bash_operator import BashOperator
+from airflow.operators.bash import BashOperator
 from airflow.models import Variable
 from kubernetes.client import models as k8s
 

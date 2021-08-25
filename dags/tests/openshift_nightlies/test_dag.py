@@ -16,7 +16,9 @@ def variable_patch(name, deserialize_json=False):
             "sshkey_token": "stub",
             "osp_orchestration_user": "stub",
             "osp_sshkey_token": "stub",
-            "osp_orchestration_host": "stub"
+            "osp_orchestration_host": "stub",
+            "orchestration_user": "stub",
+            "orchestration_host": "stub"
         }
     elif name == 'release_stream_base_url':
         return "http://test.com"

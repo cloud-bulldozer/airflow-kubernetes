@@ -9,3 +9,6 @@ unittests.cfg
 webserver_config.py
 Pipfile.lock
 .pytest_cache
+*.egg-info
+.tox
+.coverage

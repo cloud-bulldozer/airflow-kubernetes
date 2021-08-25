@@ -6,8 +6,8 @@ from datetime import timedelta, datetime
 from airflow import DAG
 from airflow.utils.dates import days_ago
 from airflow.models import Variable
-from airflow.utils.helpers import chain
-from airflow.operators.bash_operator import BashOperator
+from airflow.models.baseoperator import chain
+from airflow.operators.bash import BashOperator
 from airflow.utils.task_group import TaskGroup
 from airflow.config_templates.airflow_local_settings import LOG_FORMAT
 

@@ -45,5 +45,3 @@ ls
 cd e2e-benchmarking/workloads/$workload
 
 eval "$command"
-
-base_
