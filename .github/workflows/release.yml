@@ -1,4 +1,4 @@
-name: Release Airflow container images
+name: Release Airflow Images
 on:
   push:
     branches:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   containers:
-    name: Build container images
+    name: Build and Push Airflow images
     runs-on: ubuntu-latest
     env:
       QUAY_ACCOUNT: quay.io/keithwhitley4
