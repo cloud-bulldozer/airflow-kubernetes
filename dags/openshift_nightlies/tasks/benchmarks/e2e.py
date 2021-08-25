@@ -3,6 +3,7 @@ from os import environ
 from openshift_nightlies.util import var_loader, executor, constants
 from openshift_nightlies.tasks.index.status import StatusIndexer
 from openshift_nightlies.models.release import OpenshiftRelease
+from openshift_nightlies.models.dag_config import DagConfig
 
 import json
 from datetime import timedelta
@@ -16,11 +17,12 @@ from kubernetes.client import models as k8s
 
 
 class E2EBenchmarks():
-    def __init__(self, dag, release: OpenshiftRelease):
+    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease):
         # General DAG Configuration
         self.dag = dag
         self.release = release
-        self.exec_config = executor.get_executor_config_with_cluster_access(self.release)
+        self.config = config
+        self.exec_config = executor.get_executor_config_with_cluster_access(self.config, self.release)
         self.snappy_creds = var_loader.get_secret("snappy_creds", deserialize_json=True)
         
         # Specific Task Configuration
@@ -70,7 +72,7 @@ class E2EBenchmarks():
                     self._add_indexers(benchmark)
 
     def _add_indexer(self, benchmark): 
-        indexer = StatusIndexer(self.dag, self.release, benchmark.task_id).get_index_task() 
+        indexer = StatusIndexer(self.dag, self.config, self.release, benchmark.task_id).get_index_task() 
         benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):

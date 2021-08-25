@@ -36,7 +36,7 @@ spec:
             remote_base_log_folder: s3://perfscale-airflow-logs/$_remote_user
             remote_log_conn_id: S3Logs
           kubernetes:
-            delete_worker_pods: False
+            delete_worker_pods: True
           core:
             DAGBAG_IMPORT_TIMEOUT: 300
             killed_task_cleanup_time: 604800

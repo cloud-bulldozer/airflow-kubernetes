@@ -2,6 +2,7 @@ import abc
 from openshift_nightlies.util import var_loader, executor, constants
 from openshift_nightlies.tasks.index.status import StatusIndexer
 from openshift_nightlies.models.release import OpenshiftRelease
+from openshift_nightlies.models.dag_config import DagConfig
 
 from os import environ
 import json
@@ -13,11 +14,12 @@ from airflow.models import Variable
 from kubernetes.client import models as k8s
 
 class AbstractOpenshiftInstaller(ABC):
-    def __init__(self, dag, release: OpenshiftRelease):
+    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease):
 
         # General DAG Configuration
         self.dag = dag
         self.release = release
+        self.dag_config = config
         self.release_name = release.get_release_name(delimiter="-")
 
         # Specific Task Configuration
@@ -37,11 +39,7 @@ class AbstractOpenshiftInstaller(ABC):
         self.openstack_creds = var_loader.get_secret("openstack_creds", deserialize_json=True)
         self.rosa_creds = var_loader.get_secret("rosa_creds", deserialize_json=True)
         self.release_stream_base_url = var_loader.get_secret("release_stream_base_url")
-
-        if 'airflow_executor_image' in self.vars.keys():
-            self.exec_config = executor.get_default_executor_config(self.vars['airflow_executor_image'])
-        else:
-            self.exec_config = executor.get_default_executor_config()
+        self.exec_config = executor.get_default_executor_config(self.dag_config)
 
         # Merge all variables, prioritizing Airflow Secrets over git based vars
         self.config = {
@@ -63,7 +61,7 @@ class AbstractOpenshiftInstaller(ABC):
         raise NotImplementedError()
 
     def get_install_task(self):
-        indexer = StatusIndexer(self.dag, self.release,
+        indexer = StatusIndexer(self.dag, self.dag_config, self.release,
                                 "install").get_index_task()
         install_task = self._get_task(operation="install")
         install_task >> indexer

@@ -13,11 +13,8 @@ done
 
 setup(){
     mkdir /home/airflow/workspace
-    cd /home/airflow/workspace 
-    /home/airflow/.local/bin/virtualenv venv --system-site-packages 
-    source ./venv/bin/activate
-    git clone -b use-ripsaw-cli https://github.com/whitleykeith/e2e-benchmarking
-
+    cd /home/airflow/workspace
+    git clone https://github.com/cloud-bulldozer/e2e-benchmarking
     cp /home/airflow/.kube/config /home/airflow/workspace/kubeconfig
     export KUBECONFIG=/home/airflow/workspace/kubeconfig
     curl http://dell-r510-01.perf.lab.eng.rdu2.redhat.com/msheth/gsheet_key.json > /tmp/key.json

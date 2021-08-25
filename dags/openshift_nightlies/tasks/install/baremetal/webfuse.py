@@ -4,6 +4,7 @@ from os import environ
 
 from openshift_nightlies.util import var_loader, executor, constants
 from openshift_nightlies.models.release import BaremetalRelease
+from openshift_nightlies.models.dag_config import DagConfig
 from openshift_nightlies.tasks.install.openshift import AbstractOpenshiftInstaller
 
 import json
@@ -14,10 +15,10 @@ from kubernetes.client import models as k8s
 
 # Defines Tasks for installation of Openshift Clusters
 class BaremetalWebfuseInstaller(AbstractOpenshiftInstaller):
-    def __init__(self, dag, release: BaremetalRelease):       
+    def __init__(self, dag, config: DagConfig, release: BaremetalRelease):       
         self.baremetal_install_secrets = var_loader.get_secret(
             f"baremetal_openshift_install_config", deserialize_json=True)
-        super().__init__(dag, release)
+        super().__init__(dag, config, release)
 
     def get_deploy_app_task(self):
         return self._get_task()        
