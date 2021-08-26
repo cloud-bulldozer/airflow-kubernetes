@@ -19,8 +19,6 @@ from kubernetes.client import models as k8s
 # Defines Tasks for installation of Openshift Clusters
 class BaremetalWebfuseInstaller(AbstractOpenshiftInstaller):
     def __init__(self, dag, release: BaremetalRelease):
-        self.baremetal_exec_config = executor.get_jetski_executor_config(release)
-
         self.baremetal_install_secrets = var_loader.get_secret(
             f"baremetal_openshift_install_config", deserialize_json=True)
         super().__init__(dag, release)
@@ -77,7 +75,7 @@ class BaremetalWebfuseInstaller(AbstractOpenshiftInstaller):
             retries=3,
             dag=self.dag,
             trigger_rule=trigger_rule,
-            executor_config=self.baremetal_exec_config,
+            executor_config=self.exec_config,
             env=env
         )
 

@@ -1,4 +1,5 @@
 {
+    "airflow_executor_image": "quay.io/mukrishn/jetski:2.1",
     "provisioner_user": "kni",
     "provisioner_hostname": "e24-h01-000-r640.rdu2.scalelab.redhat.com",
     "cloud_name": "cloud00",
