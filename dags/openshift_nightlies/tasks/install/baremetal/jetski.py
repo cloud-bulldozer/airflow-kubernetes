@@ -1,12 +1,11 @@
-import sys
-from os.path import abspath, dirname
 from os import environ
 
-sys.path.insert(0, dirname(dirname(dirname(abspath(dirname(__file__))))))
-from util import var_loader, kubeconfig, constants
-from tasks.install.openshift import AbstractOpenshiftInstaller
-from tasks.benchmarks import e2e
-from models.release import BaremetalRelease
+from openshift_nightlies.util import var_loader, executor, constants
+from openshift_nightlies.tasks.install.baremetal import webfuse
+from openshift_nightlies.tasks.install.openshift import AbstractOpenshiftInstaller
+from openshift_nightlies.tasks.benchmarks import e2e
+from openshift_nightlies.models.release import BaremetalRelease
+
 
 import json
 
@@ -20,9 +19,9 @@ from kubernetes.client import models as k8s
 # Defines Tasks for installation of Openshift Clusters
 class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
     def __init__(self, dag, release: BaremetalRelease):
-        self.baremetal_exec_config = var_loader.get_jetski_executor_config(release)
-
-        self.baremetal_install_secrets = Variable.get(
+        self.baremetal_exec_config = executor.get_jetski_executor_config(release)
+          
+        self.baremetal_install_secrets = var_loader.get_secret(
             f"baremetal_openshift_install_config", deserialize_json=True)
         super().__init__(dag, release)
 
@@ -57,7 +56,7 @@ class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
         config = {
             **self.vars,
             **self.baremetal_install_secrets,
-            **{ "es_server": var_loader.get_elastic_url() }
+            **{ "es_server": var_loader.get_secret('elasticsearch') }
         }
         
         config['pullsecret'] = json.dumps(config['openshift_install_pull_secret'])

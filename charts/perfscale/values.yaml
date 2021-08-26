@@ -31,6 +31,9 @@ airflow:
       scheduler:
         scheduler_heartbeat_sec: 10
         processor_poll_interval: 30
+      secrets:
+        backend: airflow.providers.hashicorp.secrets.vault.VaultBackend
+        backend_kwargs: '{"connections_path": null, "variables_path": "variables", "kubernetes_role": "airflow", "auth_type": "kubernetes", "mount_point": "airflow", "url": "http://vault.vault.svc.cluster.local:8200"}'
     dags:
       gitSync:
         enabled: true
@@ -62,6 +65,7 @@ results:
         indice: perf_scale_ci
         username: elastic
   elastic:
+    enabled: false 
     values:
       elasticsearch:
         nodeSets:

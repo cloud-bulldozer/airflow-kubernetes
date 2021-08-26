@@ -13,22 +13,11 @@ While a `Task` is a unit of work, `TaskModules` and `TaskPackages` are abstracti
 * A `TaskPackage` is a logical grouping of `TaskModules`. 
 
 
-## TaskModule Philosophy
-
-This projects aim it to create a generic and reusable way to build improve Openshift's Performance and Scale Testing Pipelines. In doing so there needs to be a well defined philosophy on adding `TasksModules` to ensure that goal does not get lost.
-
-The core philosophy on tasks is that *A TaskModule must be agnostic about an openshift release*. This means that a TaskModule should **not**:
-
-* Be written specifically for a finite number of releases (i.e. creating a TaskModules `install_aws.py`, `install_gcp.py`)
-    * Instead, one should create the `install.py` module, with a function that can correctly generate the write task given inputs for the release. 
-* Make assumptions about the release it's on outside of defaults (i.e. having defaults to a specific release is fine, but hardcoding behavior based off of it isn't)
-
-
 A TaskModule **should**
 
 * List all of it's variables in it's `defaults.json` or similar documentation
 * Be generic enough to extend to other releases without writing extra code 
-* Be agnostic to a specific openshift release
+* Be agnostic to a specific openshift release (the one exception is for the install task as installation varies widely depending on the platform)
 * Create generic functions to dynamically configure tasks based off of the release. 
 
 ## TaskPackage Structure

@@ -1,10 +1,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: $_remote_user-$_branch-airflow
+  name: $_remote_user-$_branch_display_name-airflow
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
+  labels:
+    mode: playground
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
@@ -15,7 +17,7 @@ spec:
   source:
     repoURL: $_remote_origin_url
     path: charts/airflow
-    targetRevision: $_raw_branch
+    targetRevision: $_branch
     helm:
       releaseName: airflow
       values: |-
@@ -44,6 +46,9 @@ spec:
             instance_name: $_remote_user
             expose_config: True
             default_ui_timezone: America/New_York
+          secrets:
+            backend: airflow.providers.hashicorp.secrets.vault.VaultBackend
+            backend_kwargs: '{"connections_path": null, "variables_path": "variables", "kubernetes_role": "airflow", "auth_type": "kubernetes", "mount_point": "airflow", "url": "http://vault.vault.svc.cluster.local:8200"}'
         dags:
           gitSync:
             enabled: true
@@ -68,12 +73,12 @@ spec:
         - name: GIT_REPO
           value: $_remote_origin_url
         - name: GIT_BRANCH
-          value: $_raw_branch      
+          value: $_branch      
       parameters:
       - name: dags.gitSync.repo
         value: $_remote_origin_url
       - name: dags.gitSync.branch
-        value: $_raw_branch
+        value: $_branch
   syncPolicy:
     automated:
       prune: true
@@ -97,19 +102,21 @@ spec:
   wildcardPolicy: None
 --- 
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: Role
 metadata:
-  name: $_remote_user-$_branch-pod-reader
+  name: pod-reader
+  namespace: $_airflow_namespace
 rules:
 - apiGroups: [""] # "" indicates the core API group
   resources: ["pods", "pods/log"]
   verbs: ["get", "watch", "list"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-# This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.
-kind: ClusterRoleBinding
+# This role binding allows anyone in the "manager" group to read secrets in any namespace.
+kind: RoleBinding
 metadata:
-  name: $_remote_user-$_branch-pod-reader
+  name: pod-reader
+  namespace: $_airflow_namespace
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 subjects:
@@ -120,8 +127,8 @@ subjects:
   name: airflow-worker # Name is case sensitive
   namespace: $_airflow_namespace
 roleRef:
-  kind: ClusterRole
-  name: $_remote_user-$_branch-pod-reader
+  kind: Role
+  name: pod-reader
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: rbac.authorization.k8s.io/v1

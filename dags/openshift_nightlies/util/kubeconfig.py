@@ -13,7 +13,8 @@ def get_kubeadmin_password(release: OpenshiftRelease):
         value_from=k8s.V1EnvVarSource(
             secret_key_ref= k8s.V1SecretKeySelector(
                 name=f"{release.version}-{release.platform}-{release.profile}-kubeadmin",
-                key="KUBEADMIN_PASSWORD"
+                key="KUBEADMIN_PASSWORD",
+                optional=True
             )
         )
     )

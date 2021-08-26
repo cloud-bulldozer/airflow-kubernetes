@@ -4,39 +4,49 @@
             "name": "baseline",
             "workload": "baseline-performance",
             "command": "./baseline_perf.sh"            
-        },        
-        {
-            "group": "uperf",
-            "benchmarks": [
-                {
-                    "name": "host_network",
-                    "workload": "network-perf",
-                    "command": "./run_hostnetwork_network_test_fromgit.sh test_cloud",
-                    "env": {
-                        "COMPARE": "false",
-                        "ENABLE_SNAPPY_BACKUP": "true"
-                    }
-                },
-                {
-                    "name": "pod_network",
-                    "workload": "network-perf",
-                    "command": "./run_pod_network_test_fromgit.sh test_cloud",
-                    "env": {
-                        "COMPARE": "false",
-                        "ENABLE_SNAPPY_BACKUP": "true"
-                    }
-                },
-                {
-                    "name": "serviceip_network",
-                    "workload": "network-perf",
-                    "command": "./run_serviceip_network_test_fromgit.sh test_cloud",
-                    "env": {
-                        "COMPARE": "false",
-                        "ENABLE_SNAPPY_BACKUP": "true"
-                    }
-                }
-            ]
         },
+        {
+            "name": "host_network",
+            "workload": "network-perf",
+            "command": "./run_hostnetwork_network_test_fromgit.sh test_cloud",
+            "env": {
+                "COMPARE": "true",
+                "GOLD_OCP_VERSION": "4.7",
+                "GOLD_SDN": "openshiftsdn",
+                "COMPARE_WITH_GOLD": "true",
+                "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
+                "GSHEET_KEY_LOCATION": "/tmp/key.json",
+                "ENABLE_SNAPPY_BACKUP": "true"
+            }
+        },
+        {
+            "name": "pod_network",
+            "workload": "network-perf",
+            "command": "./run_pod_network_test_fromgit.sh test_cloud",
+            "env": {
+                "COMPARE": "true",
+                "GOLD_OCP_VERSION": "4.7",
+                "GOLD_SDN": "openshiftsdn",
+                "COMPARE_WITH_GOLD": "true",
+                "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
+                "GSHEET_KEY_LOCATION": "/tmp/key.json",
+                "ENABLE_SNAPPY_BACKUP": "true"
+            }
+        },
+        {
+            "name": "serviceip_network",
+            "workload": "network-perf",
+            "command": "./run_serviceip_network_test_fromgit.sh test_cloud",
+            "env": {
+                "COMPARE": "true",
+                "GOLD_OCP_VERSION": "4.7",
+                "GOLD_SDN": "openshiftsdn",
+                "COMPARE_WITH_GOLD": "true",
+                "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
+                "GSHEET_KEY_LOCATION": "/tmp/key.json",
+                "ENABLE_SNAPPY_BACKUP": "true"
+            }
+        },        
         {
             "name": "scale",
             "workload": "scale-perf",

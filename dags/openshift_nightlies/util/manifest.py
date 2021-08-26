@@ -1,10 +1,7 @@
 import yaml
-import sys
-from os.path import abspath, dirname
-sys.path.insert(0, dirname(abspath(dirname(__file__))))
-from models.dag_config import DagConfig
-from models.release import OpenshiftRelease, BaremetalRelease
-from util import var_loader
+from openshift_nightlies.models.dag_config import DagConfig
+from openshift_nightlies.models.release import OpenshiftRelease, BaremetalRelease
+from openshift_nightlies.util import var_loader
 
 class Manifest():
     def __init__(self, root_dag_dir):
@@ -92,10 +89,34 @@ class Manifest():
                     }
                 )
 
+    def get_rosa_releases(self):
+        for version in self.yaml['platforms'].get('rosa', []):
+            version_number = version['version']
+            release_stream = version['releaseStream']
+            version_alias = self.get_version_alias(version_number)
+            schedule = self._get_schedule_for_platform('rosa')
+            for profile in version['profiles']:
+                release = OpenshiftRelease(
+                    platform="rosa",
+                    version=version_number,
+                    release_stream=release_stream,
+                    profile=profile,
+                    version_alias=version_alias
+                )
+                dag_config = self._build_dag_config(schedule)
+
+                self.releases.append(
+                    {
+                        "config": dag_config,
+                        "release": release
+                    }
+                )
+
     def get_releases(self):
         self.get_cloud_releases()
         self.get_baremetal_releases()
         self.get_openstack_releases()
+        self.get_rosa_releases()
         return self.releases
 
     def _get_schedule_for_platform(self, platform):

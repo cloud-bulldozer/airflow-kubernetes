@@ -56,5 +56,6 @@
     "sincgars_enable ": false,
     "sincgars_remote_write_url": "",
     "kubeconfig_auth_dir_path": "",
-    "fips": false
+    "fips": false,
+    "thanos_enable": true
 }

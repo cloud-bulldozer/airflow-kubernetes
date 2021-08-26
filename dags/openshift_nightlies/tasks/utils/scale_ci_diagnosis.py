@@ -1,11 +1,7 @@
-import sys
-from os.path import abspath, dirname
 from os import environ
-
-sys.path.insert(0, dirname(dirname(abspath(dirname(__file__)))))
-from util import var_loader, kubeconfig, constants
-from tasks.index.status import StatusIndexer
-from models.release import OpenshiftRelease
+from openshift_nightlies.util import var_loader, executor, constants
+from openshift_nightlies.tasks.index.status import StatusIndexer
+from openshift_nightlies.models.release import OpenshiftRelease
 
 import json
 from datetime import timedelta
@@ -25,22 +21,17 @@ class Diagnosis():
         # General DAG Configuration
         self.dag = dag
         self.release = release
-        self.exec_config = var_loader.get_executor_config_with_cluster_access(release)
-
-
-        # Airflow Variables
-        self.SNAPPY_DATA_SERVER_URL = Variable.get("SNAPPY_DATA_SERVER_URL")
-        self.SNAPPY_DATA_SERVER_USERNAME = Variable.get("SNAPPY_DATA_SERVER_USERNAME")
-        self.SNAPPY_DATA_SERVER_PASSWORD = Variable.get("SNAPPY_DATA_SERVER_PASSWORD")
+        self.exec_config = executor.get_executor_config_with_cluster_access(release)
+        self.snappy_creds = var_loader.get_secret("snappy_creds", deserialize_json=True)
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
             release=self.release, task="utils")
         self.git_name=self._git_name()
         self.env = {
-            "SNAPPY_DATA_SERVER_URL": self.SNAPPY_DATA_SERVER_URL,
-            "SNAPPY_DATA_SERVER_USERNAME": self.SNAPPY_DATA_SERVER_USERNAME,
-            "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD,
+            "SNAPPY_DATA_SERVER_URL": self.snappy_creds['server'],
+            "SNAPPY_DATA_SERVER_USERNAME": self.snappy_creds['username'],
+            "SNAPPY_DATA_SERVER_PASSWORD": self.snappy_creds['password'],
             "SNAPPY_USER_FOLDER": self.git_name
 
         }
@@ -63,7 +54,7 @@ class Diagnosis():
         return utils 
 
     def _get_util(self, util):
-        env = {**self.env, **util.get('env', {}), **{"ES_SERVER": var_loader.get_elastic_url()}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
+        env = {**self.env, **util.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch')}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
         return BashOperator(
             task_id=f"{util['name']}",
             depends_on_past=False,

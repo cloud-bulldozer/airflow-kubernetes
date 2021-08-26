@@ -18,6 +18,8 @@ setup(){
 
     cp /home/airflow/.kube/config /home/airflow/workspace/kubeconfig
     export KUBECONFIG=/home/airflow/workspace/kubeconfig
+    curl http://dell-r510-01.perf.lab.eng.rdu2.redhat.com/msheth/gsheet_key.json > /tmp/key.json
+    export GSHEET_KEY_LOCATION=/tmp/key.json
     export BUILD_NUMBER=test
     export RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}/$AIRFLOW_CTX_TASK_ID
     export SNAPPY_RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}

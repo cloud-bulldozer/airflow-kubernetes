@@ -61,3 +61,20 @@ platforms:
       releaseStream: 4.8.0-0.nightly
       profiles:
       - default
+  rosa:
+    - version: 4.7
+      releaseStream: 4.7.0-0.nightly
+      profiles:
+      - default
+    - version: 4.8
+      releaseStream: 4.8.0-0.nightly
+      profiles:
+      - default
+      - osde2e
+      - ovn
+    - version: 4.9
+      releaseStream: 4.9.0-0.nightly
+      profiles:
+      - default
+      - osde2e
+      - ovn
