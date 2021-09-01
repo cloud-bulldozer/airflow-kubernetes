@@ -16,6 +16,7 @@ setup(){
     cd /home/airflow/workspace
     git clone https://github.com/cloud-bulldozer/e2e-benchmarking
 
+    cp /home/airflow/auth/config /home/airflow/workspace/kubeconfig
     export KUBECONFIG=/home/airflow/workspace/config
     export BUILD_NUMBER=test
     export RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}/$AIRFLOW_CTX_TASK_ID
