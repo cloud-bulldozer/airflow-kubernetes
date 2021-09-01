@@ -15,7 +15,7 @@ setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
     git clone https://github.com/cloud-bulldozer/e2e-benchmarking
-    export KUBECONFIG=/home/airflow/auth/config
+    export KUBECONFIG=/home/airflow/workspace/config
     curl http://dell-r510-01.perf.lab.eng.rdu2.redhat.com/msheth/gsheet_key.json > /tmp/key.json
     export GSHEET_KEY_LOCATION=/tmp/key.json
     export BUILD_NUMBER=test
