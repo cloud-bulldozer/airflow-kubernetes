@@ -6,7 +6,7 @@
             "command": "./baseline_perf.sh"            
         },      
         {
-            "name": "scale",
+            "name": "scale_25",
             "workload": "scale-perf",
             "command": "./run_scale_fromgit.sh",
             "env": {
@@ -120,11 +120,36 @@
             }
         },
         {
+            "name": "scale_down_25",
+            "workload": "scale-perf",
+            "command": "./run_scale_fromgit.sh",
+            "env": {
+                "SCALE": "25",
+                "METADATA_COLLECTION": "true",
+                "WORKLOAD_NODE_ROLE": "workload"
+            }
+        },
+        {
+            "name": "router",
+            "workload": "router-perf-v2",
+            "command": "./ingress-performance.sh",
+            "env": {
+                "THROUGHPUT_TOLERANCE": "10",
+                "LATENCY_TOLERANCE": "10",
+                "LARGE_SCALE_THRESHOLD": "19",
+                "ENGINE": "local",
+                "LARGE_SCALE_ROUTES": "500",
+                "COMPARE": "false",
+                "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
+                "GSHEET_KEY_LOCATION": "/tmp/key.json"
+            }
+        },
+        {
             "name": "load_cluster_preupgrade",
             "workload": "kube-burner",
             "command": "./run_clusterdensity_test_fromgit.sh",
             "env": {
-                "JOB_ITERATIONS": "1000",
+                "JOB_ITERATIONS": "500",
                 "JOB_TIMEOUT": "18000",
                 "STEP_SIZE": "30s",
                 "QPS": "20",
