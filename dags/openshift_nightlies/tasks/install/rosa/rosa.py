@@ -21,7 +21,7 @@ import json
 class RosaInstaller(AbstractOpenshiftInstaller):
     def __init__(self, dag, config: DagConfig, release: OpenshiftRelease):
         super().__init__(dag, config, release)
-        self.exec_config = self.exec_config = executor.get_default_executor_config(self.dag_config, executor_image="airflow-managed-services")
+        self.exec_config = executor.get_default_executor_config(self.dag_config, executor_image="airflow-managed-services")
 
     def _generate_cluster_name(self):
         cluster_name = super()._generate_cluster_name()
