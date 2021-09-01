@@ -15,7 +15,8 @@
             "workload": "upgrade-perf",
             "command": "./run_upgrade_fromgit.sh test_cloud",
             "env": {
-                "VERSION": "4.8.3"
+                "VERSION": "4.8.3",
+                "MCP_NODE_COUNT": 1
             }
         }        
     ]

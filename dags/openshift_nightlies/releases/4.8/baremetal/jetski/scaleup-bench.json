@@ -95,6 +95,6 @@
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true"
             }
-	}
+	    }
     ]
 }
