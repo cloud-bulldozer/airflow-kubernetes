@@ -10,10 +10,10 @@
             "workload": "network-perf",
             "command": "./run_hostnetwork_network_test_fromgit.sh test_cloud",
             "env": {
-                "COMPARE": "true",
+                "COMPARE": "false",
                 "GOLD_OCP_VERSION": "4.7",
                 "GOLD_SDN": "openshiftsdn",
-                "COMPARE_WITH_GOLD": "true",
+                "COMPARE_WITH_GOLD": "false",
                 "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
                 "GSHEET_KEY_LOCATION": "/tmp/key.json",
                 "ENABLE_SNAPPY_BACKUP": "true"
@@ -24,10 +24,10 @@
             "workload": "network-perf",
             "command": "./run_pod_network_test_fromgit.sh test_cloud",
             "env": {
-                "COMPARE": "true",
+                "COMPARE": "false",
                 "GOLD_OCP_VERSION": "4.7",
                 "GOLD_SDN": "openshiftsdn",
-                "COMPARE_WITH_GOLD": "true",
+                "COMPARE_WITH_GOLD": "false",
                 "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
                 "GSHEET_KEY_LOCATION": "/tmp/key.json",
                 "ENABLE_SNAPPY_BACKUP": "true"
