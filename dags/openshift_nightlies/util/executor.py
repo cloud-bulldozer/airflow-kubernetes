@@ -67,7 +67,7 @@ def get_kubeconfig_volume(release: OpenshiftRelease):
 def get_kubeconfig_volume_mount():
     return k8s.V1VolumeMount(
         name="kubeconfig",
-        mount_path="/home/airflow/auth",
+        mount_path="/home/airflow/workspace",
         read_only=False
     )
 
