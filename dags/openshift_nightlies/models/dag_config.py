@@ -16,3 +16,7 @@ class DagConfig:
             'retries': 1,
             'retry_delay': timedelta(minutes=5)
         })
+    executor_image: Optional[dict] = field(default_factory=lambda: {
+            "repository": "quay.io/cloud-bulldozer",
+            "tag": "2.1.3"
+        })

@@ -28,6 +28,7 @@ setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
     export PATH=$PATH:/usr/bin
+    export HOME=/home/airflow
     export AWS_REGION=us-west-2
     export AWS_ACCESS_KEY_ID=$(cat ${json_file} | jq -r .aws_access_key_id)
     export AWS_SECRET_ACCESS_KEY=$(cat ${json_file} | jq -r .aws_secret_access_key)

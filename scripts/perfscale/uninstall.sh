@@ -1,4 +1,9 @@
 #!/bin/bash
+_user=$(oc whoami)
+GIT_ROOT=$(git rev-parse --show-toplevel)
+source $GIT_ROOT/scripts/common.sh
+source $GIT_ROOT/scripts/perfscale/check_user_and_repo.sh
+
 
 kubectl delete application/perf-results -n argocd
 kubectl delete application/logging -n argocd

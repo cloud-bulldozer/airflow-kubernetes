@@ -1,15 +1,16 @@
 from kubernetes.client import models as k8s
 from openshift_nightlies.models.release import OpenshiftRelease
+from openshift_nightlies.models.dag_config import DagConfig
 
 
-def get_default_executor_config(executor_image='quay.io/keithwhitley4/airflow-ansible:2.1.0'):
+def get_default_executor_config(dag_config: DagConfig, executor_image='airflow-ansible'):
     return {
             "pod_override": k8s.V1Pod(
                 spec=k8s.V1PodSpec(
                     containers=[
                         k8s.V1Container(
                             name="base",
-                            image=executor_image,
+                            image=f"{dag_config.executor_image['repository']}/{executor_image}:{dag_config.executor_image['tag']}",
                             image_pull_policy="Always",
                             volume_mounts=[
                                 get_empty_dir_volume_mount()]
@@ -21,14 +22,14 @@ def get_default_executor_config(executor_image='quay.io/keithwhitley4/airflow-an
             )
         }
 
-def get_executor_config_with_cluster_access(release: OpenshiftRelease, executor_image='quay.io/keithwhitley4/airflow-ansible:2.1.0'):
+def get_executor_config_with_cluster_access(dag_config: DagConfig, release: OpenshiftRelease, executor_image="airflow-ansible"):
     return {
             "pod_override": k8s.V1Pod(
                 spec=k8s.V1PodSpec(
                     containers=[
                         k8s.V1Container(
                             name="base",
-                            image=executor_image,
+                            image=f"{dag_config.executor_image['repository']}/{executor_image}:{dag_config.executor_image['tag']}",
                             image_pull_policy="Always",
                             env=[
                                 get_kubeadmin_password(release)
@@ -66,7 +67,7 @@ def get_kubeconfig_volume(release: OpenshiftRelease):
 def get_kubeconfig_volume_mount():
     return k8s.V1VolumeMount(
         name="kubeconfig",
-        mount_path="/home/airflow/.kube",
+        mount_path="/home/airflow/auth",
         read_only=True
     )
 

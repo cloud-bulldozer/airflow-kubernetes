@@ -32,6 +32,5 @@
     "daemon_mode": true,
     "fips": false,
     "rosa_installation_method": "rosa",
-    "rosa_expiration_time": "1440m",
-    "airflow_executor_image": "quay.io/cloud-bulldozer/airflow-managedservices:2.1.1-python3.8"
+    "rosa_expiration_time": "1440m"
 }

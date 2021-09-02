@@ -25,32 +25,31 @@ def get_secret(name, deserialize_json=False):
 def get_overrides():
     try:
         return Variable.get("overrides", deserialize_json=True)
-    except KeyError as e: 
-        print(e)
-    return {}
+    except KeyError: 
+        return {}
     
 
 
 ### Task Variable Generator
 ### Grabs variables from appropriately placed JSON Files
-def build_task_vars(release: OpenshiftRelease, task="install"):
-    default_task_vars = get_default_task_vars(release=release, task=task)
-    profile_vars = get_profile_task_vars(release=release, task=task)
+def build_task_vars(release: OpenshiftRelease, task="install", release_dir=f"{constants.root_dag_dir}/releases", task_dir=f"{constants.root_dag_dir}/tasks"):
+    default_task_vars = get_default_task_vars(release=release, task=task, task_dir=task_dir)
+    profile_vars = get_profile_task_vars(release=release, task=task, release_dir=release_dir)
     return { **default_task_vars, **profile_vars }
 
 ### Json File Loads
-def get_profile_task_vars(release: OpenshiftRelease, task="install"):
-    file_path = f"{constants.root_dag_dir}/releases/{release.version}/{release.platform}/{release.profile}/{task}.json"
+def get_profile_task_vars(release: OpenshiftRelease, task="install", release_dir=f"{constants.root_dag_dir}/releases"):
+    file_path = f"{release_dir}/{release.version}/{release.platform}/{release.profile}/{task}.json"
     return get_json(file_path)
 
-def get_default_task_vars(release: OpenshiftRelease, task="install"):
+def get_default_task_vars(release: OpenshiftRelease, task="install", task_dir=f"{constants.root_dag_dir}/tasks"):
     if task == "install":
         if release.platform == "aws" or release.platform == "azure" or release.platform == "gcp":
-            file_path = f"{constants.root_dag_dir}/tasks/{task}/cloud/defaults.json"
+            file_path = f"{task_dir}/{task}/cloud/defaults.json"
         else:
-            file_path = f"{constants.root_dag_dir}/tasks/{task}/{release.platform}/defaults.json"
+            file_path = f"{task_dir}/{task}/{release.platform}/defaults.json"
     else:
-        file_path = f"{constants.root_dag_dir}/tasks/{task}/defaults.json"
+        file_path = f"{task_dir}/{task}/defaults.json"
     return get_json(file_path)
 
 

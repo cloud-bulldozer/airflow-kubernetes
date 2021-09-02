@@ -1,2 +1,4 @@
+import os
+
 # Base Directory where all OpenShift Nightly DAG Code lives
-root_dag_dir = "/opt/airflow/dags/repo/dags/openshift_nightlies"
+root_dag_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))

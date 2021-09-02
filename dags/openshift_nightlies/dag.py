@@ -6,9 +6,10 @@ from datetime import timedelta, datetime
 from airflow import DAG
 from airflow.utils.dates import days_ago
 from airflow.models import Variable
-from airflow.utils.helpers import chain
-from airflow.operators.bash_operator import BashOperator
+from airflow.models.baseoperator import chain
+from airflow.operators.bash import BashOperator
 from airflow.utils.task_group import TaskGroup
+from airflow.config_templates.airflow_local_settings import LOG_FORMAT
 
 # Configure Path to have the Python Module on it
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
@@ -25,10 +26,13 @@ from openshift_nightlies.util import var_loader, manifest, constants
 from abc import ABC, abstractmethod
 
 # Set Task Logger to INFO for better task logs
-log = logging.getLogger("airflow.task.operators")
+log = logging.getLogger("airflow.task")
 handler = logging.StreamHandler(sys.stdout)
+formatter = logging.Formatter(LOG_FORMAT)
 handler.setLevel(logging.INFO)
+handler.setFormatter(formatter)
 log.addHandler(handler)
+
 
 # This Applies to all DAGs
 
@@ -66,10 +70,10 @@ class AbstractOpenshiftNightlyDAG(ABC):
         raise NotImplementedError()
 
     def _get_e2e_benchmarks(self):
-        return e2e.E2EBenchmarks(self.dag, self.release)
+        return e2e.E2EBenchmarks(self.dag, self.config, self.release)
 
     def _get_scale_ci_diagnosis(self):
-        return scale_ci_diagnosis.Diagnosis(self.dag, self.release)
+        return scale_ci_diagnosis.Diagnosis(self.dag, self.config, self.release)
 
 
 class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
@@ -92,7 +96,7 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
             install_cluster >> benchmarks >> utils
 
     def _get_openshift_installer(self):
-        return openshift.CloudOpenshiftInstaller(self.dag, self.release)
+        return openshift.CloudOpenshiftInstaller(self.dag, self.config, self.release)
 
 
 class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
@@ -107,7 +111,7 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         install_cluster >> scaleup_cluster >> deploy_webfuse
 
     def _get_openshift_installer(self):
-        return jetski.BaremetalOpenshiftInstaller(self.dag, self.release)
+        return jetski.BaremetalOpenshiftInstaller(self.dag, self.config, self.release)
 
     def _get_webfuse_installer(self):
         return webfuse.BaremetalWebfuseInstaller(self.dag, self.release)
@@ -127,7 +131,7 @@ class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
             install_cluster >> benchmarks
 
     def _get_openshift_installer(self):
-        return jetpack.OpenstackJetpackInstaller(self.dag, self.release)
+        return jetpack.OpenstackJetpackInstaller(self.dag, self.config, self.release)
 
 
 class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
@@ -142,22 +146,27 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
             install_cluster
 
     def _get_openshift_installer(self):
-        return rosa.RosaInstaller(self.dag, self.release)
+        return rosa.RosaInstaller(self.dag, self.config, self.release)
 
 
-release_manifest = manifest.Manifest(constants.root_dag_dir)
-for release in release_manifest.get_releases():
-    openshift_release = release["release"]
-    dag_config = release["config"]
-    nightly = None
-    if openshift_release.platform == "baremetal":
-        nightly = BaremetalOpenshiftNightlyDAG(openshift_release, dag_config)
-    elif openshift_release.platform == "openstack":
-        nightly = OpenstackNightlyDAG(openshift_release, dag_config)
-    elif openshift_release.platform == "rosa":
-        nightly = RosaNightlyDAG(openshift_release, dag_config)
-    else:
-        nightly = CloudOpenshiftNightlyDAG(openshift_release, dag_config)
 
-    nightly.build()
-    globals()[nightly.release_name] = nightly.dag
+def build_releases():
+    release_manifest = manifest.Manifest(constants.root_dag_dir)
+    for release in release_manifest.get_releases():
+        openshift_release = release["release"]
+        dag_config = release["config"]
+        nightly = None
+        if openshift_release.platform == "baremetal":
+            nightly = BaremetalOpenshiftNightlyDAG(openshift_release, dag_config)
+        elif openshift_release.platform == "openstack":
+            nightly = OpenstackNightlyDAG(openshift_release, dag_config)
+        elif openshift_release.platform == "rosa":
+            nightly = RosaNightlyDAG(openshift_release, dag_config)
+        else:
+            nightly = CloudOpenshiftNightlyDAG(openshift_release, dag_config)
+
+        nightly.build()
+        globals()[nightly.release_name] = nightly.dag
+
+
+build_releases()
