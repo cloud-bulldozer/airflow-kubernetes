@@ -114,7 +114,7 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         return jetski.BaremetalOpenshiftInstaller(self.dag, self.config, self.release)
 
     def _get_webfuse_installer(self):
-        return webfuse.BaremetalWebfuseInstaller(self.dag, self.release)
+        return webfuse.BaremetalWebfuseInstaller(self.dag, self.config, self.release)
 
 class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):

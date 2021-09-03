@@ -38,7 +38,7 @@ class BaremetalWebfuseInstaller(AbstractOpenshiftInstaller):
         return benchmarks
 
     def _get_e2e_benchmarks(self, task_group):
-        return e2e.E2EBenchmarks(self.dag, self.release, task_group)
+        return e2e.E2EBenchmarks(self.dag, self.dag_config, self.release, task_group)
 
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, trigger_rule="all_success"):

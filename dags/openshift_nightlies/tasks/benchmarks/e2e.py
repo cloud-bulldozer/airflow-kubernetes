@@ -22,8 +22,8 @@ class E2EBenchmarks():
         self.dag = dag
         self.release = release
         self.task_group = task_group
-        self.config = config
-        self.exec_config = executor.get_executor_config_with_cluster_access(self.config, self.release)
+        self.dag_config = config
+        self.exec_config = executor.get_executor_config_with_cluster_access(self.dag_config, self.release)
         self.snappy_creds = var_loader.get_secret("snappy_creds", deserialize_json=True)
 
         
@@ -91,7 +91,7 @@ class E2EBenchmarks():
                     self._add_indexers(benchmark)
 
     def _add_indexer(self, benchmark): 
-        indexer = StatusIndexer(self.dag, self.config, self.release, benchmark.task_id).get_index_task() 
+        indexer = StatusIndexer(self.dag, self.dag_config, self.release, benchmark.task_id).get_index_task() 
         benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):
