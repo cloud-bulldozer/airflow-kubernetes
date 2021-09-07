@@ -24,7 +24,9 @@ class E2EBenchmarks():
         self.config = config
         self.exec_config = executor.get_executor_config_with_cluster_access(self.config, self.release)
         self.snappy_creds = var_loader.get_secret("snappy_creds", deserialize_json=True)
-        
+        self.es_gold = var_loader.get_secret("es_gold")
+        self.es_server_baseline = var_loader.get_secret("es_server_baseline")
+
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
             release=self.release, task="benchmarks")
@@ -33,7 +35,9 @@ class E2EBenchmarks():
             "SNAPPY_DATA_SERVER_URL": self.snappy_creds['server'],
             "SNAPPY_DATA_SERVER_USERNAME": self.snappy_creds['username'],
             "SNAPPY_DATA_SERVER_PASSWORD": self.snappy_creds['password'],
-            "SNAPPY_USER_FOLDER": self.git_name
+            "SNAPPY_USER_FOLDER": self.git_name,
+            "ES_GOLD": self.es_gold,
+            "ES_SERVER_BASELINE": self.es_server_baseline
 
         }
 

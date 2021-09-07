@@ -83,7 +83,6 @@
             "command": "./run_hostnetwork_network_test_fromgit.sh test_cloud",
             "env": {
                 "COMPARE": "true",
-                "GOLD_OCP_VERSION": "4.8",
                 "GOLD_SDN": "openshiftsdn",
                 "COMPARE_WITH_GOLD": "true",
                 "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
@@ -97,7 +96,6 @@
             "command": "./run_pod_network_test_fromgit.sh test_cloud",
             "env": {
                 "COMPARE": "true",
-                "GOLD_OCP_VERSION": "4.8",
                 "GOLD_SDN": "openshiftsdn",
                 "COMPARE_WITH_GOLD": "true",
                 "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
@@ -111,7 +109,6 @@
             "command": "./run_serviceip_network_test_fromgit.sh test_cloud",
             "env": {
                 "COMPARE": "true",
-                "GOLD_OCP_VERSION": "4.8",
                 "GOLD_SDN": "openshiftsdn",
                 "COMPARE_WITH_GOLD": "true",
                 "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
