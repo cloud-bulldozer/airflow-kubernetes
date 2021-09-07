@@ -22,7 +22,7 @@ setup(){
     timestamp=`date +"%Y-%m-%dT%T.%3N"`
 
     # Setup Kubeconfig
-    export KUBECONFIG=/home/airflow/.kube/config
+    export KUBECONFIG=/home/airflow/auth/config
     curl -sS https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xz oc
     export PATH=$PATH:/home/airflow/.local/bin:$(pwd)
     

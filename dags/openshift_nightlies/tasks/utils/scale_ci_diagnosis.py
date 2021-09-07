@@ -2,11 +2,11 @@ from os import environ
 from openshift_nightlies.util import var_loader, executor, constants
 from openshift_nightlies.tasks.index.status import StatusIndexer
 from openshift_nightlies.models.release import OpenshiftRelease
+from openshift_nightlies.models.dag_config import DagConfig
 
 import json
 from datetime import timedelta
-from airflow.operators.bash_operator import BashOperator
-from airflow.operators.subdag_operator import SubDagOperator
+from airflow.operators.bash import BashOperator
 from airflow.models import Variable
 from airflow.models import DAG
 from airflow.utils.task_group import TaskGroup
@@ -16,12 +16,13 @@ from kubernetes.client import models as k8s
 
 
 class Diagnosis():
-    def __init__(self, dag, release: OpenshiftRelease):
+    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease):
 
         # General DAG Configuration
         self.dag = dag
         self.release = release
-        self.exec_config = executor.get_executor_config_with_cluster_access(release)
+        self.config = config
+        self.exec_config = executor.get_executor_config_with_cluster_access(self.config, self.release)
         self.snappy_creds = var_loader.get_secret("snappy_creds", deserialize_json=True)
 
         # Specific Task Configuration

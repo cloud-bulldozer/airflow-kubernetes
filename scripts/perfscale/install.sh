@@ -1,8 +1,10 @@
 #!/bin/bash
 set -a
+_user=$(oc whoami)
 usage() { echo "Usage: $0 [-p <string> (airflow password)]" 1>&2; exit 1; }
 GIT_ROOT=$(git rev-parse --show-toplevel)
 source $GIT_ROOT/scripts/common.sh
+source $GIT_ROOT/scripts/perfscale/check_user_and_repo.sh
 _airflow_namespace=airflow
 
 while getopts p: flag

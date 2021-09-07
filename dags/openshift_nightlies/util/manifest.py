@@ -129,5 +129,6 @@ class Manifest():
     def _build_dag_config(self, schedule_interval):
         return DagConfig(
             schedule_interval=schedule_interval,
-            cleanup_on_success=bool(self.yaml['dagConfig']['cleanupOnSuccess'])
+            cleanup_on_success=bool(self.yaml['dagConfig']['cleanupOnSuccess']),
+            executor_image=self.yaml['dagConfig'].get('executorImages', None)
         )

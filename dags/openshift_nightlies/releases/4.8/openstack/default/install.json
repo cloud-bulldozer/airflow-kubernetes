@@ -41,7 +41,6 @@
     "openshift_worker_root_volume_iops": "0",
     "openshift_cidr": "10.128.0.0/14",
     "openshift_machine_cidr": "10.0.0.0/16",
-    "ocp_network_type": "",
     "openshift_service_network": "172.30.0.0/16",
     "openshift_host_prefix": "23",
     "openshift_infra_node_flavor": "m5.4xlarge",

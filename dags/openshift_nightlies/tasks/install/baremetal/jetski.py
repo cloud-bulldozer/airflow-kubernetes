@@ -4,19 +4,20 @@ from openshift_nightlies.util import var_loader, executor, constants
 from openshift_nightlies.tasks.install.baremetal import webfuse
 from openshift_nightlies.tasks.install.openshift import AbstractOpenshiftInstaller
 from openshift_nightlies.models.release import BaremetalRelease
+from openshift_nightlies.models.dag_config import DagConfig
 
 import json
 
-from airflow.operators.bash_operator import BashOperator
+from airflow.operators.bash import BashOperator
 from airflow.models import Variable
 from kubernetes.client import models as k8s
 
 # Defines Tasks for installation of Openshift Clusters
 class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
-    def __init__(self, dag, release: BaremetalRelease):
+    def __init__(self, dag, config: DagConfig, release: BaremetalRelease):
         self.baremetal_install_secrets = var_loader.get_secret(
             f"baremetal_openshift_install_config", deserialize_json=True)
-        super().__init__(dag, release)
+        super().__init__(dag, config, release)
 
     def get_install_task(self):
         webfuse_installer = self._get_webfuse_installer()
@@ -31,7 +32,7 @@ class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
         return self._get_task(operation="scaleup")
 
     def _get_webfuse_installer(self):
-        return webfuse.BaremetalWebfuseInstaller(self.dag, self.release)
+        return webfuse.BaremetalWebfuseInstaller(self.dag, self.dag_config, self.release)
 
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", trigger_rule="all_success"):

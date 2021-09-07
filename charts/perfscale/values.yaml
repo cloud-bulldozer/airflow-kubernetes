@@ -11,18 +11,18 @@ global:
 airflow:
   syncWave: 0
   hostName: airflow
+  chartVersion: 1.1.0
   values: 
-    defaultAirflowTag: 2.1.0-python3.8
+    executor: KubernetesExecutor
+    defaultAirflowRepository: quay.io/cloud-bulldozer/airflow
+    defaultAirflowTag: 2.1.3
+    airflowVersion: 2.1.3
     config:
       logging:
-        colored_console_log: "True"
+        colored_console_log: "False"
         remote_logging: "True"
-      elasticsearch:
-        write_stdout: "True"
-      elasticsearch_configs:
-        use_ssl: "False"
-        verify_certs: "False"
-        ssl_show_warn: "False"
+        remote_base_log_folder: s3://perfscale-airflow-logs/ci
+        remote_log_conn_id: S3Logs
       kubernetes:
         delete_worker_pods: True
       core:
@@ -33,21 +33,21 @@ airflow:
         processor_poll_interval: 30
       secrets:
         backend: airflow.providers.hashicorp.secrets.vault.VaultBackend
-        backend_kwargs: '{"connections_path": null, "variables_path": "variables", "kubernetes_role": "airflow", "auth_type": "kubernetes", "mount_point": "airflow", "url": "http://vault.vault.svc.cluster.local:8200"}'
+        backend_kwargs: '{"connections_path": "connections", "variables_path": "variables", "kubernetes_role": "airflow", "auth_type": "kubernetes", "mount_point": "airflow", "url": "http://vault.vault.svc.cluster.local:8200"}'
     dags:
       gitSync:
         enabled: true
         subPath: dags
         depth: 8
-    elasticsearch:
-      enabled: True
-      connection: 
-        host: logging-es-http.openshift-logging.svc.cluster.local
-        port: 9200
-        user: ""
-        pass: ""
     webserver:
       replicas: 3
+    migrateDatabaseJob:
+      jobAnnotations:
+        "argocd.argoproj.io/hook": "Sync"
+        "argocd.argoproj.io/hook-delete-policy": "BeforeHookCreation"
+        "helm.sh/hook": "pre-install"
+        "helm.sh/hook-weight": ""
+        "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 
 
 argo:
