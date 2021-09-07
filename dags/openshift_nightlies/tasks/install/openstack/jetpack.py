@@ -43,6 +43,11 @@ class OpenstackJetpackInstaller(AbstractOpenshiftInstaller):
             **self._insert_kube_env()
         }
 
+        # Here if network type is defined in the vars, it will be set else, network type
+        # is decided based on the day of the week.
+        if self.config['ocp_network_type'] != "":
+            self.env["OPENSHIFT_NETWORK_TYPE"] = self.config['ocp_network_type']
+
         # Dump all vars to json file for Ansible to pick up
         with open(f"/tmp/{self.release_name}-{operation}-task.json", 'w') as json_file:
             json.dump(self.config, json_file, sort_keys=True, indent=4)   
