@@ -25,8 +25,9 @@ class E2EBenchmarks():
         self.dag_config = config
         self.exec_config = executor.get_executor_config_with_cluster_access(self.dag_config, self.release)
         self.snappy_creds = var_loader.get_secret("snappy_creds", deserialize_json=True)
+        self.es_gold = var_loader.get_secret("es_gold")
+        self.es_server_baseline = var_loader.get_secret("es_server_baseline")
 
-        
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
             release=self.release, task=self.task_group)
@@ -37,7 +38,9 @@ class E2EBenchmarks():
             "SNAPPY_DATA_SERVER_PASSWORD": self.snappy_creds['password'],
             "SNAPPY_USER_FOLDER": self.git_name,
             "PLATFORM": self.release.platform,
-            "TASK_GROUP": self.task_group
+            "TASK_GROUP": self.task_group,
+            "ES_GOLD": self.es_gold,
+            "ES_SERVER_BASELINE": self.es_server_baseline
         }
 
         if self.release.platform == "baremetal":
