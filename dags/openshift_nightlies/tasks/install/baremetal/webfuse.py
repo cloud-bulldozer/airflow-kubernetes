@@ -4,16 +4,12 @@ from os import environ
 
 from openshift_nightlies.util import var_loader, executor, constants
 from openshift_nightlies.models.release import BaremetalRelease
-from openshift_nightlies.tasks.benchmarks import e2e
 from openshift_nightlies.models.dag_config import DagConfig
 from openshift_nightlies.tasks.install.openshift import AbstractOpenshiftInstaller
 
 import json
 
 from airflow.operators.bash import BashOperator
-from airflow.models import Variable
-from airflow.utils.task_group import TaskGroup
-from airflow.utils.helpers import chain
 
 from kubernetes.client import models as k8s
 
@@ -23,22 +19,11 @@ class BaremetalWebfuseInstaller(AbstractOpenshiftInstaller):
         self.baremetal_install_secrets = var_loader.get_secret(
             f"baremetal_openshift_install_config", deserialize_json=True)
         super().__init__(dag, config, release)
+        self.exec_config = executor.get_default_executor_config(self.dag_config, executor_image="airflow-jetski")
 
     def get_deploy_app_task(self):
-        benchmarks = self._add_benchmarks(task_group="webfuse-bench")
         webfuse = self._get_task()
-        webfuse >> benchmarks
-
         return webfuse
-
-    def _add_benchmarks(self, task_group):
-        with TaskGroup(task_group, prefix_group_id=True, dag=self.dag) as benchmarks:
-            benchmark_tasks = self._get_e2e_benchmarks(task_group).get_benchmarks()
-            chain(*benchmark_tasks)
-        return benchmarks
-
-    def _get_e2e_benchmarks(self, task_group):
-        return e2e.E2EBenchmarks(self.dag, self.dag_config, self.release, task_group)
 
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, trigger_rule="all_success"):

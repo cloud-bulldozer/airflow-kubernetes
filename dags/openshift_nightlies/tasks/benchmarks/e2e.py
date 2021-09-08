@@ -46,7 +46,7 @@ class E2EBenchmarks():
         if self.release.platform == "baremetal":
             self.install_vars = var_loader.build_task_vars(
                 release, task="install")
-            self.baremetal_install_secrets = Variable.get(
+            self.baremetal_install_secrets = var_loader.get_secret(
             f"baremetal_openshift_install_config", deserialize_json=True)
 
             self.config = {
