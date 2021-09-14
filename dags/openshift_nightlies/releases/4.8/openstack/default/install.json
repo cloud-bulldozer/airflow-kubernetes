@@ -29,6 +29,7 @@
     "ocp_base_domain": "rdu2.scalelab.redhat.com",
     "ocp_cluster_name": "vlan609",
     "ocp_release": "latest-4.8",
+    "ocp_dev_preview": "false",
     "master_nodes": "3",
     "worker_nodes": "3",
     "ocp_master_flavor": "m5.4xlarge",
