@@ -59,7 +59,7 @@ run_baremetal_benchmark(){
     rm -rf /home/kni/ci_${TASK_GROUP}_workspace
     mkdir /home/kni/ci_${TASK_GROUP}_workspace
     pushd /home/kni/ci_${TASK_GROUP}_workspace
-    git clone -b master https://github.com/jdowni000/e2e-benchmarking.git
+    git clone -b master https://github.com/cloud-bulldozer/e2e-benchmarking.git
 
     pushd e2e-benchmarking/workloads/$workload
     eval "$command"

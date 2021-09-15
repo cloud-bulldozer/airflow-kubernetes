@@ -52,10 +52,15 @@ platforms:
       profiles:
       - jetski    
     - version: 4.8
-      releaseStream: 4.8.2
-      build: ga
+      releaseStream: latest-4.8
+      build: dev
       profiles:
       - jetski
+    - version: 4.9
+      releaseStream: latest-4.9
+      build: dev
+      profiles:
+      - jetski      
   openstack:
     - version: 4.7
       releaseStream: 4.7.0-0.nightly
