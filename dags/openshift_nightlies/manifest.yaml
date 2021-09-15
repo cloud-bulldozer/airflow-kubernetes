@@ -1,9 +1,11 @@
 versionAliases:
   - version: 4.7
-    alias: stable
+    alias: previous
   - version: 4.8
-    alias: next
+    alias: stable
   - version: 4.9
+    alias: next
+  - version: 4.10
     alias: future
 
 dagConfig:
