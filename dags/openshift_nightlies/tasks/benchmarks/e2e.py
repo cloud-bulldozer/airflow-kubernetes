@@ -99,8 +99,9 @@ class E2EBenchmarks():
 
     def _get_benchmark(self, benchmark):
         env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch')}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
+        task_prefix=f"{self.task_group}_"
         return BashOperator(
-            task_id=f"{self.task_group}_{benchmark['name']}",
+            task_id=f"{task_prefix if self.task_group != 'benchmarks' else ''}{benchmark['name']}",
             depends_on_past=False,
             bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
             retries=3,
