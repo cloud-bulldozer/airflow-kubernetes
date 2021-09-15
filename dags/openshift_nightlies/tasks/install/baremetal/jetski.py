@@ -6,10 +6,11 @@ from openshift_nightlies.tasks.install.openshift import AbstractOpenshiftInstall
 from openshift_nightlies.models.release import BaremetalRelease
 from openshift_nightlies.models.dag_config import DagConfig
 
+
 import json
 
 from airflow.operators.bash import BashOperator
-from airflow.models import Variable
+
 from kubernetes.client import models as k8s
 
 # Defines Tasks for installation of Openshift Clusters
@@ -18,21 +19,15 @@ class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
         self.baremetal_install_secrets = var_loader.get_secret(
             f"baremetal_openshift_install_config", deserialize_json=True)
         super().__init__(dag, config, release)
+        self.exec_config = executor.get_default_executor_config(self.dag_config, executor_image="airflow-jetski")
 
     def get_install_task(self):
-        webfuse_installer = self._get_webfuse_installer()
-        install_cluster = self._get_task(operation="install")
-        deploy_webfuse = webfuse_installer.get_deploy_app_task()
-
-        install_cluster >> deploy_webfuse
-
-        return install_cluster
+        install = self._get_task(operation="install")
+        return install
 
     def get_scaleup_task(self):
-        return self._get_task(operation="scaleup")
-
-    def _get_webfuse_installer(self):
-        return webfuse.BaremetalWebfuseInstaller(self.dag, self.dag_config, self.release)
+        scaleup = self._get_task(operation="scaleup")
+        return scaleup
 
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", trigger_rule="all_success"):
@@ -46,7 +41,7 @@ class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
         }
         
         config['pullsecret'] = json.dumps(config['openshift_install_pull_secret'])
-        config['version'] = config['openshift_release']
+        config['version'] = self.release.release_stream
         config['build'] = self.release.build
         
         # Required Environment Variables for Install script
@@ -56,7 +51,10 @@ class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
             "BAREMETAL_NETWORK_CIDR": config['baremetal_network_cidr'],
             "BAREMETAL_NETWORK_VLAN": config['baremetal_network_vlan'],
             "OPENSHIFT_BASE_DOMAIN": config['openshift_base_domain'],
+            "JETSKI_SKIPTAGS": config['jetski_skiptags'],
             "KUBECONFIG_PATH": config['kubeconfig_path'],
+            "KUBECONFIG_NAME": f"{self.release_name}-kubeconfig",
+            "KUBEADMIN_NAME": f"{self.release_name}-kubeadmin",            
             **self._insert_kube_env()
         }
 
@@ -81,3 +79,8 @@ class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
             executor_config=self.exec_config,
             env=env
         )
+
+    # This Helper Injects Airflow environment variables into the task execution runtime
+    # This allows the task to interface with the Kubernetes cluster Airflow is hosted on.
+    def _insert_kube_env(self):
+        return {key: value for (key, value) in environ.items() if "KUBERNETES" in key}

@@ -21,6 +21,7 @@ def get_secret(name, deserialize_json=False):
         return overrides[name]
     return Variable.get(name, deserialize_json=deserialize_json)
 
+
 def get_overrides():
     try:
         return Variable.get("overrides", deserialize_json=True)

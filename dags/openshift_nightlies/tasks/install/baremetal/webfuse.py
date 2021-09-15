@@ -10,7 +10,7 @@ from openshift_nightlies.tasks.install.openshift import AbstractOpenshiftInstall
 import json
 
 from airflow.operators.bash import BashOperator
-from airflow.models import Variable
+
 from kubernetes.client import models as k8s
 
 # Defines Tasks for installation of Openshift Clusters
@@ -19,9 +19,11 @@ class BaremetalWebfuseInstaller(AbstractOpenshiftInstaller):
         self.baremetal_install_secrets = var_loader.get_secret(
             f"baremetal_openshift_install_config", deserialize_json=True)
         super().__init__(dag, config, release)
+        self.exec_config = executor.get_default_executor_config(self.dag_config, executor_image="airflow-jetski")
 
     def get_deploy_app_task(self):
-        return self._get_task()        
+        webfuse = self._get_task()
+        return webfuse
 
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, trigger_rule="all_success"):
@@ -34,7 +36,7 @@ class BaremetalWebfuseInstaller(AbstractOpenshiftInstaller):
             **{ "es_server": var_loader.get_secret('elasticsearch') }
         }
         
-        config['version'] = config['openshift_release']
+        config['version'] = self.release.release_stream
         config['build'] = self.release.build
         
         # Required Environment Variables for Install script

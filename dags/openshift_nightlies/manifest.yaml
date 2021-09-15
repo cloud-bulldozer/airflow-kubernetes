@@ -45,12 +45,22 @@ platforms:
       - name: gcp
         profiles:
         - default
-  baremetal:
+  baremetal: 
+    - version: 4.7
+      releaseStream: latest-4.7
+      build: dev
+      profiles:
+      - jetski    
     - version: 4.8
       releaseStream: latest-4.8
       build: dev
       profiles:
       - jetski
+    - version: 4.9
+      releaseStream: latest-4.9
+      build: dev
+      profiles:
+      - jetski      
   openstack:
     - version: 4.7
       releaseStream: 4.7.0-0.nightly

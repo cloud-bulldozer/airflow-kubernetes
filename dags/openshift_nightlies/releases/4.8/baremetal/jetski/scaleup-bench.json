@@ -1,0 +1,100 @@
+{
+    "benchmarks": [
+        {
+            "name": "uperf_serviceip_network",
+            "workload": "network-perf",
+            "command": "./run_serviceip_network_test_fromgit.sh test_cloud",
+            "env": {
+                "COMPARE": "false",
+                "ENABLE_SNAPPY_BACKUP": "false",
+                "MULTI_AZ": "false"
+            }
+        },
+        {
+            "name": "node_density",
+            "workload": "kube-burner",
+            "command": "./run_nodedensity_test_fromgit.sh test_cloud",
+            "env": {
+                "PODS_PER_NODE": "200",
+                "NODE_COUNT": "2",
+                "JOB_TIMEOUT": "18000",
+                "QPS": "20",
+                "BURST": "20",
+                "STEP_SIZE": "30s",
+                "METRICS_PROFILE": "metrics.yaml",
+                "LOG_LEVEL": "info",
+                "LOG_STREAMING": "true",
+                "CLEANUP_WHEN_FINISH": "true",
+                "CLEANUP": "true"
+            }
+        },
+	{
+	    "name": "cluster_density",
+	    "workload": "kube-burner",
+	    "command": "./run_clusterdensity_test_fromgit.sh test_cloud",
+	    "env": {
+		"JOB_ITERATIONS": "2",
+	        "JOB_TIMEOUT": "900",
+                "QPS": "20",
+                "BURST": "20",
+                "STEP_SIZE": "30s",
+                "METRICS_PROFILE": "metrics.yaml",
+                "LOG_LEVEL": "info",
+                "LOG_STREAMING": "true",
+                "CLEANUP_WHEN_FINISH": "true",
+                "CLEANUP": "true"
+            }
+        },
+	{
+	    "name": "max_namespaces",
+	    "workload": "kube-burner",
+	    "command": "./run_maxnamespaces_test_fromgit.sh test_cloud",
+	    "env": {
+		"NAMESPACE_COUNT": "5",
+	        "JOB_TIMEOUT": "900",
+                "QPS": "20",
+                "BURST": "20",
+                "STEP_SIZE": "30s",
+                "METRICS_PROFILE": "metrics.yaml",
+                "LOG_LEVEL": "info",
+                "LOG_STREAMING": "true",
+                "CLEANUP_WHEN_FINISH": "true",
+                "CLEANUP": "true"
+            }
+	},
+    	{
+	    "name": "max_services",
+	    "workload": "kube-burner",
+	    "command": "./run_maxservices_test_fromgit.sh test_cloud",
+	    "env": {
+		"SERVICE_COUNT": "5",
+	        "JOB_TIMEOUT": "900",
+                "QPS": "20",
+                "BURST": "20",
+                "STEP_SIZE": "30s",
+                "METRICS_PROFILE": "metrics.yaml",
+                "LOG_LEVEL": "info",
+                "LOG_STREAMING": "true",
+                "CLEANUP_WHEN_FINISH": "true",
+                "CLEANUP": "true"
+            }
+	},
+    	{
+	    "name": "pod_density",
+	    "workload": "kube-burner",
+	    "command": "./run_poddensity_test_fromgit.sh test_cloud",
+	    "env": {
+		"PODS": "20",
+	        "JOB_TIMEOUT": "900",
+                "QPS": "20",
+                "BURST": "20",
+                "STEP_SIZE": "30s",
+                "METRICS_PROFILE": "metrics.yaml",
+                "LOG_LEVEL": "info",
+                "LOG_STREAMING": "true",
+                "CLEANUP_WHEN_FINISH": "true",
+                "CLEANUP": "true"
+            }
+	    }
+    ]
+}

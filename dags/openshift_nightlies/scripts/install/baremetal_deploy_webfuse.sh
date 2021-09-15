@@ -37,9 +37,9 @@ setup(){
 
 run_ansible_playbook(){
     if [ -z ${WEBFUSE_SKIPTAGS} ]; then
-        time /home/airflow/.local/bin/ansible-playbook -i hosts ${WEBFUSE_PLAYBOOK} --extra-vars "@${json_file}"
+        time ansible-playbook -i hosts ${WEBFUSE_PLAYBOOK} --extra-vars "@${json_file}"
     else
-        time /home/airflow/.local/bin/ansible-playbook -i hosts ${WEBFUSE_PLAYBOOK} --skip-tags ${WEBFUSE_SKIPTAGS} --extra-vars "@${json_file}"
+        time ansible-playbook -i hosts ${WEBFUSE_PLAYBOOK} --skip-tags ${WEBFUSE_SKIPTAGS} --extra-vars "@${json_file}"
     fi
 
 }

@@ -1,0 +1,13 @@
+{
+    "benchmarks": [
+        {
+            "name": "upgrade-cluster",
+            "workload": "upgrade-perf",
+            "command": "./run_upgrade_fromgit.sh",
+            "env": {
+                "TOVERSION": "4.8.3",
+                "MCP_NODE_COUNT": 1
+            }
+        }        
+    ]
+}

@@ -22,3 +22,7 @@ services:
         BASE_IMAGE: ${QUAY_ACCOUNT}/airflow:${IMAGE_TAG}
     depends_on:
       - airflow 
+  airflow-jetski:
+    image: ${QUAY_ACCOUNT}/airflow-jetski:${IMAGE_TAG}
+    build:
+      context: ./images/airflow-jetski

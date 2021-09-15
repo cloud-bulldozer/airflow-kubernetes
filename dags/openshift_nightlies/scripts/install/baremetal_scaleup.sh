@@ -31,7 +31,7 @@ setup(){
 }
 
 run_ansible_playbook(){
-    time /home/airflow/.local/bin/ansible-playbook -i inventory/jetski/hosts playbook-jetski-scaleup.yml --extra-vars "@${json_file}"
+    time ansible-playbook -i inventory/jetski/hosts playbook-jetski-scaleup.yml --extra-vars "@${json_file}"
 }
 
 echo "Staring to scaleup cluster..." 

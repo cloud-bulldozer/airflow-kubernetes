@@ -36,9 +36,45 @@ setup(){
     fi
 }
 
+run_baremetal_benchmark(){
+    echo "Baremetal Benchmark will be began.."
+    echo "Orchestration host --> $ORCHESTRATION_HOST"
+
+    git clone https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git /tmp/perf-dept
+    export PUBLIC_KEY=/tmp/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
+    export PRIVATE_KEY=/tmp/perf-dept/ssh_keys/id_rsa_pbench_ec2 
+    chmod 600 ${PRIVATE_KEY}
+
+    echo "Transfering the environment variables to the orchestration host"
+    scp -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -i ${PRIVATE_KEY}  /tmp/environment.txt root@${ORCHESTRATION_HOST}:/tmp/environment_new.txt
+
+    echo "Starting e2e script $workload..."
+    ssh -t -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -i ${PRIVATE_KEY} root@${ORCHESTRATION_HOST} << EOF
+
+    export KUBECONFIG=/home/kni/clusterconfigs/auth/kubeconfig
+    export BENCHMARK=${TASK_GROUP}
+    while read line; do export \$line; done < /tmp/environment_new.txt
+    # clean up the temporary environment file
+    rm -rf /tmp/environment_new.txt
+    rm -rf /home/kni/ci_${TASK_GROUP}_workspace
+    mkdir /home/kni/ci_${TASK_GROUP}_workspace
+    pushd /home/kni/ci_${TASK_GROUP}_workspace
+    git clone -b master https://github.com/cloud-bulldozer/e2e-benchmarking.git
+
+    pushd e2e-benchmarking/workloads/$workload
+    eval "$command"
+
+EOF
+}
+
+if [[ $PLATFORM == "baremetal" ]]; then
+env >> /tmp/environment.txt
+run_baremetal_benchmark
+echo "Finished e2e scripts for $workload"
+else
 setup
 cd /home/airflow/workspace
 ls
 cd e2e-benchmarking/workloads/$workload
-
 eval "$command"
+fi

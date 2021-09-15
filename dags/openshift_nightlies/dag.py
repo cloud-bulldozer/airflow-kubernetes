@@ -17,7 +17,7 @@ from openshift_nightlies.models.dag_config import DagConfig
 from openshift_nightlies.models.release import OpenshiftRelease, BaremetalRelease
 from openshift_nightlies.tasks.install.cloud import openshift
 from openshift_nightlies.tasks.install.openstack import jetpack
-from openshift_nightlies.tasks.install.baremetal import jetski
+from openshift_nightlies.tasks.install.baremetal import jetski, webfuse
 from openshift_nightlies.tasks.install.rosa import rosa
 from openshift_nightlies.tasks.benchmarks import e2e
 from openshift_nightlies.tasks.utils import scale_ci_diagnosis
@@ -102,13 +102,35 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):
         bm_installer = self._get_openshift_installer()
+        webfuse_installer = self._get_webfuse_installer()
+
         install_cluster = bm_installer.get_install_task()
+        benchmark_stg_1 = self._add_benchmarks(task_group="install-bench")
+
+        deploy_webfuse = webfuse_installer.get_deploy_app_task()
+        benchmark_stg_2 = self._add_benchmarks(task_group="scaleup-bench")
+
         scaleup_cluster = bm_installer.get_scaleup_task()
-        install_cluster >> scaleup_cluster
+        benchmark_stg_3 = self._add_benchmarks(task_group="webfuse-bench")
+
+        install_cluster >> benchmark_stg_1 
+        install_cluster >> scaleup_cluster >> benchmark_stg_2 
+        scaleup_cluster >> deploy_webfuse >> benchmark_stg_3
 
     def _get_openshift_installer(self):
         return jetski.BaremetalOpenshiftInstaller(self.dag, self.config, self.release)
 
+    def _get_webfuse_installer(self):
+        return webfuse.BaremetalWebfuseInstaller(self.dag, self.config, self.release)
+
+    def _get_e2e_benchmarks(self, task_group):
+        return e2e.E2EBenchmarks(self.dag, self.config, self.release, task_group)
+
+    def _add_benchmarks(self, task_group):
+        with TaskGroup(task_group, prefix_group_id=True, dag=self.dag) as benchmarks:
+            benchmark_tasks = self._get_e2e_benchmarks(task_group).get_benchmarks()
+            chain(*benchmark_tasks)
+        return benchmarks
 
 class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):

@@ -1,0 +1,14 @@
+{
+    "benchmarks": [
+        {
+            "name": "uperf_serviceip_network",
+            "workload": "network-perf",
+            "command": "./run_serviceip_network_test_fromgit.sh test_cloud",
+            "env": {
+                "COMPARE": "false",
+                "ENABLE_SNAPPY_BACKUP": "false",
+                "MULTI_AZ": "false"
+            }
+        }
+    ]
+}

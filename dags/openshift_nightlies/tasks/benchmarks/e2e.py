@@ -17,31 +17,49 @@ from kubernetes.client import models as k8s
 
 
 class E2EBenchmarks():
-    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease):
+    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease, task_group="benchmarks"):
         # General DAG Configuration
         self.dag = dag
         self.release = release
-        self.config = config
-        self.exec_config = executor.get_executor_config_with_cluster_access(self.config, self.release)
+        self.task_group = task_group
+        self.dag_config = config
+        self.exec_config = executor.get_executor_config_with_cluster_access(self.dag_config, self.release)
         self.snappy_creds = var_loader.get_secret("snappy_creds", deserialize_json=True)
         self.es_gold = var_loader.get_secret("es_gold")
         self.es_server_baseline = var_loader.get_secret("es_server_baseline")
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
-            release=self.release, task="benchmarks")
+            release=self.release, task=self.task_group)
         self.git_name=self._git_name()
         self.env = {
             "SNAPPY_DATA_SERVER_URL": self.snappy_creds['server'],
             "SNAPPY_DATA_SERVER_USERNAME": self.snappy_creds['username'],
             "SNAPPY_DATA_SERVER_PASSWORD": self.snappy_creds['password'],
             "SNAPPY_USER_FOLDER": self.git_name,
+            "PLATFORM": self.release.platform,
+            "TASK_GROUP": self.task_group,
             "ES_GOLD": self.es_gold,
             "ES_SERVER_BASELINE": self.es_server_baseline
-
         }
 
-        
+        if self.release.platform == "baremetal":
+            self.install_vars = var_loader.build_task_vars(
+                release, task="install")
+            self.baremetal_install_secrets = var_loader.get_secret(
+            f"baremetal_openshift_install_config", deserialize_json=True)
+
+            self.config = {
+                **self.install_vars,
+                **self.baremetal_install_secrets
+            }
+
+            self.env = {
+                **self.env,
+                "SSHKEY_TOKEN": self.config['sshkey_token'],
+                "ORCHESTRATION_USER": self.config['provisioner_user'],
+                "ORCHESTRATION_HOST": self.config['provisioner_hostname']
+            }
     
 
     def get_benchmarks(self):
@@ -76,13 +94,14 @@ class E2EBenchmarks():
                     self._add_indexers(benchmark)
 
     def _add_indexer(self, benchmark): 
-        indexer = StatusIndexer(self.dag, self.config, self.release, benchmark.task_id).get_index_task() 
+        indexer = StatusIndexer(self.dag, self.dag_config, self.release, benchmark.task_id).get_index_task() 
         benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):
         env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch')}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
+        task_prefix=f"{self.task_group}_"
         return BashOperator(
-            task_id=f"{benchmark['name']}",
+            task_id=f"{task_prefix if self.task_group != 'benchmarks' else ''}{benchmark['name']}",
             depends_on_past=False,
             bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
             retries=3,
