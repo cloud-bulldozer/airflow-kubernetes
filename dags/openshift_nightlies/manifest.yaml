@@ -5,7 +5,7 @@ versionAliases:
     alias: stable
   - version: 4.9
     alias: next
-  - version: 4.10
+  - version: "4.10"
     alias: future
 
 dagConfig:
@@ -47,7 +47,7 @@ platforms:
       - name: gcp
         profiles:
         - default
-    - version: 4.10
+    - version: "4.10"
       releaseStream: 4.10.0-0.nightly
       providers:
       - name: aws
