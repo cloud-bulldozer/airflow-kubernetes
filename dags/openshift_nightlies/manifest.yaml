@@ -45,12 +45,25 @@ platforms:
       - name: gcp
         profiles:
         - default
-  baremetal: 
+    - version: 4.10
+      releaseStream: 4.10.0-0.nightly
+      providers:
+      - name: aws
+        profiles:
+        - default
+        - ovn
+      - name: azure
+        profiles:
+        - default
+      - name: gcp
+        profiles:
+        - default    
+  baremetal:
     - version: 4.7
       releaseStream: latest-4.7
       build: dev
       profiles:
-      - jetski    
+      - jetski  
     - version: 4.8
       releaseStream: latest-4.8
       build: dev
