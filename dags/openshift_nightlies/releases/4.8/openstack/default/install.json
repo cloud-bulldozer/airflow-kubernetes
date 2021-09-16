@@ -54,5 +54,6 @@
     "openshift_prometheus_storage_size": "10Gi",
     "openshift_alertmanager_storage_class": "standard",
     "openshift_alertmanager_storage_size": "2Gi",
+    "openshift_toggle_workload_node": "false",
     "job_iterations": "1"
  }
