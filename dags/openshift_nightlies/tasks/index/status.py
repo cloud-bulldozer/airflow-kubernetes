@@ -14,7 +14,7 @@ from kubernetes.client import models as k8s
 
 # Defines Task for Indexing Task Status in ElasticSearch
 class StatusIndexer():
-    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease, task):
+    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease, task, uuid=None):
         
         # General DAG Configuration
         self.dag = dag
@@ -31,6 +31,9 @@ class StatusIndexer():
             "RELEASE_STREAM": self.release.release_stream,
             "TASK": self.task
         }
+
+        if uuid is not None:
+            self.env["UUID"] = uuid
         self.git_user = var_loader.get_git_user()
         if self.git_user == 'cloud-bulldozer':
             self.env["ES_INDEX"] = "perf_scale_ci"
