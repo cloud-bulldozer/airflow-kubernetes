@@ -103,5 +103,5 @@ class E2EBenchmarks():
                 executor_config=self.exec_config
         )
 
-        self._add_indexer(task, uuid)
+        self._add_indexer(task, benchmark_uuid)
         return task
