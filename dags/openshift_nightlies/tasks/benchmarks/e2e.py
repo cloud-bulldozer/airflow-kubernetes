@@ -85,8 +85,8 @@ class E2EBenchmarks():
                 benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
         return benchmarks
 
-    def _add_indexer(self, benchmark, uuid): 
-        indexer = StatusIndexer(self.dag, self.dag_config, self.release, benchmark.task_id, uuid).get_index_task() 
+    def _add_indexer(self, benchmark, benchmark_uuid): 
+        indexer = StatusIndexer(self.dag, self.dag_config, self.release, benchmark.task_id, benchmark_uuid).get_index_task() 
         benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):
