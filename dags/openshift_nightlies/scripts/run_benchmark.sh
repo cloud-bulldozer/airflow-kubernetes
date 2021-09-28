@@ -1,7 +1,4 @@
 #!/bin/bash
-
-set -eux
-
 while getopts w:c: flag
 do
     case "${flag}" in
@@ -68,13 +65,18 @@ EOF
 }
 
 if [[ $PLATFORM == "baremetal" ]]; then
-env >> /tmp/environment.txt
-run_baremetal_benchmark
-echo "Finished e2e scripts for $workload"
+    env >> /tmp/environment.txt
+    run_baremetal_benchmark
+    echo "Finished e2e scripts for $workload"
 else
-setup
-cd /home/airflow/workspace
-ls
-cd e2e-benchmarking/workloads/$workload
-eval "$command"
+    setup
+    cd /home/airflow/workspace
+    ls
+    cd e2e-benchmarking/workloads/$workload
+    export UUID=$(uuidgen)
+    eval "$command"
+    benchmark_rv=$?
+    echo $UUID
+    exit benchmark_rv
+
 fi

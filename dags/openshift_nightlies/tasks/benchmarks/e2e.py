@@ -85,13 +85,12 @@ class E2EBenchmarks():
                 benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
         return benchmarks
 
-    def _add_indexer(self, benchmark, benchmark_uuid): 
-        indexer = StatusIndexer(self.dag, self.dag_config, self.release, benchmark.task_id, benchmark_uuid).get_index_task() 
+    def _add_indexer(self, benchmark): 
+        indexer = StatusIndexer(self.dag, self.dag_config, self.release, benchmark.task_id).get_index_task() 
         benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):
-        benchmark_uuid = str(uuid.uuid4())
-        env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch'), "KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", ""), "UUID": benchmark_uuid}}
+        env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch'), "KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
         task_prefix=f"{self.task_group}_"
         task = BashOperator(
                 task_id=f"{task_prefix if self.task_group != 'benchmarks' else ''}{benchmark['name']}",
@@ -100,8 +99,9 @@ class E2EBenchmarks():
                 retries=3,
                 dag=self.dag,
                 env=env,
+                do_xcom_push=True,
                 executor_config=self.exec_config
         )
 
-        self._add_indexer(task, benchmark_uuid)
+        self._add_indexer(task)
         return task
