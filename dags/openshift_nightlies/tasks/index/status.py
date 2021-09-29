@@ -50,7 +50,7 @@ class StatusIndexer():
         return BashOperator(
             task_id=f"index_{self.task}",
             depends_on_past=False,
-            bash_command=f'UUID={{{{ ti.xcom_pull({self.task}) }}}} {constants.root_dag_dir}/scripts/index.sh ',
+            bash_command=f'UUID={{{{ ti.xcom_pull("{self.task}") }}}} {constants.root_dag_dir}/scripts/index.sh ',
             retries=3,
             dag=self.dag,
             trigger_rule="all_done",
