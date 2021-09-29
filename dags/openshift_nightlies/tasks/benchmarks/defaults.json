@@ -154,7 +154,7 @@
                 "METRICS_PROFILE": "metrics-aggregated.yaml",
                 "LOG_LEVEL": "info",
                 "LOG_STREAMING": "true",
-                "CLEANUP_WHEN_FINISH": "true",
+                "CLEANUP_WHEN_FINISH": "false",
                 "CLEANUP": "true"
             }
         },
