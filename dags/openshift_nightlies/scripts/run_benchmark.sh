@@ -77,6 +77,6 @@ else
     eval "$command"
     benchmark_rv=$?
     echo $UUID
-    exit benchmark_rv
+    exit $benchmark_rv
 
 fi
