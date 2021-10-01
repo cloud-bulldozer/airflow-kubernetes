@@ -6,7 +6,6 @@ from openshift_nightlies.models.release import OpenshiftRelease
 from openshift_nightlies.models.dag_config import DagConfig
 
 import json
-import uuid
 from datetime import timedelta
 from airflow.operators.bash import BashOperator
 from airflow.models import Variable
