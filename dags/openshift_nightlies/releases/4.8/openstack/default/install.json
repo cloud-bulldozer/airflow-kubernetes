@@ -5,6 +5,7 @@
     "ansible_ssh_password":"",
     "install_osp":"false",
     "osp_public_external_interface": "true",
+    "ocp_network_type": "OpenshiftSDN",
     "openstack_version":"16",
     "scale_lab_cloud_name": "cloud21",
     "kubeconfig_path": "/home/stack/vlan609/auth/kubeconfig",

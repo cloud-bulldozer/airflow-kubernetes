@@ -30,19 +30,19 @@ setup(){
     cp ci/ocp_install_vars.yml vars/shift_stack_vars.yaml
 
     # Get the day of week and set networkType as OpenshiftSDN on odd days and kuryr on even days in case no network is defined manually.
-    if [ -z "$OPENSHIFT_NETWORK_TYPE" ]
-    then
-        DOW=$(date +%u)
-        rem=$(( $DOW % 2 ))
-        if [ $rem -eq 0 ]
-        then
-            echo "Using kuryr as Network Type"
-            export OPENSHIFT_NETWORK_TYPE=Kuryr
-        else
-            echo "Using OpenshiftSDN as Network Type"
-            export OPENSHIFT_NETWORK_TYPE=OpenshiftSDN
-        fi
-    fi
+    # if [ -z "$OPENSHIFT_NETWORK_TYPE" ]
+    # then
+    #     DOW=$(date +%u)
+    #     rem=$(( $DOW % 2 ))
+    #     if [ $rem -eq 0 ]
+    #     then
+    #         echo "Using kuryr as Network Type"
+    #         export OPENSHIFT_NETWORK_TYPE=Kuryr
+    #     else
+    #         echo "Using OpenshiftSDN as Network Type"
+    #         export OPENSHIFT_NETWORK_TYPE=OpenshiftSDN
+    #     fi
+    # fi
 }
 
 run_jetpack(){

@@ -20,7 +20,7 @@
             "workload": "kube-burner",
             "command": "./run_clusterdensity_test_fromgit.sh",
             "env": {
-                "JOB_ITERATIONS": "500",
+                "JOB_ITERATIONS": "300",
                 "JOB_TIMEOUT": "18000",
                 "STEP_SIZE": "30s",
                 "QPS": "20",
@@ -65,7 +65,7 @@
             "workload": "kube-burner",
             "command": "./run_clusterdensity_test_fromgit.sh",
             "env": {
-                "JOB_ITERATIONS": "1000",
+                "JOB_ITERATIONS": "700",
                 "JOB_TIMEOUT": "18000",
                 "STEP_SIZE": "30s",
                 "QPS": "20",
@@ -135,7 +135,7 @@
             "workload": "kube-burner",
             "command": "./run_clusterdensity_test_fromgit.sh",
             "env": {
-                "JOB_ITERATIONS": "500",
+                "JOB_ITERATIONS": "300",
                 "JOB_TIMEOUT": "18000",
                 "STEP_SIZE": "30s",
                 "QPS": "20",
