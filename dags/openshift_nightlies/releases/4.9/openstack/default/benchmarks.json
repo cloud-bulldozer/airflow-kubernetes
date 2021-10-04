@@ -84,7 +84,8 @@
             "env": {
                 "COMPARE": "false",
                 "ENABLE_SNAPPY_BACKUP": "true",
-                "MULTI_AZ": "false"
+                "MULTI_AZ": "false",
+                "EMAIL_ID_FOR_RESULTS_SHEET": "mkaliyam@redhat.com"
             }
         },
         {
@@ -94,7 +95,8 @@
             "env": {
                 "COMPARE": "false",
                 "ENABLE_SNAPPY_BACKUP": "true",
-                "MULTI_AZ": "false"
+                "MULTI_AZ": "false",
+                "EMAIL_ID_FOR_RESULTS_SHEET": "mkaliyam@redhat.com"
             }
         },
         {
@@ -104,7 +106,8 @@
             "env": {
                 "COMPARE": "false",
                 "ENABLE_SNAPPY_BACKUP": "true",
-                "MULTI_AZ": "false"
+                "MULTI_AZ": "false",
+                "EMAIL_ID_FOR_RESULTS_SHEET": "mkaliyam@redhat.com"
             }
         },
         {
@@ -127,7 +130,8 @@
                 "LARGE_SCALE_THRESHOLD": "19",
                 "ENGINE": "local",
                 "LARGE_SCALE_ROUTES": "500",
-                "COMPARE": "false"
+                "COMPARE": "false",
+                "EMAIL_ID_FOR_RESULTS_SHEET": "mkaliyam@redhat.com" 
             }
         },
         {
