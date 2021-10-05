@@ -31,6 +31,7 @@ class StatusIndexer():
             "RELEASE_STREAM": self.release.release_stream,
             "TASK": self.task
         }
+
         self.git_user = var_loader.get_git_user()
         if self.git_user == 'cloud-bulldozer':
             self.env["ES_INDEX"] = "perf_scale_ci"
@@ -45,11 +46,15 @@ class StatusIndexer():
             **{"ES_SERVER": var_loader.get_secret('elasticsearch')},
             **environ
         }
-
+        if self.task != "install":
+            command = f'UUID={{{{ ti.xcom_pull("{self.task}") }}}} {constants.root_dag_dir}/scripts/index.sh '
+        else:
+            command = f'{constants.root_dag_dir}/scripts/index.sh '
+    
         return BashOperator(
             task_id=f"index_{self.task}",
             depends_on_past=False,
-            bash_command=f"{constants.root_dag_dir}/scripts/index.sh ",
+            bash_command=command,
             retries=3,
             dag=self.dag,
             trigger_rule="all_done",

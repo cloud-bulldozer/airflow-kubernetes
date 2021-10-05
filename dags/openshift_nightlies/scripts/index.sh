@@ -12,7 +12,7 @@ export airflow_base_url="http://$(kubectl get route/airflow -n airflow -o jsonpa
 
 setup(){
     # Generate a uuid
-    export UUID=$(uuidgen)
+    export UUID=${UUID:-$(uuidgen)}
 
     # Elasticsearch Config
     export ES_SERVER=$ES_SERVER

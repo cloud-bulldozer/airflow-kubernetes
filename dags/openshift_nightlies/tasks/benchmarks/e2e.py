@@ -64,9 +64,7 @@ class E2EBenchmarks():
 
     def get_benchmarks(self):
         benchmarks = self._get_benchmarks(self.vars["benchmarks"])
-        with TaskGroup("Index Results", prefix_group_id=False, dag=self.dag) as post_steps:
-            indexers = self._add_indexers(benchmarks)
-        return benchmarks
+        return benchmarks 
 
     def _git_name(self):
         git_username = var_loader.get_git_user()
@@ -86,26 +84,23 @@ class E2EBenchmarks():
                 benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
         return benchmarks
 
-    def _add_indexers(self, benchmarks):
-            for index, benchmark in enumerate(benchmarks):
-                if isinstance(benchmark, BashOperator):
-                    self._add_indexer(benchmark)
-                elif isinstance(benchmark, list):
-                    self._add_indexers(benchmark)
-
     def _add_indexer(self, benchmark): 
         indexer = StatusIndexer(self.dag, self.dag_config, self.release, benchmark.task_id).get_index_task() 
         benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):
-        env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch')}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
+        env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch'), "KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
         task_prefix=f"{self.task_group}_"
-        return BashOperator(
-            task_id=f"{task_prefix if self.task_group != 'benchmarks' else ''}{benchmark['name']}",
-            depends_on_past=False,
-            bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
-            retries=3,
-            dag=self.dag,
-            env=env,
-            executor_config=self.exec_config
+        task = BashOperator(
+                task_id=f"{task_prefix if self.task_group != 'benchmarks' else ''}{benchmark['name']}",
+                depends_on_past=False,
+                bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
+                retries=3,
+                dag=self.dag,
+                env=env,
+                do_xcom_push=True,
+                executor_config=self.exec_config
         )
+
+        self._add_indexer(task)
+        return task
