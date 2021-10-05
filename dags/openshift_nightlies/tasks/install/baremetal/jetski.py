@@ -54,7 +54,9 @@ class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
             "JETSKI_SKIPTAGS": config['jetski_skiptags'],
             "KUBECONFIG_PATH": config['kubeconfig_path'],
             "KUBECONFIG_NAME": f"{self.release_name}-kubeconfig",
-            "KUBEADMIN_NAME": f"{self.release_name}-kubeadmin",            
+            "KUBEADMIN_NAME": f"{self.release_name}-kubeadmin",
+            "CURRENT_WORKER_COUNT": config['openshift_worker_count'],
+            "TARGET_WORKER_COUNT": config['openshift_worker_scaleup_target'],
             **self._insert_kube_env()
         }
 
