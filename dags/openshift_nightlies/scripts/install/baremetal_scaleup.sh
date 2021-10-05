@@ -31,7 +31,25 @@ setup(){
 }
 
 run_ansible_playbook(){
-    time ansible-playbook -i inventory/jetski/hosts playbook-jetski-scaleup.yml --extra-vars "@${json_file}"
+    scale_step=40
+    start=$((CURRENT_WORKER_COUNT + scale_step))
+    if [[ ${TARGET_WORKER_COUNT} -gt $scale_step ]]; then
+        for itr in `seq ${start} ${scale_step} ${TARGET_WORKER_COUNT}`
+        do
+            sed -i "/\"worker_count\":/c \"worker_count\": ${itr}" ${json_file}
+            echo "------------------------Scaling $itr workers------------------------"
+            time ansible-playbook -i inventory/jetski/hosts playbook-jetski-scaleup.yml --extra-vars "@${json_file}"
+            echo "------------------------Scaled up to $itr workers------------------------"
+        done
+        if [[ $itr -lt ${TARGET_WORKER_COUNT} ]]; then
+            sed -i "/\"worker_count\":/c \"worker_count\": ${itr}" ${json_file}
+            echo "------------------------Scaling $itr workers------------------------"
+            time ansible-playbook -i inventory/jetski/hosts playbook-jetski-scaleup.yml --extra-vars "@${json_file}"
+            echo "------------------------Scaled up to $itr workers------------------------"
+        fi
+    else
+        time ansible-playbook -i inventory/jetski/hosts playbook-jetski-scaleup.yml --extra-vars "@${json_file}"
+    fi
 }
 
 echo "Staring to scaleup cluster..." 
