@@ -31,10 +31,9 @@ setup(){
 }
 
 run_ansible_playbook(){
-    scale_step=40
-    start=$((CURRENT_WORKER_COUNT + scale_step))
-    if [[ ${TARGET_WORKER_COUNT} -gt $scale_step ]]; then
-        for itr in `seq ${start} ${scale_step} ${TARGET_WORKER_COUNT}`
+    start=$((CURRENT_WORKER_COUNT + SCALE_STEP))
+    if [[ ${TARGET_WORKER_COUNT} -gt ${SCALE_STEP} ]]; then
+        for itr in `seq ${start} ${SCALE_STEP} ${TARGET_WORKER_COUNT}`
         do
             sed -i "/\"worker_count\":/c \"worker_count\": ${itr}" ${json_file}
             echo "------------------------Scaling $itr workers------------------------"

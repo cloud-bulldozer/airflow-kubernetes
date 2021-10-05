@@ -57,6 +57,7 @@ class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
             "KUBEADMIN_NAME": f"{self.release_name}-kubeadmin",
             "CURRENT_WORKER_COUNT": config['openshift_worker_count'],
             "TARGET_WORKER_COUNT": config['openshift_worker_scaleup_target'],
+            "SCALE_STEP": config['openshift_worker_scale_step'],
             **self._insert_kube_env()
         }
 
