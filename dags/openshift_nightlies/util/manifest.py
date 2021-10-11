@@ -72,6 +72,7 @@ class Manifest():
             release_stream = version['releaseStream']
             version_alias = self.get_version_alias(version_number)
             schedule = self._get_schedule_for_platform('openstack')
+            dependencies = self._get_dependencies()
             for profile in version['profiles']:
                 release = OpenshiftRelease(
                     platform="openstack",
@@ -80,7 +81,7 @@ class Manifest():
                     profile=profile,
                     version_alias=version_alias
                 )
-                dag_config = self._build_dag_config(schedule)
+                dag_config = self._build_dag_config(schedule, dependencies)
 
                 self.releases.append(
                     {
@@ -119,6 +120,13 @@ class Manifest():
         self.get_rosa_releases()
         return self.releases
 
+    def _get_dependencies(self):
+        dependencies = {}
+        for dep_name, dep_value in self.yaml['dagConfig']['dependencies'].items():
+            dependencies[f"{dep_name}_repo"] = dep_value['repo']
+            dependencies[f"{dep_name}_branch"] = dep_value['branch']
+        return dependencies
+
     def _get_schedule_for_platform(self, platform):
         schedules = self.yaml['dagConfig']['schedules']
         if bool(schedules.get("enabled", False) and var_loader.get_git_user() == "cloud-bulldozer"):
@@ -126,9 +134,10 @@ class Manifest():
         else:
             return None
     
-    def _build_dag_config(self, schedule_interval):
+    def _build_dag_config(self, schedule_interval, dependencies):
         return DagConfig(
             schedule_interval=schedule_interval,
             cleanup_on_success=bool(self.yaml['dagConfig']['cleanupOnSuccess']),
-            executor_image=self.yaml['dagConfig'].get('executorImages', None)
+            executor_image=self.yaml['dagConfig'].get('executorImages', None),
+            dependencies=dependencies
         )
