@@ -123,8 +123,8 @@ class Manifest():
     def _get_dependencies(self):
         dependencies = {}
         for dep_name, dep_value in self.yaml['dagConfig']['dependencies'].items():
-            dependencies[f"{dep_name}_repo"] = dep_value['repo']
-            dependencies[f"{dep_name}_branch"] = dep_value['branch']
+            dependencies[f"{dep_name}_repo".upper()] = dep_value['repo']
+            dependencies[f"{dep_name}_branch".upper()] = dep_value['branch']
         return dependencies
 
     def _get_schedule_for_platform(self, platform):
