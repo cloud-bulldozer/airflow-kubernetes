@@ -72,7 +72,6 @@ class Manifest():
             release_stream = version['releaseStream']
             version_alias = self.get_version_alias(version_number)
             schedule = self._get_schedule_for_platform('openstack')
-            dependencies = self._get_dependencies()
             for profile in version['profiles']:
                 release = OpenshiftRelease(
                     platform="openstack",
@@ -81,7 +80,7 @@ class Manifest():
                     profile=profile,
                     version_alias=version_alias
                 )
-                dag_config = self._build_dag_config(schedule, dependencies)
+                dag_config = self._build_dag_config(schedule)
 
                 self.releases.append(
                     {
@@ -134,10 +133,10 @@ class Manifest():
         else:
             return None
     
-    def _build_dag_config(self, schedule_interval, dependencies):
+    def _build_dag_config(self, schedule_interval):
         return DagConfig(
             schedule_interval=schedule_interval,
             cleanup_on_success=bool(self.yaml['dagConfig']['cleanupOnSuccess']),
             executor_image=self.yaml['dagConfig'].get('executorImages', None),
-            dependencies=dependencies
+            dependencies=self._get_dependencies()
         )
