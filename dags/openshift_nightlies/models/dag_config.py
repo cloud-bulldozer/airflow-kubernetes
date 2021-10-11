@@ -20,3 +20,4 @@ class DagConfig:
             "repository": "quay.io/cloud-bulldozer",
             "tag": "2.1.3"
         })
+    dependencies: Optional[dict] = field(default_factory=lambda: {})
