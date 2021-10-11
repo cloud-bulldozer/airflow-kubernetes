@@ -42,6 +42,7 @@ class E2EBenchmarks():
             "ES_GOLD": self.es_gold,
             "ES_SERVER_BASELINE": self.es_server_baseline
         }
+        self.env.update(self.config['dependencies'])
 
         if self.release.platform == "baremetal":
             self.install_vars = var_loader.build_task_vars(
