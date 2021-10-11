@@ -36,7 +36,7 @@ class Diagnosis():
             "SNAPPY_USER_FOLDER": self.git_name
 
         }
-        self.env.update(self.config['dependencies'])
+        self.env.update(self.config.dependencies)
 
 
     def _git_name(self):
