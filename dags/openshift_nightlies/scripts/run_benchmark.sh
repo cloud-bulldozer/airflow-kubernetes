@@ -86,7 +86,7 @@ else
         export OPENSHIFT_MUST_GATHER=true
         export STORAGE_MODE=snappy
         export WORKLOAD=$AIRFLOW_CTX_TASK_ID-must-gather
-        ./ocp_diagnosis.sh
+        ./ocp_diagnosis.sh || true
     fi
     echo $UUID
     exit $benchmark_rv
