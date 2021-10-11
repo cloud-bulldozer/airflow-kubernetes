@@ -1,0 +1,17 @@
+dashboards: 
+  kubeBurner: 
+    id: _XeYNzD7k
+    name: kube-burner-thanos
+  clusterDashboard:
+    id: ueS4UNS7k
+    name: cluster-dash
+
+ignoreTags:
+  - baseline
+  - install
+  - scale_25
+  - scale_50
+
+
+
+reportIndex: ci-reports
