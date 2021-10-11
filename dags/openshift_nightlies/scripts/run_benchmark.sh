@@ -11,7 +11,7 @@ done
 setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
-    git clone -b master https://github.com/cloud-bulldozer/e2e-benchmarking
+    git clone -b ${E2E_BENCHMARKING_BRANCH} ${E2E_BENCHMARKING_REPO} --depth=1 --single-branch
     cp /home/airflow/auth/config /home/airflow/workspace/config
     export KUBECONFIG=/home/airflow/workspace/config
     curl http://dell-r510-01.perf.lab.eng.rdu2.redhat.com/msheth/gsheet_key.json > /tmp/key.json
@@ -56,7 +56,7 @@ run_baremetal_benchmark(){
     rm -rf /home/kni/ci_${TASK_GROUP}_workspace
     mkdir /home/kni/ci_${TASK_GROUP}_workspace
     pushd /home/kni/ci_${TASK_GROUP}_workspace
-    git clone -b master https://github.com/cloud-bulldozer/e2e-benchmarking.git
+    git clone -b ${E2E_BENCHMARKING_BRANCH} ${E2E_BENCHMARKING_REPO} --depth=1 --single-branch
 
     pushd e2e-benchmarking/workloads/$workload
     eval "$command"
