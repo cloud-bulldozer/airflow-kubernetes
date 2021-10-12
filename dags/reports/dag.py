@@ -3,10 +3,10 @@ from airflow import DAG
 import os
 import yaml
 import sys
-import os
 import logging
 from datetime import datetime, timedelta
 from reports.tasks import generate
+from airflow.config_templates.airflow_local_settings import LOG_FORMAT
 
 # Base Directory where all DAG Code Lives
 root_dag_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
