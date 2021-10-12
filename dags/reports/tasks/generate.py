@@ -23,7 +23,7 @@ def build_reports(timestamp, config, es_client, thanos_client, grafana_url):
                 reports.append(report)
     
  
-    for report in enrich.enrich_reports(reports):
+    for report in enrich.enrich_reports(reports, grafana_url, thanos_client, config):
         response = index.index_report(es_client, report, config['reportIndex'])
         print(response) 
 
