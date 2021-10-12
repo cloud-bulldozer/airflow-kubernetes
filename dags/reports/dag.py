@@ -22,4 +22,4 @@ default_args = {
 }
 dag = DAG('generate_reports', catchup=False, default_args=default_args)
 
-generate_report_task = generate.get_task(config)
+generate_report_task = generate.get_task(dag, config)
