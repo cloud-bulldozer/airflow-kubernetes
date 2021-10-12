@@ -21,4 +21,4 @@ def enrich_reports(reports, grafana_url, prom_client, config):
                 "podCPU": control_plane.get_average_cpu_of_control_plane_apps(report, prom_client),
                 "podMemory": control_plane.get_average_memory_of_control_plane_apps(report, prom_client)
             }
-        yield report
+    return reports
