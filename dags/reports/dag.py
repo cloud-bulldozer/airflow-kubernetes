@@ -2,11 +2,22 @@
 from airflow import DAG
 import os
 import yaml
+import sys
+import os
+import logging
 from datetime import datetime, timedelta
 from reports.tasks import generate
 
 # Base Directory where all DAG Code Lives
 root_dag_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+
+# Set Task Logger to INFO for better task logs
+log = logging.getLogger("airflow.task")
+handler = logging.StreamHandler(sys.stdout)
+formatter = logging.Formatter(LOG_FORMAT)
+handler.setLevel(logging.INFO)
+handler.setFormatter(formatter)
+log.addHandler(handler)
 
 with open(f"{root_dag_dir}/reports/config.yaml") as config_file:
     try:
