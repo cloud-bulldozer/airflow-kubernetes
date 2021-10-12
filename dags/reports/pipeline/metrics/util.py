@@ -1,4 +1,4 @@
-parse_timestamp(timestamp):
+def parse_timestamp(timestamp):
     return datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%f%z")
 
 def aggregate_metrics(operation, metric_data):

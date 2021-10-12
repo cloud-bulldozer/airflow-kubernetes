@@ -1,4 +1,5 @@
 import datetime
+from reports.pipeline.metrics import control_plane
 
 def generate_dashboard_links(report, grafana_url, dashboards):
     links = {}
@@ -11,13 +12,13 @@ def generate_dashboard_links(report, grafana_url, dashboards):
     
     return links
 
-def enrich_reports(reports)
+def enrich_reports(reports, grafana_url, prom_client, config):
     for report in reports:
         report['timestamp'] = datetime.datetime.utcnow()
-        report['links'] = get_links(report) 
+        report['links'] = generate_dashboard_links(report, grafana_url, config['dashboards']) 
         if report['openshift_platform'] == "AWS":
             report['metrics'] = {
-                "podCPU": get_average_cpu_of_control_plane_apps(report),
-                "podMemory": get_average_memory_of_control_plane_apps(report)
+                "podCPU": control_plane.get_average_cpu_of_control_plane_apps(report, prom_client),
+                "podMemory": control_plane.get_average_memory_of_control_plane_apps(report, prom_client)
             }
         yield report

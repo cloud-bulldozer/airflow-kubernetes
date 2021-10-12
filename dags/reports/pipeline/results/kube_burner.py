@@ -1,4 +1,4 @@
-def get_kube_burner_results(benchmark, es_client):
+def get_results(benchmark, es_client):
     pod_latencies = get_pod_latency_results(benchmark, es_client)
     job_summary = get_job_summary(benchmark, es_client)
 

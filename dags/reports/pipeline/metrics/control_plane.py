@@ -1,7 +1,6 @@
 import datetime
 import statistics
-from prometheus_api_client import PrometheusConnect, MetricRangeDataFrame, MetricsList
-from metrics import util
+from reports.pipeline.metrics import util
 
 
 def get_average_cpu_of_control_plane_apps(report, prom_client):

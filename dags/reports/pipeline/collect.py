@@ -1,4 +1,4 @@
-from pipeline.results import kube_burner
+from reports.pipeline.results import kube_burner
 
 def get_clusters(es_client, timestamp, indices=['perf_scale_ci']):
     query = {
@@ -35,6 +35,6 @@ def get_benchmarks_for_cluster(cluster, docs, ignore_tags):
 
 def get_benchmark_results(benchmark, es_client):
     if "density" in benchmark['build_tag']:
-        return get_kube_burner_results(benchmark, es_client)
+        return kube_burner.get_results(benchmark, es_client)
     else:
         return {}
