@@ -12,7 +12,7 @@ def get_pod_latency_results(benchmark, es_client):
         }
     }
     index = 'ripsaw-kube-burner'
-    query_results = es_client.search(index='ripsaw-*', query=query, size=10000)
+    query_results = es_client.search(index='ripsaw-*', body=query, size=10000)
     perf_data = {doc['_source']['quantileName']: doc['_source'] for doc in query_results['hits']['hits']}
     
     return perf_data
@@ -24,7 +24,7 @@ def get_job_summary(benchmark, es_client):
         }
     }
     index = 'ripsaw-kube-burner'
-    query_results = es_client.search(index='ripsaw-*', query=query, size=10000)
+    query_results = es_client.search(index='ripsaw-*', body=query, size=10000)
     perf_data = {"jobSummary": doc['_source'] for doc in query_results['hits']['hits']}
     
     return perf_data

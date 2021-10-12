@@ -9,7 +9,7 @@ def get_clusters(es_client, timestamp, indices=['perf_scale_ci']):
         }       
     }
 
-    result = es_client.search(index=indices, query=query, size=10000)
+    result = es_client.search(index=indices, body=query, size=10000)
     docs = [doc['_source'] for doc in result['hits']['hits']]
     unique_cluster_names = list(set([doc['cluster_name'] for doc in docs]))
 
