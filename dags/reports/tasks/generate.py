@@ -14,7 +14,7 @@ def build_reports(timestamp, config, es_client, thanos_client, grafana_url):
                 **cluster,
                 'report_type': 'podLatency',
                 'metadata': benchmark['metadata'],
-                "results": collect.get_benchmark_results(benchmark)
+                "results": collect.get_benchmark_results(benchmark, es_client)
             }
 
             if report['results'] != {}:
