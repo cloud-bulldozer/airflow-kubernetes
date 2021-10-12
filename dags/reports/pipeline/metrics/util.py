@@ -1,3 +1,5 @@
+import datetime
+
 def parse_timestamp(timestamp):
     return datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%f%z")
 
