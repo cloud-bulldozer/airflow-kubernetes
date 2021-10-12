@@ -29,7 +29,7 @@ def get_clusters(es_client, timestamp, indices=['perf_scale_ci']):
                 break
         print(f"got cluster {cluster}")
 
-    return clusters
+    return clusters, docs
 
 
 def get_benchmarks_for_cluster(cluster, docs, ignore_tags):
