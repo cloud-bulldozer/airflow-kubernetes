@@ -5,7 +5,7 @@ def get_clusters(es_client, timestamp, indices=['perf_scale_ci']):
         "query": {
             "range": {
                 "timestamp":{
-                    "gte": "now-1d/d"
+                    "gte": "now-7d/d"
                 }
             }    
         }   
