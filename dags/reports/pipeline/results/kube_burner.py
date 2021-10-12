@@ -7,8 +7,10 @@ def get_results(benchmark, es_client):
 
 def get_pod_latency_results(benchmark, es_client):
     query = {
-        "query_string": {
-            "query": f'uuid:"{benchmark["uuid"]}" AND (metricName:"podLatencyQuantilesMeasurement")'
+        "query":{ 
+            "query_string": {
+                "query": f'uuid:"{benchmark["uuid"]}" AND (metricName:"podLatencyQuantilesMeasurement")'
+            }
         }
     }
     index = 'ripsaw-kube-burner'
@@ -19,8 +21,10 @@ def get_pod_latency_results(benchmark, es_client):
 
 def get_job_summary(benchmark, es_client):
     query = {
-        "query_string": {
-            "query": f'uuid:"{benchmark["uuid"]}" AND (metricName:"jobSummary")'
+        "query": {
+            "query_string": {
+                "query": f'uuid:"{benchmark["uuid"]}" AND (metricName:"jobSummary")'
+            }
         }
     }
     index = 'ripsaw-kube-burner'
