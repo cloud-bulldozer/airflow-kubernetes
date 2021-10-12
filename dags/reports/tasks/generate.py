@@ -7,6 +7,7 @@ import yaml
 
 def build_reports(timestamp, config, es_client, thanos_client, grafana_url):
     clusters, docs = collect.get_clusters(es_client, timestamp)
+    reports = []
     for cluster in clusters:
         benchmarks = collect.get_benchmarks_for_cluster(cluster['cluster_name'], docs, config['ignoreTags'])
         for benchmark in benchmarks:
