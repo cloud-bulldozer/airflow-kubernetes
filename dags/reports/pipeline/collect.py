@@ -2,11 +2,13 @@ from reports.pipeline.results import kube_burner
 
 def get_clusters(es_client, timestamp, indices=['perf_scale_ci']):
     query = {
-        "range": {
-            "timestamp":{
-                "gte": "now-1d/d"
-            }
-        }       
+        "query": {
+            "range": {
+                "timestamp":{
+                    "gte": "now-1d/d"
+                }
+            }    
+        }   
     }
 
     result = es_client.search(index=indices, body=query, size=10000)
