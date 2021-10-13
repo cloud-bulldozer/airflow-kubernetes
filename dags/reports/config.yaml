@@ -1,8 +1,8 @@
 dashboards: 
-  kubeBurner: 
+  kube_burner_dashboard: 
     id: _XeYNzD7k
     name: kube-burner-thanos
-  clusterDashboard:
+  cluster_dashboard:
     id: ueS4UNS7k
     name: cluster-dash
 
