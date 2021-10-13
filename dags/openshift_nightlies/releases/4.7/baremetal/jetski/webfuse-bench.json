@@ -1,5 +1,29 @@
 {
     "benchmarks": [
+       {
+           "name": "node-density-icni2",
+           "workload": "icni",
+           "command": "./create_icni2_workload.sh",
+	     "env": {
+                "QPS": "20",
+                "BURST": "20",
+                "SCALE": "1",
+                "KUBE_BURNER_VERSION": "0.14",
+		  "WORKLOAD_TEMPLATE": "workload/cfg_icni2_node_density2.yml"
+            }
+       },
+       {
+           "name": "cluster-density-icni2",
+           "workload": "icni",
+           "command": "./create_icni2_workload.sh",
+	     "env": {
+                "QPS": "20",
+                "BURST": "20",
+                "SCALE": "1",
+                "KUBE_BURNER_VERSION": "0.14",
+		  "WORKLOAD_TEMPLATE": "workload/cfg_icni2_cluster_density2.yml"
+            }
+        },
         {
             "name": "upgrade-cluster",
             "workload": "upgrade-perf",
@@ -8,6 +32,6 @@
                 "TOVERSION": "4.8.3",
                 "MCP_NODE_COUNT": 1
             }
-        }        
+        }
     ]
 }
