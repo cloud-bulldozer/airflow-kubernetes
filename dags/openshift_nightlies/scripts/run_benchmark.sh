@@ -76,6 +76,18 @@ else
     export UUID=$(uuidgen)
     eval "$command"
     benchmark_rv=$?
+
+    if [[ ${MUST_GATHER_EACH_TASK} == "true" ]] ; then
+        echo -e "must gather collection enabled for this task"
+        cd ../../utils/scale-ci-diagnosis
+        export OUTPUT_DIR=$PWD
+        export PROMETHEUS_CAPTURE=false
+        export PROMETHEUS_CAPTURE_TYPE=full
+        export OPENSHIFT_MUST_GATHER=true
+        export STORAGE_MODE=snappy
+        export WORKLOAD=$AIRFLOW_CTX_TASK_ID-must-gather
+        ./ocp_diagnosis.sh || true
+    fi
     echo $UUID
     exit $benchmark_rv
 
