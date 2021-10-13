@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 while getopts w:c: flag
 do
     case "${flag}" in
@@ -29,7 +29,7 @@ setup(){
 
     export PATH=$PATH:$(pwd)
 
-    if [[ ! -z "$KUBEADMIN_PASSWORD" ]]; then 
+    if [[ ! -z "$KUBEADMIN_PASSWORD" ]]; then
         oc login -u kubeadmin -p $KUBEADMIN_PASSWORD --insecure-skip-tls-verify
     fi
 }
@@ -40,7 +40,7 @@ run_baremetal_benchmark(){
 
     git clone https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git /tmp/perf-dept
     export PUBLIC_KEY=/tmp/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
-    export PRIVATE_KEY=/tmp/perf-dept/ssh_keys/id_rsa_pbench_ec2 
+    export PRIVATE_KEY=/tmp/perf-dept/ssh_keys/id_rsa_pbench_ec2
     chmod 600 ${PRIVATE_KEY}
 
     echo "Transfering the environment variables to the orchestration host"
@@ -57,12 +57,17 @@ run_baremetal_benchmark(){
     rm -rf /home/kni/ci_${TASK_GROUP}_workspace
     mkdir /home/kni/ci_${TASK_GROUP}_workspace
     pushd /home/kni/ci_${TASK_GROUP}_workspace
-    echo "Cloning ${E2E_BENCHMARKING_REPO} from branch ${E2E_BENCHMARKING_BRANCH}"
-    git clone -b ${E2E_BENCHMARKING_BRANCH} ${E2E_BENCHMARKING_REPO} --depth=1 --single-branch
 
-    pushd e2e-benchmarking/workloads/$workload
-    eval "$command"
-
+    if [[ ${workload} == "icni" ]]; then
+        git clone -b main https://github.com/redhat-performance/web-burner
+        pushd web-burner
+        eval "$command $WORKLOAD_TEMPLATE"
+    else
+        echo "Cloning ${E2E_BENCHMARKING_REPO} from branch ${E2E_BENCHMARKING_BRANCH}"
+        git clone -b ${E2E_BENCHMARKING_BRANCH} ${E2E_BENCHMARKING_REPO} --depth=1 --single-branch
+        pushd e2e-benchmarking/workloads/$workload
+        eval "$command"
+    fi
 EOF
 }
 

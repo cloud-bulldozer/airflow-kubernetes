@@ -3,8 +3,8 @@
         {
             "name": "baseline",
             "workload": "baseline-performance",
-            "command": "./baseline_perf.sh"            
-        },      
+            "command": "./baseline_perf.sh"
+        },
         {
             "name": "scale_25",
             "workload": "scale-perf",
@@ -172,5 +172,5 @@
                 "POLL_INTERVAL": "10"
             }
         }
-    ]
+   ]
 }
