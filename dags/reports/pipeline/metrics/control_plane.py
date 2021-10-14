@@ -57,12 +57,12 @@ def get_average_cpu_of_master_nodes(report, prom_client):
     query = f'sum(irate(node_cpu_seconds_total{{{labels}}}[2m]))'
     print(query)
     metric_data = prom_client.custom_query_range(query=query, start_time=start, end_time=end, step=5)
-    try:
+    if len(metric_data) != 0:
         return {
             "average": util.aggregate_metrics("average", metric_data[0]['values']),
             "max": util.aggregate_metrics("max", metric_data[0]['values'])
         }
-    except Exception as e:
+    else:
         return {}
 
 # def get_average_memory_of_master_nodes(report, prom_client):
