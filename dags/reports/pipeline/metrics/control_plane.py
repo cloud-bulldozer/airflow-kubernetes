@@ -74,6 +74,7 @@ def get_average_available_memory_of_master_nodes(report, prom_client):
     query = f'avg(node_memory_MemAvailable_bytes{{{labels}}}) by (instance)'
     print(query)
     metric_data = prom_client.custom_query_range(query=query, start_time=start, end_time=end, step=5)
+    print(metric_data)
     if len(metric_data) != 0:
         return {
             "average": util.aggregate_metrics("average", [util.aggregate_metrics("average", series['values']) for series in metric_data])
