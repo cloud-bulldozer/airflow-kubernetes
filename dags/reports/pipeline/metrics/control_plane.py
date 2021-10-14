@@ -77,7 +77,7 @@ def get_average_available_memory_of_master_nodes(report, prom_client):
     print(metric_data)
     if len(metric_data) != 0:
         return {
-            "average": util.aggregate_metrics("average", [util.aggregate_metrics("average", series['values']) for series in metric_data])
+            "average": statistics.mean([util.aggregate_metrics("average", series['values']) for series in metric_data])
         }
     else:
         return {}
