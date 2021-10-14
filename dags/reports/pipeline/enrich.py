@@ -20,6 +20,7 @@ def enrich_reports(reports, grafana_url, prom_client, config):
             report['metrics'] = {
                 "podCPU": control_plane.get_average_cpu_of_control_plane_apps(report, prom_client),
                 "podMemory": control_plane.get_average_memory_of_control_plane_apps(report, prom_client),
-                "masterCPU": control_plane.get_average_cpu_of_master_nodes(report, prom_client)
+                "masterCPU": control_plane.get_average_cpu_of_master_nodes(report, prom_client),
+                "masterAvailableMemory": control_plane.get_average_available_memory_of_master_nodes(report, prom_client)
             }
     return reports
