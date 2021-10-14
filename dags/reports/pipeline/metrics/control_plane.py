@@ -54,13 +54,12 @@ def get_average_cpu_of_master_nodes(report, prom_client):
     cluster = report['cluster_name']
     master_nodes = get_masters(report, prom_client)
     labels = f'openshift_cluster_name="{cluster}", instance=~"{"|".join(master_nodes)}", mode!="idle"'
-    query = f'sum(irate(node_cpu_seconds_total{{{labels}}}[2m]))'
+    query = f'sum(irate(node_cpu_seconds_total{{{labels}}}[2m])) by (instance)'
     print(query)
     metric_data = prom_client.custom_query_range(query=query, start_time=start, end_time=end, step=5)
     if len(metric_data) != 0:
         return {
-            "average": util.aggregate_metrics("average", metric_data[0]['values']),
-            "max": util.aggregate_metrics("max", metric_data[0]['values'])
+            "average": statistics.mean([util.aggregate_metrics("average", series['values']) for series in metric_data])
         }
     else:
         return {}
@@ -71,10 +70,9 @@ def get_average_available_memory_of_master_nodes(report, prom_client):
     cluster = report['cluster_name']
     master_nodes = get_masters(report, prom_client)
     labels = f'openshift_cluster_name="{cluster}", instance=~"{"|".join(master_nodes)}", mode!="idle"'
-    query = f'avg(node_memory_MemAvailable_bytes{{{labels}}}) by (instance)'
+    query = f'avg(node_memory_MemAvailable_bytes{{{labels}}}) by (instance) - avg(node_memory_MemTotal_bytes{{{labels}}}) by (instance)'
     print(query)
     metric_data = prom_client.custom_query_range(query=query, start_time=start, end_time=end, step=5)
-    print(metric_data)
     if len(metric_data) != 0:
         return {
             "average": statistics.mean([util.aggregate_metrics("average", series['values']) for series in metric_data])
