@@ -41,7 +41,7 @@ run_ansible_playbook(){
             echo "------------------------Scaled up to $itr workers------------------------"
         done
         if [[ $itr -lt ${TARGET_WORKER_COUNT} ]]; then
-            sed -i "/\"worker_count\":/c \"worker_count\": ${itr}" ${json_file}
+            sed -i "/\"worker_count\":/c \"worker_count\": ${TARGET_WORKER_COUNT}" ${json_file}
             echo "------------------------Scaling $itr workers------------------------"
             time ansible-playbook -i inventory/jetski/hosts playbook-jetski-scaleup.yml --extra-vars "@${json_file}"
             echo "------------------------Scaled up to $itr workers------------------------"
