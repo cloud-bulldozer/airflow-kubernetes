@@ -20,7 +20,7 @@ dagConfig:
   dependencies:
     e2e_benchmarking:
       repo: https://github.com/cloud-bulldozer/e2e-benchmarking.git
-      branch: master
+      branch: v1.0.0
 
 
 platforms:
