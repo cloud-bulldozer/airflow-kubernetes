@@ -9,7 +9,7 @@ def get_average_cpu_of_control_plane_apps(report, prom_client):
     start = util.parse_timestamp(report['metadata']['start_date'])
     end = util.parse_timestamp(report['metadata']['end_date'])
     cluster = report['cluster_name']
-    labels = f'name!="", openshift_cluster_name="{cluster}", container!="POD",namespace=~"openshift-*"'
+    labels = f'name!="", openshift_cluster_name="{cluster}", container!="POD",namespace=~"openshift-.*"'
     query = f'sum(irate(container_cpu_usage_seconds_total{{{labels}}}[2m])) by (namespace)'
     metric_data = prom_client.custom_query_range(query=query, start_time=start, end_time=end, step=5)
     for series in metric_data:
@@ -26,7 +26,7 @@ def get_average_memory_of_control_plane_apps(report, prom_client):
     start = util.parse_timestamp(report['metadata']['start_date'])
     end = util.parse_timestamp(report['metadata']['end_date'])
     cluster = report['cluster_name']
-    labels = f'name!="", openshift_cluster_name="{cluster}", container!="POD",namespace=~"openshift-*"'
+    labels = f'name!="", openshift_cluster_name="{cluster}", container!="POD",namespace=~"openshift-.*"'
     query = f'sum(container_memory_working_set_bytes{{{labels}}}) by (namespace)'
     metric_data = prom_client.custom_query_range(query=query, start_time=start, end_time=end, step=5)
     for series in metric_data:
