@@ -69,7 +69,7 @@ def get_average_available_memory_of_master_nodes(report, prom_client):
     end = util.parse_timestamp(report['metadata']['end_date'])
     cluster = report['cluster_name']
     master_nodes = get_masters(report, prom_client)
-    labels = f'openshift_cluster_name="{cluster}", instance=~"{"|".join(master_nodes)}", mode!="idle"'
+    labels = f'openshift_cluster_name="{cluster}", instance=~"{"|".join(master_nodes)}"'
     query = f'avg(node_memory_MemTotal_bytes{{{labels}}}) by (instance) - avg(node_memory_MemAvailable_bytes{{{labels}}}) by (instance) '
     print(query)
     metric_data = prom_client.custom_query_range(query=query, start_time=start, end_time=end, step=5)
