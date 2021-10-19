@@ -23,8 +23,8 @@ spec:
       releaseName: airflow
       values: |-
         defaultAirflowRepository: quay.io/cloud-bulldozer/airflow
-        defaultAirflowTag: 2.1.3
-        airflowVersion: 2.1.3
+        defaultAirflowTag: 2.2.0
+        airflowVersion: 2.2.0
         executor: KubernetesExecutor
         images:
           airflow:
