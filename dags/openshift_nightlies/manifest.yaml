@@ -1,6 +1,4 @@
 versionAliases:
-  - version: 4.7
-    alias: previous
   - version: 4.8
     alias: stable
   - version: 4.9
@@ -65,11 +63,6 @@ platforms:
         profiles:
         - default    
   baremetal:
-    - version: 4.7
-      releaseStream: latest-4.7
-      build: dev
-      profiles:
-      - jetski  
     - version: 4.8
       releaseStream: latest-4.8
       build: dev
@@ -81,10 +74,6 @@ platforms:
       profiles:
       - jetski      
   openstack:
-    - version: 4.7
-      releaseStream: 4.7.0-0.nightly
-      profiles:
-      - default
     - version: 4.8
       releaseStream: 4.8.0-0.nightly
       profiles:
@@ -98,10 +87,6 @@ platforms:
       profiles:
       - default
   rosa:
-    - version: 4.7
-      releaseStream: 4.7.0-0.nightly
-      profiles:
-      - default
     - version: 4.8
       releaseStream: 4.8.0-0.nightly
       profiles:
