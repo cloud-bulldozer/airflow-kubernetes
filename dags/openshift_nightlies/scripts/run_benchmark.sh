@@ -79,7 +79,7 @@ else
     eval "$command"
     benchmark_rv=$?
 
-    if [[ ${MUST_GATHER_EACH_TASK} == "true" ]] ; then
+    if [[ ${MUST_GATHER_EACH_TASK} == "true" && ${benchmark_rv} -eq 1 ]] ; then
         echo -e "must gather collection enabled for this task"
         cd ../../utils/scale-ci-diagnosis
         export OUTPUT_DIR=$PWD
@@ -88,7 +88,7 @@ else
         export OPENSHIFT_MUST_GATHER=true
         export STORAGE_MODE=snappy
         export WORKLOAD=$AIRFLOW_CTX_TASK_ID-must-gather
-        ./ocp_diagnosis.sh > /dev/null 2>&1
+        ./ocp_diagnosis.sh > /dev/null
     fi
     echo $UUID
     exit $benchmark_rv
