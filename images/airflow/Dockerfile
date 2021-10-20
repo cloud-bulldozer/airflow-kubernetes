@@ -13,4 +13,4 @@ RUN apt install jq git build-essential uuid-runtime gettext-base xz-utils sshpas
 ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6
 
 USER airflow
-RUN pip install apache-airflow-providers-elasticsearch apache-airflow-providers-cncf-kubernetes --upgrade
+RUN pip install prometheus-api-client elasticsearch apache-airflow-providers-elasticsearch apache-airflow-providers-cncf-kubernetes --upgrade

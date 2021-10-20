@@ -6,6 +6,8 @@ global:
 
 airflow:
   values:
+    defaultAirflowTag: 2.2.0
+    airflowVersion: 2.2.0
     config:
       webserver:
         base_url: http://airflow.$_cluster_domain
