@@ -29,7 +29,7 @@ with open(f"{root_dag_dir}/reports/config.yaml") as config_file:
 default_args = {
     'owner': 'XYZ',
     'start_date': datetime(2020, 4, 1),
-    'schedule_interval': '@daily',
+    'schedule_interval': '@hourly',
 }
 dag = DAG('generate_reports', catchup=False, default_args=default_args)
 
