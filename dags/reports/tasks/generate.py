@@ -49,7 +49,7 @@ def get_task(dag, config):
         dag=dag,
         python_callable=build_reports,
         op_kwargs={
-            'timestamp': "now-30d/d",
+            'timestamp': "now-14d/d",
             'config': config,
             'es_url': es_url,
             'thanos_url': thanos_url,
