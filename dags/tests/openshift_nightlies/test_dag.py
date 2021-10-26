@@ -58,7 +58,7 @@ class TestDags():
             # For every DAG object, test for cycles
             for dag in dag_objects:
                 dag.tree_view()
-                dag_cycle_tester.test_cycle(dag)
+                dag_cycle_tester.check_cycle(dag)
     
 def _import_file(module_name, module_path):
     import importlib.util
