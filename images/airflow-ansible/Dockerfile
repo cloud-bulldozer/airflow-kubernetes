@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=quay.io/cloud-bulldozer/airflow:2.1.3
+ARG BASE_IMAGE=quay.io/cloud-bulldozer/airflow:2.2.0
 FROM ${BASE_IMAGE}
 USER root
 RUN apt install bc

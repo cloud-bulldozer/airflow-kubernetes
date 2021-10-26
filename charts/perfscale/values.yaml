@@ -15,8 +15,8 @@ airflow:
   values: 
     executor: KubernetesExecutor
     defaultAirflowRepository: quay.io/cloud-bulldozer/airflow
-    defaultAirflowTag: 2.1.3
-    airflowVersion: 2.1.3
+    defaultAirflowTag: 2.2.0
+    airflowVersion: 2.2.0
     config:
       logging:
         colored_console_log: "False"

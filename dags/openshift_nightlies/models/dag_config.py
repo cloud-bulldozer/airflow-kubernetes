@@ -18,6 +18,6 @@ class DagConfig:
         })
     executor_image: Optional[dict] = field(default_factory=lambda: {
             "repository": "quay.io/cloud-bulldozer",
-            "tag": "2.1.3"
+            "tag": "2.2.0"
         })
     dependencies: Optional[dict] = field(default_factory=lambda: {})

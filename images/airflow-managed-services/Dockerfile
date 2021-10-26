@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=quay.io/cloud-bulldozer/airflow:2.1.3
+ARG BASE_IMAGE=quay.io/cloud-bulldozer/airflow:2.2.0
 FROM golang:latest AS build
 
 RUN git clone https://github.com/openshift/osde2e.git /osde2e
