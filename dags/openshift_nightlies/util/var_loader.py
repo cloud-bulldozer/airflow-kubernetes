@@ -56,7 +56,7 @@ def get_default_task_vars(release: OpenshiftRelease, task="install", task_dir=f"
         file_path = f"{task_dir}/{task}/defaults.json"
     return get_json(file_path)
 
-def get_main_profile_task_vars(release: OpenshiftRelease, task, task_dir=f"{constants.root_dag_dir}/tasks"):
+def get_main_profile_task_vars(release: OpenshiftRelease, task="install", task_dir=f"{constants.root_dag_dir}/tasks"):
     if release.profile == "data-plane":
         file_path = f"{task_dir}/{task}/data-plane.json"
     else:
