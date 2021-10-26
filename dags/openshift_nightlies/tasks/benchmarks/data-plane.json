@@ -1,0 +1,68 @@
+{
+    "benchmarks": [
+        {
+            "name": "host_network",
+            "workload": "network-perf",
+            "command": "./run_hostnetwork_network_test_fromgit.sh test_cloud",
+            "env": {
+                "COMPARE": "true",
+                "GOLD_SDN": "openshiftsdn",
+                "COMPARE_WITH_GOLD": "true",
+                "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
+                "GSHEET_KEY_LOCATION": "/tmp/key.json",
+                "ENABLE_SNAPPY_BACKUP": "true"
+            }
+        },
+        {
+            "name": "pod_network",
+            "workload": "network-perf",
+            "command": "./run_pod_network_test_fromgit.sh test_cloud",
+            "env": {
+                "COMPARE": "true",
+                "GOLD_SDN": "openshiftsdn",
+                "COMPARE_WITH_GOLD": "true",
+                "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
+                "GSHEET_KEY_LOCATION": "/tmp/key.json",
+                "ENABLE_SNAPPY_BACKUP": "true"
+            }
+        },
+        {
+            "name": "serviceip_network",
+            "workload": "network-perf",
+            "command": "./run_serviceip_network_test_fromgit.sh test_cloud",
+            "env": {
+                "COMPARE": "true",
+                "GOLD_SDN": "openshiftsdn",
+                "COMPARE_WITH_GOLD": "true",
+                "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
+                "GSHEET_KEY_LOCATION": "/tmp/key.json",
+                "ENABLE_SNAPPY_BACKUP": "true"
+            }
+        },
+        {
+            "name": "scale_25",
+            "workload": "scale-perf",
+            "command": "./run_scale_fromgit.sh",
+            "env": {
+                "SCALE": "25",
+                "METADATA_COLLECTION": "true",
+                "WORKLOAD_NODE_ROLE": "workload"
+            }
+        },
+        {
+            "name": "router",
+            "workload": "router-perf-v2",
+            "command": "./ingress-performance.sh",
+            "env": {
+                "THROUGHPUT_TOLERANCE": "10",
+                "LATENCY_TOLERANCE": "10",
+                "LARGE_SCALE_THRESHOLD": "19",
+                "ENGINE": "local",
+                "LARGE_SCALE_ROUTES": "500",
+                "COMPARE": "false",
+                "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
+                "GSHEET_KEY_LOCATION": "/tmp/key.json"
+            }
+        }
+    ]
+}

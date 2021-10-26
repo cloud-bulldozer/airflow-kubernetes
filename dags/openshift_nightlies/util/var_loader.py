@@ -33,9 +33,13 @@ def get_overrides():
 ### Task Variable Generator
 ### Grabs variables from appropriately placed JSON Files
 def build_task_vars(release: OpenshiftRelease, task="install", release_dir=f"{constants.root_dag_dir}/releases", task_dir=f"{constants.root_dag_dir}/tasks"):
-    default_task_vars = get_default_task_vars(release=release, task=task, task_dir=task_dir)
-    profile_vars = get_profile_task_vars(release=release, task=task, release_dir=release_dir)
-    return { **default_task_vars, **profile_vars }
+    if release.profile == "data-plane" or release.profile == "control-plane":
+        profile_vars = get_main_profile_task_vars(release=release, task=task, task_dir=task_dir)
+        return { **profile_vars }
+    else:
+        default_task_vars = get_default_task_vars(release=release, task=task, task_dir=task_dir)
+        profile_vars = get_profile_task_vars(release=release, task=task, release_dir=release_dir)
+        return { **default_task_vars, **profile_vars }
 
 ### Json File Loads
 def get_profile_task_vars(release: OpenshiftRelease, task="install", release_dir=f"{constants.root_dag_dir}/releases"):
@@ -52,6 +56,12 @@ def get_default_task_vars(release: OpenshiftRelease, task="install", task_dir=f"
         file_path = f"{task_dir}/{task}/defaults.json"
     return get_json(file_path)
 
+def get_main_profile_task_vars(release: OpenshiftRelease, task, task_dir=f"{constants.root_dag_dir}/tasks"):
+    if release.profile == "data-plane":
+        file_path = f"{task_dir}/{task}/data-plane.json"
+    else:
+        file_path = f"{task_dir}/{task}/control-plane.json"
+    return get_json(file_path)
 
 def get_json(file_path):
     try: 

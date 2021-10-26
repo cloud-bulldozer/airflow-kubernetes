@@ -58,6 +58,8 @@ platforms:
         profiles:
         - default
         - ovn
+        - control-plane
+        - data-plane 
       - name: azure
         profiles:
         - default
