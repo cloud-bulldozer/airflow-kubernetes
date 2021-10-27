@@ -7,7 +7,6 @@ from openshift_nightlies.tasks.install.openshift import AbstractOpenshiftInstall
 from openshift_nightlies.models.dag_config import DagConfig
 from openshift_nightlies.models.release import OpenshiftRelease
 
-from hashlib import md5
 import requests
 
 from airflow.operators.bash import BashOperator
@@ -22,11 +21,6 @@ class RosaInstaller(AbstractOpenshiftInstaller):
     def __init__(self, dag, config: DagConfig, release: OpenshiftRelease):
         super().__init__(dag, config, release)
         self.exec_config = executor.get_default_executor_config(self.dag_config, executor_image="airflow-managed-services")
-
-    def _generate_cluster_name(self):
-        cluster_name = super()._generate_cluster_name()
-        cluster_version = str(self.release.version).replace(".","")
-        return "airflow-"+cluster_version+"-"+md5(cluster_name.encode("ascii")).hexdigest()[:4]
 
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", trigger_rule="all_success"):

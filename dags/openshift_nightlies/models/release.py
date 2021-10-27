@@ -1,6 +1,8 @@
 import requests
 from dataclasses import dataclass
 from typing import Optional
+from os import environ
+from hashlib import md5
 
 @dataclass
 class OpenshiftRelease:
@@ -23,6 +25,26 @@ class OpenshiftRelease:
             "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}.tar.gz",
             "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}.tar.gz"
         }
+
+    # Used to get the git user for the repo the dags live in.
+    def _get_git_user(self):
+        git_repo = environ['GIT_REPO']
+        git_path = git_repo.split("https://github.com/")[1]
+        git_user = git_path.split('/')[0]
+        return git_user.lower()
+
+    def _generate_cluster_name(self):
+        git_user = self._get_git_user()
+        release_name = self.get_release_name(delimiter="-")
+        if git_user == 'cloud-bulldozer':
+            cluster_name = f"ci-{release_name}"
+        else:
+            cluster_name = f"{git_user}-{release_name}"
+        if self.platform == 'rosa':
+            cluster_version = str(self.version).replace(".","")
+            return "airflow-"+cluster_version+"-"+md5(cluster_name.encode("ascii")).hexdigest()[:4]
+        else:
+            return cluster_name
     
 
 @dataclass
