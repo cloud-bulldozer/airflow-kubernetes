@@ -32,8 +32,8 @@ def get_overrides():
 
 ### Task Variable Generator
 ### Grabs variables from appropriately placed JSON Files
-def build_task_vars(release: OpenshiftRelease, task="install", release_dir=f"{constants.root_dag_dir}/releases", task_dir=f"{constants.root_dag_dir}/tasks"):
-    default_task_vars = get_default_task_vars(release=release, task=task, task_dir=task_dir)
+def build_task_vars(release: OpenshiftRelease, task="install",config_file="defaults", release_dir=f"{constants.root_dag_dir}/releases", task_dir=f"{constants.root_dag_dir}/tasks"):
+    default_task_vars = get_default_task_vars(release=release, task=task, task_dir=task_dir,config_file=config_file)
     profile_vars = get_profile_task_vars(release=release, task=task, release_dir=release_dir)
     return { **default_task_vars, **profile_vars }
 
@@ -42,21 +42,14 @@ def get_profile_task_vars(release: OpenshiftRelease, task="install", release_dir
     file_path = f"{release_dir}/{release.version}/{release.platform}/{release.profile}/{task}.json"
     return get_json(file_path)
 
-def get_default_task_vars(release: OpenshiftRelease, task="install", task_dir=f"{constants.root_dag_dir}/tasks"):
+def get_default_task_vars(release: OpenshiftRelease, task="install", task_dir=f"{constants.root_dag_dir}/tasks", config_file):
     if task == "install":
         if release.platform == "aws" or release.platform == "azure" or release.platform == "gcp":
             file_path = f"{task_dir}/{task}/cloud/defaults.json"
         else:
             file_path = f"{task_dir}/{task}/{release.platform}/defaults.json"
     else:
-        file_path = f"{task_dir}/{task}/defaults.json"
-    return get_json(file_path)
-
-def get_main_profile_task_vars(release: OpenshiftRelease, task="install", task_dir=f"{constants.root_dag_dir}/tasks"):
-    if release.profile == "data-plane":
-        file_path = f"{task_dir}/{task}/data-plane.json"
-    else:
-        file_path = f"{task_dir}/{task}/control-plane.json"
+        file_path = f"{task_dir}/{task}/{config_file}.json"
     return get_json(file_path)
 
 def get_json(file_path):

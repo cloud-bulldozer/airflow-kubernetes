@@ -30,9 +30,23 @@ class E2EBenchmarks():
 
         # Specific Task Configuration
 
-        
-        self.vars = var_loader.build_task_vars(
-            release=self.release, task=self.task_group)
+        if ("common" in self.release.profile):
+            if("control-plane" in self.release.platform):            
+                self.vars = var_loader.build_task_vars(
+                release=self.release, task=self.task_group, config_file="common-control-plane")
+            else:
+                self.vars = var_loader.build_task_vars(
+                release=self.release, task=self.task_group, config_file="common-data-plane")
+
+        elif("medium" in self.release.profile):
+            self.vars = var_loader.build_task_vars(
+            release=self.release, task=self.task_group, config_file="medium-control-plane")
+        elif("large" in self.release.profile):
+            self.vars = var_loader.build_task_vars(
+            release=self.release, task=self.task_group, config_file="large-control-plane")
+        else:
+            self.vars = var_loader.build_task_vars(release=self.release, task=self.task_group)
+
         self.git_name=self._git_name()
         self.env = {
             "SNAPPY_DATA_SERVER_URL": self.snappy_creds['server'],
