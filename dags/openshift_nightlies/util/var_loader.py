@@ -33,13 +33,9 @@ def get_overrides():
 ### Task Variable Generator
 ### Grabs variables from appropriately placed JSON Files
 def build_task_vars(release: OpenshiftRelease, task="install", release_dir=f"{constants.root_dag_dir}/releases", task_dir=f"{constants.root_dag_dir}/tasks"):
-    if task == "benchmarks" and (release.profile == "data-plane" or release.profile == "control-plane"):
-        profile_vars = get_main_profile_task_vars(release=release, task=task, task_dir=task_dir)
-        return { **profile_vars }
-    else:
-        default_task_vars = get_default_task_vars(release=release, task=task, task_dir=task_dir)
-        profile_vars = get_profile_task_vars(release=release, task=task, release_dir=release_dir)
-        return { **default_task_vars, **profile_vars }
+    default_task_vars = get_default_task_vars(release=release, task=task, task_dir=task_dir)
+    profile_vars = get_profile_task_vars(release=release, task=task, release_dir=release_dir)
+    return { **default_task_vars, **profile_vars }
 
 ### Json File Loads
 def get_profile_task_vars(release: OpenshiftRelease, task="install", release_dir=f"{constants.root_dag_dir}/releases"):

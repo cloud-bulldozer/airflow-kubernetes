@@ -29,6 +29,8 @@ class E2EBenchmarks():
         self.es_server_baseline = var_loader.get_secret("es_server_baseline")
 
         # Specific Task Configuration
+
+        
         self.vars = var_loader.build_task_vars(
             release=self.release, task=self.task_group)
         self.git_name=self._git_name()

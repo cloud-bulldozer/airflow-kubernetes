@@ -40,16 +40,6 @@
             }
         },
         {
-            "name": "scale_25",
-            "workload": "scale-perf",
-            "command": "./run_scale_fromgit.sh",
-            "env": {
-                "SCALE": "25",
-                "METADATA_COLLECTION": "true",
-                "WORKLOAD_NODE_ROLE": "workload"
-            }
-        },
-        {
             "name": "router",
             "workload": "router-perf-v2",
             "command": "./ingress-performance.sh",
