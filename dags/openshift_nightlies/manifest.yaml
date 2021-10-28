@@ -16,11 +16,11 @@ dagConfig:
     sdn-common-control-plane: "0 12 * * 1,3,5"
     sdn-common-data-plane: "0 12 * * 1"
     sdn-medium: "0 12 * * 1"
-    sdn-large: "0 12 12 10 * ?"
+    sdn-large: "0 12 15 * *"
     ovn-common-control-plane: "0 12 * * 1,3,5"
     ovn-common-data-plane: "0 12 * * 1"
     ovn-medium: "0 12 * * 1"
-    ovn-large: "0 12 12 10 * ?"
+    ovn-large: "0 12 15 * *"
   cleanupOnSuccess: true
   executorImages:
     repository: quay.io/cloud-bulldozer
