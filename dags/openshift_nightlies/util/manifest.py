@@ -21,10 +21,11 @@ class Manifest():
             version_number = version['version']
             release_stream = version['releaseStream']
             version_alias = self.get_version_alias(version_number)
-            schedule = self._get_schedule_for_platform('cloud')
+            
             for cloud_provider in version['providers']:
                 platform_name = cloud_provider['name']
                 for profile in cloud_provider['profiles']:
+                    schedule = self._get_schedule_for_platform(str(profile))
                     release = OpenshiftRelease(
                         platform=platform_name,
                         version=version_number,
