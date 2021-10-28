@@ -42,7 +42,7 @@ def get_profile_task_vars(release: OpenshiftRelease, task="install", release_dir
     file_path = f"{release_dir}/{release.version}/{release.platform}/{release.profile}/{task}.json"
     return get_json(file_path)
 
-def get_default_task_vars(release: OpenshiftRelease, task="install", task_dir=f"{constants.root_dag_dir}/tasks", config_file):
+def get_default_task_vars(release: OpenshiftRelease, task="install", task_dir=f"{constants.root_dag_dir}/tasks", config_file="defaults"):
     if task == "install":
         if release.platform == "aws" or release.platform == "azure" or release.platform == "gcp":
             file_path = f"{task_dir}/{task}/cloud/defaults.json"
