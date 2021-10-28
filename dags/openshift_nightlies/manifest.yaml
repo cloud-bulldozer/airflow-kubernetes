@@ -64,7 +64,6 @@ platforms:
       providers:
       - name: aws
         profiles:
-        - default
         - sdn-common-control-plane
         - sdn-common-data-plane
         - sdn-medium
@@ -75,7 +74,6 @@ platforms:
         - ovn-large 
       - name: azure
         profiles:
-        - default
         - sdn-common-control-plane
         - sdn-common-data-plane
         - ovn-common-control-plane

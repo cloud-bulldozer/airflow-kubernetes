@@ -1,6 +1,6 @@
 {
     "openshift_master_count": 3,
-    "openshift_worker_count": 3,
+    "openshift_worker_count": 20,
     "openshift_base_domain": "ats.azure.devcluster.openshift.com",
     "openshift_host_prefix": "23",
     "openshift_network_type": "OpenShiftSDN",
