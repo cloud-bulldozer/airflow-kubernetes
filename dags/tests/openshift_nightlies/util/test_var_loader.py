@@ -51,7 +51,7 @@ class TestVarLoader():
         } 
 
     def test_build_task_vars(self, valid_openshift_release, test_releases_dir, test_tasks_dir):
-        assert var_loader.build_task_vars(valid_openshift_release, task="test","defaults", release_dir=str(test_releases_dir), task_dir=str(test_tasks_dir)) == {
+        assert var_loader.build_task_vars(valid_openshift_release, task="test", config_file="defaults", release_dir=str(test_releases_dir), task_dir=str(test_tasks_dir)) == {
             "task": "test", 
             "default": "override",
             "new_field": "merge",
