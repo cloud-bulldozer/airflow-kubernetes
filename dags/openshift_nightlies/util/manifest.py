@@ -95,8 +95,8 @@ class Manifest():
             version_number = version['version']
             release_stream = version['releaseStream']
             version_alias = self.get_version_alias(version_number)
-            schedule = self._get_schedule_for_platform('rosa')
             for profile in version['profiles']:
+                schedule = self._get_schedule_for_platform(str(profile))
                 release = OpenshiftRelease(
                     platform="rosa",
                     version=version_number,
