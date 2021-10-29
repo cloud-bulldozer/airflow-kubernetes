@@ -64,6 +64,7 @@ platforms:
       providers:
       - name: aws
         profiles:
+        - default
         - sdn-common-control-plane
         - sdn-common-data-plane
         - sdn-medium
@@ -74,6 +75,7 @@ platforms:
         - ovn-large 
       - name: azure
         profiles:
+        - default
         - sdn-common-control-plane
         - sdn-common-data-plane
         - ovn-common-control-plane
@@ -128,6 +130,7 @@ platforms:
     - version: 4.9
       releaseStream: 4.9.0-0.nightly
       profiles:
-      - default
-      - osde2e
-      - ovn
+      - sdn-common-control-plane
+      - sdn-common-data-plane
+      - ovn-common-control-plane
+      - ovn-common-data-plane
