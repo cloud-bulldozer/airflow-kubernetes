@@ -3,7 +3,7 @@
     "aws_access_key_id": "",
     "aws_secret_access_key": "",
     "rosa_environment": "staging",
-    "rosa_installation_method": "osde2e",
+    "rosa_installation_method": "rosa",
     "ocm_environment": "stage",
     "openshift_worker_count": 3,
     "openshift_network_type": "OpenShiftSDN",
