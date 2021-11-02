@@ -38,6 +38,7 @@ class AbstractOpenshiftInstaller(ABC):
         self.ocp_pull_secret = var_loader.get_secret("osp_ocp_pull_creds")
         self.openstack_creds = var_loader.get_secret("openstack_creds", deserialize_json=True)
         self.rosa_creds = var_loader.get_secret("rosa_creds", deserialize_json=True)
+        self.rhacs_creds = var_loader.get_secret("rhacs_creds", deserialize_json=True)
         self.release_stream_base_url = var_loader.get_secret("release_stream_base_url")
         self.exec_config = executor.get_default_executor_config(self.dag_config)
 
@@ -51,6 +52,7 @@ class AbstractOpenshiftInstaller(ABC):
             **self.azure_creds,
             **self.openstack_creds,
             **self.rosa_creds,
+            **self.rhacs_creds,
             **self.release.get_latest_release(self.release_stream_base_url),
             **{ "es_server": var_loader.get_secret('elasticsearch'),
                 "thanos_receiver_url": var_loader.get_secret('thanos_receiver_url'),
