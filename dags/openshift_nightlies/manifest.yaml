@@ -13,12 +13,12 @@ dagConfig:
     enabled: true
     default: "0 12 * * 1,3,5"
     openstack: "0 12 * * 1-6"
-    sdn-common-control-plane: "0 12 * * 1,3,5"
-    sdn-common-data-plane: "0 12 * * 1"
+    sdn-common-cp: "0 12 * * 1,3,5"
+    sdn-common-dp: "0 12 * * 1"
     sdn-medium: "0 12 * * 1"
     sdn-large: "0 12 15 * *"
-    ovn-common-control-plane: "0 12 * * 1,3,5"
-    ovn-common-data-plane: "0 12 * * 1"
+    ovn-common-cp: "0 12 * * 1,3,5"
+    ovn-common-dp: "0 12 * * 1"
     ovn-medium: "0 12 * * 1"
     ovn-large: "0 12 15 * *"
   cleanupOnSuccess: true
@@ -64,22 +64,20 @@ platforms:
       providers:
       - name: aws
         profiles:
-        - default
-        - sdn-common-control-plane
-        - sdn-common-data-plane
+        - sdn-common-cp
+        - sdn-common-dp
         - sdn-medium
         - sdn-large
-        - ovn-common-control-plane
-        - ovn-common-data-plane
+        - ovn-common-cp
+        - ovn-common-dp
         - ovn-medium
         - ovn-large 
       - name: azure
         profiles:
-        - default
-        - sdn-common-control-plane
-        - sdn-common-data-plane
-        - ovn-common-control-plane
-        - ovn-common-data-plane
+        - sdn-common-cp
+        - sdn-common-dp
+        - ovn-common-cp
+        - ovn-common-dp
       - name: gcp
         profiles:
         - default    
@@ -130,7 +128,7 @@ platforms:
     - version: 4.9
       releaseStream: 4.9.0-0.nightly
       profiles:
-      - sdn-common-control-plane
-      - sdn-common-data-plane
-      - ovn-common-control-plane
-      - ovn-common-data-plane
+      - sdn-common-cp
+      - sdn-common-dp
+      - ovn-common-cp
+      - ovn-common-dp
