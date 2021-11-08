@@ -21,6 +21,7 @@ class AbstractOpenshiftInstaller(ABC):
         self.release = release
         self.dag_config = config
         self.release_name = release.get_release_name(delimiter="-")
+        self.cluster_name = release._generate_cluster_name()
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
@@ -76,7 +77,7 @@ class AbstractOpenshiftInstaller(ABC):
     def _setup_task(self, operation="install"):
         self.config = {**self.config,
                        ** self._get_playbook_operations(operation)}
-        self.config['openshift_cluster_name'] = self._generate_cluster_name()
+        self.config['openshift_cluster_name'] = self.cluster_name
         self.config['dynamic_deploy_path'] = f"{self.config['openshift_cluster_name']}"
         self.config['kubeconfig_path'] = f"/root/{self.config['dynamic_deploy_path']}/auth/kubeconfig"
         self.env = {
@@ -95,13 +96,6 @@ class AbstractOpenshiftInstaller(ABC):
         # Dump all vars to json file for Ansible to pick up
         with open(f"/tmp/{self.release_name}-{operation}-task.json", 'w') as json_file:
             json.dump(self.config, json_file, sort_keys=True, indent=4)
-
-    def _generate_cluster_name(self):
-        git_user = var_loader.get_git_user()
-        if git_user == 'cloud-bulldozer':
-            return f"ci-{self.release_name}"
-        else: 
-            return f"{git_user}-{self.release_name}"
 
     def _get_playbook_operations(self, operation):
         if operation == "install":
