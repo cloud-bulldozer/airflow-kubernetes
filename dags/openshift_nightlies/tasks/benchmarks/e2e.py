@@ -30,8 +30,8 @@ class E2EBenchmarks():
 
         # Specific Task Configuration
 
-        if ("-cp" in self.release.profile):
-            if("control" in self.release.profile):            
+        if ("common" in self.release.profile):
+            if("-cp" in self.release.profile):            
                 self.vars = var_loader.build_task_vars(
                 release=self.release, task=self.task_group, config_file="common-control-plane")
             else:
