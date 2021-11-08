@@ -28,6 +28,9 @@ spec:
         images:
           airflow:
             pullPolicy: Always
+        postgresql:
+          persistence:
+            enabled: false
         config:
           logging:
             colored_console_log: "False"
