@@ -33,7 +33,7 @@ dagConfig:
 
 platforms:
   cloud:
-    versions: [4.9, 4.10]
+    versions: [4.9, "4.10"]
     variants: 
     - name: aws-sdn-control-plane
       provider: aws
@@ -76,7 +76,7 @@ platforms:
         benchmarks: baremetal-benchmarks
 
   openstack:
-    versions: [4.9, 4.10]
+    versions: [4.9, "4.10"]
     variants:
       - name: sdn
         config:
@@ -84,7 +84,7 @@ platforms:
           benchmarks: openstack-benchmarks.json
 
   rosa:
-    versions: [4.9, 4.10]
+    versions: [4.9, "4.10"]
     variants:
       - name: sdn
         config:
