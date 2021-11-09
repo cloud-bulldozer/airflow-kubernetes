@@ -11,7 +11,7 @@ global:
 airflow:
   syncWave: 0
   hostName: airflow
-  chartVersion: 1.1.0
+  chartVersion: "x.x.x"
   values: 
     executor: KubernetesExecutor
     defaultAirflowRepository: quay.io/cloud-bulldozer/airflow
