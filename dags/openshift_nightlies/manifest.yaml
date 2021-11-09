@@ -58,6 +58,7 @@ platforms:
         profiles:
         - default
         - ovn
+        - acs
       - name: azure
         profiles:
         - default
