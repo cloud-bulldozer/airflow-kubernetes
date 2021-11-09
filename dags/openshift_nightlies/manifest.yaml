@@ -23,6 +23,20 @@ dagConfig:
       branch: master
 
 
+
+platforms:
+  cloud:
+  - version: 4.8
+    releaseStream: 4.8.0-0.nightly
+    variants: 
+    - name: aws-sdn
+      provider: aws
+      schedule: "0 12 * * 1,3,5"
+      config: 
+        install: aws/sdn.json
+        benchmarks: common.json
+
+
 platforms:
   cloud:
     - version: 4.8
