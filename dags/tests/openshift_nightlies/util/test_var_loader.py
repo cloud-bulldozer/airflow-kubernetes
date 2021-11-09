@@ -44,14 +44,14 @@ class TestVarLoader():
         }
 
     
-    def test_get_profile_task_vars(self, valid_openshift_release, test_releases_dir):
-        assert var_loader.get_profile_task_vars(valid_openshift_release, task="test", release_dir=str(test_releases_dir)) == { 
+    def test_get_config_vars(self, valid_openshift_release, test_config_dir):
+        assert var_loader.get_config_vars(valid_openshift_release, task="test", config_dir=str(test_config_dir)) == { 
             "default": "override",
             "new_field": "merge"
         } 
 
-    def test_build_task_vars(self, valid_openshift_release, test_releases_dir, test_tasks_dir):
-        assert var_loader.build_task_vars(valid_openshift_release, task="test", release_dir=str(test_releases_dir), task_dir=str(test_tasks_dir)) == {
+    def test_build_task_vars(self, valid_openshift_release, test_config_dir, test_tasks_dir):
+        assert var_loader.build_task_vars(valid_openshift_release, task="test", config_dir=str(test_config_dir), task_dir=str(test_tasks_dir)) == {
             "task": "test", 
             "default": "override",
             "new_field": "merge",

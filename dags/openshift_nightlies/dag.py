@@ -46,7 +46,7 @@ class AbstractOpenshiftNightlyDAG(ABC):
         tags = []
         tags.append(self.release.platform)
         tags.append(self.release.release_stream)
-        tags.append(self.release.profile)
+        tags.append(self.release.variant)
         tags.append(self.release.version_alias)
 
         self.dag = DAG(

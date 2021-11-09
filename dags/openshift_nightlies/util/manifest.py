@@ -29,7 +29,7 @@ class Manifest():
                     version=version_number,
                     release_stream=release_stream,
                     variant=variant['name'],
-                    config=variant['config']
+                    config=variant['config'],
                     version_alias=version_alias
                 )
                 schedule = variant.get('schedule', self._get_schedule_for_platform('cloud'))
@@ -54,7 +54,7 @@ class Manifest():
                     version=version_number,
                     release_stream=release_stream,
                     variant=variant['name'],
-                    config=variant['config']
+                    config=variant['config'],
                     version_alias=version_alias,
                     build=build
                 )
@@ -80,7 +80,7 @@ class Manifest():
                     version=version_number,
                     release_stream=release_stream,
                     variant=variant['name'],
-                    config=variant['config']
+                    config=variant['config'],
                     version_alias=version_alias
                 )
                 schedule = variant.get('schedule', self._get_schedule_for_platform('openstack'))
@@ -105,7 +105,7 @@ class Manifest():
                     version=version_number,
                     release_stream=release_stream,
                     variant=variant['name'],
-                    config=variant['config']
+                    config=variant['config'],
                     version_alias=version_alias
                 )
                 schedule = variant.get('schedule', self._get_schedule_for_platform('rosa'))
