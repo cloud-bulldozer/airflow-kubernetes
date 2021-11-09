@@ -1,12 +1,20 @@
-versionAliases:
+versions:
   - version: 4.7
     alias: previous
+    releaseStream: 4.7.0.0-nightly
+    baremetalReleaseStream: latest-4.7
   - version: 4.8
     alias: stable
+    releaseStream: 4.8.0-0.nightly
+    baremetalReleaseStream: latest-4.8
   - version: 4.9
     alias: next
+    releaseStream: 4.9.0-0.nightly
+    baremetalReleaseStream: latest-4.9
   - version: "4.10"
     alias: future
+    releaseStream: 4.10.0-0.nightly
+    baremetalReleaseStream: latest-4.10
 
 dagConfig:
   schedules:
@@ -25,41 +33,7 @@ dagConfig:
 
 platforms:
   cloud:
-  - version: 4.9
-    releaseStream: 4.9.0-0.nightly
-    variants: 
-    - name: aws-sdn-control-plane
-      provider: aws
-      config: 
-        install: aws/sdn.json
-        benchmarks: control-plane.json
-    - name: aws-ovn-control-plane
-      provider: aws
-      config: 
-        install: aws/ovn.json
-        benchmarks: control-plane.json
-    - name: aws-sdn-data-plane
-      provider: aws
-      config: 
-        install: aws/sdn.json
-        benchmarks: data-plane.json
-    - name: aws-ovn-data-plane
-      provider: aws
-      config: 
-        install: aws/ovn.json
-        benchmarks: data-plane.json
-    - name: azure-sdn-control-plane
-      provider: azure
-      config: 
-        install: azure/sdn.json
-        benchmarks: control-plane.json
-    - name: gcp-sdn-control-plane
-      provider: gcp
-      config: 
-        install: gcp/sdn.json
-        benchmarks: control-plane.json
-  - version: "4.10"
-    releaseStream: 4.10.0-0.nightly
+    versions: [4.9, 4.10]
     variants: 
     - name: aws-sdn-control-plane
       provider: aws
@@ -93,9 +67,8 @@ platforms:
         benchmarks: control-plane.json
 
   baremetal: 
-  - version: 4.9
-    releaseStream: latest-4.9
     build: dev
+    versions: [4.9]
     variants: 
     - name: jetski
       config: 
@@ -103,15 +76,7 @@ platforms:
         benchmarks: baremetal-benchmarks
 
   openstack:
-  - version: 4.9
-    releaseStream: 4.9.0-0.nightly
-    variants:
-      - name: sdn
-        config:
-          install: openstack/sdn.json
-          benchmarks: openstack-benchmarks.json
-  - version: "4.10"
-    releaseStream: 4.10.0-0.nightly
+    versions: [4.9, 4.10]
     variants:
       - name: sdn
         config:
@@ -119,16 +84,10 @@ platforms:
           benchmarks: openstack-benchmarks.json
 
   rosa:
-  - version: 4.9
-    releaseStream: 4.9.0-0.nightly
+    versions: [4.9, 4.10]
     variants:
       - name: sdn
         config:
           install: rosa/sdn.json
-  - version: "4.10"
-    releaseStream: 4.10.0-0.nightly
-    variants:
-      - name: sdn
-        config:
-          install: rosa/sdn.json
+
 

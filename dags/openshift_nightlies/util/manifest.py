@@ -12,111 +12,112 @@ class Manifest():
                 print(exc)
         self.releases = []
 
-    def get_version_alias(self, version):
-        aliases = self.yaml['versionAliases']
-        return [alias['alias'] for alias in aliases if alias['version'] == version][0]
-
     def get_cloud_releases(self):
-        for version in self.yaml['platforms'].get('cloud', []):
-            version_number = version['version']
-            release_stream = version['releaseStream']
-            version_alias = self.get_version_alias(version_number)
-            
-            for variant in version['variants']:
-                platform_name = variant['provider']
-                release = OpenshiftRelease(
-                    platform=platform_name,
-                    version=version_number,
-                    release_stream=release_stream,
-                    variant=variant['name'],
-                    config=variant['config'],
-                    version_alias=version_alias
-                )
-                schedule = variant.get('schedule', self._get_schedule_for_platform('cloud'))
-                dag_config = self._build_dag_config(schedule)
+        cloud = self.yaml['platforms']['cloud']
+        for version in self.yaml['versions']:
+            if version['version'] in cloud['versions']:
+                version_number = version['version']
+                release_stream = version['releaseStream']
+                version_alias = version['releaseStream']
+                for variant in cloud['variants']:
+                    platform_name = variant['provider']
+                    release = OpenshiftRelease(
+                        platform=platform_name,
+                        version=version_number,
+                        release_stream=release_stream,
+                        variant=variant['name'],
+                        config=variant['config'],
+                        version_alias=version_alias
+                    )
+                    schedule = variant.get('schedule', self._get_schedule_for_platform('cloud'))
+                    dag_config = self._build_dag_config(schedule)
 
-                self.releases.append(
-                    {
-                        "config": dag_config,
-                        "release": release
-                    }
-                )
+                    self.releases.append(
+                        {
+                            "config": dag_config,
+                            "release": release
+                        }
+                    )
 
     def get_baremetal_releases(self):
-        for version in self.yaml['platforms'].get('baremetal', []):
-            version_number = version['version']
-            release_stream = version['releaseStream']
-            build = version['build']
-            version_alias = self.get_version_alias(version_number)
-            for variant in version['variants']:
-                release = BaremetalRelease(
-                    platform="baremetal",
-                    version=version_number,
-                    release_stream=release_stream,
-                    variant=variant['name'],
-                    config=variant['config'],
-                    version_alias=version_alias,
-                    build=build
-                )
-                schedule = variant.get('schedule', self._get_schedule_for_platform('baremetal'))
-                dag_config = self._build_dag_config(schedule)
+        baremetal = self.yaml['platforms']['baremetal']
+        for version in self.yaml['versions']:
+            if version['version'] in baremetal['versions']:
+                version_number = version['version']
+                release_stream = version['baremetalReleaseStream']
+                version_alias = version['alias']
+                build = baremetal['build']
+                for variant in baremetal['variants']:
+                    release = BaremetalRelease(
+                        platform="baremetal",
+                        version=version_number,
+                        release_stream=release_stream,
+                        variant=variant['name'],
+                        config=variant['config'],
+                        version_alias=version_alias,
+                        build=build
+                    )
+                    schedule = variant.get('schedule', self._get_schedule_for_platform('baremetal'))
+                    dag_config = self._build_dag_config(schedule)
 
-                self.releases.append(
-                    {
-                        "config": dag_config,
-                        "release": release
-                    }
-                )
+                    self.releases.append(
+                        {
+                            "config": dag_config,
+                            "release": release
+                        }
+                    )
 
     def get_openstack_releases(self):
-        for version in self.yaml['platforms'].get('openstack', []):
-            version_number = version['version']
-            release_stream = version['releaseStream']
-            version_alias = self.get_version_alias(version_number)
-            schedule = self._get_schedule_for_platform('openstack')
-            for variant in version['variants']:
-                release = OpenshiftRelease(
-                    platform="openstack",
-                    version=version_number,
-                    release_stream=release_stream,
-                    variant=variant['name'],
-                    config=variant['config'],
-                    version_alias=version_alias
-                )
-                schedule = variant.get('schedule', self._get_schedule_for_platform('openstack'))
-                dag_config = self._build_dag_config(schedule)
+        openstack = self.yaml['platforms']['openstack']
+        for version in self.yaml['versions']:
+            if version['version'] in openstack['versions']:
+                version_number = version['version']
+                release_stream = version['releaseStream']
+                version_alias = version['alias']
+                for variant in openstack['variants']:
+                    release = OpenshiftRelease(
+                        platform="openstack",
+                        version=version_number,
+                        release_stream=release_stream,
+                        variant=variant['name'],
+                        config=variant['config'],
+                        version_alias=version_alias
+                    )
+                    schedule = variant.get('schedule', self._get_schedule_for_platform('openstack'))
+                    dag_config = self._build_dag_config(schedule)
 
-                self.releases.append(
-                    {
-                        "config": dag_config,
-                        "release": release
-                    }
-                )
+                    self.releases.append(
+                        {
+                            "config": dag_config,
+                            "release": release
+                        }
+                    )
 
     def get_rosa_releases(self):
-        for version in self.yaml['platforms'].get('rosa', []):
-            version_number = version['version']
-            release_stream = version['releaseStream']
-            version_alias = self.get_version_alias(version_number)
-            schedule = self._get_schedule_for_platform('rosa')
-            for variant in version['variants']:
-                release = OpenshiftRelease(
-                    platform="rosa",
-                    version=version_number,
-                    release_stream=release_stream,
-                    variant=variant['name'],
-                    config=variant['config'],
-                    version_alias=version_alias
-                )
-                schedule = variant.get('schedule', self._get_schedule_for_platform('rosa'))
-                dag_config = self._build_dag_config(schedule)
+        rosa = self.yaml['platforms']['rosa']
+        for version in self.yaml['versions']:
+            if version['version'] in rosa['versions']:
+                version_number = version['version']
+                release_stream = version['releaseStream']
+                version_alias = version['alias']
+                for variant in rosa['variants']:
+                    release = OpenshiftRelease(
+                        platform="rosa",
+                        version=version_number,
+                        release_stream=release_stream,
+                        variant=variant['name'],
+                        config=variant['config'],
+                        version_alias=version_alias
+                    )
+                    schedule = variant.get('schedule', self._get_schedule_for_platform('rosa'))
+                    dag_config = self._build_dag_config(schedule)
 
-                self.releases.append(
-                    {
-                        "config": dag_config,
-                        "release": release
-                    }
-                )
+                    self.releases.append(
+                        {
+                            "config": dag_config,
+                            "release": release
+                        }
+                    )
 
     def get_releases(self):
         self.get_cloud_releases()
