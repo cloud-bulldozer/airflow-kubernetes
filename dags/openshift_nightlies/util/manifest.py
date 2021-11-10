@@ -16,28 +16,30 @@ class Manifest():
         cloud = self.yaml['platforms']['cloud']
         for version in self.yaml['versions']:
             if version['version'] in cloud['versions']:
-                version_number = version['version']
-                release_stream = version['releaseStream']
-                version_alias = version['releaseStream']
-                for variant in cloud['variants']:
-                    platform_name = variant['provider']
-                    release = OpenshiftRelease(
-                        platform=platform_name,
-                        version=version_number,
-                        release_stream=release_stream,
-                        variant=variant['name'],
-                        config=variant['config'],
-                        version_alias=version_alias
-                    )
-                    schedule = variant.get('schedule', self._get_schedule_for_platform('cloud'))
-                    dag_config = self._build_dag_config(schedule)
+                for provider in cloud['providers']:
+                    version_number = version['version']
+                    release_stream = version['releaseStream']
+                    version_alias = version['releaseStream']
+                    for variant in cloud['variants']:
+                        platform_name = provider
+                        variant['config']['install'] = f"{provider}/{variant['config']['install']}"
+                        release = OpenshiftRelease(
+                            platform=platform_name,
+                            version=version_number,
+                            release_stream=release_stream,
+                            variant=variant['name'],
+                            config=variant['config'],
+                            version_alias=version_alias
+                        )
+                        schedule = variant.get('schedule', self._get_schedule_for_platform('cloud'))
+                        dag_config = self._build_dag_config(schedule)
 
-                    self.releases.append(
-                        {
-                            "config": dag_config,
-                            "release": release
-                        }
-                    )
+                        self.releases.append(
+                            {
+                                "config": dag_config,
+                                "release": release
+                            }
+                        )
 
     def get_baremetal_releases(self):
         baremetal = self.yaml['platforms']['baremetal']

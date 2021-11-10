@@ -1,20 +1,20 @@
 versions:
-  - version: 4.7
-    alias: previous
-    releaseStream: 4.7.0.0-nightly
-    baremetalReleaseStream: latest-4.7
-  - version: 4.8
-    alias: stable
-    releaseStream: 4.8.0-0.nightly
-    baremetalReleaseStream: latest-4.8
-  - version: 4.9
-    alias: next
-    releaseStream: 4.9.0-0.nightly
-    baremetalReleaseStream: latest-4.9
-  - version: "4.10"
-    alias: future
-    releaseStream: 4.10.0-0.nightly
-    baremetalReleaseStream: latest-4.10
+- version: 4.7
+  alias: previous
+  releaseStream: 4.7.0.0-nightly
+  baremetalReleaseStream: latest-4.7
+- version: 4.8
+  alias: stable
+  releaseStream: 4.8.0-0.nightly
+  baremetalReleaseStream: latest-4.8
+- version: 4.9
+  alias: next
+  releaseStream: 4.9.0-0.nightly
+  baremetalReleaseStream: latest-4.9
+- version: "4.10"
+  alias: future
+  releaseStream: 4.10.0-0.nightly
+  baremetalReleaseStream: latest-4.10
 
 dagConfig:
   schedules:
@@ -34,37 +34,24 @@ dagConfig:
 platforms:
   cloud:
     versions: [4.9, "4.10"]
+    providers: ["aws", "gcp", "azure"]
     variants: 
-    - name: aws-sdn-control-plane
-      provider: aws
+    - name: sdn-control-plane
       config: 
-        install: aws/sdn.json
+        install: sdn.json
         benchmarks: control-plane.json
-    - name: aws-ovn-control-plane
-      provider: aws
+    - name: ovn-control-plane
       config: 
-        install: aws/ovn.json
+        install: ovn.json
         benchmarks: control-plane.json
-    - name: aws-sdn-data-plane
-      provider: aws
+    - name: sdn-data-plane
       config: 
-        install: aws/sdn.json
+        install: sdn.json
         benchmarks: data-plane.json
-    - name: aws-ovn-data-plane
-      provider: aws
+    - name: ovn-data-plane
       config: 
-        install: aws/ovn.json
+        install: ovn.json
         benchmarks: data-plane.json
-    - name: azure-sdn-control-plane
-      provider: azure
-      config: 
-        install: azure/sdn.json
-        benchmarks: control-plane.json
-    - name: gcp-sdn-control-plane
-      provider: gcp
-      config: 
-        install: gcp/sdn.json
-        benchmarks: control-plane.json
 
   baremetal: 
     build: dev
@@ -81,7 +68,11 @@ platforms:
       - name: sdn
         config:
           install: openstack/sdn.json
-          benchmarks: openstack-benchmarks.json
+          benchmarks: openstack.json
+      - name: sdn
+        config:
+          install: openstack/kuryr.json
+          benchmarks: openstack.json
 
   rosa:
     versions: [4.9, "4.10"]
