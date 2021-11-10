@@ -97,7 +97,8 @@ platforms:
     - version: "4.10"
       releaseStream: 4.10.0-0.nightly
       profiles:
-      - default
+      - sdn
+      - kuryr
   rosa:
     - version: 4.7
       releaseStream: 4.7.0-0.nightly
