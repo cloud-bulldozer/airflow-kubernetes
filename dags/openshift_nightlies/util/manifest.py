@@ -137,7 +137,7 @@ class Manifest():
 
     def _get_schedule(self, variant, platform):
         schedules = self.yaml['dagConfig']['schedules']
-        if bool(schedules.get("enabled", False) and var_loader.get_git_user() != "cloud-bulldozer"):
+        if bool(schedules.get("enabled", False) and var_loader.get_git_user() == "cloud-bulldozer"):
             return variant.get('schedule', schedules.get(platform, schedules['default']))
         else:
             return None
