@@ -48,6 +48,10 @@ platforms:
       config: 
         install: sdn.json
         benchmarks: data-plane.json
+    - name: ovn-data-plane
+      config: 
+        install: ovn.json
+        benchmarks: data-plane.json
     - name: sdn-medium
       config: 
         install: sdn-medium.json
@@ -85,7 +89,7 @@ platforms:
         config:
           install: openstack/sdn.json
           benchmarks: openstack.json
-      - name: sdn
+      - name: kuryr
         config:
           install: openstack/kuryr.json
           benchmarks: openstack.json
@@ -93,8 +97,21 @@ platforms:
   rosa:
     versions: [4.9, "4.10"]
     variants:
-      - name: sdn
+      - name: sdn-control-plane
         config:
           install: rosa/sdn.json
+          benchmarks: control-plane.json
+      - name: sdn-data-plane
+        config:
+          install: rosa/sdn.json
+          benchmarks: data-plane.json
+      - name: ovn-control-plane
+        config:
+          install: rosa/ovn.json
+          benchmarks: control-plane.json
+      - name: ovn-data-plane
+        config:
+          install: rosa/ovn.json
+          benchmarks: data-plane.json
 
 
