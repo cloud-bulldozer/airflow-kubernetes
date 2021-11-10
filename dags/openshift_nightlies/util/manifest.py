@@ -31,7 +31,7 @@ class Manifest():
                             config=variant['config'],
                             version_alias=version_alias
                         )
-                        schedule = variant.get('schedule', self._get_schedule_for_platform('cloud'))
+                        schedule = self._get_schedule(variant, 'cloud')
                         dag_config = self._build_dag_config(schedule)
 
                         self.releases.append(
@@ -59,7 +59,7 @@ class Manifest():
                         version_alias=version_alias,
                         build=build
                     )
-                    schedule = variant.get('schedule', self._get_schedule_for_platform('baremetal'))
+                    schedule = self._get_schedule(variant, 'baremetal')
                     dag_config = self._build_dag_config(schedule)
 
                     self.releases.append(
@@ -85,7 +85,7 @@ class Manifest():
                         config=variant['config'],
                         version_alias=version_alias
                     )
-                    schedule = variant.get('schedule', self._get_schedule_for_platform('openstack'))
+                    schedule = self._get_schedule(variant, 'openstack')
                     dag_config = self._build_dag_config(schedule)
 
                     self.releases.append(
@@ -111,7 +111,7 @@ class Manifest():
                         config=variant['config'],
                         version_alias=version_alias
                     )
-                    schedule = variant.get('schedule', self._get_schedule_for_platform('rosa'))
+                    schedule = self._get_schedule(variant, 'rosa')
                     dag_config = self._build_dag_config(schedule)
 
                     self.releases.append(
@@ -135,10 +135,10 @@ class Manifest():
             dependencies[f"{dep_name}_branch".upper()] = dep_value['branch']
         return dependencies
 
-    def _get_schedule_for_platform(self, platform):
+    def _get_schedule(self, variant, platform):
         schedules = self.yaml['dagConfig']['schedules']
         if bool(schedules.get("enabled", False) and var_loader.get_git_user() != "cloud-bulldozer"):
-            return schedules.get(platform, schedules['default'])
+            return variant.get('schedule', schedules.get(platform, schedules['default']))
         else:
             return None
     
