@@ -48,10 +48,26 @@ platforms:
       config: 
         install: sdn.json
         benchmarks: data-plane.json
-    - name: ovn-data-plane
+    - name: sdn-medium
       config: 
-        install: ovn.json
-        benchmarks: data-plane.json
+        install: sdn-medium.json
+        benchmarks: medium-control-plane.json
+    - name: ovn-medium
+      config: 
+        install: ovn-medium.json
+        benchmarks: medium-control-plane.json
+    - name: sdn-large
+      config: 
+        install: sdn-large.json
+        benchmarks: large-control-plane.json
+    - name: ovn-large
+      config: 
+        install: ovn-large.json
+        benchmarks: large-control-plane.json
+    - name: acs
+      config: 
+        install: acs.json
+        benchmarks: acs.json
 
   baremetal: 
     build: dev
