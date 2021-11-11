@@ -5,7 +5,7 @@
     "rosa_environment": "staging",
     "rosa_installation_method": "osde2e",
     "ocm_environment": "stage",
-    "openshift_worker_count": 3,
+    "openshift_worker_count": 27,
     "openshift_network_type": "OVNKubernetes",
     "openshift_worker_instance_type": "m5.2xlarge",
     "machineset_metadata_label_prefix": "machine.openshift.io",
