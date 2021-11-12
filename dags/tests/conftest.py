@@ -11,7 +11,11 @@ def valid_openshift_release():
         platform="platform",
         version="version",
         release_stream="release_stream",
-        profile="profile",
+        variant="variant",
+        config={
+            "install": "install.json",
+            "test": "test.json"
+        },
         version_alias="alias"
     )
 
@@ -21,7 +25,11 @@ def valid_aws_release():
         platform="aws",
         version="version",
         release_stream="release_stream",
-        profile="profile",
+        variant="variant",
+        config={
+            "install": "install.json",
+            "test": "test.json"
+        },
         version_alias="alias"
     )
 
@@ -29,9 +37,9 @@ def valid_aws_release():
 
 
 @pytest.fixture(scope="session")
-def test_releases_dir(tmp_path_factory, valid_openshift_release):
-    releases_dir = tmp_path_factory.mktemp("releases", numbered=False)
-    _populate_releases_dir(releases_dir, valid_openshift_release, "test")
+def test_config_dir(tmp_path_factory, valid_openshift_release):
+    releases_dir = tmp_path_factory.mktemp("config", numbered=False)
+    _populate_config_dir(releases_dir, valid_openshift_release, "test")
     return releases_dir
 
 @pytest.fixture(scope="session")
@@ -68,31 +76,16 @@ def _populate_task_dir(base_task_dir, task, platform=None):
 
 
 
-def _populate_releases_dir(base_releases_dir, release: OpenshiftRelease, task):
-    version_dir = base_releases_dir / release.version
-    try:
-        version_dir.mkdir()
-    except FileExistsError:
-        pass
-
-    platform_dir = version_dir / release.platform
-
-    try:
-        platform_dir.mkdir()
-    except FileExistsError:
-        pass
-
-    profile_dir = platform_dir / release.profile
-
-    try:
-        profile_dir.mkdir()
-    except FileExistsError:
-        pass
-
+def _populate_config_dir(base_config_dir, release: OpenshiftRelease, task):
     overrides = {
         "default": "override", 
         "new_field": "merge"
     }
+    task_dir = base_config_dir / task
+    try:
+        task_dir.mkdir()
+    except FileExistsError:
+        pass
 
-    with open(f"{profile_dir}/{task}.json", 'w') as f:
+    with open(f"{base_config_dir}/{task}/{release.config[task]}", 'w') as f:
             json.dump(overrides, f)

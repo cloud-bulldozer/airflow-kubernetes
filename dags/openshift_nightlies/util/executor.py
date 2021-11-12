@@ -50,7 +50,7 @@ def get_kubeadmin_password(release: OpenshiftRelease):
         name="KUBEADMIN_PASSWORD",
         value_from=k8s.V1EnvVarSource(
             secret_key_ref= k8s.V1SecretKeySelector(
-                name=f"{release.version}-{release.platform}-{release.profile}-kubeadmin",
+                name=f"{release.get_release_name()}-kubeadmin",
                 key="KUBEADMIN_PASSWORD"
             )
         )
@@ -60,7 +60,7 @@ def get_kubeconfig_volume(release: OpenshiftRelease):
     return k8s.V1Volume(
         name="kubeconfig",
         secret=k8s.V1SecretVolumeSource(
-            secret_name=f"{release.version}-{release.platform}-{release.profile}-kubeconfig"
+            secret_name=f"{release.get_release_name()}-kubeconfig"
         )
     )
 

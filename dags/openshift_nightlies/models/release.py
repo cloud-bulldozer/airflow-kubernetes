@@ -10,12 +10,16 @@ class OpenshiftRelease:
     platform: str  # e.g. aws
     version: str # e.g. 4.7
     release_stream: str # The actual release stream to pull from (nightly/stable/ci)
-    profile: str # e.g. default/ovn
+    variant: str # e.g. default/ovn
+    config: dict # points to task configs
     version_alias: Optional[str] # e.g. stable/.next/.future
     
-    def get_release_name(self, delimiter="_") -> str:
-        return f"{self.version}{delimiter}{self.platform}{delimiter}{self.profile}"
-
+    def get_release_name(self, delimiter="-") -> str:
+        if self.platform in self.variant:  
+            return f"{self.version}{delimiter}{self.variant}"
+        else: 
+            return f"{self.version}{delimiter}{self.platform}{delimiter}{self.variant}"
+            
     def get_latest_release(self, base_url) -> dict: 
         url = f"{base_url}/{self.release_stream}/latest"
         payload = requests.get(url).json()

@@ -9,7 +9,7 @@ class TestOpenshiftRelease():
             my_release = OpenshiftRelease()
         
     def test_get_release_name(self, valid_openshift_release):
-        assert valid_openshift_release.get_release_name() == "version_platform_profile"
+        assert valid_openshift_release.get_release_name() == "version-platform-variant"
 
     
     def test_get_latest_release(self, valid_openshift_release):

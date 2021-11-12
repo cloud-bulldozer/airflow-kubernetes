@@ -32,15 +32,22 @@ def get_overrides():
 
 ### Task Variable Generator
 ### Grabs variables from appropriately placed JSON Files
-def build_task_vars(release: OpenshiftRelease, task="install", release_dir=f"{constants.root_dag_dir}/releases", task_dir=f"{constants.root_dag_dir}/tasks"):
+def build_task_vars(release: OpenshiftRelease, task="install", config_dir=f"{constants.root_dag_dir}/config", task_dir=f"{constants.root_dag_dir}/tasks"):
     default_task_vars = get_default_task_vars(release=release, task=task, task_dir=task_dir)
-    profile_vars = get_profile_task_vars(release=release, task=task, release_dir=release_dir)
-    return { **default_task_vars, **profile_vars }
+    config_vars = get_config_vars(release=release, task=task, config_dir=config_dir)
+    return { **default_task_vars, **config_vars }
 
-### Json File Loads
-def get_profile_task_vars(release: OpenshiftRelease, task="install", release_dir=f"{constants.root_dag_dir}/releases"):
-    file_path = f"{release_dir}/{release.version}/{release.platform}/{release.profile}/{task}.json"
-    return get_json(file_path)
+def get_config_vars(release: OpenshiftRelease, task="install", config_dir=f"{constants.root_dag_dir}/config"):
+    # baremetal has multiple benchmark groups so it needs to be handled separately
+    if release.platform == 'baremetal' and "bench" in task: 
+        file_path = f"{config_dir}/{release.config['benchmarks']}/{task}.json"
+        return get_json(file_path)
+
+    if task in release.config:
+        file_path = f"{config_dir}/{task}/{release.config[task]}"
+        return get_json(file_path)
+    else:
+        return {}
 
 def get_default_task_vars(release: OpenshiftRelease, task="install", task_dir=f"{constants.root_dag_dir}/tasks"):
     if task == "install":

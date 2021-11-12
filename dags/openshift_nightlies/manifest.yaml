@@ -1,12 +1,20 @@
-versionAliases:
-  - version: 4.7
-    alias: previous
-  - version: 4.8
-    alias: stable
-  - version: 4.9
-    alias: next
-  - version: "4.10"
-    alias: future
+versions:
+- version: 4.7
+  alias: previous
+  releaseStream: 4.7.0.0-nightly
+  baremetalReleaseStream: latest-4.7
+- version: 4.8
+  alias: stable
+  releaseStream: 4.8.0-0.nightly
+  baremetalReleaseStream: latest-4.8
+- version: 4.9
+  alias: next
+  releaseStream: 4.9.0-0.nightly
+  baremetalReleaseStream: latest-4.9
+- version: "4.10"
+  alias: future
+  releaseStream: 4.10.0-0.nightly
+  baremetalReleaseStream: latest-4.10
 
 dagConfig:
   schedules:
@@ -25,94 +33,97 @@ dagConfig:
 
 platforms:
   cloud:
-    - version: 4.8
-      releaseStream: 4.8.0-0.nightly
-      providers:
-      - name: aws
-        profiles:
-        - default
-        - ovn
-      - name: azure
-        profiles:
-        - default
-      - name: gcp
-        profiles:
-        - default
-    - version: 4.9
-      releaseStream: 4.9.0-0.nightly
-      providers:
-      - name: aws
-        profiles:
-        - default
-        - ovn
-      - name: azure
-        profiles:
-        - default
-      - name: gcp
-        profiles:
-        - default
-    - version: "4.10"
-      releaseStream: 4.10.0-0.nightly
-      providers:
-      - name: aws
-        profiles:
-        - default
-        - ovn
-        - acs
-      - name: azure
-        profiles:
-        - default
-      - name: gcp
-        profiles:
-        - default    
-  baremetal:
-    - version: 4.7
-      releaseStream: latest-4.7
-      build: dev
-      profiles:
-      - jetski  
-    - version: 4.8
-      releaseStream: latest-4.8
-      build: dev
-      profiles:
-      - jetski
-    - version: 4.9
-      releaseStream: latest-4.9
-      build: dev
-      profiles:
-      - jetski      
+    versions: [4.9, "4.10"]
+    providers: ["aws", "gcp", "azure"]
+    variants: 
+    - name: sdn-control-plane
+      schedule:  "0 12 * * 1,3,5"
+      config: 
+        install: sdn.json
+        benchmarks: control-plane.json
+    - name: ovn-control-plane
+      schedule:  "0 12 * * 1,3,5"
+      config: 
+        install: ovn.json
+        benchmarks: control-plane.json
+    - name: sdn-data-plane
+      schedule: "0 12 * * 1"
+      config: 
+        install: sdn.json
+        benchmarks: data-plane.json
+    - name: ovn-data-plane
+      schedule: "0 12 * * 1"
+      config: 
+        install: ovn.json
+        benchmarks: data-plane.json
+    - name: sdn-medium
+      schedule: "0 12 * * 1"
+      config: 
+        install: sdn-medium.json
+        benchmarks: medium-control-plane.json
+    - name: ovn-medium
+      schedule: "0 12 * * 1"
+      config: 
+        install: ovn-medium.json
+        benchmarks: medium-control-plane.json
+    - name: sdn-large
+      schedule: "0 12 15 * *"
+      config: 
+        install: sdn-large.json
+        benchmarks: large-control-plane.json
+    - name: ovn-large
+      schedule: "0 12 15 * *"
+      config: 
+        install: ovn-large.json
+        benchmarks: large-control-plane.json
+    - name: acs
+      config: 
+        install: acs.json
+        benchmarks: acs.json
+
+  baremetal: 
+    build: dev
+    versions: [4.9]
+    variants: 
+    - name: jetski
+      config: 
+        install: baremetal/jetski.json
+        benchmarks: baremetal-benchmarks
+
   openstack:
-    - version: 4.7
-      releaseStream: 4.7.0-0.nightly
-      profiles:
-      - default
-    - version: 4.8
-      releaseStream: 4.8.0-0.nightly
-      profiles:
-      - default
-    - version: 4.9
-      releaseStream: 4.9.0-0.nightly
-      profiles:
-      - default
-    - version: "4.10"
-      releaseStream: 4.10.0-0.nightly
-      profiles:
-      - sdn
-      - kuryr
+    versions: [4.9, "4.10"]
+    variants:
+      - name: sdn
+        config:
+          install: openstack/sdn.json
+          benchmarks: openstack.json
+      - name: kuryr
+        config:
+          install: openstack/kuryr.json
+          benchmarks: openstack.json
+
   rosa:
-    - version: 4.7
-      releaseStream: 4.7.0-0.nightly
-      profiles:
-      - default
-    - version: 4.8
-      releaseStream: 4.8.0-0.nightly
-      profiles:
-      - default
-      - osde2e
-      - ovn
-    - version: 4.9
-      releaseStream: 4.9.0-0.nightly
-      profiles:
-      - default
-      - osde2e
-      - ovn
+    versions: [4.9, "4.10"]
+    variants:
+      - name: sdn-control-plane
+        schedule:  "0 12 * * 1,3,5"
+        config:
+          install: rosa/sdn.json
+          benchmarks: control-plane.json
+      - name: sdn-data-plane
+        schedule: "0 12 * * 1"
+        config:
+          install: rosa/sdn.json
+          benchmarks: data-plane.json
+      - name: ovn-control-plane
+        schedule:  "0 12 * * 1,3,5"
+        config:
+          install: rosa/ovn.json
+          benchmarks: control-plane.json
+      - name: ovn-data-plane
+        schedule: "0 12 * * 1"
+        config:
+          install: rosa/ovn.json
+          benchmarks: data-plane.json
+
+
