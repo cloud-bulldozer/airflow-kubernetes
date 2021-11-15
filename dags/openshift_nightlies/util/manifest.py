@@ -22,18 +22,18 @@ class Manifest():
                     version_alias = version['releaseStream']
                     for variant in cloud['variants']:
                         platform_name = provider
-                        variant['config']['install'] = f"{provider}/{variant['config']['install']}"
+                        config = variant['config'].copy()
+                        config['install'] = f"{provider}/{variant['config']['install']}"
                         release = OpenshiftRelease(
                             platform=platform_name,
                             version=version_number,
                             release_stream=release_stream,
                             variant=variant['name'],
-                            config=variant['config'],
+                            config=config,
                             version_alias=version_alias
                         )
                         schedule = self._get_schedule(variant, 'cloud')
                         dag_config = self._build_dag_config(schedule)
-
                         self.releases.append(
                             {
                                 "config": dag_config,
