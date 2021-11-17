@@ -38,7 +38,7 @@ spec:
           kubernetes:
             delete_worker_pods: True
           core:
-            DAGBAG_IMPORT_TIMEOUT: 300
+            dagbag_import_timeout: 300
             killed_task_cleanup_time: 604800
           scheduler:
             scheduler_heartbeat_sec: 10
