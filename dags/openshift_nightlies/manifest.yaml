@@ -13,7 +13,7 @@ versions:
   baremetalReleaseStream: latest-4.9
 - version: "4.10"
   alias: future
-  releaseStream: 4.10.0-0.nightly
+  releaseStream: 4.10.0-0.ci
   baremetalReleaseStream: latest-4.10
 
 dagConfig:
