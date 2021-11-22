@@ -28,7 +28,7 @@ install_helm(){
 
 output_info() {
     _airflow_ns=${_airflow_namespace:-airflow}
-    _argo_url=$(oc get route/argocd -o jsonpath='{.spec.host}' -n argocd)
+    _argo_url=$(oc get route/argocd-server -o jsonpath='{.spec.host}' -n argocd)
     _argo_user="admin"
     _argo_password=$(kubectl get secret/argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 --decode)
 
@@ -42,17 +42,8 @@ output_info() {
     printf "\n\n Airflow Configs (Password was user defined so this script doesn't know it!)"
     printf "\n Host: $_airflow_url \n User: $_airflow_user \n Password: $_airflow_password"
 
-
-    _logging_elastic_url=$(oc get route/logging-elastic -o jsonpath='{.spec.host}' -n openshift-logging)
-    _logging_kibana_url=$(oc get route/logging-kibana -o jsonpath='{.spec.host}' -n openshift-logging)
-    _logging_elastic_user="elastic"
-    _logging_elastic_password=$(kubectl get secret/logging-es-elastic-user -o jsonpath='{.data.elastic}' -n openshift-logging | base64 --decode)
-
-    printf "\n\n Logging Elasticsearch Configs"
-    printf "\n Elastic Host: $_logging_elastic_url \n Kibana Host: $_logging_kibana_url \n User: $_logging_elastic_user \n Password: $_logging_elastic_password"
-
-    _results_dashboard_url=$(oc get route/perf-dashboard -o jsonpath='{.spec.host}' -n perf-results)
-    _results_api_url=$(oc get route/perf-dashboard-api -o jsonpath='{.spec.host}' -n perf-results)
+    _results_dashboard_url=$(oc get route/perf-dashboard -o jsonpath='{.spec.host}' -n dashboard)
+    _results_api_url=$(oc get route/perf-dashboard-api -o jsonpath='{.spec.host}' -n dashboard)
 
     printf "\n\n Results Dashboard Configs"
     printf "\n Dashboard URL: $_results_dashboard_url \n API Endpoint: $_results_api_url \n"
