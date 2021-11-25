@@ -25,7 +25,6 @@ class RosaInstaller(AbstractOpenshiftInstaller):
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", trigger_rule="all_success"):
         self._setup_task(operation=operation)
-
         if (self.vars['rosa_installation_method'] == "osde2e"):
             command=f"{constants.root_dag_dir}/scripts/install/osde2e.sh -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}"
         else:

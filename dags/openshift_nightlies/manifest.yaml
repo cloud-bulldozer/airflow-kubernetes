@@ -30,7 +30,6 @@ dagConfig:
       repo: https://github.com/cloud-bulldozer/e2e-benchmarking.git
       branch: master
 
-
 platforms:
   cloud:
     versions: [4.9, "4.10"]
@@ -125,5 +124,3 @@ platforms:
         config:
           install: rosa/ovn.json
           benchmarks: data-plane.json
-
-

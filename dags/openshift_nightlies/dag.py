@@ -21,6 +21,7 @@ from openshift_nightlies.tasks.install.baremetal import jetski, webfuse
 from openshift_nightlies.tasks.install.rosa import rosa
 from openshift_nightlies.tasks.benchmarks import e2e
 from openshift_nightlies.tasks.utils import scale_ci_diagnosis
+from openshift_nightlies.tasks.utils import rosa_post_install
 from openshift_nightlies.tasks.index import status
 from openshift_nightlies.util import var_loader, manifest, constants
 from abc import ABC, abstractmethod
@@ -74,6 +75,9 @@ class AbstractOpenshiftNightlyDAG(ABC):
 
     def _get_scale_ci_diagnosis(self):
         return scale_ci_diagnosis.Diagnosis(self.dag, self.config, self.release)
+
+    def _get_rosa_postinstall_setup(self):
+        return rosa_post_install.Diagnosis(self.dag, self.config, self.release)
 
 
 class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
@@ -154,12 +158,17 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
+        with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
+            benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
+            chain(*benchmark_tasks)
+        
+        rosa_post_installation = self._get_rosa_postinstall_setup()._get_rosa_postinstallation()
 
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
-            install_cluster >> cleanup_cluster
+            install_cluster >> rosa_post_installation >> benchmarks >> cleanup_cluster
         else:
-            install_cluster
+            install_cluster >> rosa_post_installation >> benchmarks
 
     def _get_openshift_installer(self):
         return rosa.RosaInstaller(self.dag, self.config, self.release)
