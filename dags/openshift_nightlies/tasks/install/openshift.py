@@ -53,6 +53,7 @@ class AbstractOpenshiftInstaller(ABC):
             **self.azure_creds,
             **self.openstack_creds,
             **self.rosa_creds,
+            **self.rhacs_creds,
             **self.release.get_latest_release(self.release_stream_base_url),
             **{ "es_server": var_loader.get_secret('elasticsearch'),
                 "thanos_receiver_url": var_loader.get_secret('thanos_receiver_url'),
