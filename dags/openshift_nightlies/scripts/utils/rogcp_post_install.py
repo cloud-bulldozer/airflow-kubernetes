@@ -19,4 +19,12 @@ import subprocess
 import os
 import json
 
-os._exit(0)
+def _gcp_config(jsonfile):
+    try:
+      json_file = json.load(jsonfile)
+    except Exception as err:
+      print("Error occurred when reading %s file" % jsonfile)
+      print(err)
+      return 1
+    my_env = os.environ.copy()
+    my_env.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.realpath(json_file)
