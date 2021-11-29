@@ -84,6 +84,13 @@ postinstall(){
     # set expiration time
     EXPIRATION_STRING=$(date -d "${EXPIRATION_TIME}" '+{"expiration_timestamp": "%FT%TZ"}')
     ocm patch /api/clusters_mgmt/v1/clusters/$(_get_cluster_id ${CLUSTER_NAME}) <<< ${EXPIRATION_STRING}
+    # Add firewall rules
+    NETWORK_NAME=$(gcloud compute networks list --format="value(name)" | grep ^${CLUSTER_NAME})
+    gcloud compute firewall-rules create ${CLUSTER_NAME}-icmp --network ${NETWORK_NAME} --priority 101 --description 'scale-ci allow icmp' --allow icmp
+    gcloud compute firewall-rules create ${CLUSTER_NAME}-ssh --network ${NETWORK_NAME} --direction INGRESS --priority 102 --description 'scale-ci allow ssh' --allow tcp:22
+    gcloud compute firewall-rules create ${CLUSTER_NAME}-pbench --network ${NETWORK_NAME} --direction INGRESS --priority 103 --description 'scale-ci allow pbench-agents' --allow tcp:2022
+    gcloud compute firewall-rules create ${CLUSTER_NAME}-net --network ${NETWORK_NAME} --direction INGRESS --priority 104 --description 'scale-ci allow tcp,udp network tests' --rules tcp:20000-20109,udp:20000-20109 --action allow
+    gcloud compute firewall-rules create ${CLUSTER_NAME}-hostnet --network ${NETWORK_NAME} --priority 105 --description 'scale-ci allow tcp,udp hostnetwork tests' --rules tcp:32768-60999,udp:32768-60999 --action allow
 }
 
 cleanup(){
