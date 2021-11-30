@@ -19,7 +19,7 @@ import subprocess
 import os
 import json
 
-def _gcp_config(jsonfile):
+def _gcp_config(cluster_name, jsonfile):
     try:
       json_file = json.load(jsonfile)
     except Exception as err:
@@ -28,3 +28,33 @@ def _gcp_config(jsonfile):
       return 1
     my_env = os.environ.copy()
     my_env.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.realpath(json_file)
+    _create_workload_machines(cluster_name, my_env)
+
+def _create_workload_machines(cluster_name, my_env):
+    ocm_create_worker_cmd = ["ocm create machinepool -c " +cluster_name +"\
+        --instance-type custom-16-65536 --labels \
+        'node-role.kubernetes.io/workload='\
+        --taints 'role=workload:NoSchedule' --replicas 3 workload"]
+    print ocm_create_worker_cmd
+    process = subprocess.Popen(ocm_create_worker_cmd, stdout=subprocess.PIPE,\
+        stderr=subprocess.PIPE, shell=True, env=my_env)
+    stdout, stderr = process.communicate()
+    print "creating machine workload"
+    print stdout
+    print stderr
+
+def _extend_ocm_lifetime(cluster_name, my_env):
+    timestamp = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+    tomorrow = timestamp.strftime("%Y-%m-%dT%H:%M:%S%ZZ")
+    ocm_extend_lifetime_command = ["ocm patch /api/clusters_mgmt/v1/clusters/" + cluster_name \
+        + "\'{\"expiration_timestamp\": \"" + tomorrow + "\"}\'"]
+    print ocm_extend_lifetime_command
+    process = subprocess.Popen(ocm_extend_lifetime_command, stdout=subprocess.PIPE, \
+        stderr=subprocess.PIPE, shell=True, env=my_env)
+    stdout, stderr = process.communicate()
+    print "extending the lifetime of cluster"
+    print stdout
+    print stderr
+
+def _main():
+
