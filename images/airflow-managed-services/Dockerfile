@@ -16,6 +16,7 @@ RUN curl -L $(curl -s https://api.github.com/repos/openshift-online/ocm-cli/rele
 RUN chmod +x /usr/local/bin/rosa && chmod +x /usr/local/bin/ocm
 RUN /usr/local/bin/rosa download openshift-client
 RUN tar xzvf openshift-client-linux.tar.gz
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && apt-get update -y && apt-get install google-cloud-sdk -y
 RUN mv oc kubectl /usr/local/bin/
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 RUN unzip awscliv2.zip

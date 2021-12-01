@@ -39,6 +39,7 @@ class AbstractOpenshiftInstaller(ABC):
         self.openstack_creds = var_loader.get_secret("openstack_creds", deserialize_json=True)
         self.rosa_creds = var_loader.get_secret("rosa_creds", deserialize_json=True)
         self.rhacs_creds = var_loader.get_secret("rhacs_creds", deserialize_json=True)
+        self.rogcp_creds = var_loader.get_secret("rogcp_creds")
         self.release_stream_base_url = var_loader.get_secret("release_stream_base_url")
         self.exec_config = executor.get_default_executor_config(self.dag_config)
 
@@ -90,6 +91,7 @@ class AbstractOpenshiftInstaller(ABC):
             "KUBECONFIG_NAME": f"{self.release_name}-kubeconfig",
             "KUBEADMIN_NAME": f"{self.release_name}-kubeadmin",
             "OPENSHIFT_INSTALL_PULL_SECRET": self.ocp_pull_secret,
+            "GCP_MANAGED_SERVICES_TOKEN": self.rogcp_creds,
             "AWS_REGION": self.config['aws_region_for_openshift'],
             **self._insert_kube_env()
         }

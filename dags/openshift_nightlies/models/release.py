@@ -44,7 +44,7 @@ class OpenshiftRelease:
             cluster_name = f"ci-{release_name}"
         else:
             cluster_name = f"{git_user}-{release_name}"
-        if self.platform == 'rosa':
+        if self.platform == 'rosa' or self.platform == 'rogcp':
             cluster_version = str(self.version).replace(".","")
             return "airflow-"+cluster_version+"-"+md5(cluster_name.encode("ascii")).hexdigest()[:4]
         else:
@@ -59,6 +59,3 @@ class BaremetalRelease(OpenshiftRelease):
     # Baremetal doesn't get it's release from a release stream
     def get_latest_release(self, base_url) -> dict:
         return {}
-
-
-
