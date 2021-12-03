@@ -3,40 +3,64 @@
         {
             "name": "host_network",
             "workload": "network-perf",
-            "command": "./run_hostnetwork_network_test_fromgit.sh test_cloud",
+            "command": "./run.sh",
             "env": {
-                "COMPARE": "true",
-                "GOLD_SDN": "openshiftsdn",
-                "COMPARE_WITH_GOLD": "true",
-                "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
-                "GSHEET_KEY_LOCATION": "/tmp/key.json",
-                "ENABLE_SNAPPY_BACKUP": "true"
+                "WORKLOAD": "hostnet",
+                "PAIRS": "1"
             }
         },
         {
-            "name": "pod_network",
+            "name": "pod_network_1p",
             "workload": "network-perf",
-            "command": "./run_pod_network_test_fromgit.sh test_cloud",
+            "command": "./run.sh",
             "env": {
-                "COMPARE": "true",
-                "GOLD_SDN": "openshiftsdn",
-                "COMPARE_WITH_GOLD": "true",
-                "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
-                "GSHEET_KEY_LOCATION": "/tmp/key.json",
-                "ENABLE_SNAPPY_BACKUP": "true"
+                "WORKLOAD": "pod",
+                "PAIRS": "1"
             }
         },
         {
-            "name": "serviceip_network",
+            "name": "pod_network_2p",
             "workload": "network-perf",
-            "command": "./run_serviceip_network_test_fromgit.sh test_cloud",
+            "command": "./run.sh",
             "env": {
-                "COMPARE": "true",
-                "GOLD_SDN": "openshiftsdn",
-                "COMPARE_WITH_GOLD": "true",
-                "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
-                "GSHEET_KEY_LOCATION": "/tmp/key.json",
-                "ENABLE_SNAPPY_BACKUP": "true"
+                "WORKLOAD": "pod",
+                "PAIRS": "2"
+            }
+        },
+        {
+            "name": "pod_network_4p",
+            "workload": "network-perf",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "pod",
+                "PAIRS": "4"
+            }
+        },
+        {
+            "name": "serviceip_network_1p",
+            "workload": "network-perf",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "service",
+                "PAIRS": "1"
+            }
+        },
+        {
+            "name": "serviceip_network_2p",
+            "workload": "network-perf",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "service",
+                "PAIRS": "2"
+            }
+        },
+        {
+            "name": "serviceip_network_4p",
+            "workload": "network-perf",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "service",
+                "PAIRS": "4"
             }
         },
         {
