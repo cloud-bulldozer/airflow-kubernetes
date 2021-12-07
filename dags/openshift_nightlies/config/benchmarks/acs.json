@@ -6,7 +6,7 @@
             "command": "./baseline_perf.sh"
         },
         {
-            "name": "scale_25",
+            "name": "scale-25",
             "workload": "scale-perf",
             "command": "./run_scale_fromgit.sh",
             "env": {
@@ -16,7 +16,7 @@
             }
         },
         {
-            "name": "cluster_density",
+            "name": "cluster-density",
             "workload": "kube-burner",
             "command": "./run_clusterdensity_test_fromgit.sh",
             "env": {
@@ -35,7 +35,7 @@
             }
         },
         {
-            "name": "node_density",
+            "name": "node-density",
             "workload": "kube-burner",
             "command": "./run_nodedensity_test_fromgit.sh",
             "env": {
@@ -55,7 +55,7 @@
             }
         },
         {
-            "name": "scale_50",
+            "name": "scale-50",
             "workload": "scale-perf",
             "command": "./run_scale_fromgit.sh",
             "env": {
@@ -65,7 +65,7 @@
             }
         },
         {
-            "name": "cluster_density_50",
+            "name": "cluster-density-50",
             "workload": "kube-burner",
             "command": "./run_clusterdensity_test_fromgit.sh",
             "env": {
@@ -84,7 +84,7 @@
             }
         },
         {
-            "name": "host_network",
+            "name": "host-network",
             "workload": "network-perf",
             "command": "./run_hostnetwork_network_test_fromgit.sh test_cloud",
             "env": {
@@ -97,7 +97,7 @@
             }
         },
         {
-            "name": "pod_network",
+            "name": "pod-network",
             "workload": "network-perf",
             "command": "./run_pod_network_test_fromgit.sh test_cloud",
             "env": {
@@ -110,7 +110,7 @@
             }
         },
         {
-            "name": "serviceip_network",
+            "name": "serviceip-network",
             "workload": "network-perf",
             "command": "./run_serviceip_network_test_fromgit.sh test_cloud",
             "env": {
@@ -123,7 +123,7 @@
             }
         },
         {
-            "name": "scale_down_25",
+            "name": "scale-down-25",
             "workload": "scale-perf",
             "command": "./run_scale_fromgit.sh",
             "env": {
@@ -148,7 +148,7 @@
             }
         },
         {
-            "name": "load_cluster_preupgrade",
+            "name": "load-cluster-preupgrade",
             "workload": "kube-burner",
             "command": "./run_clusterdensity_test_fromgit.sh",
             "env": {

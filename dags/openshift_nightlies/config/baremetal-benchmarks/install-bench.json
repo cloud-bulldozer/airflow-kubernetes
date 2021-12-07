@@ -1,7 +1,7 @@
 {
     "benchmarks": [      
         {
-            "name": "uperf_pod_network",
+            "name": "uperf-pod-network",
             "workload": "network-perf",
             "command": "./run_pod_network_test_fromgit.sh test_cloud",
             "env": {
