@@ -52,7 +52,7 @@ class StatusIndexer():
             command = f'{constants.root_dag_dir}/scripts/index.sh '
     
         return BashOperator(
-            task_id=f"index_{self.task}",
+            task_id=f"index-{self.task}",
             depends_on_past=False,
             bash_command=command,
             retries=3,
