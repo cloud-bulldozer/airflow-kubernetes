@@ -6,7 +6,7 @@
             "command": "./baseline_perf.sh"            
         },      
         {
-            "name": "node_density",
+            "name": "node-density",
             "workload": "kube-burner",
             "command": "./run_nodedensity_test_fromgit.sh",
             "env": {
@@ -25,7 +25,7 @@
             }
         },
         {
-            "name": "node_density_heavy",
+            "name": "node-density-heavy",
             "workload": "kube-burner",
             "command": "./run_nodedensity-heavy_test_fromgit.sh",
             "env": {
@@ -44,7 +44,7 @@
             }
         },
         {
-            "name": "cluster_density",
+            "name": "cluster-density",
             "workload": "kube-burner",
             "command": "./run_clusterdensity_test_fromgit.sh",
             "env": {
@@ -62,7 +62,7 @@
             }
         },
         {
-            "name": "load_cluster_preupgrade",
+            "name": "load-cluster-preupgrade",
             "workload": "kube-burner",
             "command": "./run_clusterdensity_test_fromgit.sh",
             "env": {

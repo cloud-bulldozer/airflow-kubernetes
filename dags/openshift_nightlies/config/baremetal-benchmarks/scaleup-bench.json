@@ -1,7 +1,7 @@
 {
     "benchmarks": [
         {
-            "name": "uperf_serviceip_network",
+            "name": "uperf-serviceip-network",
             "workload": "network-perf",
             "command": "./run_serviceip_network_test_fromgit.sh test_cloud",
             "env": {
@@ -11,7 +11,7 @@
             }
         },
         {
-            "name": "node_density",
+            "name": "node-density",
             "workload": "kube-burner",
             "command": "./run_nodedensity_test_fromgit.sh test_cloud",
             "env": {
@@ -29,7 +29,7 @@
             }
         },
 	{
-	    "name": "cluster_density",
+	    "name": "cluster-density",
 	    "workload": "kube-burner",
 	    "command": "./run_clusterdensity_test_fromgit.sh test_cloud",
 	    "env": {
@@ -46,7 +46,7 @@
             }
         },
 	{
-	    "name": "max_namespaces",
+	    "name": "max-namespaces",
 	    "workload": "kube-burner",
 	    "command": "./run_maxnamespaces_test_fromgit.sh test_cloud",
 	    "env": {
@@ -63,7 +63,7 @@
             }
 	},
     	{
-	    "name": "max_services",
+	    "name": "max-services",
 	    "workload": "kube-burner",
 	    "command": "./run_maxservices_test_fromgit.sh test_cloud",
 	    "env": {
@@ -80,7 +80,7 @@
             }
 	},
     	{
-	    "name": "pod_density",
+	    "name": "pod-density",
 	    "workload": "kube-burner",
 	    "command": "./run_poddensity_test_fromgit.sh test_cloud",
 	    "env": {

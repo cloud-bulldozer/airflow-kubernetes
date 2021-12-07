@@ -1,7 +1,7 @@
 {
     "benchmarks": [
         {
-            "name": "host_network",
+            "name": "host-network",
             "workload": "network-perf",
             "command": "./run.sh",
             "env": {
@@ -10,7 +10,7 @@
             }
         },
         {
-            "name": "pod_network_1p",
+            "name": "pod-network-1p",
             "workload": "network-perf",
             "command": "./run.sh",
             "env": {
@@ -19,7 +19,7 @@
             }
         },
         {
-            "name": "pod_network_2p",
+            "name": "pod-network-2p",
             "workload": "network-perf",
             "command": "./run.sh",
             "env": {
@@ -28,7 +28,7 @@
             }
         },
         {
-            "name": "pod_network_4p",
+            "name": "pod-network-4p",
             "workload": "network-perf",
             "command": "./run.sh",
             "env": {
@@ -37,7 +37,7 @@
             }
         },
         {
-            "name": "serviceip_network_1p",
+            "name": "serviceip-network-1p",
             "workload": "network-perf",
             "command": "./run.sh",
             "env": {
@@ -46,7 +46,7 @@
             }
         },
         {
-            "name": "serviceip_network_2p",
+            "name": "serviceip-network-2p",
             "workload": "network-perf",
             "command": "./run.sh",
             "env": {
@@ -55,7 +55,7 @@
             }
         },
         {
-            "name": "serviceip_network_4p",
+            "name": "serviceip-network-4p",
             "workload": "network-perf",
             "command": "./run.sh",
             "env": {
