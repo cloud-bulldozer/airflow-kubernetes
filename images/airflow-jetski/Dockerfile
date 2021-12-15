@@ -24,6 +24,7 @@ RUN git clone https://github.com/redhat-performance/badfish /root/badfish
 
 WORKDIR /root/badfish
 RUN pip3.8 install -r requirements.txt
+RUN ln -s /root/badfish/src/helpers/ /usr/lib/python3.8/site-packages/helpers
 
 # Commented JetSki clone 
 # ADD https://api.github.com/repos/redhat-performance/JetSki/git/refs/heads/master /root/JetSki-version.json
