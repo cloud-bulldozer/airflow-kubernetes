@@ -45,8 +45,9 @@ class OpenshiftRelease:
         else:
             cluster_name = f"{git_user}-{release_name}"
         if self.platform == 'rosa' or self.platform == 'rogcp':
+            #Only 15 chars are allowed
             cluster_version = str(self.version).replace(".","")
-            return "airflow-"+cluster_version+"-"+md5(cluster_name.encode("ascii")).hexdigest()[:4]
+            return "perf-"+cluster_version+"-"+md5(cluster_name.encode("ascii")).hexdigest()[:4]
         else:
             return cluster_name
     
