@@ -76,7 +76,7 @@ EOF
 }
 
 if [[ $PLATFORM == "baremetal" ]]; then
-    export UUID=$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')-$(uuidgen | head -c16)
+    export UUID=$(uuidgen | head -c16)-$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')
     env >> /tmp/environment.txt
     run_baremetal_benchmark
     echo $UUID
