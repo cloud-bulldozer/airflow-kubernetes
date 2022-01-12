@@ -17,7 +17,7 @@ spec:
   source:
     repoURL: https://airflow.apache.org
     chart: airflow
-    targetRevision: "x.x.x"
+    targetRevision: "1.3.0"
     helm:
       releaseName: airflow
       values: |-
@@ -73,7 +73,7 @@ spec:
         - name: AIRFLOW__KUBERNETES__DAGS_VOLUME_SUBPATH
           value: repo/
         - name: AIRFLOW__CORE__KILLED_TASK_CLEANUP_TIME
-          value: 604800
+          value: "604800"
         - name: GIT_REPO
           value: $_remote_origin_url
         - name: GIT_BRANCH
