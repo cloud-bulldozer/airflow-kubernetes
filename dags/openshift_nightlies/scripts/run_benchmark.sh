@@ -83,7 +83,7 @@ else
     cd /home/airflow/workspace
     ls
     cd e2e-benchmarking/workloads/$workload
-    export UUID=$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')-$(uuidgen | head -c16)
+    export UUID=$(uuidgen | head -c16)-$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')
     
     eval "$command"
     benchmark_rv=$?
