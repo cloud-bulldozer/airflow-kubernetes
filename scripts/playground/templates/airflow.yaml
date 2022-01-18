@@ -35,6 +35,8 @@ spec:
         postgresql:
           persistence:
             enabled: false
+        pgbouncer:
+          enabled: true
         config:
           logging:
             colored_console_log: "False"
@@ -46,6 +48,8 @@ spec:
           core:
             dagbag_import_timeout: 300
             killed_task_cleanup_time: 604800
+            dag_file_processor_timeout: 300
+            dagbag_import_error_traceback_depth: 4
           scheduler:
             scheduler_heartbeat_sec: 10
             processor_poll_interval: 30
