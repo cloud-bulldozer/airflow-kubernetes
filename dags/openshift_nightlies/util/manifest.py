@@ -149,11 +149,16 @@ class Manifest():
 
 
     def get_releases(self):
-        self.get_cloud_releases()
-        self.get_baremetal_releases()
-        self.get_openstack_releases()
-        self.get_rosa_releases()
-        self.get_rogcp_releases()
+        if 'cloud' in self.yaml['platforms']:
+            self.get_cloud_releases()
+        if 'baremetal' in self.yaml['platforms']:
+            self.get_baremetal_releases()
+        if 'openstack' in self.yaml['platforms']:
+            self.get_openstack_releases()
+        if 'rosa' in self.yaml['platforms']:
+            self.get_rosa_releases()
+        if 'rogcp' in self.yaml['platforms']:
+            self.get_rogcp_releases()
         return self.releases
 
     def _get_dependencies(self):
