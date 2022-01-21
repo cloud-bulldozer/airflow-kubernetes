@@ -51,6 +51,7 @@ class AbstractOpenshiftNightlyDAG(ABC):
         tags.append(self.release.release_stream)
         tags.append(self.release.variant)
         tags.append(self.release.version_alias)
+        tags.append(self.release._generate_cluster_name())
 
         self.dag = DAG(
             self.release_name,
