@@ -5,5 +5,5 @@
     "openshift_network_type": "OpenShiftSDN",
     "openshift_worker_instance_type": "custom-8-32768",
     "machineset_metadata_label_prefix": "machine.openshift.io",
-    "openshift_workload_node_instance_type": "custom-16-65536"
+    "openshift_workload_node_instance_type": "custom-8-32768"
 }
