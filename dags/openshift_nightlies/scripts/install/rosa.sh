@@ -27,7 +27,7 @@ _get_cluster_status(){
 setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
-    export PATH=$PATH:/usr/bin
+    export PATH=$PATH:/usr/bin:/usr/local/go/bin
     export HOME=/home/airflow
     export AWS_REGION=us-west-2
     export AWS_ACCESS_KEY_ID=$(cat ${json_file} | jq -r .aws_access_key_id)
@@ -35,6 +35,14 @@ setup(){
     export ROSA_ENVIRONMENT=$(cat ${json_file} | jq -r .rosa_environment)
     export ROSA_TOKEN=$(cat ${json_file} | jq -r .rosa_token_${ROSA_ENVIRONMENT})
     export CLUSTER_NAME=$(cat ${json_file} | jq -r .openshift_cluster_name)
+    export ROSA_CLI_VERSION=$(cat ${json_file} | jq -r .rosa_cli_version)
+    if [[ ${ROSA_CLI_VERSION} == "master" ]]; then
+        git clone https://github.com/openshift/rosa
+	pushd rosa
+	make
+	sudo mv rosa /usr/local/bin/
+	popd
+    fi
     rosa login --env=${ROSA_ENVIRONMENT}
     rosa whoami
     rosa verify quota
