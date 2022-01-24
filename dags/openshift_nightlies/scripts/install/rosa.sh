@@ -44,9 +44,10 @@ setup(){
 install(){
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .openshift_worker_count)
     export COMPUTE_WORKERS_TYPE=$(cat ${json_file} | jq -r .openshift_worker_instance_type)
+    export NETWORK_TYPE=$(cat ${json_file} | jq -r .openshift_network_type)
     export ROSA_VERSION=$(rosa list versions -o json --channel-group=nightly | jq -r '.[] | select(.raw_id|startswith('\"${version}\"')) | .raw_id' | sort -rV | head -1)
     [ -z ${ROSA_VERSION} ] && echo "ERROR: Image not found for version (${version}) on ROSA Nightly channel group" && exit 1
-    rosa create cluster --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}-nightly" --channel-group=nightly --multi-az --compute-machine-type ${COMPUTE_WORKERS_TYPE} --compute-nodes ${COMPUTE_WORKERS_NUMBER} --watch
+    rosa create cluster --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}-nightly" --channel-group=nightly --multi-az --compute-machine-type ${COMPUTE_WORKERS_TYPE} --compute-nodes ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} --watch
     postinstall
 }
 
