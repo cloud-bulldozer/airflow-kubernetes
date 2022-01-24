@@ -27,7 +27,7 @@ with open(f"{root_dag_dir}/reports/config.yaml") as config_file:
 
 
 default_args = {
-    'owner': 'XYZ',
+    'owner': 'airflow',
     'start_date': datetime(2020, 4, 1),
     'schedule_interval': '@hourly',
 }

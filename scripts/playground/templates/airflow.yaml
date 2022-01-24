@@ -17,20 +17,26 @@ spec:
   source:
     repoURL: https://airflow.apache.org
     chart: airflow
-    targetRevision: "1.3.0"
+    targetRevision: "1.4.0"
     helm:
       releaseName: airflow
       values: |-
         defaultAirflowRepository: quay.io/cloud-bulldozer/airflow
-        defaultAirflowTag: 2.2.0
-        airflowVersion: 2.2.0
+        defaultAirflowTag: 2.2.3
+        airflowVersion: 2.2.3
         executor: KubernetesExecutor
+        createUserJob:
+          useHelmHooks: false
+        migrateDatabaseJob:
+          useHelmHooks: false
         images:
           airflow:
             pullPolicy: Always
         postgresql:
           persistence:
             enabled: false
+        pgbouncer:
+          enabled: true
         config:
           logging:
             colored_console_log: "False"
@@ -42,6 +48,8 @@ spec:
           core:
             dagbag_import_timeout: 300
             killed_task_cleanup_time: 604800
+            dag_file_processor_timeout: 300
+            dagbag_import_error_traceback_depth: 4
           scheduler:
             scheduler_heartbeat_sec: 10
             processor_poll_interval: 30
@@ -62,13 +70,6 @@ spec:
           replicas: 1
           defaultUser:
             password: $password
-        migrateDatabaseJob:
-          jobAnnotations:
-            "argocd.argoproj.io/hook": "Sync"
-            "argocd.argoproj.io/hook-delete-policy": "BeforeHookCreation"
-            "helm.sh/hook": "pre-install"
-            "helm.sh/hook-weight": ""
-            "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
         env:
         - name: AIRFLOW__KUBERNETES__DAGS_VOLUME_SUBPATH
           value: repo/

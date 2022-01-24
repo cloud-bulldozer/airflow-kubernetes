@@ -22,13 +22,18 @@ class OpenshiftRelease:
             
     def get_latest_release(self, base_url) -> dict: 
         url = f"{base_url}/{self.release_stream}/latest"
-        payload = requests.get(url).json()
-        latest_accepted_release = payload["name"]
-        latest_accepted_release_url = payload["downloadURL"]
-        return {
-            "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}.tar.gz",
-            "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}.tar.gz"
-        }
+        try:
+            payload = requests.get(url).json()
+            latest_accepted_release = payload["name"]
+            latest_accepted_release_url = payload["downloadURL"]
+            return {
+                "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}.tar.gz",
+                "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}.tar.gz"
+            }
+        except Exception as err:
+            raise Exception("Can't get latest release from OpenShift Release API")
+            
+        
 
     # Used to get the git user for the repo the dags live in.
     def _get_git_user(self):
