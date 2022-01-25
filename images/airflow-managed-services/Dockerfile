@@ -1,13 +1,14 @@
 ARG BASE_IMAGE=quay.io/cloud-bulldozer/airflow:2.2.0
-FROM golang:latest AS build
-
-RUN git clone https://github.com/openshift/osde2e.git /osde2e
-ENV GOFLAGS=
-
-RUN make --directory /osde2e build 
-
 FROM ${BASE_IMAGE} as runtime
 USER root
+RUN curl -L https://go.dev/dl/go1.17.6.linux-amd64.tar.gz -o go1.17.6.linux-amd64.tar.gz
+RUN tar -C /usr/local -xzf go1.17.6.linux-amd64.tar.gz
+ENV PATH=$PATH:/usr/local/go/bin
+RUN mkdir -p /home/airflow/go
+ENV GOPATH=/home/airflow/go
+RUN go install github.com/markbates/pkger/cmd/pkger@latest
+RUN mv $GOPATH/bin/pkger /usr/local/bin/
+ENV GOFLAGS=
 RUN apt update -y
 RUN apt upgrade -y
 RUN apt install jq unzip bsdmainutils -y
@@ -22,7 +23,7 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
 RUN unzip awscliv2.zip
 RUN ./aws/install
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
-COPY --from=build /osde2e/out/osde2e* /usr/local/bin/
+RUN echo "airflow ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 USER airflow
 RUN python3 -m pip install --upgrade pip || true
 RUN yes | pip3 install openshift==0.11.0 || true
