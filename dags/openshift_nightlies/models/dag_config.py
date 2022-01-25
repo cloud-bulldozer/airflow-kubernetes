@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Optional
 from datetime import timedelta, datetime
+from openshift_nightlies.util import slack_integration
 
 @dataclass
 class DagConfig:
@@ -14,6 +15,7 @@ class DagConfig:
             'email_on_failure': False,
             'email_on_retry': False,
             'retries': 1,
+            'on_failure_callback': slack_integration.task_fail_slack_alert,
             'retry_delay': timedelta(minutes=5)
         })
     executor_image: Optional[dict] = field(default_factory=lambda: {
