@@ -61,6 +61,7 @@ run_baremetal_benchmark(){
     if [[ ${workload} == "icni" ]]; then
         git clone -b main https://github.com/redhat-performance/web-burner
         pushd web-burner
+        echo "Running $WORKLOAD_TEMPLATE workload at $SCALE scale"
         eval "$command $WORKLOAD_TEMPLATE $SCALE"
     else
         echo "Cloning ${E2E_BENCHMARKING_REPO} from branch ${E2E_BENCHMARKING_BRANCH}"
@@ -75,9 +76,10 @@ EOF
 }
 
 if [[ $PLATFORM == "baremetal" ]]; then
+    export UUID=$(uuidgen | head -c16)-$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')
     env >> /tmp/environment.txt
     run_baremetal_benchmark
-    echo "Finished e2e scripts for $workload"
+    echo $UUID
 else
     setup
     cd /home/airflow/workspace
