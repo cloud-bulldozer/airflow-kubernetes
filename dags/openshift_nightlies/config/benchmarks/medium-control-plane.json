@@ -11,7 +11,7 @@
             "command": "./run_nodedensity_test_fromgit.sh",
             "env": {
                 "PODS_PER_NODE": "250",
-                "NODE_COUNT": "123",
+                "NODE_COUNT": "120",
                 "JOB_TIMEOUT": "18000",
                 "QPS": "20",
                 "BURST": "20",
@@ -30,7 +30,7 @@
             "command": "./run_nodedensity-heavy_test_fromgit.sh",
             "env": {
                 "PODS_PER_NODE": "100",
-                "NODE_COUNT": "123",
+                "NODE_COUNT": "120",
                 "JOB_TIMEOUT": "18000",
                 "QPS": "20",
                 "BURST": "20",
