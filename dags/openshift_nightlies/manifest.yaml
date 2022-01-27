@@ -160,3 +160,14 @@ platforms:
         config: 
           install: None
           benchmarks: data-plane.json
+      - name: ovn-control-plane
+        schedule:  "0 12 * * 1,3,5"
+        config:
+          install: rogcp/ovn.json
+          benchmarks: control-plane.json
+      - name: ovn-data-plane
+        schedule: "0 12 * * 1"
+        config:
+          install: rogcp/ovn.json
+          benchmarks: data-plane.json
+
