@@ -14,7 +14,7 @@ generate_external_labels(){
 
 
 install_grafana_agent(){
-    envsubst < templates/grafana-agent.yaml | kubectl apply -f -
+    envsubst < $SCRIPT_DIR/templates/grafana-agent.yaml | kubectl apply -f -
 }
 
 # install_promtail(){
@@ -24,6 +24,7 @@ install_grafana_agent(){
 
 setup(){
     mkdir /home/airflow/workspace
+    cd /home/airflow/workspace
     cp /home/airflow/auth/config /home/airflow/workspace/config
     export KUBECONFIG=/home/airflow/workspace/config
     curl -sS https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xz oc
