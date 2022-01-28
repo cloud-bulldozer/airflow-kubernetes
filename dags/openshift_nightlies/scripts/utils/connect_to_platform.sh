@@ -14,6 +14,7 @@ generate_external_labels(){
 
 
 install_grafana_agent(){
+    oc create ns grafana-agent
     envsubst < $SCRIPT_DIR/templates/grafana-agent.yaml | kubectl apply -f -
 }
 
