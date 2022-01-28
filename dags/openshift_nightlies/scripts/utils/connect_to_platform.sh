@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eux
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 generate_external_labels(){
@@ -16,9 +17,9 @@ install_grafana_agent(){
     envsubst < templates/grafana-agent.yaml | kubectl apply -f -
 }
 
-install_promtail(){
-    # TODO 
-}
+# install_promtail(){
+#     # TODO 
+# }
 
 
 setup(){
