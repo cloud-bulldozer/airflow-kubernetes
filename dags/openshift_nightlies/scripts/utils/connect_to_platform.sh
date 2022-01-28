@@ -4,11 +4,11 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 generate_external_labels(){
     # Get OpenShift cluster details
-    CLUSTER_NAME=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}')
-    OPENSHIFT_VERSION=$(oc version -o json | jq -r '.openshiftVersion')
-    NETWORK_TYPE=$(oc get network.config/cluster -o jsonpath='{.status.networkType}')
-    PLATFORM=$(oc get infrastructure cluster -o jsonpath='{.status.platformStatus.type}')
-    DAG_ID=${AIRFLOW_CTX_DAG_ID}
+    export CLUSTER_NAME=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}')
+    export OPENSHIFT_VERSION=$(oc version -o json | jq -r '.openshiftVersion')
+    export NETWORK_TYPE=$(oc get network.config/cluster -o jsonpath='{.status.networkType}')
+    export PLATFORM=$(oc get infrastructure cluster -o jsonpath='{.status.platformStatus.type}')
+    export DAG_ID=${AIRFLOW_CTX_DAG_ID}
 
 }
 
