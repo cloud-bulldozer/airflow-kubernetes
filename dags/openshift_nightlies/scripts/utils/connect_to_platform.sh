@@ -23,6 +23,7 @@ install_grafana_agent(){
 
 
 setup(){
+    mkdir /home/airflow/workspace
     cp /home/airflow/auth/config /home/airflow/workspace/config
     export KUBECONFIG=/home/airflow/workspace/config
     curl -sS https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xz oc
