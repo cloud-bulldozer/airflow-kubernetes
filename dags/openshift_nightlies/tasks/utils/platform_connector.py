@@ -32,6 +32,6 @@ class PlatformConnectorTask():
             retries=3,
             dag=self.dag,
             env=env,
-            cwd=f"{constants.root_dag_dir}/scripts/utils ",
+            cwd=f"{constants.root_dag_dir}/scripts/utils",
             executor_config=self.exec_config
         )
