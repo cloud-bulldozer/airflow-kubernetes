@@ -206,7 +206,11 @@ class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
             description=f"DAG for Openshift Nightly iiidfi builds {self.release_name}",
             schedule_interval=self.config.schedule_interval,
             max_active_runs=1,
-            catchup=False
+            catchup=False,
+            params={
+                'int_param': Param(10, type='integer', minimum=0, maximum=20),
+                'simple_param': Param('im_just_like_old_param')
+            }
         )
     
     def build(self):       
