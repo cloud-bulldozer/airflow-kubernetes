@@ -228,10 +228,8 @@ class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
 
-        #initialize_cluster >> benchmarks >> utils
-        initialize_cluster
+        initialize_cluster >> benchmarks >> utils
         
-
     def _get_openshift_installer(self):
         return initialize_cluster.InitializePrebuiltCluster(self.dag, self.config, self.release)
 
