@@ -21,6 +21,7 @@ from openshift_nightlies.tasks.install.openstack import jetpack
 from openshift_nightlies.tasks.install.baremetal import jetski, webfuse
 from openshift_nightlies.tasks.install.rosa import rosa
 from openshift_nightlies.tasks.install.rogcp import rogcp
+from openshift_nightlies.tasks.install.prebuilt import initialize_cluster
 from openshift_nightlies.tasks.benchmarks import e2e
 from openshift_nightlies.tasks.utils import scale_ci_diagnosis
 from openshift_nightlies.tasks.utils import rosa_post_install
@@ -203,20 +204,21 @@ class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
             self.release_name,
             default_args=self.config.default_args,
             tags=self.tags,
-            description=f"DAG for Openshift Nightly iiidfi builds {self.release_name}",
+            description=f"DAG for Prebuilt Openshift Nightly builds {self.release_name}",
             schedule_interval=self.config.schedule_interval,
             max_active_runs=1,
             catchup=False,
             params={
-                'int_param': Param(10, type='integer', minimum=0, maximum=20),
-                'simple_param': Param('im_just_like_old_param')
+                'KUBEUSER': Param('Enter openshif cluster-admin username'),
+                'KUBEPASSWORD': Param('Enter openshift cluster password'),
+                'KUBEURL': Param('Enter cluster URL')
             }
         )
     
     def build(self):       
 
         installer = self._get_openshift_installer()
-        install_cluster = installer.get_install_task()
+        initialize_cluster = installer.initialize_cluster_task()
 
         with TaskGroup("utils", prefix_group_id=False, dag=self.dag) as utils:
             utils_tasks = self._get_scale_ci_diagnosis().get_utils()
@@ -226,14 +228,12 @@ class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
 
-        if self.config.cleanup_on_success:
-            cleanup_cluster = installer.get_cleanup_task()
-            install_cluster >> benchmarks >> utils >> cleanup_cluster
-        else:
-            install_cluster >> benchmarks >> utils
+        #initialize_cluster >> benchmarks >> utils
+        initialize_cluster
+        
 
     def _get_openshift_installer(self):
-        return openshift.CloudOpenshiftInstaller(self.dag, self.config, self.release)
+        return initialize_cluster.InitializePrebuiltCluster(self.dag, self.config, self.release)
 
 
 def build_releases():
