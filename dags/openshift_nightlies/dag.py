@@ -10,6 +10,7 @@ from airflow.models.baseoperator import chain
 from airflow.operators.bash import BashOperator
 from airflow.utils.task_group import TaskGroup
 from airflow.config_templates.airflow_local_settings import LOG_FORMAT
+from airflow.models.param import Param
 
 # Configure Path to have the Python Module on it
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
@@ -45,17 +46,17 @@ class AbstractOpenshiftNightlyDAG(ABC):
         self.config = config
         self.release_name = release.get_release_name()
 
-        tags = []
-        tags.append(self.release.platform)
-        tags.append(self.release.release_stream)
-        tags.append(self.release.variant)
-        tags.append(self.release.version_alias)
-        tags.append(self.release._generate_cluster_name())
+        self.tags = []
+        self.tags.append(self.release.platform)
+        self.tags.append(self.release.release_stream)
+        self.tags.append(self.release.variant)
+        self.tags.append(self.release.version_alias)
+        self.tags.append(self.release._generate_cluster_name())
 
         self.dag = DAG(
             self.release_name,
             default_args=self.config.default_args,
-            tags=tags,
+            tags=self.tags,
             description=f"DAG for Openshift Nightly builds {self.release_name}",
             schedule_interval=self.config.schedule_interval,
             max_active_runs=1,
@@ -195,7 +196,21 @@ class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
         return rogcp.RoGCPInstaller(self.dag, self.config, self.release)
 
 class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
-    def build(self):
+    def __init__(self,openshift_release, DagConfig):
+        AbstractOpenshiftNightlyDAG.__init__(self, release=openshift_release, config=DagConfig)
+
+        self.dag = DAG(
+            self.release_name,
+            default_args=self.config.default_args,
+            tags=self.tags,
+            description=f"DAG for Openshift Nightly iiidfi builds {self.release_name}",
+            schedule_interval=self.config.schedule_interval,
+            max_active_runs=1,
+            catchup=False
+        )
+    
+    def build(self):       
+
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
 
