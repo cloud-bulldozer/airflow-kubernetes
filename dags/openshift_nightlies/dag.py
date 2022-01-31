@@ -194,6 +194,28 @@ class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
     def _get_openshift_installer(self):
         return rogcp.RoGCPInstaller(self.dag, self.config, self.release)
 
+class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
+    def build(self):
+        installer = self._get_openshift_installer()
+        install_cluster = installer.get_install_task()
+
+        with TaskGroup("utils", prefix_group_id=False, dag=self.dag) as utils:
+            utils_tasks = self._get_scale_ci_diagnosis().get_utils()
+            chain(*utils_tasks)
+
+        with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
+            benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
+            chain(*benchmark_tasks)
+
+        if self.config.cleanup_on_success:
+            cleanup_cluster = installer.get_cleanup_task()
+            install_cluster >> benchmarks >> utils >> cleanup_cluster
+        else:
+            install_cluster >> benchmarks >> utils
+
+    def _get_openshift_installer(self):
+        return openshift.CloudOpenshiftInstaller(self.dag, self.config, self.release)
+
 
 def build_releases():
     release_manifest = manifest.Manifest(constants.root_dag_dir)
@@ -209,6 +231,8 @@ def build_releases():
             nightly = RosaNightlyDAG(openshift_release, dag_config)
         elif openshift_release.platform == "rogcp":
             nightly = RoGCPNightlyDAG(openshift_release, dag_config)
+        elif openshift_release.platform == "prebuilt":
+            nightly = PrebuiltOpenshiftNightlyDAG(openshift_release, dag_config)
         else:
             nightly = CloudOpenshiftNightlyDAG(openshift_release, dag_config)
 
