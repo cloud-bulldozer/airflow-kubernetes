@@ -82,7 +82,7 @@ class InitializePrebuiltCluster():
         return BashOperator(
             task_id=f"initialize_cluster",
             depends_on_past=False,
-            bash_command=f"echo {{ params.KUBEUSER }}; echo {{ params.KUBEPASSWORD }}; echo {{ params.KUBEURL }};",
+            bash_command='echo {{ params.KUBEUSER }}; echo {{ params.KUBEPASSWORD }}; echo {{ params.KUBEURL }};',
             #retries=3,
             dag=self.dag,
             #trigger_rule=trigger_rule,
