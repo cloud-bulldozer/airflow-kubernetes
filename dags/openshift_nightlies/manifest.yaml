@@ -1,7 +1,7 @@
 versions:
 - version: 4.7
   alias: previous
-  releaseStream: 4.7.0.0-nightly
+  releaseStream: 4.7.0-0.nightly
   baremetalReleaseStream: latest-4.7
 - version: 4.8
   alias: stable
