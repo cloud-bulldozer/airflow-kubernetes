@@ -29,7 +29,7 @@ class Manifest():
                     "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}.tar.gz"
                 }
             except Exception as err:
-                raise Exception("Can't get latest release from OpenShift Release API")
+                raise Exception(f"Can't get latest release from OpenShift Release API: {err}")
 
     def get_cloud_releases(self):
         cloud = self.yaml['platforms']['cloud']
