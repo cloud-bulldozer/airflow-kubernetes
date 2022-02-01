@@ -20,7 +20,8 @@ class PlatformConnectorTask():
 
         # Specific Task Configuration
         self.env = {
-            "THANOS_RECEIVER_URL": var_loader.get_secret("thanos_receiver_url")
+            "THANOS_RECEIVER_URL": var_loader.get_secret("thanos_receiver_url"),
+            "LOKI_RECEIVER_URL": var_loader.get_secret("loki_receiver_url")
         }
 
     def get_task(self):
