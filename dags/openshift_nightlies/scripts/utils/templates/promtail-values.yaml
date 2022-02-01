@@ -1,0 +1,16 @@
+securityContext: 
+  privileged: true
+  allowPrivilegeEscalation: true
+containerSecurityContext:
+  privileged: true
+  allowPrivilegeEscalation: true
+config:
+  lokiAddress: $LOKI_RECEIVER_URL
+  snippets:
+    extraClientConfigs: |-
+      external_labels:
+        openshift_cluster_name: $CLUSTER_NAME
+        openshift_network_type: $NETWORK_TYPE
+        openshift_version: $OPENSHIFT_VERSION
+        openshift_platform: $PLATFORM
+        dag_id: $DAG_ID

@@ -24,14 +24,13 @@ class PlatformConnectorTask():
         }
 
     def get_task(self):
-        env = {**self.env, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
         return BashOperator(
             task_id="connect-to-platform",
             depends_on_past=False,
             bash_command=f"{constants.root_dag_dir}/scripts/utils/connect_to_platform.sh ",
             retries=3,
             dag=self.dag,
-            env=env,
+            env=self.env,
             cwd=f"{constants.root_dag_dir}/scripts/utils",
             executor_config=self.exec_config
         )

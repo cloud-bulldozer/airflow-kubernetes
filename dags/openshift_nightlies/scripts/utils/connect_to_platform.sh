@@ -17,9 +17,13 @@ install_grafana_agent(){
     envsubst < $SCRIPT_DIR/templates/grafana-agent.yaml | kubectl apply -f -
 }
 
-# install_promtail(){
-#     # TODO 
-# }
+install_promtail(){
+    helm repo add grafana https://grafana.github.io/helm-charts 
+    helm repo update
+    oc create namespace loki || true
+    oc adm policy add-scc-to-group privileged system:authenticated
+    envsubst < $SCRIPT_DIR/templates/promtail-values.yaml | helm upgrade --install promtail --namespace=loki grafana/promtail -f - 
+}
 
 
 setup(){
