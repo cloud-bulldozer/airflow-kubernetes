@@ -20,20 +20,18 @@ class Manifest():
         self.latest_releases = {}
         for stream in release_streams:
             url = f"{self.release_stream_base_url}/{stream}/latest"
-            try:
-                response  = requests.get(url)
-                if response.status_code != 200: 
-                    raise Exception(f"Can't get latest release from OpenShift Release API, API Returned {response.status_code}")
+            response  = requests.get(url)
+            if response.status_code != 200: 
+                raise Exception(f"Can't get latest release from OpenShift Release API, API Returned {response.status_code}")
 
-                payload = response.json()
-                latest_accepted_release = payload["name"]
-                latest_accepted_release_url = payload["downloadURL"]
-                print(payload)
-                self.latest_releases[stream] = {
-                    "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}.tar.gz",
-                    "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}.tar.gz"
-                }
-            except Exception as err:
+            payload = response.json()
+            latest_accepted_release = payload["name"]
+            latest_accepted_release_url = payload["downloadURL"]
+            print(payload)
+            self.latest_releases[stream] = {
+                "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}.tar.gz",
+                "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}.tar.gz"
+            }
                 
 
     def get_cloud_releases(self):
