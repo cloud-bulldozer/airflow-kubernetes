@@ -204,6 +204,7 @@ class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
 
 def build_releases():
     release_manifest = manifest.Manifest(constants.root_dag_dir)
+    log.info(f"Latest Releases Found: {release_manifest.latest_releases}")
     for release in release_manifest.get_releases():
         openshift_release = release["release"]
         dag_config = release["config"]

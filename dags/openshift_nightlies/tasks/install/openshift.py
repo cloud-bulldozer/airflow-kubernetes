@@ -39,8 +39,7 @@ class AbstractOpenshiftInstaller(ABC):
         self.openstack_creds = var_loader.get_secret("openstack_creds", deserialize_json=True)
         self.rosa_creds = var_loader.get_secret("rosa_creds", deserialize_json=True)
         self.rhacs_creds = var_loader.get_secret("rhacs_creds", deserialize_json=True)
-        self.rogcp_creds = var_loader.get_secret("rogcp_creds")
-        self.release_stream_base_url = var_loader.get_secret("release_stream_base_url")
+        self.rogcp_creds = var_loader.get_secret("rogcp_creds") 
         self.exec_config = executor.get_default_executor_config(self.dag_config)
 
         # Merge all variables, prioritizing Airflow Secrets over git based vars
@@ -54,7 +53,7 @@ class AbstractOpenshiftInstaller(ABC):
             **self.openstack_creds,
             **self.rosa_creds,
             **self.rhacs_creds,
-            **self.release.get_latest_release(self.release_stream_base_url),
+            **self.release.get_latest_release(),
             **{ "es_server": var_loader.get_secret('elasticsearch'),
                 "thanos_receiver_url": var_loader.get_secret('thanos_receiver_url'),
                 "loki_receiver_url": var_loader.get_secret('loki_receiver_url') }
