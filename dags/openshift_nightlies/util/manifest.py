@@ -22,7 +22,7 @@ class Manifest():
             url = f"{self.release_stream_base_url}/{stream}/latest"
             response  = requests.get(url)
             if response.status_code != 200: 
-                raise Exception(f"Can't get latest release from OpenShift Release API, API Returned {response.status_code}")
+                raise Exception(f"Can't get latest release from OpenShift Release API, API Returned {response.status_code}, {url}")
 
             payload = response.json()
             latest_accepted_release = payload["name"]
