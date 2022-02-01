@@ -27,7 +27,6 @@ class Manifest():
             payload = response.json()
             latest_accepted_release = payload["name"]
             latest_accepted_release_url = payload["downloadURL"]
-            print(payload)
             self.latest_releases[stream] = {
                 "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}.tar.gz",
                 "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}.tar.gz"
