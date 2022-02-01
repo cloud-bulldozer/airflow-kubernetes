@@ -40,5 +40,5 @@ setup(){
 setup
 generate_external_labels
 install_grafana_agent
-
+install_promtail
 
