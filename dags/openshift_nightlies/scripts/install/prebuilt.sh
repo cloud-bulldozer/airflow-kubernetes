@@ -27,9 +27,10 @@ create_login_secrets(){
     ls 
     ls ~/
 
+    unset KUBECONFIG
     kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=$pass
     kubectl create secret generic ${KUBECONFIG_NAME} --from-file=config=kubeconfig
-    unset KUBECONFIG
+    
     cd .. 
 }
 
