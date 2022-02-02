@@ -12,11 +12,12 @@ done
 
 create_login_secrets(){
     echo ${user}; echo ${pass}; echo ${url};
-    ls ~/.kube/
+    ls ~/
+    $PWD 
     rm -f ~/.kube/config 
 
     oc login -u ${user} -p ${pass} ${url} --insecure-skip-tls-verify
-    ls ~/.kube/
+    ls ~/
 
     kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=$pass
 }
