@@ -82,10 +82,9 @@ class InitializePrebuiltCluster():
         return BashOperator(
             task_id=f"initialize_cluster",
             depends_on_past=False,
-            bash_command=f"{constants.root_dag_dir}/scripts/install/prebuilt.sh",
-            #retries=3,
+            bash_command='{constants.root_dag_dir}/scripts/install/prebuilt.sh -u {{ params.KUBEUSER }} -p {{ params.KUBEPASSWORD }} -w {{ params.KUBEURL }}',
+            retries=1,
             dag=self.dag,
-            #trigger_rule=trigger_rule,
             executor_config=self.exec_config,
             env=self.env
         )
