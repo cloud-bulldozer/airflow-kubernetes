@@ -66,9 +66,9 @@ class InitializePrebuiltCluster():
         #self.config['kubeconfig_path'] = f"/root/{self.config['dynamic_deploy_path']}/auth/kubeconfig"
         self.env = {
             "SSHKEY_TOKEN": self.config['sshkey_token'],
-            "ORCHESTRATION_HOST": self.config['orchestration_host'],
-            "ORCHESTRATION_USER": self.config['orchestration_user'],
-            #"OPENSHIFT_CLUSTER_NAME": self.config['openshift_cluster_name'],
+            #"ORCHESTRATION_HOST": self.config['orchestration_host'],
+            #"ORCHESTRATION_USER": self.config['orchestration_user'],
+            "OPENSHIFT_CLUSTER_NAME": self.cluster_name,
             #"DEPLOY_PATH": self.config['dynamic_deploy_path'],
             "KUBECONFIG_NAME": f"{self.release_name}-kubeconfig",
             "KUBEADMIN_NAME": f"{self.release_name}-kubeadmin",
@@ -82,7 +82,7 @@ class InitializePrebuiltCluster():
         return BashOperator(
             task_id=f"initialize_cluster",
             depends_on_past=False,
-            bash_command='echo {{ params.KUBEUSER }}; echo {{ params.KUBEPASSWORD }}; echo {{ params.KUBEURL }};',
+            bash_command=f"{constants.root_dag_dir}/scripts/install/prebuilt.sh",
             #retries=3,
             dag=self.dag,
             #trigger_rule=trigger_rule,
