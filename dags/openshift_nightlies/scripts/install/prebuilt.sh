@@ -15,7 +15,10 @@ create_login_secrets(){
     ls ~/.kube/
     rm -f ~/.kube/config 
 
-    oc login -u ${user} -p ${pass} ${url}
+    oc login -u ${user} -p ${pass} ${url} --insecure-skip-tls-verify
     ls ~/.kube/
+
+    kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=$pass
 }
 
+create_login_secrets
