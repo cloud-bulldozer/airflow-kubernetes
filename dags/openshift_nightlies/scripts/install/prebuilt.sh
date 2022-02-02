@@ -13,7 +13,7 @@ done
 create_login_secrets(){
     echo ${user}; echo ${pass}; echo ${url};
     ls ~/
-    $PWD 
+    echo $PWD 
     rm -f ~/.kube/config 
 
     oc login -u ${user} -p ${pass} ${url} --insecure-skip-tls-verify
