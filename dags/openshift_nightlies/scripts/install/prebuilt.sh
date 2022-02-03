@@ -11,11 +11,9 @@ do
 done
 
 create_login_secrets(){
-    echo ${user}; echo ${pass}; echo ${url};
-    ls ~/
+    echo ${user}; echo ${pass}; echo ${url};   
     echo $PWD 
-    rm -f ~/.kube/config 
-
+    
     curl -sS https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xz oc
 
     export PATH=$PATH:$(pwd)
@@ -25,7 +23,6 @@ create_login_secrets(){
     export KUBECONFIG=kubeconfig
     oc login -u ${user} -p ${pass} ${url} --insecure-skip-tls-verify
     ls 
-    ls ~/
 
     unset KUBECONFIG
     kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=$pass

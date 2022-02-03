@@ -24,9 +24,6 @@ class InitializePrebuiltCluster():
         self.release_name = release.get_release_name(delimiter="-")
         self.cluster_name = release._generate_cluster_name()
 
-        # Specific Task Configuration
-        #self.vars = var_loader.build_task_vars(release, task="install")
-
         # Airflow Variables
         self.ansible_orchestrator = var_loader.get_secret(
             "ansible_orchestrator", deserialize_json=True)
@@ -41,12 +38,10 @@ class InitializePrebuiltCluster():
         self.rosa_creds = var_loader.get_secret("rosa_creds", deserialize_json=True)
         self.rhacs_creds = var_loader.get_secret("rhacs_creds", deserialize_json=True)
         self.rogcp_creds = var_loader.get_secret("rogcp_creds")
-        #self.release_stream_base_url = var_loader.get_secret("release_stream_base_url")
         self.exec_config = executor.get_default_executor_config(self.dag_config)
 
         # Merge all variables, prioritizing Airflow Secrets over git based vars
         self.config = {
-            #**self.vars,
             **self.ansible_orchestrator,
             **self.install_secrets,
             **self.aws_creds,
@@ -55,21 +50,14 @@ class InitializePrebuiltCluster():
             **self.openstack_creds,
             **self.rosa_creds,
             **self.rhacs_creds,
-            #**self.release.get_latest_release(self.release_stream_base_url),
             **{ "es_server": var_loader.get_secret('elasticsearch'),
                 "thanos_receiver_url": var_loader.get_secret('thanos_receiver_url'),
                 "loki_receiver_url": var_loader.get_secret('loki_receiver_url') }
         }
 
-        #self.config['openshift_cluster_name'] = self.cluster_name
-        #self.config['dynamic_deploy_path'] = f"{self.config['openshift_cluster_name']}"
-        #self.config['kubeconfig_path'] = f"/root/{self.config['dynamic_deploy_path']}/auth/kubeconfig"
         self.env = {
             "SSHKEY_TOKEN": self.config['sshkey_token'],
-            #"ORCHESTRATION_HOST": self.config['orchestration_host'],
-            #"ORCHESTRATION_USER": self.config['orchestration_user'],
             "OPENSHIFT_CLUSTER_NAME": self.cluster_name,
-            #"DEPLOY_PATH": self.config['dynamic_deploy_path'],
             "KUBECONFIG_NAME": f"{self.release_name}-kubeconfig",
             "KUBEADMIN_NAME": f"{self.release_name}-kubeadmin",
             "OPENSHIFT_INSTALL_PULL_SECRET": self.ocp_pull_secret,
