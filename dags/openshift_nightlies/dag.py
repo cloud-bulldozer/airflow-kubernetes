@@ -209,9 +209,9 @@ class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
             max_active_runs=1,
             catchup=False,
             params={
-                'KUBEUSER': Param('Enter openshif cluster-admin username'),
-                'KUBEPASSWORD': Param('Enter openshift cluster password'),
-                'KUBEURL': Param('Enter cluster URL')
+                'KUBEUSER': Param('<Enter openshift cluster-admin username>'),
+                'KUBEPASSWORD': Param('<Enter openshift cluster password>'),
+                'KUBEURL': Param('<Enter cluster URL>')
             }
         )
     
