@@ -143,11 +143,11 @@ platforms:
       - name: control-plane
         schedule:  "None"
         config: 
-          install: ovn.json
+          install: None
           benchmarks: control-plane.json
       - name: data-plane
         schedule: "None"
         config: 
-          install: sdn.json
+          install: None
           benchmarks: data-plane.json
 
