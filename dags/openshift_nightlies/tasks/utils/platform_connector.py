@@ -20,9 +20,28 @@ class PlatformConnectorTask():
 
         # Specific Task Configuration
         self.env = {
+            "REL_PLATFORM": self.release.platform,
             "THANOS_RECEIVER_URL": var_loader.get_secret("thanos_receiver_url"),
             "LOKI_RECEIVER_URL": var_loader.get_secret("loki_receiver_url")
         }
+
+        if self.release.platform == "baremetal":
+            self.install_vars = var_loader.build_task_vars(
+                release, task="install")
+            self.baremetal_install_secrets = var_loader.get_secret(
+            f"baremetal_openshift_install_config", deserialize_json=True)
+
+            self.config = {
+                **self.install_vars,
+                **self.baremetal_install_secrets
+            }
+
+            self.env = {
+                **self.env,
+                "SSHKEY_TOKEN": self.config['sshkey_token'],
+                "ORCHESTRATION_USER": self.config['provisioner_user'],
+                "ORCHESTRATION_HOST": self.config['provisioner_hostname']
+            }
 
     def get_task(self):
         return BashOperator(
