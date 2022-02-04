@@ -10,6 +10,8 @@ RUN ln -s /bin/bash /usr/bin/bash
 RUN apt update -y
 RUN apt install jq git build-essential uuid-runtime gettext-base xz-utils sshpass -y
 
+RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
 ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6
 
 USER airflow

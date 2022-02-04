@@ -1,4 +1,5 @@
 import yaml
+import requests
 from openshift_nightlies.models.dag_config import DagConfig
 from openshift_nightlies.models.release import OpenshiftRelease, BaremetalRelease
 from openshift_nightlies.util import var_loader
@@ -11,6 +12,26 @@ class Manifest():
             except yaml.YAMLError as exc:
                 print(exc)
         self.releases = []
+        self.release_stream_base_url = var_loader.get_secret("release_stream_base_url")
+        self.get_latest_releases()
+
+    def get_latest_releases(self): 
+        release_streams = [ version['releaseStream'] for version in self.yaml['versions']]
+        self.latest_releases = {}
+        for stream in release_streams:
+            url = f"{self.release_stream_base_url}/{stream}/latest"
+            response  = requests.get(url)
+            if response.status_code != 200: 
+                raise Exception(f"Can't get latest release from OpenShift Release API, API Returned {response.status_code}, {url}")
+
+            payload = response.json()
+            latest_accepted_release = payload["name"]
+            latest_accepted_release_url = payload["downloadURL"]
+            self.latest_releases[stream] = {
+                "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}.tar.gz",
+                "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}.tar.gz"
+            }
+                
 
     def get_cloud_releases(self):
         cloud = self.yaml['platforms']['cloud']
@@ -28,6 +49,7 @@ class Manifest():
                             platform=platform_name,
                             version=version_number,
                             release_stream=release_stream,
+                            latest_release=self.latest_releases[release_stream],
                             variant=variant['name'],
                             config=config,
                             version_alias=version_alias
@@ -57,6 +79,7 @@ class Manifest():
                         variant=variant['name'],
                         config=variant['config'],
                         version_alias=version_alias,
+                        latest_release={}, # baremetal builds dont use this
                         build=build
                     )
                     schedule = self._get_schedule(variant, 'baremetal')
@@ -81,6 +104,7 @@ class Manifest():
                         platform="openstack",
                         version=version_number,
                         release_stream=release_stream,
+                        latest_release=self.latest_releases[release_stream],
                         variant=variant['name'],
                         config=variant['config'],
                         version_alias=version_alias
@@ -107,6 +131,7 @@ class Manifest():
                         platform="rosa",
                         version=version_number,
                         release_stream=release_stream,
+                        latest_release=self.latest_releases[release_stream],
                         variant=variant['name'],
                         config=variant['config'],
                         version_alias=version_alias
@@ -133,6 +158,7 @@ class Manifest():
                         platform="rogcp",
                         version=version_number,
                         release_stream=release_stream,
+                        latest_release=self.latest_releases[release_stream],
                         variant=variant['name'],
                         config=variant['config'],
                         version_alias=version_alias
