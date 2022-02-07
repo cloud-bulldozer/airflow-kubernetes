@@ -106,7 +106,7 @@ class AbstractOpenshiftInstaller(ABC):
         else:
             return {"openshift_cleanup": True, "openshift_debug_config": False,
                     "openshift_install": False, "openshift_post_config": False, "openshift_post_install": False,
-                    "rhacs_enable": False}
+                    "rhacs_enable": False, "cerberus_enable": False}
 
     # This Helper Injects Airflow environment variables into the task execution runtime
     # This allows the task to interface with the Kubernetes cluster Airflow is hosted on.

@@ -75,6 +75,10 @@ platforms:
       config: 
         install: acs.json
         benchmarks: acs.json
+    - name: chaos
+      config:
+        install: chaos.json
+        benchmarks: chaos.json
 
   baremetal: 
     build: dev

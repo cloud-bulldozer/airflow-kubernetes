@@ -1,0 +1,25 @@
+{
+    "benchmarks": [
+        {
+            "name": "chaos-test-application-outages",
+            "workload": "kraken",
+            "command": "application-outages",
+            "env": {
+                "WAIT_DURATION": "5",
+                "DURATION": "10",
+                "NAMESPACE": "openshift-monitoring",
+                "CERBERUS_ENABLED": "True",
+                "CERBERUS_URL": "http://0.0.0.0:8080",
+                "ITERATIONS": "1",
+                "DAEMON_MODE": "False",
+                "RETRY_WAIT": "120",
+                "PUBLISH_KRAKEN_STATUS": "False",
+                "SIGNAL_STATE": "RUN",
+                "DEPLOY_DASHBOARDS": "False",
+                "CAPTURE_METRICS": "False",
+                "ENABLE_ALERTS": "False",
+                "ES_SERVER": "http://0.0.0.0:9200"
+            }
+        }
+   ]
+}

@@ -61,6 +61,21 @@ class E2EBenchmarks():
                 "ORCHESTRATION_USER": self.config['provisioner_user'],
                 "ORCHESTRATION_HOST": self.config['provisioner_hostname']
             }
+        elif self.release.platform == "aws":
+            self.install_vars = var_loader.build_task_vars(
+                release, task="install")
+            self.install_secrets = var_loader.get_secret(
+            f"openshift_install_config", deserialize_json=True)
+
+            self.config = {
+                **self.install_vars,
+                **self.install_secrets
+            }
+
+            self.env = {
+                **self.env,
+                "SSHKEY_TOKEN": self.config['sshkey_token']
+            }
         
         if self.release.platform == "rosa":
             self.rosa_creds = var_loader.get_secret("rosa_creds", deserialize_json=True)
@@ -104,7 +119,12 @@ class E2EBenchmarks():
         benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):
-        env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch'), "KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
+        if benchmark['workload'] == "kraken":
+            cerberus = var_loader.get_secret("ansible_orchestrator", deserialize_json=True)
+            task_env = { "CERBERUS_HOST": cerberus['orchestration_host'],  **self.env}
+        else:
+            task_env = {**self.env}
+        env = {**task_env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch'), "KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
         task_prefix=f"{self.task_group}_"
         task = BashOperator(
                 task_id=f"{task_prefix if self.task_group != 'benchmarks' else ''}{benchmark['name']}",
