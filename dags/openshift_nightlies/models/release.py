@@ -1,4 +1,3 @@
-import requests
 from dataclasses import dataclass
 from typing import Optional
 from os import environ
@@ -13,6 +12,7 @@ class OpenshiftRelease:
     variant: str # e.g. default/ovn
     config: dict # points to task configs
     version_alias: Optional[str] # e.g. stable/.next/.future
+    latest_release: Optional[dict] # populated at runtime by hitting upstream openshift api
     
     def get_release_name(self, delimiter="-") -> str:
         if self.platform in self.variant:  
@@ -20,18 +20,8 @@ class OpenshiftRelease:
         else: 
             return f"{self.version}{delimiter}{self.platform}{delimiter}{self.variant}"
             
-    def get_latest_release(self, base_url) -> dict: 
-        url = f"{base_url}/{self.release_stream}/latest"
-        try:
-            payload = requests.get(url).json()
-            latest_accepted_release = payload["name"]
-            latest_accepted_release_url = payload["downloadURL"]
-            return {
-                "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}.tar.gz",
-                "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}.tar.gz"
-            }
-        except Exception as err:
-            raise Exception("Can't get latest release from OpenShift Release API")
+    def get_latest_release(self) -> dict: 
+        return self.latest_release
             
         
 
@@ -63,5 +53,5 @@ class BaremetalRelease(OpenshiftRelease):
     build: str
 
     # Baremetal doesn't get it's release from a release stream
-    def get_latest_release(self, base_url) -> dict:
+    def get_latest_release(self) -> dict:
         return {}

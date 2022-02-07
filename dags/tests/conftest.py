@@ -16,7 +16,11 @@ def valid_openshift_release():
             "install": "install.json",
             "test": "test.json"
         },
-        version_alias="alias"
+        version_alias="alias",
+        latest_release={
+            "openshift_client_location": "foo",
+            "openshift_install_binary_url": "bar"
+        }
     )
 
 @pytest.fixture(scope="session")
@@ -30,7 +34,11 @@ def valid_aws_release():
             "install": "install.json",
             "test": "test.json"
         },
-        version_alias="alias"
+        version_alias="alias",
+        latest_release={
+            "openshift_client_location": "foo",
+            "openshift_install_binary_url": "bar"
+        }
     )
 
 
