@@ -197,8 +197,8 @@ class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
         return rogcp.RoGCPInstaller(self.dag, self.config, self.release)
 
 class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
-    def __init__(self,openshift_release, DagConfig):
-        AbstractOpenshiftNightlyDAG.__init__(self, release=openshift_release, config=DagConfig)
+    def __init__(self, Release: OpenshiftRelease, Config: DagConfig):
+        AbstractOpenshiftNightlyDAG.__init__(self, release=Release, config=Config)
 
         self.dag = DAG(
             self.release_name,
@@ -219,6 +219,7 @@ class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 
         installer = self._get_openshift_installer()
         initialize_cluster = installer.initialize_cluster_task()
+        connect_to_platform = self._get_platform_connector().get_task()
 
         with TaskGroup("utils", prefix_group_id=False, dag=self.dag) as utils:
             utils_tasks = self._get_scale_ci_diagnosis().get_utils()
@@ -228,7 +229,7 @@ class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
 
-        initialize_cluster >> benchmarks >> utils
+        initialize_cluster >> connect_to_platform >> benchmarks >> utils
         
     def _get_openshift_installer(self):
         return initialize_cluster.InitializePrebuiltCluster(self.dag, self.config, self.release)
