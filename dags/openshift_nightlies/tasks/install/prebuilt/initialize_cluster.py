@@ -39,7 +39,6 @@ class InitializePrebuiltCluster():
         }
 
         self.env = {
-            "SSHKEY_TOKEN": self.config['sshkey_token'],
             "OPENSHIFT_CLUSTER_NAME": self.cluster_name,
             "KUBECONFIG_NAME": f"{self.release_name}-kubeconfig",
             "KUBEADMIN_NAME": f"{self.release_name}-kubeadmin",
