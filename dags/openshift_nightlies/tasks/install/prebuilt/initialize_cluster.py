@@ -28,28 +28,11 @@ class InitializePrebuiltCluster():
         self.ansible_orchestrator = var_loader.get_secret(
             "ansible_orchestrator", deserialize_json=True)
 
-        self.install_secrets = var_loader.get_secret(
-            f"openshift_install_config", deserialize_json=True)
-        self.aws_creds = var_loader.get_secret("aws_creds", deserialize_json=True)
-        self.gcp_creds = var_loader.get_secret("gcp_creds", deserialize_json=True)
-        self.azure_creds = var_loader.get_secret("azure_creds", deserialize_json=True)
-        self.ocp_pull_secret = var_loader.get_secret("osp_ocp_pull_creds")
-        self.openstack_creds = var_loader.get_secret("openstack_creds", deserialize_json=True)
-        self.rosa_creds = var_loader.get_secret("rosa_creds", deserialize_json=True)
-        self.rhacs_creds = var_loader.get_secret("rhacs_creds", deserialize_json=True)
-        self.rogcp_creds = var_loader.get_secret("rogcp_creds")
         self.exec_config = executor.get_default_executor_config(self.dag_config)
 
         # Merge all variables, prioritizing Airflow Secrets over git based vars
         self.config = {
             **self.ansible_orchestrator,
-            **self.install_secrets,
-            **self.aws_creds,
-            **self.gcp_creds,
-            **self.azure_creds,
-            **self.openstack_creds,
-            **self.rosa_creds,
-            **self.rhacs_creds,
             **{ "es_server": var_loader.get_secret('elasticsearch'),
                 "thanos_receiver_url": var_loader.get_secret('thanos_receiver_url'),
                 "loki_receiver_url": var_loader.get_secret('loki_receiver_url') }
@@ -60,9 +43,6 @@ class InitializePrebuiltCluster():
             "OPENSHIFT_CLUSTER_NAME": self.cluster_name,
             "KUBECONFIG_NAME": f"{self.release_name}-kubeconfig",
             "KUBEADMIN_NAME": f"{self.release_name}-kubeadmin",
-            "OPENSHIFT_INSTALL_PULL_SECRET": self.ocp_pull_secret,
-            "GCP_MANAGED_SERVICES_TOKEN": self.rogcp_creds,
-            "AWS_REGION": self.config['aws_region_for_openshift'],
             **self._insert_kube_env()
         }
 
