@@ -184,6 +184,7 @@ class Manifest():
                         platform="prebuilt",
                         version=version_number,
                         release_stream=release_stream,
+                        latest_release={},
                         variant=variant['name'],
                         config=variant['config'],
                         version_alias=version_alias
