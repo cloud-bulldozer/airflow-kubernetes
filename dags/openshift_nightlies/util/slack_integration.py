@@ -1,8 +1,17 @@
 from airflow.hooks.base import BaseHook
 from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 import logging
-#import openshift_nightlies.util.var_loader 
+from os import environ
+
 SLACK_CONN_ID = 'slack'
+
+# Used to get the git user for the repo the dags live in. 
+def get_git_user():
+    git_repo = environ['GIT_REPO']
+    git_path = git_repo.split("https://github.com/")[1]
+    git_user = git_path.split('/')[0]
+    return git_user.lower()
+
 
 def alert_members(context):
     if "rosa" in context.get('task_instance').dag_id or "rogcp" in context.get('task_instance').dag_id:
@@ -14,7 +23,7 @@ def alert_members(context):
     elif "azure" in context.get('task_instance').dag_id:
         members=" @mohit @rsevilla @asagtani"
     elif "-gcp-" in context.get('task_instance').dag_id:
-        members=" @mohit @rsevilla @asagtani"
+        members=" @humesh"
     elif "baremetal" in context.get('task_instance').dag_id:
         members=" @mohit @rsevilla @asagtani"
     elif "chaos" in context.get('task_instance').dag_id:
@@ -22,17 +31,17 @@ def alert_members(context):
     else:
         members=""
     return members
-    
-
-
-        
+            
 
 
 def task_fail_slack_alert(context):
     slack_webhook_token = BaseHook.get_connection(SLACK_CONN_ID).password
-    #if var_loader.get_git_user() != "cloud-bulldozer":
-    #    print("Task Failed")
-    #    return 
+    if get_git_user() != "cloud-bulldozer":
+        print("Task Failed")
+        return
+    if "index" in context.get('task_instance').task_id:
+        print("Index Task Failed")
+        return
    
     slack_msg = """
             :red_circle: Task Failed {mem} 
