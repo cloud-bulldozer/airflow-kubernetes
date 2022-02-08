@@ -25,7 +25,7 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
 
     def get_hosted_install_task(self):
         hosted_install = []
-        for iteration in range(0,self.config.number_of_hosted_cluster):
+        for iteration in range(0, self.vars.number_of_hosted_cluster):
             hosted_install[iteration] = self._get_task(operation="hosted-"+iteration)
         return hosted_install
 
