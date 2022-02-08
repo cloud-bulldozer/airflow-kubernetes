@@ -20,6 +20,7 @@ from openshift_nightlies.tasks.install.openstack import jetpack
 from openshift_nightlies.tasks.install.baremetal import jetski, webfuse
 from openshift_nightlies.tasks.install.rosa import rosa
 from openshift_nightlies.tasks.install.rogcp import rogcp
+from openshift_nightlies.tasks.install.hypershift import hypershift
 from openshift_nightlies.tasks.benchmarks import e2e
 from openshift_nightlies.tasks.utils import rosa_post_install, scale_ci_diagnosis, platform_connector
 from openshift_nightlies.tasks.index import status
@@ -201,6 +202,33 @@ class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
     def _get_openshift_installer(self):
         return rogcp.RoGCPInstaller(self.dag, self.config, self.release)
 
+class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
+    def build(self):
+        mgmt_installer = self._get_rosa_openshift_installer()
+        hosted_installer = self._get_hypershift_openshift_installer()
+        install_mgmt_cluster = mgmt_installer.get_install_task()
+        connect_to_platform = self._get_platform_connector().get_task()
+
+        with TaskGroup("install_hosted_cluster", prefix_group_id=False, dag=self.dag) as install_hosted_cluster:
+            sub_tasks = hosted_installer.get_hosted_install_task()
+            chain(*sub_tasks)
+
+        rosa_post_installation = self._get_rosa_postinstall_setup()._get_rosa_postinstallation()
+
+        # if self.config.cleanup_on_success:
+        #     cleanup_mgmt_cluster = mgmt_installer.get_cleanup_task()
+        #     cleanup_hosted_cluster = hosted_installer.get_cleanup_task()
+        #     install_mgmt_cluster >> rosa_post_installation >> connect_to_platform
+        #     connect_to_platform >> install_hosted_cluster >>  rosa_post_installation >> benchmarks
+        #     benchmarks >> cleanup_hosted_cluster >> cleanup_mgmt_cluster
+        # else:
+        install_mgmt_cluster >> rosa_post_installation >> install_hosted_cluster 
+
+    def _get_rosa_openshift_installer(self):
+        return rosa.RosaInstaller(self.dag, self.config, self.release)
+
+    def _get_hypershift_openshift_installer(self):
+        return hypershift.HypershiftInstaller(self.dag, self.config, self.release)
 
 def build_releases():
     release_manifest = manifest.Manifest(constants.root_dag_dir)
@@ -217,6 +245,8 @@ def build_releases():
             nightly = RosaNightlyDAG(openshift_release, dag_config)
         elif openshift_release.platform == "rogcp":
             nightly = RoGCPNightlyDAG(openshift_release, dag_config)
+        elif openshift_release.platform == "hypershift":
+            nightly = HypershiftNightlyDAG(openshift_release, dag_config)            
         else:
             nightly = CloudOpenshiftNightlyDAG(openshift_release, dag_config)
 

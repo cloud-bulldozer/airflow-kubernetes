@@ -29,7 +29,7 @@ def get_executor_config_with_cluster_access(dag_config: DagConfig, release: Open
                     containers=[
                         k8s.V1Container(
                             name="base",
-                            image=f"{dag_config.executor_image['repository']}/{executor_image}:{dag_config.executor_image['tag']}",
+                            image="quay.io/mukrishn/airflow-managed-service:hypershift",
                             image_pull_policy="Always",
                             env=[
                                 get_kubeadmin_password(release)
