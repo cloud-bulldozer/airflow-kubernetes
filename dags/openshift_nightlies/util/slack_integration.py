@@ -6,7 +6,7 @@ SLACK_CONN_ID = 'slack'
 
 def alert_members(context):
     if "rosa" in context.get('task_instance').dag_id or "rogcp" in context.get('task_instance').dag_id:
-        members=" @harshith @morenod @dry @asagtani"
+        members=" @harshith @morenod @dry @asagtani @humesh"
     elif "aws" in context.get('task_instance').dag_id:
         members=" @mohit @rsevilla @asagtani"
     elif "openstack" in context.get('task_instance').dag_id:
