@@ -222,10 +222,11 @@ class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         #     connect_to_platform >> install_hosted_cluster >>  rosa_post_installation >> benchmarks
         #     benchmarks >> cleanup_hosted_cluster >> cleanup_mgmt_cluster
         # else:
-        
-        install_hosted_cluster = hosted_installer.get_hosted_install_task()
+
+        c_id, install_hosted_cluster = hosted_installer.get_hosted_install_task()
         for cluster in install_hosted_cluster:
-            install_mgmt_cluster >> rosa_post_installation >> cluster 
+            benchmark = self._add_benchmarks(task_group=c_id)
+            install_mgmt_cluster >> rosa_post_installation >> cluster >> benchmark
 
         # install_mgmt_cluster >> rosa_post_installation >> install_hosted_cluster
 
@@ -234,6 +235,15 @@ class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 
     def _get_hypershift_openshift_installer(self):
         return hypershift.HypershiftInstaller(self.dag, self.config, self.release)
+
+    def _get_e2e_benchmarks(self, task_group):
+        return e2e.E2EBenchmarks(self.dag, self.config, self.release, task_group)
+
+    def _add_benchmarks(self, task_group):
+        with TaskGroup(task_group, prefix_group_id=True, dag=self.dag) as benchmarks:
+            benchmark_tasks = self._get_e2e_benchmarks(task_group).get_benchmarks()
+            chain(*benchmark_tasks)
+        return benchmarks
 
 def build_releases():
     release_manifest = manifest.Manifest(constants.root_dag_dir)

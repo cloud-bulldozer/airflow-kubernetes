@@ -6,11 +6,14 @@ from openshift_nightlies.util import var_loader, kubeconfig, constants, executor
 from openshift_nightlies.tasks.install.openshift import AbstractOpenshiftInstaller
 from openshift_nightlies.models.dag_config import DagConfig
 from openshift_nightlies.models.release import OpenshiftRelease
+from openshift_nightlies.tasks.benchmarks import e2e
 
 import requests
 
 from airflow.operators.bash import BashOperator
 from airflow.models import Variable
+from airflow.models.baseoperator import chain
+from airflow.utils.task_group import TaskGroup
 from kubernetes.client import models as k8s
 
 import json
@@ -33,9 +36,16 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
         # return hosted_install
 
         for iteration in range(config['number_of_hosted_cluster']):
-            yield self._get_task(operation="hosted-"+str(iteration))
-            
-    # def _add_benchmark(self, task):
+            yield "hosted-"+str(iteration), self._get_task(operation="hosted-"+str(iteration))
+
+    # def _add_benchmarks(self, task_group):
+    #     with TaskGroup(task_group, prefix_group_id=False, dag=self.dag) as benchmarks:
+    #         benchmark_tasks = self._get_e2e_benchmarks(task_group).get_benchmarks()
+    #         chain(*benchmark_tasks)
+    #     return benchmarks
+
+    # def _get_e2e_benchmarks(self, task_group):
+    #     return e2e.E2EBenchmarks(self.dag, self.dag_config, self.release, task_group)
 
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="hosted", trigger_rule="all_success"):
@@ -58,5 +68,5 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
             env=env
         )
 
-        # self._add_benchmark(task)        
+        # self._add_benchmarks(task_group=operation)        
         return task
