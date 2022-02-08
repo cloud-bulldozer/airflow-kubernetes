@@ -17,7 +17,7 @@ RUN curl -L $(curl -s https://api.github.com/repos/openshift-online/ocm-cli/rele
 RUN chmod +x /usr/local/bin/rosa && chmod +x /usr/local/bin/ocm
 RUN /usr/local/bin/rosa download openshift-client
 RUN tar xzvf openshift-client-linux.tar.gz
-RUN curl "https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tar.xz" | tar xf
+RUN curl "https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tar.xz" | tar xJf -
 RUN cd Python-3.9.9 && ./configure --enable-optimizations && make && make altinstall
 RUN echo "export CLOUDSDK_PYTHON=python3.9" >> /home/airflow/.bashrc
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && apt-get update -y && apt-get install google-cloud-sdk -y
