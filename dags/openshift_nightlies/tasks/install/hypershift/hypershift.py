@@ -22,12 +22,8 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
         super().__init__(dag, config, release)
         self.exec_config = executor.get_executor_config_with_cluster_access(self.dag_config, self.release, executor_image="airflow-managed-services")
         self.hypershift_pull_secret = var_loader.get_secret("hypershift_pull_secret") 
-        self.env = {
-            "PULL_SECRET": self.hypershift_pull_secret,
-            **self.env
-        }
 
-    def get_hosted_install(self):
+    def get_hosted_install_task(self):
         hosted_install = []
         for iteration in range(0,self.config.number_of_hosted_cluster):
             hosted_install[iteration] = self._get_task(operation="hosted-"+iteration)
@@ -36,6 +32,10 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="hosted", trigger_rule="all_success"):
         self._setup_task(operation=operation)
+        self.env = {
+            "PULL_SECRET": self.hypershift_pull_secret,
+            **self.env
+        }        
         env = {**self.env, **{"HOSTED_NAME": operation}}
         command=f"{constants.root_dag_dir}/scripts/install/hypershift.sh -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}"
 
