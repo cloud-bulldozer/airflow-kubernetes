@@ -6,17 +6,17 @@ SLACK_CONN_ID = 'slack'
 
 def alert_members(context):
     if "rosa" in context.get('task_instance').dag_id or "rogcp" in context.get('task_instance').dag_id:
-        members="@morenod @dry"
+        members=" @morenod @dry"
     elif "aws" in context.get('task_instance').dag_id:
-        members="@mohit @rsevilla @asagtani"
+        members=" @mohit @rsevilla @asagtani"
     elif "openstack" in context.get('task_instance').dag_id:
-        members="@asagtani @masco"
+        members=" @asagtani @masco"
     elif "azure" in context.get('task_instance').dag_id:
-        members=""
+        members=" @mohit @rsevilla @asagtani"
     elif "-gcp-" in context.get('task_instance').dag_id:
-        members=""
+        members=" @mohit @rsevilla @asagtani"
     elif "baremetal" in context.get('task_instance').dag_id:
-        members="@mohit @rsevilla @asagtani"
+        members=" @mohit @rsevilla @asagtani"
     elif "chaos" in context.get('task_instance').dag_id:
         members=""
     else:
