@@ -204,7 +204,7 @@ class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
 
 class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):
-        mgmt_installer = self._get_rosa_openshift_installer()
+        mgmt_installer = self._get_openshift_installer()
         hosted_installer = self._get_hypershift_openshift_installer()
         install_mgmt_cluster = mgmt_installer.get_install_task()
         connect_to_platform = self._get_platform_connector().get_task()
@@ -224,7 +224,7 @@ class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         # else:
         install_mgmt_cluster >> rosa_post_installation >> install_hosted_cluster 
 
-    def _get_rosa_openshift_installer(self):
+    def _get_openshift_installer(self):
         return rosa.RosaInstaller(self.dag, self.config, self.release)
 
     def _get_hypershift_openshift_installer(self):
