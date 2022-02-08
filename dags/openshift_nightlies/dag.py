@@ -209,9 +209,9 @@ class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         install_mgmt_cluster = mgmt_installer.get_install_task()
         connect_to_platform = self._get_platform_connector().get_task()
 
-        with TaskGroup("install_hosted_cluster", prefix_group_id=False, dag=self.dag) as install_hosted_cluster:
-            sub_tasks = hosted_installer.get_hosted_install_task()
-            chain(*sub_tasks)
+        # with TaskGroup("install_hosted_cluster", prefix_group_id=False, dag=self.dag) as install_hosted_cluster:
+        #     sub_tasks = hosted_installer.get_hosted_install_task()
+        #     chain(*sub_tasks)
 
         rosa_post_installation = self._get_rosa_postinstall_setup()._get_rosa_postinstallation()
 
@@ -222,7 +222,12 @@ class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         #     connect_to_platform >> install_hosted_cluster >>  rosa_post_installation >> benchmarks
         #     benchmarks >> cleanup_hosted_cluster >> cleanup_mgmt_cluster
         # else:
-        install_mgmt_cluster >> rosa_post_installation >> install_hosted_cluster 
+        
+        install_hosted_cluster = hosted_installer.get_hosted_install_task()
+        for cluster in install_hosted_cluster:
+            install_mgmt_cluster >> rosa_post_installation >> cluster 
+
+        # install_mgmt_cluster >> rosa_post_installation >> install_hosted_cluster
 
     def _get_openshift_installer(self):
         return rosa.RosaInstaller(self.dag, self.config, self.release)

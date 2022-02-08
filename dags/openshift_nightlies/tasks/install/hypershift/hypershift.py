@@ -24,15 +24,17 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
         self.hypershift_pull_secret = var_loader.get_secret("hypershift_pull_secret") 
 
     def get_hosted_install_task(self):
-        hosted_install = []
+        # hosted_install = []
         config = {
             **self.vars
         }
-        for iteration in range(config['number_of_hosted_cluster']):
-            sub_task = self._get_task(operation="hosted-"+str(iteration))
-            hosted_install.append(sub_task)
-        return hosted_install
+        # for iteration in range(config['number_of_hosted_cluster']):
+        #     hosted_install.append(self._get_task(operation="hosted-"+str(iteration)))
+        # return hosted_install
 
+        for iteration in range(config['number_of_hosted_cluster']):
+            yield self._get_task(operation="hosted-"+str(iteration))
+            
     # def _add_benchmark(self, task):
 
     # Create Airflow Task for Install/Cleanup steps
