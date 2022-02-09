@@ -45,6 +45,9 @@ setup(){
 	sudo mv rosa /usr/local/bin/
 	popd
     fi
+    echo [default] >> aws_credentials
+    echo aws_access_key_id=$AWS_ACCESS_KEY_ID >> aws_credentials
+    echo aws_secret_access_key=$AWS_SECRET_ACCESS_KEY >> aws_credentials
     rosa login --env=${ROSA_ENVIRONMENT}
     ocm login --url=https://api.stage.openshift.com --token="${ROSA_TOKEN}"
     rosa whoami
@@ -58,7 +61,7 @@ setup(){
     aws s3api delete-bucket --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --region $AWS_REGION || true
     aws s3api create-bucket --acl public-read --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --create-bucket-configuration LocationConstraint=$AWS_REGION --region $AWS_REGION
     sleep 10 # wait a few seconds 
-    hypershift install --oidc-storage-provider-s3-bucket-name $MGMT_CLUSTER_NAME-aws-rhperfscale-org --oidc-storage-provider-s3-credentials $HOME/.aws/credentials --oidc-storage-provider-s3-region $AWS_REGION  --enable-ocp-cluster-monitoring
+    hypershift install --oidc-storage-provider-s3-bucket-name $MGMT_CLUSTER_NAME-aws-rhperfscale-org --oidc-storage-provider-s3-credentials aws_credentials --oidc-storage-provider-s3-region $AWS_REGION  --enable-ocp-cluster-monitoring
     exit $?  #if hypershift install fails
 }
 
@@ -69,7 +72,7 @@ install(){
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_network_type)    
     BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
     echo $PULL_SECRET > pull-secret
-    hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds $HOME/.aws/credentials --region $AWS_REGION
+    hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION
     exit $?  #if hypershift create hosted cluster fails
     kubectl get hostercluster -n cluster $HOSTED_CLUSTER_NAME
     echo "Wait till hosted cluster is ready.."
