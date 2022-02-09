@@ -57,7 +57,10 @@ def get_default_task_vars(release: OpenshiftRelease, task="install", task_dir=f"
         else:
             file_path = f"{task_dir}/{task}/{release.platform}/defaults.json"
     else:
-        file_path = f"{task_dir}/{task}/defaults.json"
+        if release.platform == 'hypershift' and "hosted" in task:
+            file_path = f"{task_dir}/benchmarks/defaults.json"           
+        else:
+            file_path = f"{task_dir}/{task}/defaults.json"
     return get_json(file_path)
 
 

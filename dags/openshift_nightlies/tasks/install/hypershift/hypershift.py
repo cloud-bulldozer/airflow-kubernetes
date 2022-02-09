@@ -36,7 +36,8 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
         # return hosted_install
 
         for iteration in range(config['number_of_hosted_cluster']):
-            yield self._get_task(operation="hosted-"+str(iteration))
+            c_id = f"{'hosted-'+str(iteration)}"
+            yield c_id, self._get_task(operation=c_id)
 
     # def _add_benchmarks(self, task_group):
     #     with TaskGroup(task_group, prefix_group_id=False, dag=self.dag) as benchmarks:
@@ -58,7 +59,7 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
         command=f"{constants.root_dag_dir}/scripts/install/hypershift.sh -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}"
 
         task = BashOperator(
-            task_id=f"{operation}",
+            task_id=f"{operation}_cluster",
             depends_on_past=False,
             bash_command=command,
             retries=3,
