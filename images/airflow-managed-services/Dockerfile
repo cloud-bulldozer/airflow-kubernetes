@@ -24,6 +24,10 @@ RUN unzip awscliv2.zip
 RUN ./aws/install
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 RUN echo "airflow ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN git clone https://github.com/openshift/hypershift
+WORKDIR hypershift
+RUN make build
+WORKDIR /opt/airflow/
 USER airflow
 RUN python3 -m pip install --upgrade pip || true
 RUN yes | pip3 install openshift==0.11.0 || true

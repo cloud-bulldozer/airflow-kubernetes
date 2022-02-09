@@ -27,7 +27,7 @@ _get_base_domain(){
 setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
-    export PATH=$PATH:/usr/bin:/usr/local/go/bin
+    export PATH=$PATH:/usr/bin:/usr/local/go/bin:/opt/airflow/hypershift/bin
     export HOME=/home/airflow
     export AWS_REGION=us-west-2
     export AWS_ACCESS_KEY_ID=$(cat ${json_file} | jq -r .aws_access_key_id)
