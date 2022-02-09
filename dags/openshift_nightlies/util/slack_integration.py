@@ -14,31 +14,22 @@ def get_git_user():
 
 
 def alert_members(context):
-    if "rosa" in context.get('task_instance').dag_id or "rogcp" in context.get('task_instance').dag_id:
-        members=" @harshith @morenod @dry @asagtani @humesh"
-    elif "aws" in context.get('task_instance').dag_id:
-        members=" @mohit @rsevilla @asagtani"
+    if "rosa" in context.get('task_instance').dag_id or "rogcp" in context.get('task_instance').dag_id or "-aro-" in context.get('task_instance').dag_id:
+        members=" @hperfscale-managed-services-team" 
+    elif "aws" in context.get('task_instance').dag_id or "azure" in context.get('task_instance').dag_id or "-gcp-" in context.get('task_instance').dag_id or "baremetal" in context.get('task_instance').dag_id:
+        members=" @perfscale-team-core"
     elif "openstack" in context.get('task_instance').dag_id:
         members=" @asagtani @masco"
-    elif "azure" in context.get('task_instance').dag_id:
-        members=" @mohit @rsevilla @asagtani"
-    elif "-gcp-" in context.get('task_instance').dag_id:
-        members=" @humesh"
-    elif "baremetal" in context.get('task_instance').dag_id:
-        members=" @mohit @rsevilla @asagtani"
-    elif "chaos" in context.get('task_instance').dag_id:
-        members=""
     else:
         members=""
-    return members
-            
+    return members            
 
 
 def task_fail_slack_alert(context):
     slack_webhook_token = BaseHook.get_connection(SLACK_CONN_ID).password
-    if get_git_user() != "cloud-bulldozer":
-        print("Task Failed")
-        return
+    #if get_git_user() != "cloud-bulldozer":
+    #    print("Task Failed")
+    #    return
     if "index" in context.get('task_instance').task_id:
         print("Index Task Failed")
         return
