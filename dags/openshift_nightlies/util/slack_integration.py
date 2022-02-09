@@ -15,7 +15,7 @@ def get_git_user():
 
 def alert_members(context):
     if "rosa" in context.get('task_instance').dag_id or "rogcp" in context.get('task_instance').dag_id or "-aro-" in context.get('task_instance').dag_id:
-        members=" @hperfscale-managed-services-team" 
+        members=" @perfscale-managed-services-team" 
     elif "aws" in context.get('task_instance').dag_id or "azure" in context.get('task_instance').dag_id or "-gcp-" in context.get('task_instance').dag_id or "baremetal" in context.get('task_instance').dag_id:
         members=" @perfscale-team-core"
     elif "openstack" in context.get('task_instance').dag_id:
