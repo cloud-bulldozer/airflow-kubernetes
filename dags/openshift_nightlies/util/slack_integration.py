@@ -27,9 +27,9 @@ def alert_members(context):
 
 def task_fail_slack_alert(context):
     slack_webhook_token = BaseHook.get_connection(SLACK_CONN_ID).password
-    #if get_git_user() != "cloud-bulldozer":
-    #    print("Task Failed")
-    #    return
+    if get_git_user() != "cloud-bulldozer":
+        print("Task Failed")
+        return
     if "index" in context.get('task_instance').task_id:
         print("Index Task Failed")
         return
