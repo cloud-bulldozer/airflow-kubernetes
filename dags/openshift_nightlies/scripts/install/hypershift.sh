@@ -85,7 +85,7 @@ postinstall(){
     kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-admin-kubeconfig -o json | jq -r '.data.config' | base64 -d > ./kubeconfig
     PASSWORD=$(kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-kubeadmin-password -o json | jq -r '.data.KUBEADMIN_PASSWORD' | base64 -d)
     unset KUBECONFIG # Unsetting Management cluster kubeconfig, will fall back to Airflow cluster kubeconfig
-    kubectl delete secret $HOSTED_CLUSTER_NAME-kubeconfig $HOSTED_CLUSTER_NAME-kubeadmin
+    kubectl delete secret $HOSTED_CLUSTER_NAME-kubeconfig $HOSTED_CLUSTER_NAME-kubeadmin || true
     kubectl create secret generic $HOSTED_CLUSTER_NAME-kubeconfig --from-file=config=./kubeconfig
     kubectl create secret generic $HOSTED_CLUSTER_NAME-kubeadmin --from-literal=KUBEADMIN_PASSWORD=${PASSWORD}
 }
