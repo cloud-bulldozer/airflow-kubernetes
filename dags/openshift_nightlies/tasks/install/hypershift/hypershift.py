@@ -27,26 +27,13 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
         self.hypershift_pull_secret = var_loader.get_secret("hypershift_pull_secret") 
 
     def get_hosted_install_task(self):
-        # hosted_install = []
         config = {
             **self.vars
         }
-        # for iteration in range(config['number_of_hosted_cluster']):
-        #     hosted_install.append(self._get_task(operation="hosted-"+str(iteration)))
-        # return hosted_install
 
         for iteration in range(config['number_of_hosted_cluster']):
             c_id = f"{'hosted-'+str(iteration)}"
             yield c_id, self._get_task(operation=c_id)
-
-    # def _add_benchmarks(self, task_group):
-    #     with TaskGroup(task_group, prefix_group_id=False, dag=self.dag) as benchmarks:
-    #         benchmark_tasks = self._get_e2e_benchmarks(task_group).get_benchmarks()
-    #         chain(*benchmark_tasks)
-    #     return benchmarks
-
-    # def _get_e2e_benchmarks(self, task_group):
-    #     return e2e.E2EBenchmarks(self.dag, self.dag_config, self.release, task_group)
 
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="hosted", trigger_rule="all_success"):
@@ -59,7 +46,7 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
         command=f"{constants.root_dag_dir}/scripts/install/hypershift.sh -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}"
 
         task = BashOperator(
-            task_id=f"{operation}_cluster",
+            task_id=f"{operation}-cluster",
             depends_on_past=False,
             bash_command=command,
             retries=3,
@@ -69,5 +56,4 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
             env=env
         )
 
-        # self._add_benchmarks(task_group=operation)        
         return task
