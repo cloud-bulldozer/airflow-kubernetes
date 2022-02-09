@@ -42,8 +42,9 @@ def get_config_vars(release: OpenshiftRelease, task="install", config_dir=f"{con
     if release.platform == 'baremetal' and "bench" in task: 
         file_path = f"{config_dir}/{release.config['benchmarks']}/{task}.json"
         return get_json(file_path)
-    elif release.platform == 'hypershift' and "hosted" in task:
+    elif release.platform == 'hypershift' and "hosted-0" == task:
         file_path = f"{config_dir}/benchmarks/{release.config['benchmarks']}"
+        return get_json(file_path)
     elif task in release.config:
         file_path = f"{config_dir}/{task}/{release.config[task]}"
         return get_json(file_path)
@@ -55,12 +56,9 @@ def get_default_task_vars(release: OpenshiftRelease, task="install", task_dir=f"
         if release.platform == "aws" or release.platform == "azure" or release.platform == "gcp":
             file_path = f"{task_dir}/{task}/cloud/defaults.json"
         else:
-            file_path = f"{task_dir}/{task}/{release.platform}/defaults.json"
+            file_path = f"{task_dir}/{task}/{release.platform}/defaults.json"                     
     else:
-        if release.platform == 'hypershift' and "hosted" in task:
-            file_path = f"{task_dir}/benchmarks/defaults.json"           
-        else:
-            file_path = f"{task_dir}/{task}/defaults.json"
+        file_path = f"{task_dir}/{task}/defaults.json"
     return get_json(file_path)
 
 
