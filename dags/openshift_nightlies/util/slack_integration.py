@@ -17,7 +17,7 @@ def alert_members(context):
     if "rosa" in context.get('task_instance').dag_id or "rogcp" in context.get('task_instance').dag_id or "-aro-" in context.get('task_instance').dag_id:
         members=" @perfscale-managed-services-team" 
     elif "aws" in context.get('task_instance').dag_id or "azure" in context.get('task_instance').dag_id or "-gcp-" in context.get('task_instance').dag_id or "baremetal" in context.get('task_instance').dag_id:
-        members=" @perfscale-team-core"
+        members=" @perfscale-core-team"
     elif "openstack" in context.get('task_instance').dag_id:
         members=" @asagtani @masco"
     else:
