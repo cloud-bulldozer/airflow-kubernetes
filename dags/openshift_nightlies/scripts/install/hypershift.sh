@@ -55,6 +55,7 @@ setup(){
     echo "MANAGEMENT CLUSTER NODES:"
     kubectl get nodes
     echo "Install Hypershift Operator"
+    aws s3api delete-bucket --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --region $AWS_REGION || true
     aws s3api create-bucket --acl public-read --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --create-bucket-configuration LocationConstraint=$AWS_REGION --region $AWS_REGION
     sleep 10 # wait a few seconds 
     hypershift install --oidc-storage-provider-s3-bucket-name $MGMT_CLUSTER_NAME-aws-rhperfscale-org --oidc-storage-provider-s3-credentials $HOME/.aws/credentials --oidc-storage-provider-s3-region $AWS_REGION  --enable-ocp-cluster-monitoring
