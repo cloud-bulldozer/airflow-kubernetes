@@ -14,13 +14,14 @@ from kubernetes.client import models as k8s
 
 # Defines Task for Indexing Task Status in ElasticSearch
 class StatusIndexer():
-    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease, task):
+    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease, task, task_group=""):
         
         # General DAG Configuration
         self.dag = dag
         self.release = release
         self.config = config
-        self.exec_config = executor.get_executor_config_with_cluster_access(self.config, self.release)
+        self.task_group = task_group
+        self.exec_config = executor.get_executor_config_with_cluster_access(self.config, self.release, task_group=self.task_group)
     
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(release, task="index")
