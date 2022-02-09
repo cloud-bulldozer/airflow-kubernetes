@@ -24,7 +24,7 @@ RUN unzip awscliv2.zip
 RUN ./aws/install
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 RUN echo "airflow ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-RUN git clone https://github.com/openshift/hypershift
+RUN git clone --branch release-4.10 https://github.com/openshift/hypershift
 WORKDIR hypershift
 RUN make build
 WORKDIR /opt/airflow/

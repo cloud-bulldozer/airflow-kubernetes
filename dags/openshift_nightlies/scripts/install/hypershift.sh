@@ -72,7 +72,7 @@ install(){
     BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
     echo $PULL_SECRET > pull-secret
     hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION
-    kubectl get hostercluster -n cluster $HOSTED_CLUSTER_NAME
+    kubectl get hostedcluster -n cluster $HOSTED_CLUSTER_NAME
     echo "Wait till hosted cluster is ready.."
     kubectl wait --for=condition=available --timeout=3600s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
 }
