@@ -20,6 +20,10 @@ _download_kubeconfig(){
     ocm get /api/clusters_mgmt/v1/clusters/$1/credentials | jq -r .kubeconfig > $2
 }
 
+_get_cluster_status(){
+    echo $(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .status.state')
+}
+
 _get_base_domain(){
     ocm get /api/clusters_mgmt/v1/clusters/$1/ | jq -r '.dns.base_domain'
 }
@@ -57,14 +61,14 @@ setup(){
     ocm list cluster $MGMT_CLUSTER_NAME
     echo "MANAGEMENT CLUSTER NODES:"
     kubectl get nodes
+}
+
+install(){
     echo "Install Hypershift Operator"
     # aws s3api delete-bucket --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --region $AWS_REGION || true
     aws s3api create-bucket --acl public-read --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --create-bucket-configuration LocationConstraint=$AWS_REGION --region $AWS_REGION || true
     sleep 10 # wait a few seconds 
     hypershift install --oidc-storage-provider-s3-bucket-name $MGMT_CLUSTER_NAME-aws-rhperfscale-org --oidc-storage-provider-s3-credentials aws_credentials --oidc-storage-provider-s3-region $AWS_REGION  --enable-ocp-cluster-monitoring
-}
-
-install(){
     echo "Create Hosted cluster.."    
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .hosted_cluster_nodepool_size)
     export COMPUTE_WORKERS_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_instance_type)
@@ -72,27 +76,43 @@ install(){
     BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
     echo $PULL_SECRET > pull-secret
     hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION
-    kubectl get hostedcluster -n cluster $HOSTED_CLUSTER_NAME
+    kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     echo "Wait till hosted cluster is ready.."
     kubectl wait --for=condition=available --timeout=3600s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
 }
 
-postinstall(){
+# postinstall(){
+#     kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-admin-kubeconfig -o yaml > $HOSTED_CLUSTER_NAME-admin-kubeconfig.yaml
+#     kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-kubeadmin-password -o yaml > $HOSTED_CLUSTER_NAME-kubeadmin-password.yaml
+# }
 
-    _download_kubeconfig $(_get_cluster_id ${CLUSTER_NAME}) ./kubeconfig
-    kubectl delete secret ${KUBECONFIG_NAME} || true
-    kubectl create secret generic ${KUBECONFIG_NAME} --from-file=config=./kubeconfig
-    PASSWORD=$(rosa create admin -c $(_get_cluster_id ${CLUSTER_NAME}) -y 2>/dev/null | grep "oc login" | awk '{print $7}')
-    kubectl delete secret ${KUBEADMIN_NAME} || true
-    kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=${PASSWORD}
-    # create machinepool for workload nodes
-    rosa create machinepool -c ${CLUSTER_NAME} --instance-type ${WORKLOAD_TYPE} --name workload --labels node-role.kubernetes.io/workload= --taints role=workload:NoSchedule --replicas 3
-    # set expiration to 24h
-    rosa edit cluster -c $(_get_cluster_id ${CLUSTER_NAME}) --expiration=${EXPIRATION_TIME}
+cleanup(){
+
+    ROSA_CLUSTER_ID=$(_get_cluster_id ${MGMT_CLUSTER_NAME})
+    rosa delete cluster -c ${ROSA_CLUSTER_ID} -y
+    rosa logout
 }
 
 cat ${json_file}
 
 setup
-install
+
+if [[ "$operation" == "cleanup" ]]; then
+    printf "Running Cleanup Steps"
+    cleanup
+else
+    printf "INFO: Checking if management cluster is installed and ready"
+    CLUSTER_STATUS=$(_get_cluster_status ${MGMT_CLUSTER_NAME})
+    if [ -z "${CLUSTER_STATUS}" ] ; then
+        printf "INFO: Cluster not found, need a Management cluster to be available first"
+        exit 1
+    elif [ "${CLUSTER_STATUS}" == "ready" ] ; then
+        printf "INFO: Cluster ${MGMT_CLUSTER_NAME} already installed and ready, using..."
+	    install
+        # postinstall
+    else
+        printf "INFO: Cluster ${MGMT_CLUSTER_NAME} already installed but not ready, exiting..."
+	    exit 1
+    fi
+fi
 
