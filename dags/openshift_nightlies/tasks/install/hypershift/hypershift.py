@@ -36,7 +36,7 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
         # return hosted_install
 
         for iteration in range(config['number_of_hosted_cluster']):
-            yield "hosted-"+str(iteration), self._get_task(operation="hosted-"+str(iteration))
+            yield self._get_task(operation="hosted-"+str(iteration))
 
     # def _add_benchmarks(self, task_group):
     #     with TaskGroup(task_group, prefix_group_id=False, dag=self.dag) as benchmarks:

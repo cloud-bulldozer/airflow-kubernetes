@@ -223,9 +223,10 @@ class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         #     benchmarks >> cleanup_hosted_cluster >> cleanup_mgmt_cluster
         # else:
 
-        c_id, install_hosted_cluster = hosted_installer.get_hosted_install_task()
+        benchmark = self._add_benchmarks(task_group="hosted-0")
+        install_hosted_cluster = hosted_installer.get_hosted_install_task()
         for cluster in install_hosted_cluster:
-            benchmark = self._add_benchmarks(task_group=c_id)
+            # benchmark = self._add_benchmarks(task_group=cluster.task_id)
             install_mgmt_cluster >> rosa_post_installation >> cluster >> benchmark
 
         # install_mgmt_cluster >> rosa_post_installation >> install_hosted_cluster
