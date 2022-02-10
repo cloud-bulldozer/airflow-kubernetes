@@ -75,6 +75,9 @@ EOF
     fi
 }
 
+# replaces '_' with '-', openshift doent support this char
+export AIRFLOW_CTX_TASK_ID=$(echo $AIRFLOW_CTX_TASK_ID | sed -r 's/[_]+/-/g')
+
 if [[ $PLATFORM == "baremetal" ]]; then
     export UUID=$(uuidgen | head -c8)-$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')
     env >> /tmp/environment.txt
