@@ -56,7 +56,7 @@ def get_default_task_vars(release: OpenshiftRelease, task="install", task_dir=f"
         if release.platform == "aws" or release.platform == "azure" or release.platform == "gcp":
             file_path = f"{task_dir}/{task}/cloud/defaults.json"
         else:
-            file_path = f"{task_dir}/{task}/{release.platform}/defaults.json"                     
+            file_path = f"{task_dir}/{task}/{release.platform}/defaults.json"
     else:
         file_path = f"{task_dir}/{task}/defaults.json"
     return get_json(file_path)

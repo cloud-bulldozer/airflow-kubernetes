@@ -74,10 +74,11 @@ install(){
     echo "Create Hosted cluster.."    
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .hosted_cluster_nodepool_size)
     export COMPUTE_WORKERS_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_instance_type)
-    export NETWORK_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_network_type)    
+    export NETWORK_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_network_type)
+    export REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_control_plane_availability)   
     BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
     echo $PULL_SECRET > pull-secret
-    hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION
+    hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE
     sleep 10 # pause for few sec 
     kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     echo "Wait till hosted cluster is ready.."
