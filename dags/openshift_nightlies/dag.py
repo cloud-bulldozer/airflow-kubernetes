@@ -148,13 +148,14 @@ class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         connect_to_platform = self._get_platform_connector().get_task()
+        final_status=final_dag_status.get_task(self.dag)
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
 
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
-            install_cluster >> connect_to_platform >> benchmarks >> cleanup_cluster
+            install_cluster >> connect_to_platform >> benchmarks >> cleanup_cluster >> final_status
         else:
             install_cluster >> connect_to_platform >> benchmarks
 
@@ -167,6 +168,7 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         connect_to_platform = self._get_platform_connector().get_task()
+        final_status=final_dag_status.get_task(self.dag)
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
@@ -175,7 +177,7 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
 
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
-            install_cluster >> rosa_post_installation >> connect_to_platform >> benchmarks >> cleanup_cluster
+            install_cluster >> rosa_post_installation >> connect_to_platform >> benchmarks >> cleanup_cluster >> final_status
         else:
             install_cluster >> rosa_post_installation >> connect_to_platform >> benchmarks
 
@@ -188,6 +190,7 @@ class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         connect_to_platform = self._get_platform_connector().get_task()
+        final_status=final_dag_status.get_task(self.dag)
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
@@ -195,7 +198,7 @@ class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
 
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
-            install_cluster >> connect_to_platform >> benchmarks >> cleanup_cluster
+            install_cluster >> connect_to_platform >> benchmarks >> cleanup_cluster >> final_status
         else:
             install_cluster >> connect_to_platform >> benchmarks
 
