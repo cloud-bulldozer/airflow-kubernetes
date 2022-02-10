@@ -92,6 +92,15 @@ postinstall(){
     kubectl delete secret $HOSTED_KUBECONFIG_NAME $HOSTED_KUBEADMIN_NAME || true
     kubectl create secret generic $HOSTED_KUBECONFIG_NAME --from-file=config=./kubeconfig
     kubectl create secret generic $HOSTED_KUBEADMIN_NAME --from-literal=KUBEADMIN_PASSWORD=${PASSWORD}
+    echo "Wait till Hosted cluster is ready.."
+    export KUBECONFIG=./kubeconfig
+    node=0
+    while [ $node -lt $COMPUTE_WORKERS_NUMBER ]
+    do
+        node=$(oc get nodes | grep worker | grep -i ready | wc -l)
+        echo "Available nodes on $$HOSTED_CLUSTER_NAME ...$node"
+        sleep 300
+    done
 }
 
 cleanup(){

@@ -46,7 +46,7 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
         command=f"{constants.root_dag_dir}/scripts/install/hypershift.sh -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}"
 
         task = BashOperator(
-            task_id=f"{operation}-install",
+            task_id=f"{operation}-cluster-install",
             depends_on_past=False,
             bash_command=command,
             retries=3,
