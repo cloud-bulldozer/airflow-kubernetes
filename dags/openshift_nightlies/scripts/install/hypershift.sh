@@ -40,6 +40,8 @@ setup(){
     export ROSA_TOKEN=$(cat ${json_file} | jq -r .rosa_token_${ROSA_ENVIRONMENT})
     export MGMT_CLUSTER_NAME=$(cat ${json_file} | jq -r .openshift_cluster_name)
     export HOSTED_CLUSTER_NAME=$MGMT_CLUSTER_NAME-$HOSTED_NAME
+    export HOSTED_KUBECONFIG_NAME=$(echo $KUBECONFIG_NAME | awk -F-kubeconfig '{print$1}')-$HOSTED_NAME-kubeconfig
+    export HOSTED_KUBEADMIN_NAME=$(echo $KUBEADMIN_NAME | awk -F-kubeadmin '{print$1}')-$HOSTED_NAME-kubeadmin    
     export KUBECONFIG=/home/airflow/auth/config
     export ROSA_CLI_VERSION=$(cat ${json_file} | jq -r .rosa_cli_version)
     if [[ ${ROSA_CLI_VERSION} == "master" ]]; then
@@ -87,9 +89,9 @@ postinstall(){
     kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-admin-kubeconfig -o json | jq -r '.data.kubeconfig' | base64 -d > ./kubeconfig
     PASSWORD=$(kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-kubeadmin-password -o json | jq -r '.data.password' | base64 -d)
     unset KUBECONFIG # Unsetting Management cluster kubeconfig, will fall back to Airflow cluster kubeconfig
-    kubectl delete secret $HOSTED_CLUSTER_NAME-kubeconfig $HOSTED_CLUSTER_NAME-kubeadmin || true
-    kubectl create secret generic $HOSTED_CLUSTER_NAME-kubeconfig --from-file=config=./kubeconfig
-    kubectl create secret generic $HOSTED_CLUSTER_NAME-kubeadmin --from-literal=KUBEADMIN_PASSWORD=${PASSWORD}
+    kubectl delete secret $HOSTED_KUBECONFIG_NAME $HOSTED_KUBEADMIN_NAME || true
+    kubectl create secret generic $HOSTED_KUBECONFIG_NAME --from-file=config=./kubeconfig
+    kubectl create secret generic $HOSTED_KUBEADMIN_NAME --from-literal=KUBEADMIN_PASSWORD=${PASSWORD}
 }
 
 cleanup(){
