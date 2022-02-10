@@ -76,14 +76,16 @@ install(){
     BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
     echo $PULL_SECRET > pull-secret
     hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION
+    sleep 10 # pause for few sec 
     kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     echo "Wait till hosted cluster is ready.."
     kubectl wait --for=condition=available --timeout=3600s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
 }
 
 postinstall(){
-    kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-admin-kubeconfig -o json | jq -r '.data.config' | base64 -d > ./kubeconfig
-    PASSWORD=$(kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-kubeadmin-password -o json | jq -r '.data.KUBEADMIN_PASSWORD' | base64 -d)
+    echo "Create Hosted cluster secrets for benchmarks.."
+    kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-admin-kubeconfig -o json | jq -r '.data.kubeconfig' | base64 -d > ./kubeconfig
+    PASSWORD=$(kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-kubeadmin-password -o json | jq -r '.data.password' | base64 -d)
     unset KUBECONFIG # Unsetting Management cluster kubeconfig, will fall back to Airflow cluster kubeconfig
     kubectl delete secret $HOSTED_CLUSTER_NAME-kubeconfig $HOSTED_CLUSTER_NAME-kubeadmin || true
     kubectl create secret generic $HOSTED_CLUSTER_NAME-kubeconfig --from-file=config=./kubeconfig
@@ -91,6 +93,7 @@ postinstall(){
 }
 
 cleanup(){
+    echo "Delete Hosted cluster.."
 
     ROSA_CLUSTER_ID=$(_get_cluster_id ${MGMT_CLUSTER_NAME})
     rosa delete cluster -c ${ROSA_CLUSTER_ID} -y
