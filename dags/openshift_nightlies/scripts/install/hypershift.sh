@@ -98,7 +98,7 @@ postinstall(){
     while [ $node -lt $COMPUTE_WORKERS_NUMBER ]
     do
         node=$(oc get nodes | grep worker | grep -i ready | wc -l)
-        echo "Available nodes on $$HOSTED_CLUSTER_NAME ...$node"
+        echo "Available nodes on cluster - $HOSTED_CLUSTER_NAME ...$node"
         sleep 300
     done
 }
