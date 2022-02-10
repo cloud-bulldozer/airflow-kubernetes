@@ -13,6 +13,6 @@
     "number_of_hosted_cluster": 2,
     "hosted_cluster_nodepool_size": 3,
     "hosted_cluster_instance_type": "m5.2xlarge",
-    "hosted_cluster_network_type": "OpenShiftSDN", // Supports either Calico or OpenshiftSDN. (default "OpenShiftSDN")
-    "hosted_control_plane_availability": "SingleReplica" // Supported options: SingleReplica, HighlyAvailable (default "SingleReplica")
+    "hosted_cluster_network_type": "OpenShiftSDN", 
+    "hosted_control_plane_availability": "SingleReplica" 
 }
