@@ -9,7 +9,7 @@ from airflow.operators.python import PythonOperator
 
 def final_status(**kwargs):
     for task_instance in kwargs['dag_run'].get_task_instances():
-        if task_instance.current_state() != State.SUCCESS and task_instance.task_id != kwargs['task_instance'].task_id:
+        if task_instance.current_state() != 'success' and task_instance.task_id != kwargs['task_instance'].task_id:
             raise Exception("Task {} failed. Failing this DAG run".format(task_instance.task_id))
 
 
