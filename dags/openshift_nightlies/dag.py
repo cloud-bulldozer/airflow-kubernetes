@@ -236,7 +236,7 @@ class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         return e2e.E2EBenchmarks(self.dag, self.config, self.release, task_group)
 
     def _add_benchmarks(self, task_group):
-        with TaskGroup(task_group, prefix_group_id=True, dag=self.dag) as benchmarks:
+        with TaskGroup(task_group, prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks(task_group).get_benchmarks()
             chain(*benchmark_tasks)
         return benchmarks
