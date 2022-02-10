@@ -32,7 +32,7 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
         }
 
         for iteration in range(config['number_of_hosted_cluster']):
-            c_id = f"{'hosted-'+str(iteration)}"
+            c_id = f"{'hosted-'+str(iteration+1)}" # adding 1 to name the cluster hosted-1, hosted-2..
             yield c_id, self._get_task(operation=c_id)
 
     # Create Airflow Task for Install/Cleanup steps
