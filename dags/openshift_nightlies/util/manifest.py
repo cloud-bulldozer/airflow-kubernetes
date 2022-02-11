@@ -174,30 +174,25 @@ class Manifest():
                     )
     def get_prebuilt_releases(self):
         prebuilt = self.yaml['platforms']['prebuilt']
-        for version in self.yaml['versions']:
-            if version['version'] in prebuilt['versions']:
-                version_number = version['version']
-                release_stream = version['releaseStream']
-                version_alias = version['alias']
-                for variant in prebuilt['variants']:
-                    release = OpenshiftRelease(
-                        platform="prebuilt",
-                        version=version_number,
-                        release_stream=release_stream,
-                        latest_release={},
-                        variant=variant['name'],
-                        config=variant['config'],
-                        version_alias=version_alias
-                    )
-                    schedule = self._get_schedule(variant, 'prebuilt')
-                    dag_config = self._build_dag_config(schedule)
+        for variant in prebuilt['variants']:
+            release = OpenshiftRelease(
+                platform="prebuilt",
+                version="4.X",
+                release_stream="",
+                latest_release={},
+                variant=variant['name'],
+                config=variant['config'],
+                version_alias=""
+            )
+            schedule = self._get_schedule(variant, 'prebuilt')
+            dag_config = self._build_dag_config(schedule)
 
-                    self.releases.append(
-                        {
-                            "config": dag_config,
-                            "release": release
-                        }
-                    )
+            self.releases.append(
+                {
+                    "config": dag_config,
+                    "release": release
+                }
+            )
 
 
 
