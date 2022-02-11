@@ -18,7 +18,8 @@ def alert_members(context):
     return members    
 
 def get_hyperlink(context):
-    return '{"blocks":[{"type": "section","text":{"type": "mrkdwn","text": "<{0}|Dag Link>"}}]}'.format(context.get('task_instance').log_url)        
+    link= '{"blocks":[{"type": "section","text":{"type": "mrkdwn","text": "<{0}|Dag Link>"}}]}'.format(context.get('task_instance').log_url)
+    return str(link)        
 
 
 def task_fail_slack_alert(context):
