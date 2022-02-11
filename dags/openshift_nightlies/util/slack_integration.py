@@ -7,11 +7,16 @@ from openshift_nightlies.util import var_loader
 SLACK_CONN_ID = 'slack'
 
 def alert_members(context):
-    if "rosa" in context.get('task_instance').dag_id or "rogcp" in context.get('task_instance').dag_id or "-aro-" in context.get('task_instance').dag_id:
-        members=" @perfscale-managed-services-team" 
-    elif "aws" in context.get('task_instance').dag_id or "azure" in context.get('task_instance').dag_id or "-gcp-" in context.get('task_instance').dag_id or "baremetal" in context.get('task_instance').dag_id:
+
+    dag_id = context.get('task_instance').dag_id 
+    managed_services_terms = [ "rosa", "rogcp", "-aro-" ] 
+    perf_core_terms = ["aws", "azure", "-gcp-","baremetal"]
+
+    if any(term in dag_id for term in managed_services_terms):
+        members = " @perfscale-managed-services-team"
+    elif any(term in dag_id for term in perf_core_terms):
         members=" @perfscale-core-team"
-    elif "openstack" in context.get('task_instance').dag_id:
+    elif "openstack" in dag_id:
         members=" @asagtani @masco"
     else:
         members=""
