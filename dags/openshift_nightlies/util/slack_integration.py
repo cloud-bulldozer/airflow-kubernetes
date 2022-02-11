@@ -18,7 +18,7 @@ def alert_members(context):
     return members    
 
 def get_hyperlink(context):
-    link= r'{"blocks":[{"type": "section","text":{"type": "mrkdwn","text":'+"<{0}|Dag Link>".format(context.get('task_instance').log_url)+'"}}]}'
+    link= "<{0}|Dag Link>".format(context.get('task_instance').log_url)
     return str(link)        
 
 
