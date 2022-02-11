@@ -177,7 +177,7 @@ class Manifest():
         for variant in prebuilt['variants']:
             release = OpenshiftRelease(
                 platform="prebuilt",
-                version="4.X",
+                version="4.x",
                 release_stream="",
                 latest_release={},
                 variant=variant['name'],

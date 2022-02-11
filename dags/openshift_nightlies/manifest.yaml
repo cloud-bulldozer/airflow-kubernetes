@@ -134,7 +134,7 @@ platforms:
           install: rogcp/sdn.json
           benchmarks: data-plane.json
   prebuilt:
-    versions: ["4.X"]
+    versions: ["4.x"]
     variants:
       - name: control-plane
         schedule:  "None"
