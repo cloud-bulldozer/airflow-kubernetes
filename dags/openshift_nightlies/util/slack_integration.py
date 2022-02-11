@@ -9,7 +9,7 @@ SLACK_CONN_ID = 'slack'
 def alert_members(context):
     if "rosa" in context.get('task_instance').dag_id or "rogcp" in context.get('task_instance').dag_id or "-aro-" in context.get('task_instance').dag_id:
         members=" @perfscale-managed-services-team" 
-    elif "awsf" in context.get('task_instance').dag_id or "azure" in context.get('task_instance').dag_id or "-gcp-" in context.get('task_instance').dag_id or "baremetal" in context.get('task_instance').dag_id:
+    elif "aws" in context.get('task_instance').dag_id or "azure" in context.get('task_instance').dag_id or "-gcp-" in context.get('task_instance').dag_id or "baremetal" in context.get('task_instance').dag_id:
         members=" @perfscale-core-team"
     elif "openstack" in context.get('task_instance').dag_id:
         members=" @asagtani @masco"
@@ -24,9 +24,9 @@ def get_hyperlink(context):
 
 def task_fail_slack_alert(context):
     slack_webhook_token = BaseHook.get_connection(SLACK_CONN_ID).password
-    #if var_loader.get_git_user() != "cloud-bulldozer":
-    #    print("Task Failed")
-    #    return
+    if var_loader.get_git_user() != "cloud-bulldozer":
+        print("Task Failed")
+        return
     if "index" in context.get('task_instance').task_id:
         print("Index Task Failed")
         return
