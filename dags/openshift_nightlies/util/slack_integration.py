@@ -29,8 +29,9 @@ def get_hyperlink(context):
 
 def task_fail_slack_alert(context):
     slack_webhook_token = BaseHook.get_connection(SLACK_CONN_ID).password
-    if var_loader.get_git_user() != "cloud-bulldozer":
-        return
+    #if var_loader.get_git_user() != "cloud-bulldozer":
+    #    print("DAG Failed since one or more upstream tasks failed")
+    #    return
     if context.get('task_instance').task_id != "final_status":
         print(context.get('task_instance').task_id,"Task failed")
         return
