@@ -32,12 +32,12 @@ def task_fail_slack_alert(context):
     if var_loader.get_git_user() != "cloud-bulldozer":
         print("Task Failed")
         return
-    if "index" in context.get('task_instance').task_id:
-        print("Index Task Failed")
+    if context.get('task_instance').task_id != "final_status":
+        print(context.get('task_instance').task_id,"Task failed")
         return
    
     slack_msg = """
-            :red_circle: Task Failed {mem} 
+            :red_circle: DAG Failed {mem} 
             *Task*: {task}  
             *Dag*: {dag} 
             *Execution Time*: {exec_date}  
