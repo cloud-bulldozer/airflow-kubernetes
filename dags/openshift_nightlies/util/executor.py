@@ -23,6 +23,10 @@ def get_default_executor_config(dag_config: DagConfig, executor_image='airflow-a
         }
 
 def get_executor_config_with_cluster_access(dag_config: DagConfig, release: OpenshiftRelease, executor_image="airflow-ansible"):
+    if release.platform == "aro":
+        return ""
+
+
     return {
             "pod_override": k8s.V1Pod(
                 spec=k8s.V1PodSpec(

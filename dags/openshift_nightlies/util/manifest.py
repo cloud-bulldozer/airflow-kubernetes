@@ -226,9 +226,29 @@ class Manifest():
             return None
     
     def _build_dag_config(self, schedule_interval):
-        return DagConfig(
-            schedule_interval=schedule_interval,
-            cleanup_on_success=bool(self.yaml['dagConfig']['cleanupOnSuccess']),
-            executor_image=self.yaml['dagConfig'].get('executorImages', None),
-            dependencies=self._get_dependencies()
-        )
+        if var_loader.get_git_user()  == "cloud-bulldozer":
+            prod_args = { 
+                'owner': 'airflow',
+                'depends_on_past': False,
+                'start_date': datetime(2021, 1, 1),
+                'email': ['airflow@example.com'],
+                'email_on_failure': False,
+                'email_on_retry': False,
+                'retries': 1,
+                'on_failure_callback': slack_integration.task_fail_slack_alert,
+                'retry_delay': timedelta(minutes=5)
+            }
+            return DagConfig(
+                schedule_interval=schedule_interval,
+                cleanup_on_success=bool(self.yaml['dagConfig']['cleanupOnSuccess']),
+                default_args=prod_args,
+                executor_image=self.yaml['dagConfig'].get('executorImages', None),
+                dependencies=self._get_dependencies()
+            )
+        else: 
+            return DagConfig(
+                schedule_interval=schedule_interval,
+                cleanup_on_success=bool(self.yaml['dagConfig']['cleanupOnSuccess']),
+                executor_image=self.yaml['dagConfig'].get('executorImages', None),
+                dependencies=self._get_dependencies()
+            )
