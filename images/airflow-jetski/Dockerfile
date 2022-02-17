@@ -7,7 +7,8 @@ RUN dnf --enablerepo=epel -y install sudo sshpass openssh-clients git ipmitool a
 
 RUN pip3.8 install update
 RUN pip3.8 install click==7.1.2 idna==2.10 kubernetes==11.0.0 openshift==0.11.2 # due to apacke-airflow dependency version limit
-RUN pip3.8 install jmespath psycopg2-binary apache-airflow[kubernetes] apache-airflow-providers-amazon apache-airflow-providers-elasticsearch apache-airflow-providers-hashicorp[google] j2cli openshift netaddr
+#RUN pip3.8 install jmespath psycopg2-binary apache-airflow[kubernetes] apache-airflow-providers-amazon apache-airflow-providers-elasticsearch apache-airflow-providers-hashicorp[google] j2cli openshift netaddr
+RUN pip3.8 install jmespath psycopg2-binary apache-airflow apache-airflow-providers-slack apache-airflow-providers-amazon apache-airflow-providers-elasticsearch apache-airflow-providers-hashicorp j2cli openshift netaddr
 
 # Hammercli
 # epel-release is needed, but was installed above.
