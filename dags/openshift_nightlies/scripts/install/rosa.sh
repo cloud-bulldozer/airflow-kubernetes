@@ -24,6 +24,28 @@ _get_cluster_status(){
     echo $(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .status.state')
 }
 
+_wait_for_cluster_ready(){
+    echo "INFO: Waiting about 3 hour for cluster on ready status"
+    # 180 iterations, sleeping 60 seconds, 3 hours of wait
+    for i in `seq 1 180` ; do
+        CLUSTER_STATUS=$(_get_cluster_status $1)
+        if [ ${CLUSTER_STATUS} == "ready" ] ; then
+            sleep 120 # Wait 120 seconds to allow OCM to really finish the cluster installation
+	    echo "INFO: Cluster on ready status, dumping installation logs..."
+            rosa logs install -c $1
+    	    rosa describe cluster -c $1
+            return 0
+        else
+            echo "INFO: ${i}/180. Cluster on ${CLUSTER_STATUS} status, waiting 60 seconds for next check"
+            sleep 60
+        fi
+    done
+    echo "ERROR: Cluster $1 not installed after 3 hours, dumping installation logs..."
+    rosa logs install -c $1
+    rosa describe cluster -c $1
+    exit 1
+}
+
 setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
@@ -55,7 +77,8 @@ install(){
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .openshift_network_type)
     export ROSA_VERSION=$(rosa list versions -o json --channel-group=nightly | jq -r '.[] | select(.raw_id|startswith('\"${version}\"')) | .raw_id' | sort -rV | head -1)
     [ -z ${ROSA_VERSION} ] && echo "ERROR: Image not found for version (${version}) on ROSA Nightly channel group" && exit 1
-    rosa create cluster --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}-nightly" --channel-group=nightly --multi-az --compute-machine-type ${COMPUTE_WORKERS_TYPE} --compute-nodes ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} --watch
+    rosa create cluster --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}-nightly" --channel-group=nightly --multi-az --compute-machine-type ${COMPUTE_WORKERS_TYPE} --compute-nodes ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE}
+    _wait_for_cluster_ready ${CLUSTER_NAME}
     postinstall
 }
 
