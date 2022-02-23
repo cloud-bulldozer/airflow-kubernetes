@@ -12,24 +12,26 @@ generate_external_labels(){
 
 }
 
-
-install_grafana_agent(){
+cleanup_old_resources(){
     if [[ $(oc get project | grep grafana-agent) ]]; then
-        echo "Delete existing resources and namespace"
+        echo "Delete existing grafana resources and namespace"
         oc delete project grafana-agent --force
         # wait for few sec to finish deleting
-        sleep 15
+        sleep 80
     fi
+    if [[ $(oc get project | grep loki) ]]; then
+        echo "Delete existing loki resources and namespace"
+        oc delete project loki --force
+        # wait for few sec to finish deleting
+        sleep 80
+    fi  
+}
+
+install_grafana_agent(){
     envsubst < $SCRIPT_DIR/templates/grafana-agent.yaml | kubectl apply -f -
 }
 
 install_promtail(){
-    if [[ $(oc get project | grep loki) ]]; then
-        echo "Delete existing resources and namespace"
-        oc delete project loki --force
-        # wait for few sec to finish deleting
-        sleep 15
-    fi    
     helm repo add grafana https://grafana.github.io/helm-charts 
     helm repo update
     oc create namespace loki || true
@@ -116,6 +118,7 @@ if [[ $REL_PLATFORM == "baremetal" ]]; then
     bm_setup
 else
     setup
+    cleanup_old_resources
     generate_external_labels
     install_grafana_agent
     install_promtail

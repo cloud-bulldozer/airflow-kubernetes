@@ -172,6 +172,28 @@ class Manifest():
                             "release": release
                         }
                     )
+    def get_prebuilt_releases(self):
+        prebuilt = self.yaml['platforms']['prebuilt']
+        for variant in prebuilt['variants']:
+            release = OpenshiftRelease(
+                platform="prebuilt",
+                version="4.x",
+                release_stream="",
+                latest_release={},
+                variant=variant['name'],
+                config=variant['config'],
+                version_alias=""
+            )
+            schedule = self._get_schedule(variant, 'prebuilt')
+            dag_config = self._build_dag_config(schedule)
+
+            self.releases.append(
+                {
+                    "config": dag_config,
+                    "release": release
+                }
+            )
+
 
 
     def get_releases(self):
@@ -185,6 +207,8 @@ class Manifest():
             self.get_rosa_releases()
         if 'rogcp' in self.yaml['platforms']:
             self.get_rogcp_releases()
+        if 'prebuilt' in self.yaml['platforms']:
+            self.get_prebuilt_releases()
         return self.releases
 
     def _get_dependencies(self):
