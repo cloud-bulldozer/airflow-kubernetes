@@ -29,7 +29,7 @@ setup(){
     export PATH=$PATH:$(pwd)
 
     if [[ ! -z "$KUBEADMIN_PASSWORD" ]]; then 
-        oc login -u kubeadmin -p $KUBEADMIN_PASSWORD
+        oc login -u kubeadmin -p $KUBEADMIN_PASSWORD --insecure-skip-tls-verify
     fi
 }
 

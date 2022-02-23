@@ -28,3 +28,17 @@ This data is used to generate a dag and load in the variables defined in the `re
 
 The manifest is just the `manifest.yaml` file that defines the releases. The `dag.py` script will read that file in and generate the DAGs accordingly.
 
+## Prebuilt Clusters
+
+To run a dag using an already existing cluster, you can make use of the 2 prebuilt dags, ie 4.x-prebuilt-data-plane and 4.x-prebuilt-control-plane. 
+
+These dags can only be triggered manually and have to be triggered using the "Trigger with config option" upon which you will be prompted to enter the openshift credentials in json format.
+```
+{
+    "KUBEUSER": "<Enter openshift cluster-admin username>",
+    "KUBEPASSWORD": "<Enter openshift cluster password>",
+    "KUBEURL": "<Enter cluster URL>"
+}
+``` 
+Airflow will use the provided credentials to login to your specified cluster to run the benchmarks used for that dag.
+

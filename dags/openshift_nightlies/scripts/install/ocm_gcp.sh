@@ -51,6 +51,7 @@ setup(){
     export ROSA_TOKEN=$(cat ${json_file} | jq -r .rosa_token_${ROSA_ENVIRONMENT})
     export CLUSTER_NAME=$(cat ${json_file} | jq -r .openshift_cluster_name)
     echo ${GCP_MANAGED_SERVICES_TOKEN} > ./serviceAccount.json
+    export CLOUDSDK_PYTHON=python3.9
     ocm login --url=https://api.stage.openshift.com --token="${ROSA_TOKEN}"
     gcloud config set account osd-ccs-admin@openshift-perfscale.iam.gserviceaccount.com
     gcloud auth activate-service-account osd-ccs-admin@openshift-perfscale.iam.gserviceaccount.com --key-file ./serviceAccount.json

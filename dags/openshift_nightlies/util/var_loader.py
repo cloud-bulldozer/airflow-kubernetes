@@ -1,6 +1,6 @@
 import json
 from os import environ
-from openshift_nightlies.util import constants, executor
+from openshift_nightlies.util import constants
 from openshift_nightlies.models.release import OpenshiftRelease
 
 import requests

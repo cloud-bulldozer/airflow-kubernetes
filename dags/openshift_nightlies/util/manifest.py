@@ -172,6 +172,28 @@ class Manifest():
                             "release": release
                         }
                     )
+    def get_prebuilt_releases(self):
+        prebuilt = self.yaml['platforms']['prebuilt']
+        for variant in prebuilt['variants']:
+            release = OpenshiftRelease(
+                platform="prebuilt",
+                version="4.x",
+                release_stream="",
+                latest_release={},
+                variant=variant['name'],
+                config=variant['config'],
+                version_alias=""
+            )
+            schedule = self._get_schedule(variant, 'prebuilt')
+            dag_config = self._build_dag_config(schedule)
+
+            self.releases.append(
+                {
+                    "config": dag_config,
+                    "release": release
+                }
+            )
+
 
     def get_hypershift_releases(self):
         hypershift = self.yaml['platforms']['hypershift']
@@ -212,7 +234,9 @@ class Manifest():
         if 'rogcp' in self.yaml['platforms']:
             self.get_rogcp_releases()
         if 'hypershift' in self.yaml['platforms']:
-            self.get_hypershift_releases()            
+            self.get_hypershift_releases()
+        if 'prebuilt' in self.yaml['platforms']:
+            self.get_prebuilt_releases()
         return self.releases
 
     def _get_dependencies(self):
@@ -224,7 +248,7 @@ class Manifest():
 
     def _get_schedule(self, variant, platform):
         schedules = self.yaml['dagConfig']['schedules']
-        if bool(schedules.get("enabled", False) and var_loader.get_git_user() == "cloud-bulldozer"):
+        if bool(schedules.get("enabled", False)) and platform != "prebuilt" and var_loader.get_git_user() == "cloud-bulldozer":
             return variant.get('schedule', schedules.get(platform, schedules['default']))
         else:
             return None

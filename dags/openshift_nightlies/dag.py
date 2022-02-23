@@ -10,6 +10,7 @@ from airflow.models.baseoperator import chain
 from airflow.operators.bash import BashOperator
 from airflow.utils.task_group import TaskGroup
 from airflow.config_templates.airflow_local_settings import LOG_FORMAT
+from airflow.models.param import Param
 
 # Configure Path to have the Python Module on it
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
@@ -21,8 +22,9 @@ from openshift_nightlies.tasks.install.baremetal import jetski, webfuse
 from openshift_nightlies.tasks.install.rosa import rosa
 from openshift_nightlies.tasks.install.rogcp import rogcp
 from openshift_nightlies.tasks.install.hypershift import hypershift
+from openshift_nightlies.tasks.install.prebuilt import initialize_cluster
 from openshift_nightlies.tasks.benchmarks import e2e
-from openshift_nightlies.tasks.utils import rosa_post_install, scale_ci_diagnosis, platform_connector
+from openshift_nightlies.tasks.utils import rosa_post_install, scale_ci_diagnosis, platform_connector,final_dag_status
 from openshift_nightlies.tasks.index import status
 from openshift_nightlies.util import var_loader, manifest, constants
 from abc import ABC, abstractmethod
@@ -45,17 +47,17 @@ class AbstractOpenshiftNightlyDAG(ABC):
         self.config = config
         self.release_name = release.get_release_name()
 
-        tags = []
-        tags.append(self.release.platform)
-        tags.append(self.release.release_stream)
-        tags.append(self.release.variant)
-        tags.append(self.release.version_alias)
-        tags.append(self.release._generate_cluster_name())
+        self.tags = []
+        self.tags.append(self.release.platform)
+        self.tags.append(self.release.release_stream)
+        self.tags.append(self.release.variant)
+        self.tags.append(self.release.version_alias)
+        self.tags.append(self.release._generate_cluster_name())
 
         self.dag = DAG(
             self.release_name,
             default_args=self.config.default_args,
-            tags=tags,
+            tags=self.tags,
             description=f"DAG for Openshift Nightly builds {self.release_name}",
             schedule_interval=self.config.schedule_interval,
             max_active_runs=1,
@@ -90,6 +92,7 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         connect_to_platform = self._get_platform_connector().get_task()
+        final_status=final_dag_status.get_task(self.dag)
 
         with TaskGroup("utils", prefix_group_id=False, dag=self.dag) as utils:
             utils_tasks = self._get_scale_ci_diagnosis().get_utils()
@@ -101,7 +104,7 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
-            install_cluster >> connect_to_platform >> benchmarks >> utils >> cleanup_cluster
+            install_cluster >> connect_to_platform >> benchmarks >> utils >> cleanup_cluster >> final_status
         else:
             install_cluster >> connect_to_platform >> benchmarks >> utils
 
@@ -148,13 +151,14 @@ class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         connect_to_platform = self._get_platform_connector().get_task()
+        final_status=final_dag_status.get_task(self.dag)
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
 
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
-            install_cluster >> connect_to_platform >> benchmarks >> cleanup_cluster
+            install_cluster >> connect_to_platform >> benchmarks >> cleanup_cluster >> final_status
         else:
             install_cluster >> connect_to_platform >> benchmarks
 
@@ -167,6 +171,7 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         connect_to_platform = self._get_platform_connector().get_task()
+        final_status=final_dag_status.get_task(self.dag)
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
@@ -175,7 +180,7 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
 
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
-            install_cluster >> rosa_post_installation >> connect_to_platform >> benchmarks >> cleanup_cluster
+            install_cluster >> rosa_post_installation >> connect_to_platform >> benchmarks >> cleanup_cluster >> final_status
         else:
             install_cluster >> rosa_post_installation >> connect_to_platform >> benchmarks
 
@@ -188,6 +193,7 @@ class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         connect_to_platform = self._get_platform_connector().get_task()
+        final_status=final_dag_status.get_task(self.dag)
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
@@ -195,7 +201,7 @@ class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
 
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
-            install_cluster >> connect_to_platform >> benchmarks >> cleanup_cluster
+            install_cluster >> connect_to_platform >> benchmarks >> cleanup_cluster >> final_status
         else:
             install_cluster >> connect_to_platform >> benchmarks
 
@@ -230,6 +236,44 @@ class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
             chain(*benchmark_tasks)
         return benchmarks
 
+class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
+    def __init__(self, Release: OpenshiftRelease, Config: DagConfig):
+        AbstractOpenshiftNightlyDAG.__init__(self, release=Release, config=Config)
+
+        self.dag = DAG(
+            self.release_name,
+            default_args=self.config.default_args,
+            tags=self.tags,
+            description=f"DAG for Prebuilt Openshift Nightly builds {self.release_name}",
+            schedule_interval=self.config.schedule_interval,
+            max_active_runs=1,
+            catchup=False,
+            params={
+                'KUBEUSER': Param('<Enter openshift cluster-admin username>'),
+                'KUBEPASSWORD': Param('<Enter openshift cluster password>'),
+                'KUBEURL': Param('<Enter cluster URL>')
+            }
+        )
+    
+    def build(self):       
+
+        installer = self._get_openshift_installer()
+        initialize_cluster = installer.initialize_cluster_task()
+        connect_to_platform = self._get_platform_connector().get_task()
+
+        with TaskGroup("utils", prefix_group_id=False, dag=self.dag) as utils:
+            utils_tasks = self._get_scale_ci_diagnosis().get_utils()
+            chain(*utils_tasks)
+
+        with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
+            benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
+            chain(*benchmark_tasks)
+
+        initialize_cluster >> connect_to_platform >> benchmarks >> utils
+        
+    def _get_openshift_installer(self):
+        return initialize_cluster.InitializePrebuiltCluster(self.dag, self.config, self.release)
+
 def build_releases():
     release_manifest = manifest.Manifest(constants.root_dag_dir)
     log.info(f"Latest Releases Found: {release_manifest.latest_releases}")
@@ -246,7 +290,9 @@ def build_releases():
         elif openshift_release.platform == "rogcp":
             nightly = RoGCPNightlyDAG(openshift_release, dag_config)
         elif openshift_release.platform == "hypershift":
-            nightly = HypershiftNightlyDAG(openshift_release, dag_config)            
+            nightly = HypershiftNightlyDAG(openshift_release, dag_config)
+        elif openshift_release.platform == "prebuilt":
+            nightly = PrebuiltOpenshiftNightlyDAG(openshift_release, dag_config)
         else:
             nightly = CloudOpenshiftNightlyDAG(openshift_release, dag_config)
 
