@@ -138,12 +138,12 @@ platforms:
     versions: ["4.x"]
     variants:
       - name: control-plane
-        schedule:  "None"
+        schedule: None
         config: 
           install: None
           benchmarks: control-plane.json
       - name: data-plane
-        schedule: "None"
+        schedule: None
         config: 
           install: None
           benchmarks: data-plane.json
