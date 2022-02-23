@@ -44,6 +44,7 @@ class AbstractOpenshiftInstaller(ABC):
 
         # Merge all variables, prioritizing Airflow Secrets over git based vars
         self.config = {
+            **self.release.get_latest_release(),
             **self.vars,
             **self.ansible_orchestrator,
             **self.install_secrets,
@@ -53,7 +54,6 @@ class AbstractOpenshiftInstaller(ABC):
             **self.openstack_creds,
             **self.rosa_creds,
             **self.rhacs_creds,
-            **self.release.get_latest_release(),
             **{ "es_server": var_loader.get_secret('elasticsearch'),
                 "thanos_receiver_url": var_loader.get_secret('thanos_receiver_url'),
                 "loki_receiver_url": var_loader.get_secret('loki_receiver_url') }

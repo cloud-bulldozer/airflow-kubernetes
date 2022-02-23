@@ -53,7 +53,7 @@ The report lifecycle starts with how the raw performance results are indexed. Cu
 ```
 
 
-### Step 1: Get all the runs and benchmark results
+### Step 1 -- Collect: Get all the runs and benchmark results
 ---
 
 The first step in the workflow is grab all the runs that ran in the last `n` days. That's pretty easy in ES:
@@ -71,7 +71,7 @@ The first step in the workflow is grab all the runs that ran in the last `n` day
 
 After that we take these metadata docs and group them by the clusters to see what benchmarks each cluster had. After that we go through each of these benchmarks and grab the raw performance data from their respective indices. We can use the `build_tag` field to understand what type of benchmark was ran (i.e. if `build_tag == cluster-density` then we know it's a kube-burner benchmark and to query `ripsaw-kube-burner`). 
 
-This generates the `results` field in a report doc. 
+This generates the `results` field in a report doc. This step 
 
 ### Step 2: Get metrics from Thanos (optional) 
 ---

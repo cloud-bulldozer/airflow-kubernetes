@@ -17,17 +17,26 @@ We need to install and perf test Openshift in a variety of different environment
 ### How does it work? 
 We model the variable hierarchy directly off of the way we define a `release` ([Read about releases](./manifest_and_releases.md)).
 
-All `release` configurations should go into `releases` and no where else. All default task configurations should go into `defaults.json` in the task package and no where else. This is a strict requirement and PRs breaking this pattern should not be merged. 
+All `release` configurations should go into `config` and no where else. All default task configurations should go into `defaults.json` in the task package and no where else. This is a strict requirement and PRs breaking this pattern should not be merged. 
 
-The `releases` folder has a structure as follows:
+The `config` folder has a structure as follows:
 
 ```
-releases
-└── $version
-    └── $platform
-        └── $profile
-            └── $task.json
+config
+└── $task
+    └── $unique_task_config_name.json
 ```
+
+For the install task specifically the structure is: 
+
+```
+config
+└── $install
+    └──$platform
+        └── $unique_task_config_name.json
+```
+
+This is because install is the only task that is not platform agnostic. 
 
 If using the `util.var_loader` module functions to load task variables, this pattern will automatically load the task defaults as well as the release specific configurations and apply them properly. 
 
@@ -39,10 +48,10 @@ If using the `util.var_loader` module functions to load task variables, this pat
 
 ## Task Variables
 
-Task Variables are variables used in a specific instance of a task. As mentioned [here](#how-does-it-work), release-specific configuration of tasks should go in the `releases` directory and follow the variable hierarchy. 
+Task Variables are variables used in a specific instance of a task. As mentioned [here](#how-does-it-work), unique, often-used configuration of tasks should go in the `config` directory and follow the variable hierarchy. 
 
 To avoid ambiguity in task configurations, task writers should add all possible variables to the `defaults.json` file **or** other documentation method that defines all of the variables (i.e. `defaults.md`)
 
 Task writers are *required* to add a `defaults.json` file to their task with functional defaults. If there are no universal defaults, then the writer should add the configurations for all current releases that work with their task in the appropriate place and create a `defaults.json` file that is an empty json object `{}`. 
 
-KISS still applies here. If a task needs no variables, then do none of this! If a task works on all releases with no specific configurations, don't create any configs inside the `releases` folder!
+KISS still applies here. If a task needs no variables, then do none of this! If a task works on all releases with no specific configurations, don't create any configs inside the `config` folder!
