@@ -77,8 +77,9 @@ install(){
     export REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_control_plane_availability)   
     BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
     echo $PULL_SECRET > pull-secret
-    hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE
-    sleep 10 # pause for few sec 
+    hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE --instance-type $COMPUTE_WORKERS_TYPE
+    echo "Wait till hosted cluster got created and in progress.."
+    kubectl wait --for=condition=available=false --timeout=60s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     echo "Wait till hosted cluster is ready.."
     kubectl wait --for=condition=available --timeout=3600s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
@@ -105,10 +106,7 @@ postinstall(){
 
 cleanup(){
     echo "Delete Hosted cluster.."
-
-    ROSA_CLUSTER_ID=$(_get_cluster_id ${MGMT_CLUSTER_NAME})
-    rosa delete cluster -c ${ROSA_CLUSTER_ID} -y
-    rosa logout
+    # TODO
 }
 
 cat ${json_file}
