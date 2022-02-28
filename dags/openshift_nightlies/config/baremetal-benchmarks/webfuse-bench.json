@@ -1,10 +1,12 @@
 {
     "benchmarks": [
+
         {
             "name": "uperf-serviceip-network",
             "workload": "network-perf",
-            "command": "./run_serviceip_network_test_fromgit.sh test_cloud",
+            "command": "./run.sh",
             "env": {
+                "WORKLOAD": "pod2svc",
                 "COMPARE": "false",
                 "ENABLE_SNAPPY_BACKUP": "false",
                 "MULTI_AZ": "false"

@@ -80,34 +80,32 @@
         {
             "name": "host-network",
             "workload": "network-perf",
-            "command": "./run_hostnetwork_network_test_fromgit.sh test_cloud",
+            "command": "./run.sh",
             "env": {
-                "COMPARE": "false",
-                "ENABLE_SNAPPY_BACKUP": "true",
+                "WORKLOAD": "hostnet",
                 "MULTI_AZ": "false",
-                "EMAIL_ID_FOR_RESULTS_SHEET": "mkaliyam@redhat.com"
+                "COMPARE": "false",
+                "PAIRS": "1"
             }
         },
         {
             "name": "pod-network",
             "workload": "network-perf",
-            "command": "./run_pod_network_test_fromgit.sh test_cloud",
+            "command": "./run.sh",
             "env": {
-                "COMPARE": "false",
-                "ENABLE_SNAPPY_BACKUP": "true",
+                "WORKLOAD": "pod2pod",
                 "MULTI_AZ": "false",
-                "EMAIL_ID_FOR_RESULTS_SHEET": "mkaliyam@redhat.com"
+                "COMPARE": "false"
             }
         },
         {
             "name": "serviceip-network",
             "workload": "network-perf",
-            "command": "./run_serviceip_network_test_fromgit.sh test_cloud",
+            "command": "./run.sh",
             "env": {
-                "COMPARE": "false",
-                "ENABLE_SNAPPY_BACKUP": "true",
+                "WORKLOAD": "pod2svc",
                 "MULTI_AZ": "false",
-                "EMAIL_ID_FOR_RESULTS_SHEET": "mkaliyam@redhat.com"
+                "COMPARE": "false"
             }
         },
         {
