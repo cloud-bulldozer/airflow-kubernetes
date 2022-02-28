@@ -10,57 +10,19 @@
             }
         },
         {
-            "name": "pod-network-1p",
+            "name": "pod-network",
             "workload": "network-perf",
             "command": "./run.sh",
             "env": {
-                "WORKLOAD": "pod",
-                "PAIRS": "1"
+                "WORKLOAD": "pod2pod"
             }
         },
         {
-            "name": "pod-network-2p",
+            "name": "serviceip-network",
             "workload": "network-perf",
             "command": "./run.sh",
             "env": {
-                "WORKLOAD": "pod",
-                "PAIRS": "2"
-            }
-        },
-        {
-            "name": "pod-network-4p",
-            "workload": "network-perf",
-            "command": "./run.sh",
-            "env": {
-                "WORKLOAD": "pod",
-                "PAIRS": "4"
-            }
-        },
-        {
-            "name": "serviceip-network-1p",
-            "workload": "network-perf",
-            "command": "./run.sh",
-            "env": {
-                "WORKLOAD": "service",
-                "PAIRS": "1"
-            }
-        },
-        {
-            "name": "serviceip-network-2p",
-            "workload": "network-perf",
-            "command": "./run.sh",
-            "env": {
-                "WORKLOAD": "service",
-                "PAIRS": "2"
-            }
-        },
-        {
-            "name": "serviceip-network-4p",
-            "workload": "network-perf",
-            "command": "./run.sh",
-            "env": {
-                "WORKLOAD": "service",
-                "PAIRS": "4"
+                "WORKLOAD": "pod2svc"
             }
         },
         {
