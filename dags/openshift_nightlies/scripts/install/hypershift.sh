@@ -68,8 +68,17 @@ setup(){
 install(){
     echo "Install Hypershift Operator"
     aws s3api create-bucket --acl public-read --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --create-bucket-configuration LocationConstraint=$AWS_REGION --region $AWS_REGION || true
-    sleep 10 # wait a few seconds 
+    echo "Wait till S3 bucket is ready.."
+    aws s3api wait bucket-exists --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org 
     hypershift install --oidc-storage-provider-s3-bucket-name $MGMT_CLUSTER_NAME-aws-rhperfscale-org --oidc-storage-provider-s3-credentials aws_credentials --oidc-storage-provider-s3-region $AWS_REGION  --enable-ocp-cluster-monitoring
+    echo "Wait till Operator is ready.."
+    cm=""
+    while [ $cm != "oidc-storage-provider-s3-config" ]
+    do
+        cm=$(oc get configmap -n kube-public oidc-storage-provider-s3-config --no-headers | awk '{print$1}' || true)
+        echo "Hypershift Operator is not ready yet.."
+        sleep 5
+    done
     echo "Create Hosted cluster.."    
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .hosted_cluster_nodepool_size)
     export COMPUTE_WORKERS_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_instance_type)
