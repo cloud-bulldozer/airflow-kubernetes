@@ -79,6 +79,9 @@ install(){
         echo "Hypershift Operator is not ready yet.."
         sleep 5
     done
+}
+
+create_cluster(){
     echo "Create Hosted cluster.."    
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .hosted_cluster_nodepool_size)
     export COMPUTE_WORKERS_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_instance_type)
@@ -87,6 +90,21 @@ install(){
     BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
     echo $PULL_SECRET > pull-secret
     hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE --instance-type $COMPUTE_WORKERS_TYPE
+    echo "Wait till hosted cluster got created and in progress.."
+    kubectl wait --for=condition=available=false --timeout=60s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
+    kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME
+    echo "Wait till hosted cluster is ready.."
+    kubectl wait --for=condition=available --timeout=3600s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
+    postinstall
+}
+
+create_empty_cluster(){
+    echo "Create None type Hosted cluster.."    
+    export NETWORK_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_network_type)
+    export REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_control_plane_availability)   
+    BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
+    echo $PULL_SECRET > pull-secret
+    hypershift create cluster none --name $HOSTED_CLUSTER_NAME --node-pool-replicas=0 --base-domain $BASEDOMAIN --pull-secret pull-secret --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE
     echo "Wait till hosted cluster got created and in progress.."
     kubectl wait --for=condition=available=false --timeout=60s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME
@@ -134,7 +152,12 @@ else
     elif [ "${CLUSTER_STATUS}" == "ready" ] ; then
         printf "INFO: Cluster ${MGMT_CLUSTER_NAME} already installed and ready, using..."
 	    install
-        postinstall
+        export NODEPOOL_SIZE=$(cat ${json_file} | jq -r .hosted_cluster_nodepool_size)
+        if [ "${NODEPOOL_SIZE}" == "0" ] ; then
+            create_empty_cluster
+        else
+            create_cluster
+        fi
     else
         printf "INFO: Cluster ${MGMT_CLUSTER_NAME} already installed but not ready, exiting..."
 	    exit 1

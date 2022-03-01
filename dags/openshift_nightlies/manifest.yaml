@@ -143,6 +143,11 @@ platforms:
         config:
           install: hypershift/sdn.json
           benchmarks: hosted-control-plane.json
+      - name: management-control-plane
+        schedule:  "0 12 * * 1,3,5"
+        config:
+          install: hypershift/none_type.json
+          benchmarks: management-control-plane.json
 
   prebuilt:
     versions: ["4.x"]
