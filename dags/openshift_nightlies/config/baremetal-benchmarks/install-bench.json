@@ -1,14 +1,3 @@
 {
-    "benchmarks": [      
-        {
-            "name": "uperf-pod-network",
-            "workload": "network-perf",
-            "command": "./run_pod_network_test_fromgit.sh test_cloud",
-            "env": {
-                "COMPARE": "false",
-                "ENABLE_SNAPPY_BACKUP": "false",
-                "MULTI_AZ": "false"
-            }
-        }
-    ]
+    "benchmarks": []
 }
