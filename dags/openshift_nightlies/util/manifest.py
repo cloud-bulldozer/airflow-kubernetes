@@ -195,6 +195,32 @@ class Manifest():
             )
 
 
+    def get_hypershift_releases(self):
+        hypershift = self.yaml['platforms']['hypershift']
+        for version in self.yaml['versions']:
+            if version['version'] in hypershift['versions']:
+                version_number = version['version']
+                release_stream = version['releaseStream']
+                version_alias = version['alias']
+                for variant in hypershift['variants']:
+                    release = OpenshiftRelease(
+                        platform="hypershift",
+                        version=version_number,
+                        release_stream=release_stream,
+                        latest_release=self.latest_releases[release_stream],
+                        variant=variant['name'],
+                        config=variant['config'],
+                        version_alias=version_alias
+                    )
+                    schedule = self._get_schedule(variant, 'hypershift')
+                    dag_config = self._build_dag_config(schedule)
+
+                    self.releases.append(
+                        {
+                            "config": dag_config,
+                            "release": release
+                        }
+                    )
 
     def get_releases(self):
         if 'cloud' in self.yaml['platforms']:
@@ -207,6 +233,8 @@ class Manifest():
             self.get_rosa_releases()
         if 'rogcp' in self.yaml['platforms']:
             self.get_rogcp_releases()
+        if 'hypershift' in self.yaml['platforms']:
+            self.get_hypershift_releases()
         if 'prebuilt' in self.yaml['platforms']:
             self.get_prebuilt_releases()
         return self.releases

@@ -21,6 +21,7 @@ from openshift_nightlies.tasks.install.openstack import jetpack
 from openshift_nightlies.tasks.install.baremetal import jetski, webfuse
 from openshift_nightlies.tasks.install.rosa import rosa
 from openshift_nightlies.tasks.install.rogcp import rogcp
+from openshift_nightlies.tasks.install.hypershift import hypershift
 from openshift_nightlies.tasks.install.prebuilt import initialize_cluster
 from openshift_nightlies.tasks.benchmarks import e2e
 from openshift_nightlies.tasks.utils import rosa_post_install, scale_ci_diagnosis, platform_connector,final_dag_status
@@ -207,6 +208,34 @@ class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
     def _get_openshift_installer(self):
         return rogcp.RoGCPInstaller(self.dag, self.config, self.release)
 
+class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
+    def build(self):
+        mgmt_installer = self._get_openshift_installer()
+        hosted_installer = self._get_hypershift_openshift_installer()
+        install_mgmt_cluster = mgmt_installer.get_install_task()
+
+        rosa_post_installation = self._get_rosa_postinstall_setup()._get_rosa_postinstallation()
+
+        install_hosted_cluster = hosted_installer.get_hosted_install_task()
+        for c_id, cluster in install_hosted_cluster:
+            benchmark = self._add_benchmarks(task_group=c_id)
+            install_mgmt_cluster >> rosa_post_installation >> cluster >> benchmark
+
+    def _get_openshift_installer(self):
+        return rosa.RosaInstaller(self.dag, self.config, self.release)
+
+    def _get_hypershift_openshift_installer(self):
+        return hypershift.HypershiftInstaller(self.dag, self.config, self.release)
+
+    def _get_e2e_benchmarks(self, task_group):
+        return e2e.E2EBenchmarks(self.dag, self.config, self.release, task_group)
+
+    def _add_benchmarks(self, task_group):
+        with TaskGroup(task_group, prefix_group_id=False, dag=self.dag) as benchmarks:
+            benchmark_tasks = self._get_e2e_benchmarks(task_group).get_benchmarks()
+            chain(*benchmark_tasks)
+        return benchmarks
+
 class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def __init__(self, Release: OpenshiftRelease, Config: DagConfig):
         AbstractOpenshiftNightlyDAG.__init__(self, release=Release, config=Config)
@@ -245,7 +274,6 @@ class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def _get_openshift_installer(self):
         return initialize_cluster.InitializePrebuiltCluster(self.dag, self.config, self.release)
 
-
 def build_releases():
     release_manifest = manifest.Manifest(constants.root_dag_dir)
     log.info(f"Latest Releases Found: {release_manifest.latest_releases}")
@@ -261,6 +289,8 @@ def build_releases():
             nightly = RosaNightlyDAG(openshift_release, dag_config)
         elif openshift_release.platform == "rogcp":
             nightly = RoGCPNightlyDAG(openshift_release, dag_config)
+        elif openshift_release.platform == "hypershift":
+            nightly = HypershiftNightlyDAG(openshift_release, dag_config)
         elif openshift_release.platform == "prebuilt":
             nightly = PrebuiltOpenshiftNightlyDAG(openshift_release, dag_config)
         else:

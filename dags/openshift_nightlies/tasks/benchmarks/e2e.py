@@ -23,7 +23,7 @@ class E2EBenchmarks():
         self.release = release
         self.task_group = task_group
         self.dag_config = config
-        self.exec_config = executor.get_executor_config_with_cluster_access(self.dag_config, self.release)
+        self.exec_config = executor.get_executor_config_with_cluster_access(self.dag_config, self.release, task_group=self.task_group)
         self.snappy_creds = var_loader.get_secret("snappy_creds", deserialize_json=True)
         self.es_gold = var_loader.get_secret("es_gold")
         self.es_server_baseline = var_loader.get_secret("es_server_baseline")
@@ -100,12 +100,12 @@ class E2EBenchmarks():
         return benchmarks
 
     def _add_indexer(self, benchmark): 
-        indexer = StatusIndexer(self.dag, self.dag_config, self.release, benchmark.task_id).get_index_task() 
+        indexer = StatusIndexer(self.dag, self.dag_config, self.release, benchmark.task_id, task_group=self.task_group).get_index_task() 
         benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):
         env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch'), "KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
-        task_prefix=f"{self.task_group}_"
+        task_prefix=f"{self.task_group}-"
         task = BashOperator(
                 task_id=f"{task_prefix if self.task_group != 'benchmarks' else ''}{benchmark['name']}",
                 depends_on_past=False,
