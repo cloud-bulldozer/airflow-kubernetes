@@ -125,15 +125,22 @@ postinstall(){
     node=0
     while [ $node -lt $COMPUTE_WORKERS_NUMBER ]
     do
+        sleep 300
         node=$(oc get nodes | grep worker | grep -i ready | wc -l)
         echo "Available nodes on cluster - $HOSTED_CLUSTER_NAME ...$node"
-        sleep 300
     done
 }
 
 cleanup(){
-    echo "Delete Hosted cluster.."
-    # TODO
+    echo "Cleanup Hosted Cluster..."
+    kubectl get hostedcluster -n clusters
+    LIST_OF_HOSTED_CLUSTER=$(kubectl get hostedcluster -n clusters --no-headers | awk '{print$1}')
+    for h in $LIST_OF_HOSTED_CLUSTER
+    do
+        echo "Destroy Hosted cluster $h ..."
+        hypershift destroy cluster aws --name $h --aws-creds aws_credentials --region $AWS_REGION
+        sleep 5 # pause a few secs before destroying next...
+    done
 }
 
 cat ${json_file}
