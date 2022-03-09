@@ -10,7 +10,7 @@ RUN go install github.com/markbates/pkger/cmd/pkger@latest
 RUN mv $GOPATH/bin/pkger /usr/local/bin/
 ENV GOFLAGS=
 RUN apt update -y
-RUN apt upgrade -y
+RUN env ACCEPT_EULA=Y apt upgrade -y
 RUN apt install jq unzip bsdmainutils build-essential libncurses5-dev zlib1g-dev libnss3-dev libgdbm-dev libssl-dev libsqlite3-dev libffi-dev libreadline-dev curl libbz2-dev -y
 RUN curl -L $(curl -s https://api.github.com/repos/openshift/rosa/releases/latest | jq -r ".assets[] | select(.name == \"rosa-linux-amd64\") | .browser_download_url") --output /usr/local/bin/rosa
 RUN curl -L $(curl -s https://api.github.com/repos/openshift-online/ocm-cli/releases/latest | jq -r ".assets[] | select(.name == \"ocm-linux-amd64\") | .browser_download_url") --output /usr/local/bin/ocm
