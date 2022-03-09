@@ -17,7 +17,7 @@ class PlatformConnectorTask():
         self.release = release
         self.config = config
         self.task_group = task_group
-        self.exec_config = executor.get_executor_config_with_cluster_access(self.config, self.release, self.task_group)
+        self.exec_config = executor.get_executor_config_with_cluster_access(self.config, self.release, task_group=self.task_group)
 
         # Specific Task Configuration
         self.env = {

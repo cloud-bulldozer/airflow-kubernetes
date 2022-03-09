@@ -122,23 +122,33 @@ postinstall(){
     kubectl create secret generic $HOSTED_KUBEADMIN_NAME --from-literal=KUBEADMIN_PASSWORD=${PASSWORD}
     echo "Wait till Hosted cluster is ready.."
     export KUBECONFIG=./kubeconfig
-    node=0
-    while [ $node -lt $COMPUTE_WORKERS_NUMBER ]
-    do
-        sleep 300
-        node=$(oc get nodes | grep worker | grep -i ready | wc -l)
-        echo "Available nodes on cluster - $HOSTED_CLUSTER_NAME ...$node"
-    done
+    export NODEPOOL_SIZE=$(cat ${json_file} | jq -r .hosted_cluster_nodepool_size)
+    if [ "${NODEPOOL_SIZE}" == "0" ] ; then
+        echo "None type cluster with nodepool size set to 0"
+    else
+        node=0
+        while [ $node -lt $COMPUTE_WORKERS_NUMBER ]
+        do
+            sleep 300
+            node=$(oc get nodes | grep worker | grep -i ready | wc -l)
+            echo "Available nodes on cluster - $HOSTED_CLUSTER_NAME ...$node"
+        done
+    fi
 }
 
 cleanup(){
     echo "Cleanup Hosted Cluster..."
     kubectl get hostedcluster -n clusters
     LIST_OF_HOSTED_CLUSTER=$(kubectl get hostedcluster -n clusters --no-headers | awk '{print$1}')
+    export NODEPOOL_SIZE=$(cat ${json_file} | jq -r .hosted_cluster_nodepool_size)    
     for h in $LIST_OF_HOSTED_CLUSTER
     do
         echo "Destroy Hosted cluster $h ..."
-        hypershift destroy cluster aws --name $h --aws-creds aws_credentials --region $AWS_REGION
+        if [ "${NODEPOOL_SIZE}" == "0" ] ; then
+            hypershift destroy cluster none --name $h
+        else
+            hypershift destroy cluster aws --name $h --aws-creds aws_credentials --region $AWS_REGION
+        fi
         sleep 5 # pause a few secs before destroying next...
     done
 }
