@@ -9,24 +9,52 @@ This project has two top level terms essential in understanding how this project
 
 ## Releases
 
-A `release` is simply a unique installation of Openshift and are defined in two places: the `releases` directory ([More about that directory](./variables.md)) and the `manifest.yaml`. 
+A `release` is simply a unique installation of Openshift and are defined in two places: the `configs` directory ([More about that directory](./variables.md)) and the `manifest.yaml`. 
 
-Strictly speaking, a `release` is actually a unique combination of three variables defined in the manifest: `version`, `platform`, and `profile`:
+Strictly speaking, a `release` is actually a unique combination of configurations defined in the manifest:
 
 1. `version` refers to the openshift release (i.e. 4.7)
-2. `platform` refers to the platform openshift is being installed on (i.e. aws)
-3. `profile` refers to a specific configuration within that release+platform (i.e. ovn)
+2. `platform` refers to the platform openshift is being installed on (i.e. cloud/baremetal)
+3. `variant` refers to a specific configuration of install/benchmarks (i.e. ovn)
 
+> Note: For the "cloud" platform there is also the "provider" field which determines what cloud provider to use. 
 
-This data is used to generate a dag and load in the variables defined in the `releases` directory accordingly. Airflow also names the dag based off of it. Adding a second release with the same values for all three of these parameters would essentialy create duplicate DAGs, so you don't want to do that. 
+## Variants
 
-> Note: In the manifest, all cloud releases are underneath a "cloud" umbrella platform. However, each cloud version also has a "providers" key which determines the Cloud provider to install OpenShift on. In this case, the Provider is used as the platform. Currently we support 'aws', 'gcp', and 'azure' cloud providers.
-
-
+A `variant` is ultimately just a combination of install and benchmark configurations. This is not directly represented in code but is functionally defined in the manifest.  
 
 ## Manifest
 
 The manifest is just the `manifest.yaml` file that defines the releases. The `dag.py` script will read that file in and generate the DAGs accordingly.
+
+``` 
+Airflow will use the provided credentials to login to your specified cluster to run the benchmarks used for that dag.
+In the manifest the `version` and `provider` (cloud-only) fields are applied to all variants for that platform. So for instance:
+
+```yaml
+
+platforms:
+  cloud:
+    versions: [4.9, "4.10"]
+    providers: ["aws", "gcp", "azure"]
+    variants: 
+    - name: sdn-control-plane
+      schedule:  "0 12 * * 1,3,5"
+      config: 
+        install: sdn.json
+        benchmarks: control-plane.json  
+  openstack:
+    versions: [4.9, "4.10"]
+    variants:
+      - name: sdn
+        config:
+          install: openstack/sdn.json
+          benchmarks: openstack.json
+
+
+```
+
+would create a total of 8 dags ( 6 cloud-based, 2 openstack) with the naming convention being `$version-$provider-$variant`. This is because there is no fundamental parameter differences required between versions/providers, and this behavior gives us confidence that we're testing the same configurations across different versions and/or platforms.
 
 ## Prebuilt Clusters
 
@@ -39,6 +67,3 @@ These dags can only be triggered manually and have to be triggered using the "Tr
     "KUBEPASSWORD": "<Enter openshift cluster password>",
     "KUBEURL": "<Enter cluster URL>"
 }
-``` 
-Airflow will use the provided credentials to login to your specified cluster to run the benchmarks used for that dag.
-
