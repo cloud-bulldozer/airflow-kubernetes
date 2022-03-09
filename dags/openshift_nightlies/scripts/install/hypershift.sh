@@ -138,7 +138,7 @@ postinstall(){
                 echo "Available node(s) are $node, still waiting for remaining nodes"
                 sleep 300
             fi
-            itr=$itr+1
+            itr=$((itr+1))
         done
     fi
 }
