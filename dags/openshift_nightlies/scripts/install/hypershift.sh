@@ -110,6 +110,7 @@ create_empty_cluster(){
     kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     echo "Wait till hosted cluster is ready.."
     kubectl wait --for=condition=available --timeout=3600s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
+    postinstall
 }
 
 postinstall(){
