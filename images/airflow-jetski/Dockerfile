@@ -1,4 +1,4 @@
-FROM quay.io/centos/centos:8
+FROM quay.io/centos/centos:stream8
 
 ENV DISABLE_PODMAN=true
 
