@@ -127,12 +127,18 @@ postinstall(){
     if [ "${NODEPOOL_SIZE}" == "0" ] ; then
         echo "None type cluster with nodepool size set to 0"
     else
-        node=0
-        while [ $node -lt $COMPUTE_WORKERS_NUMBER ]
+        itr=0
+        while [ $itr -lt 12 ]
         do
-            sleep 300
             node=$(oc get nodes | grep worker | grep -i ready | wc -l)
-            echo "Available nodes on cluster - $HOSTED_CLUSTER_NAME ...$node"
+            if [[ $node == $COMPUTE_WORKERS_NUMBER ]]; then
+                echo "All nodes are ready in cluster - $HOSTED_CLUSTER_NAME ..."
+                exit 0
+            else
+                echo "Available node(s) are $node, still waiting for remaining nodes"
+                sleep 300
+            fi
+            itr=$itr+1
         done
     fi
 }
@@ -152,6 +158,19 @@ cleanup(){
         fi
         sleep 5 # pause a few secs before destroying next...
     done
+    if [[ $(oc get project | grep hypershift) ]]; then
+        echo "Delete hypershift operator"
+        oc delete ns hypershift --force
+        sleep 60
+    fi
+    if [[ $(oc get project | grep clusters) ]]; then
+        echo "Delete clusters project"
+        oc delete ns clusters --force
+        sleep 60
+    fi
+    echo "Delete AWS s3 bucket..."
+    aws s3api delete-bucket --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org
+    aws s3api wait bucket-not-exists --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org
 }
 
 cat ${json_file}
