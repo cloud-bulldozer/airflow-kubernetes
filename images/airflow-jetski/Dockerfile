@@ -6,7 +6,7 @@ RUN dnf -y install python3.8 gcc platform-python-devel epel-release --nodocs
 RUN dnf --enablerepo=epel -y install sudo sshpass openssh-clients git ipmitool ansible python3-dns python3-netaddr ipmitool --nodocs
 
 RUN pip3.8 install update
-RUN pip3.8 install click==7.1.2 idna==2.10 kubernetes==11.0.0 openshift==0.11.2 
+RUN pip3.8 install click idna kubernetes openshift
 RUN pip3.8 install jmespath psycopg2-binary apache-airflow apache-airflow-providers-slack apache-airflow-providers-amazon apache-airflow-providers-elasticsearch apache-airflow-providers-hashicorp j2cli openshift netaddr
 
 # Hammercli
@@ -55,7 +55,6 @@ RUN usermod -g 0 airflow -G ${AIRFLOW_GID}
 RUN echo "airflow ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 RUN update-alternatives --remove python /usr/libexec/no-python
-RUN update-alternatives --remove python3 /usr/bin/python3.6
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1
 
 RUN curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
