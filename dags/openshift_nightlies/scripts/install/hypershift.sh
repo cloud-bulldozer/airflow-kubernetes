@@ -158,16 +158,6 @@ cleanup(){
         fi
         sleep 5 # pause a few secs before destroying next...
     done
-    if [[ $(oc get project | grep hypershift) ]]; then
-        echo "Delete hypershift operator"
-        oc delete ns hypershift --force
-        sleep 60
-    fi
-    if [[ $(oc get project | grep clusters) ]]; then
-        echo "Delete clusters project"
-        oc delete ns clusters --force
-        sleep 60
-    fi
     echo "Delete AWS s3 bucket..."
     for o in $(aws s3api list-objects --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org | jq -r '.Contents[].Key' | uniq)
     do 
