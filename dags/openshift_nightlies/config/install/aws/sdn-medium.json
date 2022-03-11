@@ -15,7 +15,7 @@
     "openshift_worker_root_volume_type": "gp3",
     "openshift_worker_root_volume_iops": 0,
     "machineset_metadata_label_prefix": "machine.openshift.io",
-    "openshift_infra_node_instance_type": "m6i.4xlarge",
+    "openshift_infra_node_instance_type": "m6i.12xlarge",
     "openshift_workload_node_instance_type": "m6i.4xlarge",
     "openshift_infra_node_volume_size": 100,
     "openshift_infra_node_volume_type": "gp3",
@@ -24,8 +24,8 @@
     "openshift_workload_node_volume_type": "gp3",
     "openshift_workload_node_volume_iops": 0,
     "openshift_prometheus_retention_period": "15d",
-    "openshift_prometheus_storage_class": "gp3-csi",
+    "openshift_prometheus_storage_class": "gp2",
     "openshift_prometheus_storage_size": "500Gi",
-    "openshift_alertmanager_storage_class": "gp3-csi",
+    "openshift_alertmanager_storage_class": "gp2",
     "openshift_alertmanager_storage_size": "20Gi"
  }
