@@ -114,6 +114,7 @@ class E2EBenchmarks():
                 dag=self.dag,
                 env=env,
                 do_xcom_push=True,
+                execution_timeout=timedelta(seconds=21600),
                 executor_config=self.exec_config
         )
 
