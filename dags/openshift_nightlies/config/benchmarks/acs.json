@@ -18,8 +18,9 @@
         {
             "name": "cluster-density",
             "workload": "kube-burner",
-            "command": "WORKLOAD=cluster-density ./run.sh",
+            "command": "./run.sh",
             "env": {
+                "WORKLOAD": "cluster-density",
                 "JOB_ITERATIONS": "500",
                 "JOB_TIMEOUT": "18000",
                 "STEP_SIZE": "30s",
@@ -37,8 +38,9 @@
         {
             "name": "node-density",
             "workload": "kube-burner",
-            "command": "WORKLOAD=node-density ./run.sh",
+            "command": "./run.sh",
             "env": {
+                "WORKLOAD": "node-density",
                 "PODS_PER_NODE": "250",
                 "NODE_COUNT": "25",
                 "JOB_TIMEOUT": "18000",
@@ -67,8 +69,9 @@
         {
             "name": "cluster-density-50",
             "workload": "kube-burner",
-            "command": "WORKLOAD=cluster-density ./run.sh",
+            "command": "./run.sh",
             "env": {
+                "WORKLOAD": "cluster-density",
                 "JOB_ITERATIONS": "1000",
                 "JOB_TIMEOUT": "18000",
                 "STEP_SIZE": "30s",
@@ -136,8 +139,9 @@
         {
             "name": "load-cluster-preupgrade",
             "workload": "kube-burner",
-            "command": "WORKLOAD=cluster-density ./run.sh",
+            "command": "./run.sh",
             "env": {
+                "WORKLOAD": "cluster-density",
                 "JOB_ITERATIONS": "500",
                 "JOB_TIMEOUT": "18000",
                 "STEP_SIZE": "30s",
