@@ -11,7 +11,7 @@
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "node-density",
-                "PODS_PER_NODE": "250",
+                "PODS_PER_NODE": "245",
                 "NODE_COUNT": "250",
                 "JOB_TIMEOUT": "18000",
                 "QPS": "20",

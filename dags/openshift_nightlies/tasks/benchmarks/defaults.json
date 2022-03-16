@@ -38,7 +38,7 @@
             "workload": "kube-burner",
             "command": "./run_nodedensity_test_fromgit.sh",
             "env": {
-                "PODS_PER_NODE": "250",
+                "PODS_PER_NODE": "245",
                 "NODE_COUNT": "25",
                 "JOB_TIMEOUT": "18000",
                 "QPS": "20",
