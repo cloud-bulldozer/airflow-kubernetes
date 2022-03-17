@@ -110,7 +110,7 @@ class E2EBenchmarks():
                 task_id=f"{task_prefix if self.task_group != 'benchmarks' else ''}{benchmark['name']}",
                 depends_on_past=False,
                 bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
-                retries=3,
+                retries=0,
                 dag=self.dag,
                 env=env,
                 do_xcom_push=True,
