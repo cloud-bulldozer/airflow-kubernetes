@@ -140,6 +140,10 @@ postinstall(){
             fi
             itr=$((itr+1))
         done
+        if [[ $node != $COMPUTE_WORKERS_NUMBER ]]; then
+            echo "All nodes are not ready in cluster - $HOSTED_CLUSTER_NAME ..."
+            exit 1
+        fi
     fi
 }
 
