@@ -47,7 +47,10 @@ setup(){
     export KUBECONFIG=/home/airflow/workspace/config
     curl -sS https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xz oc
     export PATH=$PATH:$(pwd)
-
+    if [[ $(oc get nodes | grep -c worker) -lt 1 ]]; then 
+        echo "No worker nodes to install grafana agent"
+        exit 0 # exiting without failing the job.
+    fi
 }
 
 bm_setup(){

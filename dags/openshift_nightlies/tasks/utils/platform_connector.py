@@ -10,13 +10,14 @@ from airflow.operators.bash import BashOperator
 # Connect Installed Cluster to PerfScale Platform to send metrics and logs. 
 
 class PlatformConnectorTask():
-    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease):
+    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease, task_group=""):
         
         # General DAG Configuration
         self.dag = dag
         self.release = release
         self.config = config
-        self.exec_config = executor.get_executor_config_with_cluster_access(self.config, self.release)
+        self.task_group = task_group
+        self.exec_config = executor.get_executor_config_with_cluster_access(self.config, self.release, task_group=self.task_group)
 
         # Specific Task Configuration
         self.env = {
@@ -44,8 +45,9 @@ class PlatformConnectorTask():
             }
 
     def get_task(self):
+        task_prefix=f"{self.task_group}-"
         return BashOperator(
-            task_id="connect-to-platform",
+            task_id=f"{task_prefix if self.task_group != '' else ''}connect-to-platform",
             depends_on_past=False,
             bash_command=f"{constants.root_dag_dir}/scripts/utils/connect_to_platform.sh ",
             retries=3,
