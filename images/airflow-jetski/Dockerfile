@@ -3,10 +3,10 @@ FROM quay.io/centos/centos:stream8
 ENV DISABLE_PODMAN=true
 
 RUN dnf -y install python3.8 gcc platform-python-devel epel-release --nodocs
-RUN dnf --enablerepo=epel -y install sudo sshpass openssh-clients git ipmitool ansible python3-dns python3-netaddr ipmitool --nodocs
+RUN dnf --enablerepo=epel -y install sudo sshpass openssh-clients git ipmitool ansible-2.9.27 python3-dns python3-netaddr ipmitool --nodocs
 
 RUN pip3.8 install update
-RUN pip3.8 install click idna kubernetes openshift
+RUN pip3.8 install click idna==2.10 kubernetes==11.0.0 openshift==0.11.2 # due to apache-airflow dependency version limit
 RUN pip3.8 install elasticsearch==7.13 jmespath==0.9.5 click==7.1.2 pyjwt==1.7.1 pytz==2020.4 psycopg2-binary apache-airflow apache-airflow-providers-slack apache-airflow-providers-amazon apache-airflow-providers-elasticsearch apache-airflow-providers-hashicorp j2cli openshift netaddr
 
 # Hammercli
