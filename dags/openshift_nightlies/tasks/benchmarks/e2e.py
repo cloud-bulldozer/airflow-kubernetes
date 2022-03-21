@@ -111,6 +111,7 @@ class E2EBenchmarks():
                 depends_on_past=False,
                 bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
                 retries=0,
+                trigger_rule=benchmark.get("trigger_rule", "all_success"),
                 dag=self.dag,
                 env=env,
                 do_xcom_push=True,

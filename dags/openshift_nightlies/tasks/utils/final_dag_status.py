@@ -26,5 +26,6 @@ def get_task(dag):
         provide_context=True,
         python_callable=final_status,
         trigger_rule='all_done',
+        retries=0,
         dag=dag,
     )
