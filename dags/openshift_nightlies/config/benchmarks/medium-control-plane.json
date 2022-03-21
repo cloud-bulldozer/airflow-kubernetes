@@ -27,6 +27,7 @@
         {
             "name": "node-density-heavy",
             "workload": "kube-burner",
+            "trigger_rule": "all_done",
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "node-density-heavy",
@@ -46,6 +47,7 @@
         {
             "name": "cluster-density",
             "workload": "kube-burner",
+            "trigger_rule": "all_done",
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "cluster-density",
@@ -64,6 +66,7 @@
         {
             "name": "load-cluster-preupgrade",
             "workload": "kube-burner",
+            "trigger_rule": "all_done",
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "cluster-density",
@@ -81,6 +84,7 @@
         {
             "name": "upgrades",
             "workload": "upgrade-perf",
+            "trigger_rule": "all_done",
             "command": "./run_upgrade_fromgit.sh",
             "env": {
                 "LATEST": "true",
