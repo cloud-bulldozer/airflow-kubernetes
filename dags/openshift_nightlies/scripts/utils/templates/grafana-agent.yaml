@@ -63,6 +63,14 @@ spec:
       labels:
         name: grafana-agent
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: node-role.kubernetes.io/infra
+                operator: Exists
       containers:
       - args:
         - --config.file=/etc/agent/agent.yaml
