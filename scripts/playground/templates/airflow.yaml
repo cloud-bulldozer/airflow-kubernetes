@@ -57,7 +57,7 @@ spec:
             base_url: http://$_airflow_namespace.$_cluster_domain
             instance_name: $_remote_user
             expose_config: True
-            default_ui_timezone: America/New_York
+            default_ui_timezone: UTC
           secrets:
             backend: airflow.providers.hashicorp.secrets.vault.VaultBackend
             backend_kwargs: '{"connections_path": "connections", "variables_path": "variables", "kubernetes_role": "airflow", "auth_type": "kubernetes", "mount_point": "airflow", "url": "http://vault-active.vault.svc.cluster.local:8200"}'
