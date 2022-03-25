@@ -31,7 +31,7 @@ spec:
             pullPolicy: Always
         config:
           logging:
-            colored_console_log: "False"
+            colored_console_log: "True"
             remote_logging: "True"
             remote_base_log_folder: s3://perfscale-airflow-logs/$_remote_user
             remote_log_conn_id: S3Logs
