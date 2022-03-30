@@ -87,11 +87,11 @@ postinstall(){
     ocm patch /api/clusters_mgmt/v1/clusters/$(_get_cluster_id ${CLUSTER_NAME}) <<< ${EXPIRATION_STRING}
     # Add firewall rules
     NETWORK_NAME=$(gcloud compute networks list --format="value(name)" | grep ^${CLUSTER_NAME})
-    gcloud compute firewall-rules create ${CLUSTER_NAME}-icmp --network ${NETWORK_NAME} --priority 101 --description 'scale-ci allow icmp' --allow icmp
-    gcloud compute firewall-rules create ${CLUSTER_NAME}-ssh --network ${NETWORK_NAME} --direction INGRESS --priority 102 --description 'scale-ci allow ssh' --allow tcp:22
-    gcloud compute firewall-rules create ${CLUSTER_NAME}-pbench --network ${NETWORK_NAME} --direction INGRESS --priority 103 --description 'scale-ci allow pbench-agents' --allow tcp:2022
-    gcloud compute firewall-rules create ${CLUSTER_NAME}-net --network ${NETWORK_NAME} --direction INGRESS --priority 104 --description 'scale-ci allow tcp,udp network tests' --rules tcp:20000-20109,udp:20000-20109 --action allow
-    gcloud compute firewall-rules create ${CLUSTER_NAME}-hostnet --network ${NETWORK_NAME} --priority 105 --description 'scale-ci allow tcp,udp hostnetwork tests' --rules tcp:32768-60999,udp:32768-60999 --action allow
+    gcloud compute firewall-rules create ${NETWORK_NAME}-icmp --network ${NETWORK_NAME} --priority 101 --description 'scale-ci allow icmp' --allow icmp
+    gcloud compute firewall-rules create ${NETWORK_NAME}-ssh --network ${NETWORK_NAME} --direction INGRESS --priority 102 --description 'scale-ci allow ssh' --allow tcp:22
+    gcloud compute firewall-rules create ${NETWORK_NAME}-pbench --network ${NETWORK_NAME} --direction INGRESS --priority 103 --description 'scale-ci allow pbench-agents' --allow tcp:2022
+    gcloud compute firewall-rules create ${NETWORK_NAME}-net --network ${NETWORK_NAME} --direction INGRESS --priority 104 --description 'scale-ci allow tcp,udp network tests' --rules tcp:20000-20109,udp:20000-20109 --action allow
+    gcloud compute firewall-rules create ${NETWORK_NAME}-hostnet --network ${NETWORK_NAME} --priority 105 --description 'scale-ci allow tcp,udp hostnetwork tests' --rules tcp:32768-60999,udp:32768-60999 --action allow
 }
 
 cleanup(){
@@ -99,6 +99,24 @@ cleanup(){
     ocm logout
 }
 
+preclean(){
+    echo "Delete old firewall-rules.."
+    for i in $(gcloud compute firewall-rules list | grep ${CLUSTER_NAME} | awk '{print$1}'); do 
+        gcloud compute firewall-rules delete $i --quiet || true
+    done
+    echo "Delete old routers.."
+    for i in $(gcloud compute routers list | grep ${CLUSTER_NAME} | awk '{print$1}'); do 
+        gcloud compute routers delete $i --quiet --region $(gcloud compute routers list | grep $i | awk '{print$2}') || true
+    done    
+    echo "Delete old routes.."
+    for i in $(gcloud compute routes list | grep ${CLUSTER_NAME} | awk '{print$1}'); do 
+        gcloud compute routes delete $i --quiet || true
+    done
+    echo "Delete old networks.."
+    for i in $(gcloud compute networks list | grep ${CLUSTER_NAME} | awk '{print$1}'); do 
+        gcloud compute networks delete $i --quiet || true
+    done
+}
 cat ${json_file}
 
 setup
@@ -107,7 +125,8 @@ if [[ "$operation" == "install" ]]; then
     printf "INFO: Checking if cluster is already installed"
     CLUSTER_STATUS=$(_get_cluster_status ${CLUSTER_NAME})
     if [ -z "${CLUSTER_STATUS}" ] ; then
-        printf "INFO: Cluster not found, installing..."
+        printf "INFO: Cluster not found, precleaning & installing..."
+        preclean # to cleanup any old orphaned resources from prev itr
         install
     elif [ "${CLUSTER_STATUS}" == "ready" ] ; then
         printf "INFO: Cluster ${CLUSTER_NAME} already installed and ready, reusing..."
