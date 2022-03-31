@@ -52,6 +52,14 @@ setup(){
     export CLUSTER_NAME=$(cat ${json_file} | jq -r .openshift_cluster_name)
     echo ${GCP_MANAGED_SERVICES_TOKEN} > ./serviceAccount.json
     export CLOUDSDK_PYTHON=python3.9
+    export OCM_CLI_VERSION=$(cat ${json_file} | jq -r .ocm_cli_version)
+    if [[ ${OCM_CLI_VERSION} == "master" ]]; then
+        git clone https://github.com/openshift-online/ocm-cli
+	pushd ocm-cli
+	make
+	sudo mv ocm /usr/local/bin/
+	popd
+    fi
     ocm login --url=https://api.stage.openshift.com --token="${ROSA_TOKEN}"
     gcloud config set account osd-ccs-admin@openshift-perfscale.iam.gserviceaccount.com
     gcloud auth activate-service-account osd-ccs-admin@openshift-perfscale.iam.gserviceaccount.com --key-file ./serviceAccount.json
@@ -61,9 +69,10 @@ setup(){
 install(){
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .openshift_worker_count)
     export COMPUTE_WORKERS_TYPE=$(cat ${json_file} | jq -r .openshift_worker_instance_type)
+    export NETWORK_TYPE=$(cat ${json_file} | jq -r .openshift_network_type)
     export OCM_VERSION=$(ocm list versions --channel-group nightly | grep ^${version} | sort -rV | head -1)
     [ -z ${OCM_VERSION} ] && echo "ERROR: Image not found for version (${version}) on OCM Nightly channel group" && exit 1
-    ocm create cluster --ccs --provider gcp --region ${GCP_REGION} --service-account-file ./serviceAccount.json --channel-group nightly --version ${OCM_VERSION} --multi-az --compute-nodes ${COMPUTE_WORKERS_NUMBER} --compute-machine-type ${COMPUTE_WORKERS_TYPE} ${CLUSTER_NAME}
+    ocm create cluster --ccs --provider gcp --region ${GCP_REGION} --service-account-file ./serviceAccount.json --channel-group nightly --version ${OCM_VERSION} --multi-az --compute-nodes ${COMPUTE_WORKERS_NUMBER} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --network-type ${NETWORK_TYPE} ${CLUSTER_NAME}
     _wait_for_cluster_ready ${CLUSTER_NAME}
     postinstall
 }
