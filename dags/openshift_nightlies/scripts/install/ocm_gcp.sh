@@ -44,7 +44,7 @@ _wait_for_cluster_ready(){
 setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
-    export PATH=$PATH:/usr/bin
+    export PATH=$PATH:/usr/bin:/usr/local/go/bin
     export HOME=/home/airflow
     export GCP_REGION=us-east4
     export ROSA_ENVIRONMENT=$(cat ${json_file} | jq -r .rosa_environment)
@@ -55,10 +55,10 @@ setup(){
     export OCM_CLI_VERSION=$(cat ${json_file} | jq -r .ocm_cli_version)
     if [[ ${OCM_CLI_VERSION} == "master" ]]; then
         git clone https://github.com/openshift-online/ocm-cli
-	pushd ocm-cli
-	make
-	sudo mv ocm /usr/local/bin/
-	popd
+        pushd ocm-cli
+        sudo PATH=$PATH:/usr/bin:/usr/local/go/bin make
+        sudo mv ocm /usr/local/bin/
+        popd
     fi
     ocm login --url=https://api.stage.openshift.com --token="${ROSA_TOKEN}"
     gcloud config set account osd-ccs-admin@openshift-perfscale.iam.gserviceaccount.com
