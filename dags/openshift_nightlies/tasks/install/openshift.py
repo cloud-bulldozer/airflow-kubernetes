@@ -35,6 +35,7 @@ class AbstractOpenshiftInstaller(ABC):
         self.aws_creds = var_loader.get_secret("aws_creds", deserialize_json=True)
         self.gcp_creds = var_loader.get_secret("gcp_creds", deserialize_json=True)
         self.azure_creds = var_loader.get_secret("azure_creds", deserialize_json=True)
+        self.alibaba_creds = var_loader.get_secret("alibaba_creds", deserialize_json=True)
         self.ocp_pull_secret = var_loader.get_secret("osp_ocp_pull_creds")
         self.openstack_creds = var_loader.get_secret("openstack_creds", deserialize_json=True)
         self.rosa_creds = var_loader.get_secret("rosa_creds", deserialize_json=True)
@@ -50,6 +51,7 @@ class AbstractOpenshiftInstaller(ABC):
             **self.aws_creds,
             **self.gcp_creds,
             **self.azure_creds,
+            **self.alibaba_creds,
             **self.openstack_creds,
             **self.rosa_creds,
             **self.rhacs_creds,

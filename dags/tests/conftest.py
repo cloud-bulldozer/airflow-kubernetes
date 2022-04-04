@@ -73,7 +73,7 @@ def _populate_task_dir(base_task_dir, task, platform=None):
         pass
 
     if platform is not None:
-        platform = "cloud" if platform == 'aws' or platform == 'azure' or platform == 'gcp' else platform
+        platform = "cloud" if platform == 'aws' or platform == 'azure' or platform == 'gcp' or platform == 'alibaba' else platform
         platform_specific_dir = task_dir / platform
         platform_specific_dir.mkdir()
         with open(f"{platform_specific_dir}/defaults.json", 'w') as f:
