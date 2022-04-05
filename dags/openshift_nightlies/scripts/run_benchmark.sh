@@ -51,9 +51,9 @@ run_baremetal_benchmark(){
 
     export KUBECONFIG=/home/kni/clusterconfigs/auth/kubeconfig
     export BENCHMARK=${TASK_GROUP}
-    while read line; do export \$line; done < /tmp/environment_new.txt
-    # clean up the temporary environment file
-    rm -rf /tmp/environment_new.txt
+    cat /tmp/environment_new.txt | awk -v x="'" -F "=" '{print "export " \$1"="x\$2x}' > vars.sh
+    source vars.sh
+    rm -rf /tmp/environment_new.txt vars.sh
     rm -rf /home/kni/ci_${TASK_GROUP}_workspace
     mkdir /home/kni/ci_${TASK_GROUP}_workspace
     pushd /home/kni/ci_${TASK_GROUP}_workspace
