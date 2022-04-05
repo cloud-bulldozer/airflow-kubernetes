@@ -3,7 +3,7 @@ set -a
 usage() { echo "Usage: $0 [-p <string> (airflow password)]" 1>&2; exit 1; }
 GIT_ROOT=$(git rev-parse --show-toplevel)
 source $GIT_ROOT/scripts/common.sh
-_airflow_namespace=$_remote_user-$_branch-airflow
+_airflow_namespace=$_remote_user-$_branch_display_name-airflow
 
 
 

@@ -39,7 +39,7 @@ setup(){
     export ROSA_ENVIRONMENT=$(cat ${json_file} | jq -r .rosa_environment)
     export ROSA_TOKEN=$(cat ${json_file} | jq -r .rosa_token_${ROSA_ENVIRONMENT})
     export MGMT_CLUSTER_NAME=$(cat ${json_file} | jq -r .openshift_cluster_name)
-    export HOSTED_CLUSTER_NAME=$MGMT_CLUSTER_NAME-$HOSTED_NAME
+    export HOSTED_CLUSTER_NAME=hypershift-$MGMT_CLUSTER_NAME-$HOSTED_NAME
     export HOSTED_KUBECONFIG_NAME=$(echo $KUBECONFIG_NAME | awk -F-kubeconfig '{print$1}')-$HOSTED_NAME-kubeconfig
     export HOSTED_KUBEADMIN_NAME=$(echo $KUBEADMIN_NAME | awk -F-kubeadmin '{print$1}')-$HOSTED_NAME-kubeadmin    
     export KUBECONFIG=/home/airflow/auth/config
@@ -89,7 +89,7 @@ create_cluster(){
     export REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_control_plane_availability)   
     BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
     echo $PULL_SECRET > pull-secret
-    hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE --instance-type $COMPUTE_WORKERS_TYPE
+    hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE --instance-type $COMPUTE_WORKERS_TYPE # --control-plane-operator-image=quay.io/hypershift/hypershift:latest
     echo "Wait till hosted cluster got created and in progress.."
     kubectl wait --for=condition=available=false --timeout=60s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME
