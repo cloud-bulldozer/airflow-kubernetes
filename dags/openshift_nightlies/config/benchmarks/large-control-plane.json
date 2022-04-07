@@ -1,6 +1,14 @@
 {
     "benchmarks": [
         {
+            "name": "baseline",
+            "workload": "baseline-performance",
+            "command": "./baseline_perf.sh",
+            "env": {
+                "WATCH_TIME": "15"
+            }
+        },
+        {
             "name": "node-density",
             "workload": "kube-burner",
             "command": "./run.sh",
@@ -16,7 +24,8 @@
                 "LOG_STREAMING": "true",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "MUST_GATHER_EACH_TASK": "true",
+                "CLEANUP_TIMEOUT": "1h"
             }
         },
         {
@@ -36,7 +45,8 @@
                 "LOG_STREAMING": "true",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "MUST_GATHER_EACH_TASK": "true",
+                "CLEANUP_TIMEOUT": "1h"
             }
         },
         {
@@ -55,7 +65,8 @@
                 "LOG_STREAMING": "true",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "MUST_GATHER_EACH_TASK": "true",
+                "CLEANUP_TIMEOUT": "1h"
             }
         }
     ]

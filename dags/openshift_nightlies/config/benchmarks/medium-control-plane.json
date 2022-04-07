@@ -1,6 +1,14 @@
 {
     "benchmarks": [
         {
+            "name": "baseline",
+            "workload": "baseline-performance",
+            "command": "./baseline_perf.sh",
+            "env": {
+                "WATCH_TIME": "15"
+            }
+        },
+        {
             "name": "node-density",
             "workload": "kube-burner",
             "command": "./run.sh",
@@ -11,12 +19,13 @@
                 "JOB_TIMEOUT": "18000",
                 "QPS": "20",
                 "BURST": "20",
-                "STEP_SIZE": "30s",
+                "STEP_SIZE": "2m",
                 "LOG_LEVEL": "info",
                 "LOG_STREAMING": "true",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "MUST_GATHER_EACH_TASK": "true",
+				"CLEANUP_TIMEOUT": "1h"
             }
         },
         {
@@ -31,12 +40,13 @@
                 "JOB_TIMEOUT": "18000",
                 "QPS": "20",
                 "BURST": "20",
-                "STEP_SIZE": "30s",
+                "STEP_SIZE": "2m",
                 "LOG_LEVEL": "info",
                 "LOG_STREAMING": "true",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "MUST_GATHER_EACH_TASK": "true",
+                "CLEANUP_TIMEOUT": "1h"
             }
         },
         {
@@ -48,14 +58,15 @@
                 "WORKLOAD": "cluster-density",
                 "JOB_ITERATIONS": "1000",
                 "JOB_TIMEOUT": "18000",
-                "STEP_SIZE": "30s",
+                "STEP_SIZE": "2m",
                 "QPS": "20",
                 "BURST": "20",
                 "LOG_LEVEL": "info",
                 "LOG_STREAMING": "true",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "MUST_GATHER_EACH_TASK": "true",
+                "CLEANUP_TIMEOUT": "1h"
             }
         }
     ]
