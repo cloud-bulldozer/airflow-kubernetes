@@ -1,14 +1,14 @@
 versions:
 - version: 4.9
-  alias: stable
+  alias: previous
   releaseStream: 4.9.0-0.nightly
   baremetalReleaseStream: latest-4.9
 - version: "4.10"
-  alias: next
+  alias: stable
   releaseStream: 4.10.0-0.nightly
   baremetalReleaseStream: latest-4.10
 - version: 4.11
-  alias: future
+  alias: next
   releaseStream: 4.11.0-0.nightly
   baremetalReleaseStream: latest-4.11
 
@@ -28,7 +28,7 @@ dagConfig:
 
 platforms:
   cloud:
-    versions: [4.9, "4.10", 4.11]
+    versions: ["4.10", 4.11]
     providers: ["aws", "gcp", "azure"]
     variants: 
     - name: sdn-control-plane

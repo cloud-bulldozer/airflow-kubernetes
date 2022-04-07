@@ -3,8 +3,11 @@
         {
             "name": "baseline",
             "workload": "baseline-performance",
-            "command": "./baseline_perf.sh"            
-        },      
+            "command": "./baseline_perf.sh",
+            "env": {
+                "WATCH_TIME": "15"
+            }
+        },
         {
             "name": "node-density",
             "workload": "kube-burner",
@@ -16,12 +19,13 @@
                 "JOB_TIMEOUT": "18000",
                 "QPS": "20",
                 "BURST": "20",
-                "STEP_SIZE": "30s",
+                "STEP_SIZE": "2m",
                 "LOG_LEVEL": "info",
                 "LOG_STREAMING": "true",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "MUST_GATHER_EACH_TASK": "true",
+				"CLEANUP_TIMEOUT": "1h"
             }
         },
         {
@@ -36,12 +40,13 @@
                 "JOB_TIMEOUT": "18000",
                 "QPS": "20",
                 "BURST": "20",
-                "STEP_SIZE": "30s",
+                "STEP_SIZE": "2m",
                 "LOG_LEVEL": "info",
                 "LOG_STREAMING": "true",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "MUST_GATHER_EACH_TASK": "true",
+                "CLEANUP_TIMEOUT": "1h"
             }
         },
         {
@@ -53,44 +58,15 @@
                 "WORKLOAD": "cluster-density",
                 "JOB_ITERATIONS": "1000",
                 "JOB_TIMEOUT": "18000",
-                "STEP_SIZE": "30s",
+                "STEP_SIZE": "2m",
                 "QPS": "20",
                 "BURST": "20",
                 "LOG_LEVEL": "info",
                 "LOG_STREAMING": "true",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
-            }
-        },
-        {
-            "name": "load-cluster-preupgrade",
-            "workload": "kube-burner",
-            "trigger_rule": "all_done",
-            "command": "./run.sh",
-            "env": {
-                "WORKLOAD": "cluster-density",
-                "JOB_ITERATIONS": "1000",
-                "JOB_TIMEOUT": "18000",
-                "STEP_SIZE": "30s",
-                "QPS": "20",
-                "BURST": "20",
-                "LOG_LEVEL": "info",
-                "LOG_STREAMING": "true",
-                "CLEANUP_WHEN_FINISH": "false",
-                "CLEANUP": "true"
-            }
-        },
-        {
-            "name": "upgrades",
-            "workload": "upgrade-perf",
-            "trigger_rule": "all_done",
-            "command": "./run_upgrade_fromgit.sh",
-            "env": {
-                "LATEST": "true",
-                "CHANNEL": "nightlies",
-                "TIMEOUT": "400",
-                "POLL_INTERVAL": "10"
+                "MUST_GATHER_EACH_TASK": "true",
+                "CLEANUP_TIMEOUT": "1h"
             }
         }
     ]
