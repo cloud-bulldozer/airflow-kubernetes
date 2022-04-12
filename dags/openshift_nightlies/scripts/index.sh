@@ -74,7 +74,7 @@ index_task(){
         encoded_execution_date=$(python3 -c "import urllib.parse; print(urllib.parse.quote(input()))" <<< "$execution_date")
         build_url="${airflow_base_url}/task?dag_id=${dag_id}&task_id=${task_id}&execution_date=${encoded_execution_date}"
         
-        curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
+        curl --insecure -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{
             "uuid" : "'$UUID'",
             "release_stream": "'$RELEASE_STREAM'",
             "platform": "'$platform'",
