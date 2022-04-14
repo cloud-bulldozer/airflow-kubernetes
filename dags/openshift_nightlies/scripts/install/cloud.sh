@@ -40,7 +40,7 @@ setup(){
 }
 
 run_ansible_playbook(){
-    /home/airflow/.local/bin/ansible-playbook -vv -i inventory OCP-4.X/deploy-cluster.yml -e platform="$platform" --extra-vars "@${json_file}"
+    /home/airflow/.local/bin/ansible-playbook -vvv -i inventory OCP-4.X/deploy-cluster.yml -e platform="$platform" --extra-vars "@${json_file}"
 }
 
 post_install(){
