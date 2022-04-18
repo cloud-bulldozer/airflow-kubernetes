@@ -8,6 +8,7 @@
     "openshift_worker_count": 252,
     "openshift_base_domain": "alicloud-qe.devcluster.openshift.com",
     "openshift_host_prefix": "22",
+    "openshift_debug_config": "false",
     "openshift_network_type": "OVNKubernetes",
     "openshift_master_instance_type": "ecs.r5.4xlarge",
     "openshift_worker_instance_type": "ecs.g6.2xlarge",
