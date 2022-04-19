@@ -100,7 +100,8 @@ Schema:
         "alibaba_region": "string",
         "aliyun_profile": "string",
         "aliyun_access_key_secret": "string",
-        "aliyun_access_key_id": "string" 
+        "aliyun_access_key_id": "string",
+        "alibaba_resource_group_id": "string"
     }
 ```
 

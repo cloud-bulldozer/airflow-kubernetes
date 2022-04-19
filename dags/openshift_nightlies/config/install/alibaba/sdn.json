@@ -3,6 +3,7 @@
     "aliyun_profile": "",
     "aliyun_access_key_secret": "",
     "aliyun_access_key_id": "",
+    "alibaba_resource_group_id": "",
     "aliyun_binary": "https://aliyuncli.alicdn.com/aliyun-cli-linux-3.0.32-amd64.tgz",
     "openshift_master_count": 3,
     "openshift_worker_count": 27,
