@@ -54,7 +54,7 @@ setup(){
     export CLOUDSDK_PYTHON=python3.9
     export OCM_CLI_VERSION=$(cat ${json_file} | jq -r .ocm_cli_version)
     if [[ ${OCM_CLI_VERSION} == "master" ]]; then
-        git clone https://github.com/openshift-online/ocm-cli
+        git clone --depth=1 --single-branch --branch main https://github.com/openshift-online/ocm-cli
         pushd ocm-cli
         sudo PATH=$PATH:/usr/bin:/usr/local/go/bin make
         sudo mv ocm /usr/local/bin/

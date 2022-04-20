@@ -16,11 +16,11 @@ done
 
 setup(){
     # Clone webfuse
-    git clone --single-branch --branch main https://${SSHKEY_TOKEN}@github.com/redhat-performance/webfuse.git /tmp/webfuse
+    git clone --depth=1 --single-branch --branch main https://${SSHKEY_TOKEN}@github.com/redhat-performance/webfuse.git /tmp/webfuse
     pushd /tmp/webfuse
 
     # Clone Perf private keys
-    git clone https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git
+    git clone --depth=1 --single-branch --branch master https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git
     export PUBLIC_KEY=/tmp/webfuse/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
     export PRIVATE_KEY=/tmp/webfuse/perf-dept/ssh_keys/id_rsa_pbench_ec2
     export ANSIBLE_FORCE_COLOR=true

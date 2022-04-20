@@ -60,7 +60,7 @@ setup(){
     export CLUSTER_NAME=$(cat ${json_file} | jq -r .openshift_cluster_name)
     export ROSA_CLI_VERSION=$(cat ${json_file} | jq -r .rosa_cli_version)
     if [[ ${ROSA_CLI_VERSION} == "master" ]]; then
-        git clone https://github.com/openshift/rosa
+        git clone --depth=1 --single-branch --branch master https://github.com/openshift/rosa
 	pushd rosa
 	make
 	sudo mv rosa /usr/local/bin/
