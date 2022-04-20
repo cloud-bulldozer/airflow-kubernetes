@@ -57,7 +57,7 @@ bm_setup(){
     echo "Baremetal connector.."
     echo "Orchestration host --> $ORCHESTRATION_HOST"
 
-    git clone https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git /tmp/perf-dept
+    git clone --depth=1 --single-branch --branch master https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git /tmp/perf-dept
     export PUBLIC_KEY=/tmp/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
     export PRIVATE_KEY=/tmp/perf-dept/ssh_keys/id_rsa_pbench_ec2
     chmod 600 ${PRIVATE_KEY}

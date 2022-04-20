@@ -14,8 +14,8 @@ done
 setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
-    git clone --depth=1 https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git
-    git clone https://github.com/redhat-performance/jetpack.git
+    git clone --depth=1 --single-branch --branch master https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git
+    git clone --depth=1 --single-branch --branch master https://github.com/redhat-performance/jetpack.git
     export PUBLIC_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
     export PRIVATE_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2
     chmod 600 ${PRIVATE_KEY}
