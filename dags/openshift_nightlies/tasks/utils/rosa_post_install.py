@@ -17,11 +17,12 @@ from kubernetes.client import models as k8s
 
 
 class Diagnosis():
-    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease):
+    def __init__(self, dag, config: DagConfig, release: OpenshiftRelease, task_group=""):
 
         # General DAG Configuration
         self.dag = dag
         self.release = release
+        self.task_group = task_group
         self.config = config
         self.release_name = release.get_release_name(delimiter="-")
 
@@ -42,11 +43,12 @@ class Diagnosis():
 
         super().__init__()
 
-        self.exec_config = executor.get_executor_config_with_cluster_access(self.config, self.release, executor_image="airflow-managed-services")
+        self.exec_config = executor.get_executor_config_with_cluster_access(self.config, self.release, executor_image="airflow-managed-services", task_group=self.task_group)
 
     def _get_rosa_postinstallation(self, operation="postinstall", trigger_rule="all_success"):
+        task_prefix=f"{self.task_group}-"
         return BashOperator(
-            task_id=f"{operation}_rosa",
+            task_id=f"{task_prefix if self.task_group != '' else ''}{operation}_rosa",
             depends_on_past=False,
             bash_command=f"python {constants.root_dag_dir}/scripts/utils/rosa_post_install.py --jsonfile /tmp/{self.release_name}-postinstall-task.json --kubeconfig /home/airflow/auth/config",
             retries=3,
