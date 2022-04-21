@@ -96,6 +96,7 @@ create_cluster(){
     echo "Wait till hosted cluster is ready.."
     kubectl wait --for=condition=available --timeout=3600s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     postinstall
+    update_fw
 }
 
 create_empty_cluster(){
@@ -133,7 +134,6 @@ postinstall(){
             node=$(oc get nodes | grep worker | grep -i ready | wc -l)
             if [[ $node == $COMPUTE_WORKERS_NUMBER ]]; then
                 echo "All nodes are ready in cluster - $HOSTED_CLUSTER_NAME ..."
-                exit 0
             else
                 echo "Available node(s) are $node, still waiting for remaining nodes"
                 sleep 300
@@ -145,6 +145,22 @@ postinstall(){
             exit 1
         fi
     fi
+}
+
+update_fw(){
+    echo "Get AWS VPC and security groups.."
+    CLUSTER_VPC=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId,Tags[?Key==`Name`].Value|[0],State.Name,PrivateIpAddress,PublicIpAddress, PrivateDnsName, VpcId]' --output text | column -t | grep ${HOSTED_CLUSTER_NAME} | awk '{print $7}' | grep -v '^$' | sort -u)
+    SECURITY_GROUPS=$(aws ec2 describe-security-groups --filters "Name=vpc-id,Values=${CLUSTER_VPC}" --output json | jq -r .SecurityGroups[].GroupId)
+    for group in $SECURITY_GROUPS
+    do
+        echo "Add rules to group $group.."
+        aws ec2 authorize-security-group-ingress --group-id $group --protocol tcp --port 22 --cidr 0.0.0.0/0
+        aws ec2 authorize-security-group-ingress --group-id $group --protocol tcp --port 2022 --cidr 0.0.0.0/0
+        aws ec2 authorize-security-group-ingress --group-id $group --protocol tcp --port 20000-30109 --cidr 0.0.0.0/0
+        aws ec2 authorize-security-group-ingress --group-id $group --protocol udp --port 20000-30109 --cidr 0.0.0.0/0
+        aws ec2 authorize-security-group-ingress --group-id $group --protocol tcp --port 32768-60999 --cidr 0.0.0.0/0
+        aws ec2 authorize-security-group-ingress --group-id $group --protocol udp --port 32768-60999 --cidr 0.0.0.0/0
+    done
 }
 
 cleanup(){
