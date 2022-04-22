@@ -39,10 +39,15 @@ class OpenshiftRelease:
             cluster_name = f"ci-{release_name}"
         else:
             cluster_name = f"{git_user}-{release_name}"
+
         if self.platform == 'rosa' or self.platform == 'rogcp' or self.platform == 'hypershift':
             #Only 15 chars are allowed
             cluster_version = str(self.version).replace(".","")
             return "perf-"+cluster_version+"-"+md5(cluster_name.encode("ascii")).hexdigest()[:4]
+        elif self.platform == 'alibaba':
+            # "." is not allowed in the cluster name while creating private network.
+            cluster_name = str(cluster_name).replace(".","-")
+            return cluster_name
         else:
             return cluster_name
     

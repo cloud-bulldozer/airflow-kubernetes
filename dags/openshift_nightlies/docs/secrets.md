@@ -83,6 +83,30 @@ Schema:
 ```
 
 ---
+Key: `alibaba_creds`
+
+Type: JSON
+
+Description: Alibaba Credentials for account to install Openshift Clusters into
+
+Used by: install, cleanup 
+
+Platforms: Cloud (alibaba)
+
+Schema:
+
+```json
+    { 
+        "alibaba_region": "string",
+        "aliyun_profile": "string",
+        "aliyun_access_key_secret": "string",
+        "aliyun_access_key_id": "string",
+        "alibaba_resource_group_id": "string"
+    }
+```
+
+
+---
 Key: `azure_creds`
 
 Type: JSON
