@@ -1,4 +1,5 @@
- #!/bin/bash
+#!/bin/bash
+
 while getopts w:c: flag
 do
     case "${flag}" in
@@ -12,18 +13,13 @@ setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
     echo "Cloning ${E2E_BENCHMARKING_REPO} from branch ${E2E_BENCHMARKING_BRANCH}"
-    git clone -b ${E2E_BENCHMARKING_BRANCH} ${E2E_BENCHMARKING_REPO} --depth=1 --single-branch
+    git clone -q -b ${E2E_BENCHMARKING_BRANCH} ${E2E_BENCHMARKING_REPO} --depth=1 --single-branch
     cp /home/airflow/auth/config /home/airflow/workspace/config
     export KUBECONFIG=/home/airflow/workspace/config
     curl http://dell-r510-01.perf.lab.eng.rdu2.redhat.com/msheth/gsheet_key.json > /tmp/key.json
     export GSHEET_KEY_LOCATION=/tmp/key.json
-    export BUILD_NUMBER=test
     export RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}/$AIRFLOW_CTX_TASK_ID
     export SNAPPY_RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}
-
-    rm /tmp/uperf_$BUILD_NUMBER.status || true
-    export BENCHMARK_STATUS_PATH=/tmp/uperf_$BUILD_NUMBER.status
-    echo "BENCHMARK_STATUS_FILE=$BENCHMARK_STATUS_PATH" > uperf.properties
 
     curl -sS https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xz oc
 
@@ -38,7 +34,7 @@ run_baremetal_benchmark(){
     echo "Baremetal Benchmark will be began.."
     echo "Orchestration host --> $ORCHESTRATION_HOST"
 
-    git clone --depth=1 --single-branch --branch master https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git /tmp/perf-dept
+    git clone -q --depth=1 --single-branch --branch master https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git /tmp/perf-dept
     export PUBLIC_KEY=/tmp/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
     export PRIVATE_KEY=/tmp/perf-dept/ssh_keys/id_rsa_pbench_ec2
     chmod 600 ${PRIVATE_KEY}
@@ -59,13 +55,13 @@ run_baremetal_benchmark(){
     pushd /home/kni/ci_${TASK_GROUP}_workspace
 
     if [[ ${workload} == "icni" ]]; then
-        git clone --depth=1 --single-branch -b main https://github.com/redhat-performance/web-burner
+        git clone -q --depth=1 --single-branch -b main https://github.com/redhat-performance/web-burner
         pushd web-burner
         echo "Running $WORKLOAD_TEMPLATE workload at $SCALE scale"
         eval "$command $WORKLOAD_TEMPLATE $SCALE"
     else
         echo "Cloning ${E2E_BENCHMARKING_REPO} from branch ${E2E_BENCHMARKING_BRANCH}"
-        git clone -b ${E2E_BENCHMARKING_BRANCH} ${E2E_BENCHMARKING_REPO} --depth=1 --single-branch
+        git clone -q -b ${E2E_BENCHMARKING_BRANCH} ${E2E_BENCHMARKING_REPO} --depth=1 --single-branch
         pushd e2e-benchmarking/workloads/$workload
         eval "$command"
     fi
@@ -74,18 +70,18 @@ EOF
         exit 1
     fi
 }
+export UUID=$(uuidgen | head -c8)-$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')
+echo "############################################"
+echo "# Benchmark UUID: ${UUID}"
+echo "############################################"
 
 if [[ $PLATFORM == "baremetal" ]]; then
-    export UUID=$(uuidgen | head -c8)-$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')
     env >> /tmp/environment.txt
     run_baremetal_benchmark
     echo $UUID
 else
     setup
-    cd /home/airflow/workspace
-    ls
-    cd e2e-benchmarking/workloads/$workload
-    export UUID=$(uuidgen | head -c8)-$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')
+    cd /home/airflow/workspace/e2e-benchmarking/workloads/$workload
     
     eval "$command"
     benchmark_rv=$?
@@ -103,5 +99,4 @@ else
     fi
     echo $UUID
     exit $benchmark_rv
-
 fi
