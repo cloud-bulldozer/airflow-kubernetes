@@ -76,6 +76,14 @@ class E2EBenchmarks():
                 "AWS_DEFAULT_REGION": self.aws_creds['aws_region_for_openshift']
             }
     
+        if self.release.platform == "hypershift":
+            mgmt_cluster_name = release._generate_cluster_name()
+            self.env = {
+                "THANOS_RECEIVER_URL": var_loader.get_secret("thanos_receiver_url"),
+                "PROM_URL": var_loader.get_secret("thanos_querier_url"),
+                "MGMT_CLUSTER_NAME": f"{mgmt_cluster_name}.*",
+                "HOSTED_CLUSTER_NS": f"clusters-hypershift-{mgmt_cluster_name}-{self.task_group}"
+            }
 
     def get_benchmarks(self):
         benchmarks = self._get_benchmarks(self.vars["benchmarks"])
