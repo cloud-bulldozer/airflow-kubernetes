@@ -13,7 +13,6 @@
                 "BURST": "20",
                 "STEP_SIZE": "30s",
                 "LOG_LEVEL": "info",
-                "LOG_STREAMING": "true",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
                 "MUST_GATHER_EACH_TASK": "true"
@@ -33,7 +32,6 @@
                 "BURST": "20",
                 "STEP_SIZE": "30s",
                 "LOG_LEVEL": "info",
-                "LOG_STREAMING": "true",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
                 "MUST_GATHER_EACH_TASK": "true",
@@ -54,7 +52,6 @@
                 "BURST": "20",
                 "STEP_SIZE": "30s",
                 "LOG_LEVEL": "info",
-                "LOG_STREAMING": "true",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
                 "MUST_GATHER_EACH_TASK": "true"
@@ -73,7 +70,7 @@
                 "QPS": "20",
                 "BURST": "20",
                 "LOG_LEVEL": "info",
-                "LOG_STREAMING": "true",
+                "PLATFORM_ALERTS": "true",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
                 "MUST_GATHER_EACH_TASK": "true"
