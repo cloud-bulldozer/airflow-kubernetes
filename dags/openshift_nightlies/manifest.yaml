@@ -101,36 +101,48 @@ platforms:
   rosa:
     versions: ["4.10", 4.11]
     variants:
-      - name: sdn-control-plane
+      - name: sts-sdn-control-plane
         schedule:  "0 12 * * 1,3,5"
         config:
           install: rosa/sdn.json
           benchmarks: control-plane.json
-      - name: sdn-data-plane
+      - name: sts-sdn-data-plane
         schedule: "5 12 * * 1"
         config:
           install: rosa/sdn.json
           benchmarks: data-plane.json
-      - name: ovn-control-plane
+      - name: sts-ovn-control-plane
         schedule:  "10 12 * * 1,3,5"
         config:
           install: rosa/ovn.json
           benchmarks: control-plane.json
-      - name: ovn-data-plane
+      - name: sts-ovn-data-plane
         schedule: "15 12 * * 1"
         config:
           install: rosa/ovn.json
           benchmarks: data-plane.json
+      - name: ccs-ovn-control-plane
+        schedule:  "20 12 * * 1,3,5"
+        config:
+          install: rosa/ccs-ovn.json
+          benchmarks: control-plane.json
+      - name: ccs-sdn-control-plane
+        schedule:  "25 12 * * 1,3,5"
+        config:
+          install: rosa/ccs-sdn.json
+          benchmarks: control-plane.json
+
+
   rogcp:
     versions: ["4.10", 4.11]
     variants:
       - name: sdn-control-plane
-        schedule:  "20 12 * * 1,3,5"
+        schedule:  "00 13 * * 1,3,5"
         config:
           install: rogcp/sdn.json
           benchmarks: control-plane.json
       - name: sdn-data-plane
-        schedule: "25 12 * * 1"
+        schedule: "05 13 * * 1"
         config:
           install: rogcp/sdn.json
           benchmarks: data-plane.json
