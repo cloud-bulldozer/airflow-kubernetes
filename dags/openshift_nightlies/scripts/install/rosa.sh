@@ -170,8 +170,10 @@ postinstall(){
 }
 
 index_metadata(){
-    _download_kubeconfig $(_get_cluster_id ${CLUSTER_NAME}) ./kubeconfig
-    export KUBECONFIG=./kubeconfig
+    if [[ ! "${INDEXDATA[*]}" =~ "cleanup" ]] ; then
+        _download_kubeconfig $(_get_cluster_id ${CLUSTER_NAME}) ./kubeconfig
+        export KUBECONFIG=./kubeconfig
+    fi
     METADATA=$(cat << EOF
 {
 "uuid" : "${UUID}",
