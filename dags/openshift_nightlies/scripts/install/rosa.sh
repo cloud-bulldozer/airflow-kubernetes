@@ -135,7 +135,7 @@ setup(){
     rosa whoami
     rosa verify quota
     rosa verify permissions
-    export ROSA_VERSION=$(rosa list versions -o json --channel-group=nightly | jq -r '.[] | select(.raw_id|startswith('\"${version}\"')) | .raw_id' | sort -rV | head -1)
+    export ROSA_VERSION=$(rosa list versions -o json --channel-group=nightly | jq -r '.[] | select(.raw_id|startswith('\"${version}\"')) | .raw_id' | sort -rV | head -2 | tail -1)
     [ -z "${ROSA_VERSION}" ] && echo "ERROR: Image not found for version (${version}) on ROSA Nightly channel group" && exit 1
     return 0
 }
