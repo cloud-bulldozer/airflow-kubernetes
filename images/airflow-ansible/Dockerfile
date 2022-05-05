@@ -3,4 +3,4 @@ FROM ${BASE_IMAGE}
 USER root
 RUN apt install bc
 USER airflow
-RUN yes | pip install ansible netaddr
+RUN yes | pip install ansible netaddr sqlalchemy==1.3.20
