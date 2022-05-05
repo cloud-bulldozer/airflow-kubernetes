@@ -33,4 +33,4 @@ RUN make build
 WORKDIR /opt/airflow/
 USER airflow
 RUN python3 -m pip install --upgrade pip || true
-RUN yes | pip3 install openshift==0.11.0 || true
+RUN yes | pip3 install openshift==0.11.0 sqlalchemy==1.3.20 || true
