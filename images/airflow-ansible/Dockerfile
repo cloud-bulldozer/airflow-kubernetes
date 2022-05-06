@@ -4,4 +4,3 @@ USER root
 RUN apt install bc
 USER airflow
 RUN yes | pip install ansible netaddr
-RUN yes | pip install sqlalchemy==1.3.20 --force-reinstall
