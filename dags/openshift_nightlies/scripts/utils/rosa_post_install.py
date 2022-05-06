@@ -58,8 +58,8 @@ def _aws_config(nodes,clustername,jsonfile):
 
     sec_group_cmds = ["aws ec2 authorize-security-group-ingress --group-id ITEM --protocol tcp --port 22 --cidr 0.0.0.0/0",
                       "aws ec2 authorize-security-group-ingress --group-id ITEM --protocol tcp --port 2022 --cidr 0.0.0.0/0",
-                      "aws ec2 authorize-security-group-ingress --group-id ITEM --protocol tcp --port 20000-20109 --cidr 0.0.0.0/0",
-                      "aws ec2 authorize-security-group-ingress --group-id ITEM --protocol udp --port 20000-20109 --cidr 0.0.0.0/0",
+                      "aws ec2 authorize-security-group-ingress --group-id ITEM --protocol tcp --port 20000-30109 --cidr 0.0.0.0/0",
+                      "aws ec2 authorize-security-group-ingress --group-id ITEM --protocol udp --port 20000-30109 --cidr 0.0.0.0/0",
                       "aws ec2 authorize-security-group-ingress --group-id ITEM --protocol tcp --port 32768-60999 --cidr 0.0.0.0/0",
                       "aws ec2 authorize-security-group-ingress --group-id ITEM --protocol udp --port 32768-60999 --cidr 0.0.0.0/0"]
     for item in sec_group_list:
