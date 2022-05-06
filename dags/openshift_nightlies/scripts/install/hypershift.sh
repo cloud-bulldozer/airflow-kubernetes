@@ -13,7 +13,11 @@ do
 done
 
 _get_cluster_id(){
-    echo $(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .id')
+    if [[ $INSTALL_METHOD == "osd" ]]; then
+        echo $(ocm list clusters --no-headers --columns id $1)
+    else
+        echo $(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .id')
+    fi
 }
 
 _download_kubeconfig(){
@@ -21,7 +25,11 @@ _download_kubeconfig(){
 }
 
 _get_cluster_status(){
-    echo $(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .status.state')
+    if [[ $INSTALL_METHOD == "osd" ]]; then
+        echo $(ocm list clusters --no-headers --columns state $1)
+    else    
+        echo $(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .status.state')
+    fi
 }
 
 _get_base_domain(){
@@ -43,22 +51,37 @@ setup(){
     export HOSTED_KUBECONFIG_NAME=$(echo $KUBECONFIG_NAME | awk -F-kubeconfig '{print$1}')-$HOSTED_NAME-kubeconfig
     export HOSTED_KUBEADMIN_NAME=$(echo $KUBEADMIN_NAME | awk -F-kubeadmin '{print$1}')-$HOSTED_NAME-kubeadmin    
     export KUBECONFIG=/home/airflow/auth/config
-    export ROSA_CLI_VERSION=$(cat ${json_file} | jq -r .rosa_cli_version)
-    if [[ ${ROSA_CLI_VERSION} == "master" ]]; then
-        git clone --depth=1 --single-branch --branch master https://github.com/openshift/rosa
-	pushd rosa
-	make
-	sudo mv rosa /usr/local/bin/
-	popd
+    if [[ $INSTALL_METHOD == "osd" ]]; then
+        export OCM_CLI_VERSION=$(cat ${json_file} | jq -r .ocm_cli_version)
+        if [[ ${OCM_CLI_VERSION} == "master" ]]; then
+            git clone https://github.com/openshift-online/ocm-cli
+            pushd ocm-cli
+            sudo PATH=$PATH:/usr/bin:/usr/local/go/bin make
+            sudo mv ocm /usr/local/bin/
+            popd
+        fi
+        ocm login --url=https://api.stage.openshift.com --token="${ROSA_TOKEN}"
+        ocm whoami
+    else
+        export ROSA_CLI_VERSION=$(cat ${json_file} | jq -r .rosa_cli_version)
+        if [[ ${ROSA_CLI_VERSION} == "master" ]]; then
+            git clone --depth=1 --single-branch --branch master https://github.com/openshift/rosa
+            pushd rosa
+            make
+            sudo mv rosa /usr/local/bin/
+            popd
+        fi
+        ocm login --url=https://api.stage.openshift.com --token="${ROSA_TOKEN}"
+        ocm whoami        
+        rosa login --env=${ROSA_ENVIRONMENT}
+        rosa whoami
+        rosa verify quota
+        rosa verify permissions
     fi
+    export BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
     echo [default] >> aws_credentials
     echo aws_access_key_id=$AWS_ACCESS_KEY_ID >> aws_credentials
     echo aws_secret_access_key=$AWS_SECRET_ACCESS_KEY >> aws_credentials
-    rosa login --env=${ROSA_ENVIRONMENT}
-    ocm login --url=https://api.stage.openshift.com --token="${ROSA_TOKEN}"
-    rosa whoami
-    rosa verify quota
-    rosa verify permissions
     echo "MANAGEMENT CLUSTER VERSION:"
     ocm list cluster $MGMT_CLUSTER_NAME
     echo "MANAGEMENT CLUSTER NODES:"
@@ -66,7 +89,7 @@ setup(){
 }
 
 install(){
-    echo "Install Hypershift Operator"
+    echo "Create S3 bucket.."
     aws s3api create-bucket --acl public-read --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --create-bucket-configuration LocationConstraint=$AWS_REGION --region $AWS_REGION || true
     echo "Wait till S3 bucket is ready.."
     aws s3api wait bucket-exists --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org 
@@ -76,7 +99,7 @@ install(){
     while [[ $cm != "oidc-storage-provider-s3-config" ]]
     do
         cm=$(oc get configmap -n kube-public oidc-storage-provider-s3-config --no-headers | awk '{print$1}' || true)
-        echo "Hypershift Operator is not ready yet.."
+        echo "Hypershift Operator is not ready yet..Retrying after few seconds"
         sleep 5
     done
 }
@@ -86,12 +109,21 @@ create_cluster(){
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .hosted_cluster_nodepool_size)
     export COMPUTE_WORKERS_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_instance_type)
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_network_type)
-    export REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_control_plane_availability)   
-    BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
+    export REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_control_plane_availability)
+    export CPO_IMAGE=$(cat ${json_file} | jq -r .control_plane_operator_image)
+    export RELEASE_IMAGE=$(cat ${json_file} | jq -r .hosted_cluster_release_image)
     echo $PULL_SECRET > pull-secret
-    hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE --instance-type $COMPUTE_WORKERS_TYPE
+    CPO_IMAGE_ARG=""
+    if [[ $CPO_IMAGE != "" ]] ; then
+        CPO_IMAGE_ARG="--control-plane-operator-image=$CPO_IMAGE"
+    fi
+    RELEASE=""
+    if [[ $RELEASE_IMAGE != "" ]]; then
+        RELEASE="--release-image=$RELEASE_IMAGE"
+    fi
+    hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE --instance-type $COMPUTE_WORKERS_TYPE ${RELEASE} ${CPO_IMAGE_ARG}
     echo "Wait till hosted cluster got created and in progress.."
-    kubectl wait --for=condition=available=false --timeout=60s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
+    kubectl wait --for=condition=available=false --timeout=120s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     echo "Wait till hosted cluster is ready.."
     kubectl wait --for=condition=available --timeout=3600s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
@@ -103,9 +135,8 @@ create_empty_cluster(){
     echo "Create None type Hosted cluster.."    
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_network_type)
     export REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_control_plane_availability)   
-    BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
     echo $PULL_SECRET > pull-secret
-    hypershift create cluster none --name $HOSTED_CLUSTER_NAME --node-pool-replicas=0 --base-domain $BASEDOMAIN --pull-secret pull-secret --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE
+    hypershift create cluster none --name $HOSTED_CLUSTER_NAME --node-pool-replicas=0 --base-domain $BASEDOMAIN --pull-secret pull-secret --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE --control-plane-operator-image=quay.io/hypershift/hypershift:latest
     echo "Wait till hosted cluster got created and in progress.."
     kubectl wait --for=condition=available=false --timeout=60s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME
@@ -185,10 +216,12 @@ cleanup(){
     done    
     aws s3api delete-bucket --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org
     aws s3api wait bucket-not-exists --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org
+    ROUTE_ID=$(aws route53 list-hosted-zones --output text --query HostedZones | grep $BASEDOMAIN | grep hypershift | grep -v terraform | awk '{print$2}' | awk -F/ '{print$3}')
+    for id in $ROUTE_ID; do aws route53 delete-hosted-zone --id=$id || true; done
 }
 
 cat ${json_file}
-
+export INSTALL_METHOD=$(cat ${json_file} | jq -r .cluster_install_method)
 setup
 
 if [[ "$operation" == "cleanup" ]]; then
