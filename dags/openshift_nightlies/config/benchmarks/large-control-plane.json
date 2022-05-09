@@ -1,14 +1,6 @@
 {
     "benchmarks": [
         {
-            "name": "baseline",
-            "workload": "baseline-performance",
-            "command": "./baseline_perf.sh",
-            "env": {
-                "WATCH_TIME": "15"
-            }
-        },
-        {
             "name": "node-density",
             "workload": "kube-burner",
             "command": "./run.sh",
