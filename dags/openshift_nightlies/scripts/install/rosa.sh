@@ -113,7 +113,7 @@ _wait_for_cluster_ready(){
             INDEXDATA+=("${PREVIOUS_STATUS}"-"${DURATION}")
             START_TIMER=${CURRENT_TIMER}
             echo "INFO: Cluster status changed to ${CLUSTER_STATUS}"
-	        if [ ${CLUSTER_STATUS} == "error" ] ; then
+            if [ ${CLUSTER_STATUS} == "error" ] ; then
                 if [[ $INSTALL_METHOD == "osd" ]]; then
                     echo "ERROR: Cluster $1 not installed after 1.5 hours.."
                 else
@@ -272,7 +272,7 @@ index_metadata(){
         export KUBECONFIG=./kubeconfig
     fi
     if [[ $INSTALL_METHOD == "osd" ]]; then
-        export PLATFORM="AWS"
+        export PLATFORM="AWS-MS"
         export CLUSTER_VERSION="${OCM_VERSION}"
     else
         export PLATFORM="ROSA"

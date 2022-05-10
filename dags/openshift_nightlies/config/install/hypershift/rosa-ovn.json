@@ -8,7 +8,7 @@
     "ocm_environment": "stage",
     "openshift_worker_count": 12,
     "openshift_network_type": "OVNKubernetes",
-    "openshift_worker_instance_type": "m5.2xlarge",
+    "openshift_worker_instance_type": "m5.4xlarge",
     "number_of_hosted_cluster": 1,
     "control_plane_operator_image": "quay.io/hypershift/hypershift:latest",
     "hosted_cluster_nodepool_size": 24,

@@ -5,7 +5,7 @@
     "rosa_environment": "staging",
     "openshift_worker_count": 9,
     "openshift_network_type": "OpenShiftSDN",
-    "openshift_worker_instance_type": "m5.2xlarge",
+    "openshift_worker_instance_type": "m5.4xlarge",
     "number_of_hosted_cluster": 10,
     "control_plane_operator_image": "quay.io/hypershift/hypershift:latest",
     "hosted_cluster_nodepool_size": 0,

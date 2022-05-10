@@ -123,7 +123,7 @@ create_cluster(){
     fi
     hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE --instance-type $COMPUTE_WORKERS_TYPE ${RELEASE} ${CPO_IMAGE_ARG}
     echo "Wait till hosted cluster got created and in progress.."
-    kubectl wait --for=condition=available=false --timeout=120s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
+    kubectl wait --for=condition=available=false --timeout=3600s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     echo "Wait till hosted cluster is ready.."
     kubectl wait --for=condition=available --timeout=3600s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
@@ -162,7 +162,7 @@ postinstall(){
         itr=0
         while [ $itr -lt 12 ]
         do
-            node=$(oc get nodes | grep worker | grep -i ready | wc -l)
+            node=$(oc get nodes | grep worker | grep -i ready | grep -iv notready | wc -l)
             if [[ $node == $COMPUTE_WORKERS_NUMBER ]]; then
                 echo "All nodes are ready in cluster - $HOSTED_CLUSTER_NAME ..."
             else
