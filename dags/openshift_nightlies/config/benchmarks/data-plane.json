@@ -12,6 +12,7 @@
         {
             "name": "pod-network",
             "workload": "network-perf",
+            "trigger_rule": "all_done",
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "pod2pod"
@@ -20,6 +21,7 @@
         {
             "name": "serviceip-network",
             "workload": "network-perf",
+            "trigger_rule": "all_done",
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "pod2svc"
@@ -28,6 +30,7 @@
         {
             "name": "router",
             "workload": "router-perf-v2",
+            "trigger_rule": "all_done",
             "command": "./ingress-performance.sh",
             "env": {
                 "THROUGHPUT_TOLERANCE": "10",
