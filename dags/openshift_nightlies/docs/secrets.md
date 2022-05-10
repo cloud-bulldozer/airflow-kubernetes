@@ -14,26 +14,17 @@ To resolve this, Airflow lets you [define variables](https://airflow.apache.org/
 
 For users leveraging the `playground` or `tenant` mode of installation benefit from the fact that Airflow instances created with those modes are auto-wired to connect to our [Vault](https://www.vaultproject.io/) instance. This ensures Airflow will work OOTB as our Vault has all of the required variables defined in it. 
 
-## Overriding Vault Variables
+## Variables for specific tasks
 
-If Airflow is connected to a Vault instance, those variables will take precendence over any defined locally within Airflow. In order to allow users to override the variables with their own configurations, users can create a singular `overrides` variable in Airflow that is a JSON blob with mappings of the variable key to the new desired value. 
+It's possible to set variables for a specific dag/task tuple, by default Airflow will try to fetch a secret with the name `<DAG_NAME>-<TASK_NAME>` from a connected vault instance. The variables set in this secret will take precedence to any other variable defined in the task.
 
-Example `overrides` variable:
+Example `4.11-aws-sdn-data-plane-router` variable:
 
 ```json
-
 {
-    "ansible_orchestrator": {
-        "orchestration_host": "my_custom_host",
-        "orchestration_user": "my_custom_user"
-    },
-    "elasticsearch": "my_custom_elastic_url"
+    "TERMINATIONS": "mix"
 }
-
 ```
-
-
-
 
 
 # Supported Variables

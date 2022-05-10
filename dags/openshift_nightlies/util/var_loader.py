@@ -15,19 +15,15 @@ def get_git_user():
     git_user = git_path.split('/')[0]
     return git_user.lower()
 
-def get_secret(name, deserialize_json=False):
-    overrides = get_overrides()
-    if name in overrides:
-        return overrides[name]
-    return Variable.get(name, deserialize_json=deserialize_json)
 
-
-def get_overrides():
-    try:
-        return Variable.get("overrides", deserialize_json=True)
-    except KeyError: 
-        return {}
-    
+def get_secret(name, deserialize_json=False, required=True):
+    if required:
+        return Variable.get(name, deserialize_json=deserialize_json)
+    else:
+        try:
+            return Variable.get(name, deserialize_json=deserialize_json)
+        except KeyError:
+            return {}
 
 
 ### Task Variable Generator
