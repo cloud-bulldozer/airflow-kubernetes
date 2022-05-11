@@ -1,0 +1,17 @@
+{
+    "cluster_install_method": "rosa",
+    "aws_profile": "",
+    "aws_access_key_id": "",
+    "aws_secret_access_key": "",
+    "rosa_environment": "staging",
+    "rosa_cli_version": "master",
+    "ocm_environment": "stage",
+    "openshift_worker_count": 9,
+    "openshift_network_type": "OpenShiftSDN",
+    "openshift_worker_instance_type": "m5.4xlarge",
+    "number_of_hosted_cluster": 10,
+    "control_plane_operator_image": "quay.io/hypershift/hypershift:latest",
+    "hosted_cluster_nodepool_size": 0,
+    "hosted_cluster_network_type": "OpenShiftSDN", 
+    "hosted_control_plane_availability": "HighlyAvailable" 
+}

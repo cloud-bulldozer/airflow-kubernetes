@@ -1,8 +1,11 @@
 {
-    "cluster_install_method": "osd",
-    "ocm_cli_version": "master",
-    "ocm_environment": "stage",
+    "cluster_install_method": "rosa",
+    "aws_profile": "",
+    "aws_access_key_id": "",
+    "aws_secret_access_key": "",
     "rosa_environment": "staging",
+    "rosa_cli_version": "master",
+    "ocm_environment": "stage",
     "openshift_worker_count": 12,
     "openshift_network_type": "OVNKubernetes",
     "openshift_worker_instance_type": "m5.4xlarge",
@@ -11,5 +14,5 @@
     "hosted_cluster_nodepool_size": 24,
     "hosted_cluster_instance_type": "m5.4xlarge",
     "hosted_cluster_network_type": "OVNKubernetes", 
-    "hosted_control_plane_availability": "HighlyAvailable"   
+    "hosted_control_plane_availability": "HighlyAvailable"    
  }

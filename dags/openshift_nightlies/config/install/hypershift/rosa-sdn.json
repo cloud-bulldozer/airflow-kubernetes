@@ -1,4 +1,5 @@
 {
+    "cluster_install_method": "rosa",
     "aws_profile": "",
     "aws_access_key_id": "",
     "aws_secret_access_key": "",
@@ -7,11 +8,10 @@
     "ocm_environment": "stage",
     "openshift_worker_count": 9,
     "openshift_network_type": "OpenShiftSDN",
-    "openshift_worker_instance_type": "m5.2xlarge",
-    "machineset_metadata_label_prefix": "machine.openshift.io",
-    "openshift_workload_node_instance_type": "m5.2xlarge",
-    "number_of_hosted_cluster": 10,
-    "hosted_cluster_nodepool_size": 0,
+    "openshift_worker_instance_type": "m5.4xlarge",
+    "number_of_hosted_cluster": 1,
+    "hosted_cluster_nodepool_size": 24,
+    "hosted_cluster_instance_type": "m5.4xlarge",
     "hosted_cluster_network_type": "OpenShiftSDN", 
     "hosted_control_plane_availability": "HighlyAvailable" 
 }

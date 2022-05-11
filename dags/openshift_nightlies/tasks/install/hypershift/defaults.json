@@ -31,9 +31,11 @@
     "sleep_time": 30,
     "daemon_mode": true,
     "fips": false,
-    "rosa_expiration_time": "2880m",
+    "rosa_expiration_time": "2880",
     "number_of_hosted_cluster": 1,
+    "control_plane_operator_image": "",
     "hosted_cluster_instance_type": "m5.2xlarge",
     "hosted_cluster_network_type": "OpenShiftSDN",    
-    "hosted_control_plane_availability": "SingleReplica" 
+    "hosted_control_plane_availability": "SingleReplica",
+    "hosted_cluster_release_image": ""
 }
