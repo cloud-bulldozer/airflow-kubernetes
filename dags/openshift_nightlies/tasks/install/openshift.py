@@ -59,7 +59,7 @@ class AbstractOpenshiftInstaller(ABC):
                 "thanos_receiver_url": var_loader.get_secret('thanos_receiver_url'),
                 "loki_receiver_url": var_loader.get_secret('loki_receiver_url') }
         }
-        if self.config.get('openshift_install_binary_url', "") == "" or self.config('openshift_client_location', "") == "":
+        if self.config.get('openshift_install_binary_url', "") == "" or self.config.get('openshift_client_location', "") == "":
             self.config = {**self.config, **self.release.get_latest_release()}
 
         super().__init__()
