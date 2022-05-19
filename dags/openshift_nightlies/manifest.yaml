@@ -44,12 +44,12 @@ platforms:
     - name: sdn-data-plane
       schedule: "0 12 * * 1"
       config: 
-        install: sdn.json
+        install: sdn-data-plane.json
         benchmarks: data-plane.json
     - name: ovn-data-plane
       schedule: "0 12 * * 1"
       config:
-        install: ovn.json
+        install: ovn-data-plane.json
         benchmarks: data-plane.json
     - name: sdn-medium
       schedule: "0 12 * * 1"
