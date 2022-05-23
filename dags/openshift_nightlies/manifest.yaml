@@ -127,12 +127,12 @@ platforms:
           install: rosa/ovn.json
           benchmarks: data-plane.json
       - name: iam-ovn-control-plane
-        schedule: "None"
+        schedule: 'None'
         config:
           install: rosa/iam-ovn.json
           benchmarks: control-plane.json
       - name: iam-sdn-control-plane
-        schedule: "None"
+        schedule: 'None'
         config:
           install: rosa/iam-sdn.json
           benchmarks: control-plane.json          

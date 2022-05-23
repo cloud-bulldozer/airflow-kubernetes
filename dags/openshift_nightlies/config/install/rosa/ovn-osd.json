@@ -6,6 +6,8 @@
     "rosa_environment": "staging",
     "rosa_cli_version": "master",
     "ocm_environment": "stage",
+    "managed_channel_group": "nightly",
+    "managed_ocp_version": "latest",
     "openshift_worker_count": 27,
     "openshift_network_type": "OVNKubernetes",
     "openshift_worker_instance_type": "m5.2xlarge",
