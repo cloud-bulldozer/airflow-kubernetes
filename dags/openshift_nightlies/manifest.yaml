@@ -48,7 +48,7 @@ platforms:
         benchmarks: data-plane.json
     - name: ovn-data-plane
       schedule: "0 12 * * 1"
-      config: 
+      config:
         install: ovn.json
         benchmarks: data-plane.json
     - name: sdn-medium
@@ -61,6 +61,11 @@ platforms:
       config: 
         install: ovn-medium.json
         benchmarks: medium-control-plane.json
+    - name: sdn-extra-large
+      schedule: "0 12 15 * *"
+      config:
+        install: sdn-extra-large.json
+        benchmarks: extra-large-control-plane.json
     - name: sdn-large
       schedule: "0 12 15 * *"
       config: 

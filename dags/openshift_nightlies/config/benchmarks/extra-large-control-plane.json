@@ -7,7 +7,7 @@
             "env": {
                 "WORKLOAD": "node-density",
                 "PODS_PER_NODE": "245",
-                "NODE_COUNT": "252",
+                "NODE_COUNT": "501",
                 "JOB_TIMEOUT": "18000",
                 "QPS": "20",
                 "BURST": "20",
@@ -16,28 +16,7 @@
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
                 "MUST_GATHER_EACH_TASK": "true",
-                "CLEANUP_TIMEOUT": "1h",
-                "METRICS_PROFILE": "metrics-aggregated.yaml"
-            }
-        },
-        {
-            "name": "node-density-heavy",
-            "workload": "kube-burner",
-            "trigger_rule": "all_done",
-            "command": "./run.sh",
-            "env": {
-                "WORKLOAD": "node-density-heavy",
-                "PODS_PER_NODE": "100",
-                "NODE_COUNT": "252",
-                "JOB_TIMEOUT": "18000",
-                "QPS": "20",
-                "BURST": "20",
-                "STEP_SIZE": "2m",
-                "LOG_LEVEL": "info",
-                "CLEANUP_WHEN_FINISH": "true",
-                "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true",
-                "CLEANUP_TIMEOUT": "1h",
+                "CLEANUP_TIMEOUT": "2h",
                 "METRICS_PROFILE": "metrics-aggregated.yaml"
             }
         },
