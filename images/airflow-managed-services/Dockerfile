@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=quay.io/cloud-bulldozer/airflow:2.3.0
+ARG BASE_IMAGE=quay.io/cloud-bulldozer/airflow:2.3.1
 FROM ${BASE_IMAGE} as runtime
 USER root
 RUN curl -L https://go.dev/dl/go1.17.6.linux-amd64.tar.gz -o go1.17.6.linux-amd64.tar.gz
