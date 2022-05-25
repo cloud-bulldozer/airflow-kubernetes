@@ -30,14 +30,14 @@
             "workload": "router-perf-v2",
             "command": "./ingress-performance.sh",
             "env": {
-                "THROUGHPUT_TOLERANCE": "10",
-                "LATENCY_TOLERANCE": "10",
                 "LARGE_SCALE_THRESHOLD": "19",
                 "ENGINE": "local",
                 "LARGE_SCALE_ROUTES": "500",
-                "COMPARE": "false",
                 "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
-                "GSHEET_KEY_LOCATION": "/tmp/key.json"
+                "GSHEET_KEY_LOCATION": "/tmp/key.json",
+                "LARGE_SCALE_CLIENTS": "1 20 40",
+                "LARGE_SCALE_CLIENTS_MIX": "1 5 10",
+                "QUIET_PERIOD": "30s"
             }
         }
     ]
