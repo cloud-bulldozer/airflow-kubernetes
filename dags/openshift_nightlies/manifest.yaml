@@ -83,7 +83,7 @@ platforms:
 
   baremetal: 
     build: dev
-    versions: [4.9]
+    versions: [4.11]
     variants: 
     - name: jetski
       config: 
