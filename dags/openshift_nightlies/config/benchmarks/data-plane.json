@@ -37,7 +37,9 @@
                 "GSHEET_KEY_LOCATION": "/tmp/key.json",
                 "LARGE_SCALE_CLIENTS": "1 20 40",
                 "LARGE_SCALE_CLIENTS_MIX": "1 5 10",
-                "QUIET_PERIOD": "30s"
+                "QUIET_PERIOD": "30s",
+                "SAMPLES": "4",
+                "RUNTIME": "30"
             }
         }
     ]
