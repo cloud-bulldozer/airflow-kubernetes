@@ -41,7 +41,8 @@ class BaremetalOpenshiftInstaller(AbstractOpenshiftInstaller):
         }
         
         config['pullsecret'] = json.dumps(config['openshift_install_pull_secret'])
-        config['version'] = var_loader.get_secret(f'{var_loader.get_git_user()}-baremetal_clusterversion') or self.release.release_stream
+        version_variable = f'{var_loader.get_git_user()}-baremetal_clusterversion'
+        config['version'] = var_loader.get_secret(version_variable, required=False) or self.release.release_stream
         config['build'] = self.release.build
         
         # Required Environment Variables for Install script
