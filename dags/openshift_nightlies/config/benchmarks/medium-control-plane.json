@@ -28,7 +28,7 @@
                 "WORKLOAD": "cluster-density",
                 "JOB_ITERATIONS": "1000",
                 "JOB_TIMEOUT": "18000",
-                "STEP_SIZE": "1m",
+                "STEP_SIZE": "2m",
                 "QPS": "20",
                 "BURST": "20",
                 "LOG_LEVEL": "info",
