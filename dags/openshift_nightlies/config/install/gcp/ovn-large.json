@@ -1,6 +1,6 @@
 {
     "openshift_master_count": 3,
-    "openshift_worker_count": 252,
+    "openshift_worker_count": 3,
     "openshift_base_domain": "perfscale.gcp.devcluster.openshift.com",
     "openshift_host_prefix": "23",
     "openshift_network_type": "OVNKubernetes",
