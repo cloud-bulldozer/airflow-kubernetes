@@ -41,6 +41,24 @@
             }
         },
         {
+            "name": "cluster-density",
+            "workload": "kube-burner",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "cluster-density",
+                "JOB_ITERATIONS": "4000",
+                "JOB_TIMEOUT": "18000",
+                "STEP_SIZE": "2m",
+                "QPS": "20",
+                "BURST": "20",
+                "LOG_LEVEL": "info",
+                "CLEANUP_WHEN_FINISH": "true",
+                "CLEANUP": "true",
+                "MUST_GATHER_EACH_TASK": "true",
+                "CLEANUP_TIMEOUT": "1h"
+            }
+        },
+        {
             "name": "node-density",
             "workload": "kube-burner",
             "command": "./run.sh",
@@ -58,25 +76,6 @@
                 "MUST_GATHER_EACH_TASK": "true",
                 "CLEANUP_TIMEOUT": "2h",
                 "METRICS_PROFILE": "metrics-profiles/metrics-aggregated.yaml"
-            }
-        },
-        {
-            "name": "cluster-density",
-            "workload": "kube-burner",
-            "trigger_rule": "all_done",
-            "command": "./run.sh",
-            "env": {
-                "WORKLOAD": "cluster-density",
-                "JOB_ITERATIONS": "4000",
-                "JOB_TIMEOUT": "18000",
-                "STEP_SIZE": "2m",
-                "QPS": "20",
-                "BURST": "20",
-                "LOG_LEVEL": "info",
-                "CLEANUP_WHEN_FINISH": "true",
-                "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true",
-                "CLEANUP_TIMEOUT": "1h"
             }
         }
     ]
