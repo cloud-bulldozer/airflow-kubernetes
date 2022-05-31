@@ -85,9 +85,11 @@ setup(){
         HYPERSHIFT_CLI_FORK=$(cat ${json_file} | jq -r .hypershift_cli_fork)
         echo "Remove current Hypershift CLI directory.."
         rm -rf hypershift
+        rm /usr/local/bin/hypershift || true
         git clone -q --depth=1 --single-branch --branch ${HYPERSHIFT_CLI_VERSION} ${HYPERSHIFT_CLI_FORK}    
         pushd hypershift
         make build
+        cp bin/hypershift /usr/local/bin
         popd
     fi
     export BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
