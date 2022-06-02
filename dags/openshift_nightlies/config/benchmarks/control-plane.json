@@ -15,7 +15,8 @@
                 "LOG_LEVEL": "info",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "MUST_GATHER_EACH_TASK": "true",
+                "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
             }
         },
         {
@@ -35,7 +36,8 @@
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
                 "MUST_GATHER_EACH_TASK": "true",
-                "CLEANUP_TIMEOUT": "1h"
+                "CLEANUP_TIMEOUT": "1h",
+                "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
             }
         },
         {
@@ -54,7 +56,8 @@
                 "LOG_LEVEL": "info",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "MUST_GATHER_EACH_TASK": "true",
+                "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
             }
         },
         {
@@ -73,7 +76,8 @@
                 "PLATFORM_ALERTS": "true",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "MUST_GATHER_EACH_TASK": "true",
+                "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
             }
         }
     ]
