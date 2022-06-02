@@ -55,7 +55,8 @@
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
                 "MUST_GATHER_EACH_TASK": "true",
-                "CLEANUP_TIMEOUT": "2h"
+                "CLEANUP_TIMEOUT": "2h",
+                "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
             }
         },
         {
@@ -75,7 +76,8 @@
                 "CLEANUP": "true",
                 "MUST_GATHER_EACH_TASK": "true",
                 "CLEANUP_TIMEOUT": "2h",
-                "METRICS_PROFILE": "metrics-profiles/metrics-aggregated.yaml"
+                "METRICS_PROFILE": "metrics-profiles/metrics-aggregated.yaml",
+                "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
             }
         }
     ]

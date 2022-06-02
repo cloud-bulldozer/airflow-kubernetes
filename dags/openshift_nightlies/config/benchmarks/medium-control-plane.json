@@ -35,7 +35,8 @@
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
                 "MUST_GATHER_EACH_TASK": "true",
-                "CLEANUP_TIMEOUT": "1h"
+                "CLEANUP_TIMEOUT": "1h",
+                "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
             }
         },
         {
@@ -45,7 +46,7 @@
             "env": {
                 "WORKLOAD": "node-density",
                 "PODS_PER_NODE": "245",
-                "NODE_COUNT": "501",
+                "NODE_COUNT": "120",
                 "JOB_TIMEOUT": "18000",
                 "QPS": "20",
                 "BURST": "20",
@@ -55,7 +56,8 @@
                 "CLEANUP": "true",
                 "MUST_GATHER_EACH_TASK": "true",
                 "CLEANUP_TIMEOUT": "2h",
-                "METRICS_PROFILE": "metrics-profiles/metrics-aggregated.yaml"
+                "METRICS_PROFILE": "metrics-profiles/metrics-aggregated.yaml",
+                "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
             }
         }
     ]

@@ -1,17 +1,12 @@
 {
     "benchmarks": [
         {
-            "name": "baseline",
-            "workload": "baseline-performance",
-            "command": "./baseline_perf.sh"            
-        },
-        {
-            "name": "scale-25",
+            "name": "scale-27",
             "workload": "scale-perf",
             "command": "./run_scale_fromgit.sh",
             "env": {
-                "SCALE": "25",
-                "METADATA_COLLECTION": "true",
+                "SCALE": "27",
+                "METADATA_COLLECTION": "false",
                 "WORKLOAD_NODE_ROLE": "workload"
             }
         },
@@ -21,7 +16,7 @@
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "cluster-density",
-                "JOB_ITERATIONS": "300",
+                "JOB_ITERATIONS": "500",
                 "JOB_TIMEOUT": "18000",
                 "STEP_SIZE": "30s",
                 "QPS": "20",
@@ -38,7 +33,7 @@
             "env": {
                 "WORKLOAD": "node-density",
                 "PODS_PER_NODE": "245",
-                "NODE_COUNT": "25",
+                "NODE_COUNT": "27",
                 "JOB_TIMEOUT": "18000",
                 "QPS": "20",
                 "BURST": "20",
@@ -49,29 +44,32 @@
             }
         },
         {
-            "name": "scale-50",
+            "name": "scale-120",
             "workload": "scale-perf",
             "command": "./run_scale_fromgit.sh",
             "env": {
-                "SCALE": "50",
-                "METADATA_COLLECTION": "true",
+                "SCALE": "120",
+                "METADATA_COLLECTION": "false",
                 "WORKLOAD_NODE_ROLE": "workload"
             }
         },
         {
-            "name": "cluster-density-50",
+            "name": "cluster-density-1000",
             "workload": "kube-burner",
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "cluster-density",
-                "JOB_ITERATIONS": "700",
+                "JOB_ITERATIONS": "1000",
                 "JOB_TIMEOUT": "18000",
-                "STEP_SIZE": "30s",
+                "STEP_SIZE": "2m",
                 "QPS": "20",
                 "BURST": "20",
                 "LOG_LEVEL": "info",
                 "CLEANUP_WHEN_FINISH": "true",
-                "CLEANUP": "true"
+                "CLEANUP": "true",
+                "MUST_GATHER_EACH_TASK": "true",
+                "CLEANUP_TIMEOUT": "1h",
+                "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
             }
         },
         {
@@ -106,11 +104,11 @@
             }
         },
         {
-            "name": "scale-down-25",
+            "name": "scale-down-27",
             "workload": "scale-perf",
             "command": "./run_scale_fromgit.sh",
             "env": {
-                "SCALE": "25",
+                "SCALE": "27",
                 "METADATA_COLLECTION": "true",
                 "WORKLOAD_NODE_ROLE": "workload"
             }
@@ -120,40 +118,10 @@
             "workload": "router-perf-v2",
             "command": "./ingress-performance.sh",
             "env": {
-                "THROUGHPUT_TOLERANCE": "10",
-                "LATENCY_TOLERANCE": "10",
-                "LARGE_SCALE_THRESHOLD": "19",
                 "ENGINE": "local",
                 "LARGE_SCALE_ROUTES": "500",
                 "COMPARE": "false",
                 "EMAIL_ID_FOR_RESULTS_SHEET": "mkaliyam@redhat.com" 
-            }
-        },
-        {
-            "name": "load_cluster_preupgrade",
-            "workload": "kube-burner",
-            "command": "./run.sh",
-            "env": {
-                "WORKLOAD": "cluster-density",
-                "JOB_ITERATIONS": "300",
-                "JOB_TIMEOUT": "18000",
-                "STEP_SIZE": "30s",
-                "QPS": "20",
-                "BURST": "20",
-                "LOG_LEVEL": "info",
-                "CLEANUP_WHEN_FINISH": "false",
-                "CLEANUP": "true"
-            }
-        },        
-        {
-            "name": "upgrades",
-            "workload": "upgrade-perf",
-            "command": "./run_upgrade_fromgit.sh",
-            "env": {
-                "LATEST": "true",
-                "CHANNEL": "nightlies",
-                "TIMEOUT": "400",
-                "POLL_INTERVAL": "10"
             }
         }
     ]
