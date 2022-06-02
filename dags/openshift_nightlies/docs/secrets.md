@@ -14,11 +14,11 @@ To resolve this, Airflow lets you [define variables](https://airflow.apache.org/
 
 For users leveraging the `playground` or `tenant` mode of installation benefit from the fact that Airflow instances created with those modes are auto-wired to connect to our [Vault](https://www.vaultproject.io/) instance. This ensures Airflow will work OOTB as our Vault has all of the required variables defined in it. 
 
-## Variables for specific tasks
+## Variables for specific benchmark tasks
 
-It's possible to set variables for a specific dag/task tuple, by default Airflow will try to fetch a secret with the name `<DAG_NAME>-<TASK_NAME>` from a connected vault instance. The variables set in this secret will take precedence to any other variable defined in the task.
+It's possible to set arbitrary variables for a specific dag/task tuple, by default Airflow will try to fetch a secret with the name `<GIT_USER>-<DAG_NAME>-<TASK_NAME>` from a connected vault instance. The variables set in this secret will take precedence to any other variable defined in the task.
 
-Example `4.11-aws-sdn-data-plane-router` variable:
+Example `cloud-bulldozer-4.11-aws-sdn-data-plane-router` variable:
 
 ```json
 {
@@ -233,3 +233,8 @@ Schema:
 }
 
 ```
+
+# Overriding jetski OCP version
+
+It's possible to override the OCP version deployed by JetSki by creating a secret in vault with the name `<GIT_USER>-baremetal_clusterversion`. For example, `cloud-bulldozer-baremetal_clusterversion` set to `4.10.16
+

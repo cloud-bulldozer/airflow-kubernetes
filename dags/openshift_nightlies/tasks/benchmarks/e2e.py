@@ -112,9 +112,9 @@ class E2EBenchmarks():
     def _get_benchmark(self, benchmark):
         env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch'), "KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
         # Fetch variables from a secret with the name <DAG_NAME>-<TASK_NAME>
-        task_variables = var_loader.get_secret(f"{self.dag.dag_id}-{benchmark['name']}", True, False)
+        task_variables = var_loader.get_secret(f"{var_loader.get_git_user()}-{self.dag.dag_id}-{benchmark['name']}", True, False)
         env.update(task_variables)
-        task_prefix=f"{self.task_group}-"
+        task_prefix = f"{self.task_group}-"
         task = BashOperator(
                 task_id=f"{task_prefix if self.task_group != 'benchmarks' else ''}{benchmark['name']}",
                 depends_on_past=False,
