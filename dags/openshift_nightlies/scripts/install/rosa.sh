@@ -170,6 +170,8 @@ setup(){
     export AWS_AUTHENTICATION_METHOD=$(cat ${json_file} | jq -r .aws_authentication_method)
     export ROSA_ENVIRONMENT=$(cat ${json_file} | jq -r .rosa_environment)
     export ROSA_TOKEN=$(cat ${json_file} | jq -r .rosa_token_${ROSA_ENVIRONMENT})
+    export MANAGED_OCP_VERSION=$(cat ${json_file} | jq -r .managed_ocp_version)
+    export MANAGED_CHANNEL_GROUP=$(cat ${json_file} | jq -r .managed_channel_group)
     export CLUSTER_NAME=$(cat ${json_file} | jq -r .openshift_cluster_name)
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .openshift_worker_count)
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .openshift_network_type)
@@ -208,24 +210,41 @@ setup(){
         rosa whoami
         rosa verify quota
         rosa verify permissions
-        export ROSA_VERSION=$(rosa list versions -o json --channel-group=nightly | jq -r '.[] | select(.raw_id|startswith('\"${version}\"')) | .raw_id' | sort -rV | head -1)
-        [ -z "${ROSA_VERSION}" ] && echo "ERROR: Image not found for version (${version}) on ROSA Nightly channel group" && exit 1
-        return 0        
+        if [ "${MANAGED_OCP_VERSION}" == "latest" ] ; then
+            export ROSA_VERSION=$(rosa list versions -o json --channel-group=${MANAGED_CHANNEL_GROUP} | jq -r '.[] | select(.raw_id|startswith('\"${version}\"')) | .raw_id' | sort -rV | head -1)
+        elif [ "${MANAGED_OCP_VERSION}" == "prelatest" ] ; then
+            export ROSA_VERSION=$(rosa list versions -o json --channel-group=${MANAGED_CHANNEL_GROUP} | jq -r '.[] | select(.raw_id|startswith('\"${version}\"')) | .raw_id' | sort -rV | head -2 | tail -1)
+        else
+            export ROSA_VERSION=$(rosa list versions -o json --channel-group=${MANAGED_CHANNEL_GROUP} | jq -r '.[] | select(.raw_id|startswith('\"${version}\"')) | .raw_id' | grep ^${MANAGED_OCP_VERSION}$)
+        fi
+        [ -z "${ROSA_VERSION}" ] && echo "ERROR: Image not found for version (${version}) on ROSA ${MANAGED_CHANNEL_GROUP} channel group" && exit 1
+        if [ "${MANAGED_CHANNEL_GROUP}" == "nightly" ] ; then
+            ROSA_VERSION="${ROSA_VERSION}-nightly"
+        elif [ "${MANAGED_CHANNEL_GROUP}" == "candidate" ] ; then
+            ROSA_VERSION="${ROSA_VERSION}-candidate"
+        fi
+        return 0
     fi
 }
 
 install(){
     export COMPUTE_WORKERS_TYPE=$(cat ${json_file} | jq -r .openshift_worker_instance_type)
     if [[ $INSTALL_METHOD == "osd" ]]; then
-        export OCM_VERSION=$(ocm list versions --channel-group nightly | grep ^${version} | sort -rV | head -1)
-        [ -z ${OCM_VERSION} ] && echo "ERROR: Image not found for version (${version}) on OCM Nightly channel group" && exit 1
-        ocm create cluster --ccs --provider aws --region ${AWS_REGION} --aws-account-id ${AWS_ACCOUNT_ID} --aws-access-key-id ${AWS_ACCESS_KEY_ID} --aws-secret-access-key ${AWS_SECRET_ACCESS_KEY} --channel-group nightly --version ${OCM_VERSION} --multi-az --compute-nodes ${COMPUTE_WORKERS_NUMBER} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --network-type ${NETWORK_TYPE} ${CLUSTER_NAME}
+	if [ "${MANAGED_OCP_VERSION}" == "latest" ] ; then
+            export OCM_VERSION=$(ocm list versions --channel-group ${MANAGED_CHANNEL_GROUP} | grep ^${version} | sort -rV | head -1)
+	elif [ "${MANAGED_OCP_VERSION}" == "prelatest" ] ; then
+            export OCM_VERSION=$(ocm list versions --channel-group ${MANAGED_CHANNEL_GROUP} | grep ^${version} | sort -rV | head -2 | tail -1)
+	else
+            export OCM_VERSION=$(ocm list versions --channel-group ${MANAGED_CHANNEL_GROUP} | grep ^${MANAGED_OCP_VERSION}$)
+	fi
+        [ -z ${OCM_VERSION} ] && echo "ERROR: Image not found for version (${version}) on OCM ${MANAGED_CHANNEL_GROUP} channel group" && exit 1
+        ocm create cluster --ccs --provider aws --region ${AWS_REGION} --aws-account-id ${AWS_ACCOUNT_ID} --aws-access-key-id ${AWS_ACCESS_KEY_ID} --aws-secret-access-key ${AWS_SECRET_ACCESS_KEY} --channel-group ${MANAGED_CHANNEL_GROUP} --version ${OCM_VERSION} --multi-az --compute-nodes ${COMPUTE_WORKERS_NUMBER} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --network-type ${NETWORK_TYPE} ${CLUSTER_NAME}
     else
         export INSTALLATION_PARAMS=""
         if [ $AWS_AUTHENTICATION_METHOD == "sts" ] ; then
             INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --sts -m auto --yes"
         fi
-        rosa create cluster --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}-nightly" --channel-group=nightly --multi-az --compute-machine-type ${COMPUTE_WORKERS_TYPE} --compute-nodes ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS}
+        rosa create cluster --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --multi-az --compute-machine-type ${COMPUTE_WORKERS_TYPE} --compute-nodes ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS}
     fi
     _wait_for_cluster_ready ${CLUSTER_NAME}
     postinstall
