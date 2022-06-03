@@ -110,13 +110,15 @@ class E2EBenchmarks():
         benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):
-        env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch'), "KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
-        # Fetch variables from a secret with the name <DAG_NAME>-<TASK_NAME>
-        task_variables = var_loader.get_secret(f"{var_loader.get_git_user()}-{self.dag.dag_id}-{benchmark['name']}", True, False)
-        env.update(task_variables)
         task_prefix = f"{self.task_group}-"
+        task_id = f"{task_prefix if self.task_group != 'benchmarks' else ''}{benchmark['name']}"
+        env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch'), "KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
+        # Fetch variables from a secret with the name <GIT_USER>-<GIT_BRANCH><DAG_NAME>
+        dag_variables = var_loader.get_secret(f"{var_loader.get_git_user()}-{var_loader.get_git_branch()}-{self.dag.dag_id}", True, False)
+        if task_id in dag_variables:
+            env.update(dag_variables[task_id])
         task = BashOperator(
-                task_id=f"{task_prefix if self.task_group != 'benchmarks' else ''}{benchmark['name']}",
+                task_id=task_id,
                 depends_on_past=False,
                 bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
                 retries=0,

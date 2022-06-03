@@ -16,6 +16,10 @@ def get_git_user():
     return git_user.lower()
 
 
+def get_git_branch():
+    return environ['GIT_BRANCH']
+
+
 def get_secret(name, deserialize_json=False, required=True):
     if required:
         return Variable.get(name, deserialize_json=deserialize_json)

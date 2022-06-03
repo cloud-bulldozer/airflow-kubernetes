@@ -16,16 +16,23 @@ For users leveraging the `playground` or `tenant` mode of installation benefit f
 
 ## Variables for specific benchmark tasks
 
-It's possible to set arbitrary variables for a specific dag/task tuple, by default Airflow will try to fetch a secret with the name `<GIT_USER>-<DAG_NAME>-<TASK_NAME>` from a connected vault instance. The variables set in this secret will take precedence to any other variable defined in the task.
+It's possible to set arbitrary variables for a specific benchmark tasks of a dag, by default Airflow will try to fetch a secret with the name `<GIT_USER>-<GIT_BRANCH>-<DAG_NAME>` from a connected vault instance. That variable should consist of a json payload with the following syntax: 
 
-Example `cloud-bulldozer-4.11-aws-sdn-data-plane-router` variable:
+Example `cloud-bulldozer-master-4.11-aws-sdn-data-plane` variable:
 
 ```json
 {
+  "router": {
     "TERMINATIONS": "mix"
+  },
+  "host-network": {
+    "BASELINE_UUID": "ba8941da-62d3-4cca-a552-fd1c62eca8f3",
+	"ES_SERVER_BASELINE": "https://my.es.instance.rocks:9200"
+  }
 }
 ```
 
+> The variables set in this secret will take precedence to any other variable defined in the task.
 
 # Supported Variables
 
