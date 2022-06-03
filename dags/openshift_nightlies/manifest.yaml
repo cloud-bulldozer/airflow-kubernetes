@@ -146,6 +146,11 @@ platforms:
         config:
           install: rosa/ovn-osd.json
           benchmarks: data-plane.json
+      - name: ocm-api-load
+        schedule: "None"
+        config:
+          install: rosa/ocm.json
+          benchmarks: ocm-api-load.json
 
   rogcp:
     versions: ["4.10", 4.11]

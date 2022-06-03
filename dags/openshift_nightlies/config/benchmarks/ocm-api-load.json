@@ -1,0 +1,14 @@
+{
+    "benchmarks": [
+        {
+            "name": "api-load",
+            "workload": "api-load",
+            "command": "./run.sh",
+            "env": {
+		"TESTS": "list-clusters",
+		"RATE": "5/m",
+		"GATEWAY_URL": "https://api.integration.openshift.com/"
+            }
+        }
+    ]
+}

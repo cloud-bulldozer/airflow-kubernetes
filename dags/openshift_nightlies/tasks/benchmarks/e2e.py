@@ -63,6 +63,7 @@ class E2EBenchmarks():
         if self.release.platform == "rosa":
             self.rosa_creds = var_loader.get_secret("rosa_creds", deserialize_json=True)
             self.aws_creds = var_loader.get_secret("aws_creds", deserialize_json=True)
+            self.ocm_creds = var_loader.get_secret("ocm_creds", deserialize_json=True)
             self.environment = self.vars["environment"] if "environment" in self.vars else "staging"
             self.env = {
                 **self.env,
@@ -71,7 +72,9 @@ class E2EBenchmarks():
                 "ROSA_TOKEN": self.rosa_creds['rosa_token_'+self.environment],
                 "AWS_ACCESS_KEY_ID": self.aws_creds['aws_access_key_id'],
                 "AWS_SECRET_ACCESS_KEY": self.aws_creds['aws_secret_access_key'],
-                "AWS_DEFAULT_REGION": self.aws_creds['aws_region_for_openshift']
+                "AWS_DEFAULT_REGION": self.aws_creds['aws_region_for_openshift'],
+                "AWS_ACCOUNT_ID": self.aws_creds['aws_account_id'],
+                "OCM_TOKEN": self.ocm_creds['ocm_token']
             }
     
         if self.release.platform == "hypershift":

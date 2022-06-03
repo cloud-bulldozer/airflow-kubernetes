@@ -13,6 +13,7 @@ def variable_patch(name, deserialize_json=False):
             "aws_access_key_id": "stub",
             "aws_secret_access_key": "stub",
             "aws_region_for_openshift": "stub",
+            "aws_account_id": "stub",
             "server": "stub",
             "username": "stub",
             "password": "stub",
@@ -21,7 +22,8 @@ def variable_patch(name, deserialize_json=False):
             "osp_sshkey_token": "stub",
             "osp_orchestration_host": "stub",
             "orchestration_user": "stub",
-            "orchestration_host": "stub"
+            "orchestration_host": "stub",
+            "ocm_token": "stub"
         }
     elif name == 'release_stream_base_url':
         return "http://test.com"
