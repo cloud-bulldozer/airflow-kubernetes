@@ -23,7 +23,6 @@ class E2EBenchmarks():
         self.release = release
         self.task_group = task_group
         self.dag_config = config
-        self.exec_config = executor.get_executor_config_with_cluster_access(self.dag_config, self.release, task_group=self.task_group)
         self.snappy_creds = var_loader.get_secret("snappy_creds", deserialize_json=True)
         self.es_server_baseline = var_loader.get_secret("es_server_baseline")
 
@@ -118,6 +117,10 @@ class E2EBenchmarks():
         task_variables = var_loader.get_secret(f"{self.dag.dag_id}-{benchmark['name']}", True, False)
         env.update(task_variables)
         task_prefix=f"{self.task_group}-"
+        if 'executor_image' in benchmark:
+            self.exec_config = executor.get_executor_config_with_cluster_access(self.dag_config, self.release, executor_image=benchmark['executor_image'], task_group=self.task_group)
+        else:
+            self.exec_config = executor.get_executor_config_with_cluster_access(self.dag_config, self.release, task_group=self.task_group)
         task = BashOperator(
                 task_id=f"{task_prefix if self.task_group != 'benchmarks' else ''}{benchmark['name']}",
                 depends_on_past=False,

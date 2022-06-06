@@ -198,7 +198,7 @@ setup(){
         aws iam get-user | jq -r .User.UserName        
     else
         export ROSA_CLI_VERSION=$(cat ${json_file} | jq -r .rosa_cli_version)
-        if [[ ${ROSA_CLI_VERSION} != "null" ]]; then
+        if [[ ${ROSA_CLI_VERSION} != "container" ]]; then
             ROSA_CLI_FORK=$(cat ${json_file} | jq -r .rosa_cli_fork)
             git clone -q --depth=1 --single-branch --branch ${ROSA_CLI_VERSION} ${ROSA_CLI_FORK}
             pushd rosa
@@ -321,7 +321,7 @@ EOF
     TOTAL_TIME=0
     for i in ${INDEXDATA[@]} ; do IFS="-" ; set -- $i
         METADATA="${METADATA}, \"$1\":\"$2\""
-	if [ $1 != "day2operations" ] ; then
+	if [ $1 != "day2operations" ] && [ $1 != "cleanup" ] ; then
 	    INSTALL_TIME=$((${INSTALL_TIME} + $2))
 	    TOTAL_TIME=$((${TOTAL_TIME} + $2))
 	else
@@ -332,8 +332,8 @@ EOF
     METADATA="${METADATA}, \"install_time\":\"${INSTALL_TIME}\""
     METADATA="${METADATA}, \"total_time\":\"${TOTAL_TIME}\""
     METADATA="${METADATA} }"
-    printf "Indexing installation timings to ${ES_SERVER}/managedservices-install-timings"
-    curl -k -sS -X POST -H "Content-type: application/json" ${ES_SERVER}/managedservices-install-timings/_doc -d "${METADATA}" -o /dev/null
+    printf "Indexing installation timings to ES"
+    curl -k -sS -X POST -H "Content-type: application/json" ${ES_SERVER}/managedservices-timings/_doc -d "${METADATA}" -o /dev/null
     unset KUBECONFIG
     return 0
 }

@@ -151,6 +151,11 @@ platforms:
         config:
           install: rosa/ocm.json
           benchmarks: ocm-api-load.json
+      - name: rosa-upgrade
+        schedule:  "20 12 * * 3"
+        config:
+          install: rosa/upgrade.json
+          benchmarks: upgrade.json
 
   rogcp:
     versions: ["4.10", 4.11]
