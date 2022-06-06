@@ -1,0 +1,34 @@
+{
+    "benchmarks": [
+        {
+            "name": "load-cluster-preupgrade",
+            "workload": "kube-burner",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "cluster-density",
+                "JOB_ITERATIONS": "500",
+                "JOB_TIMEOUT": "18000",
+                "STEP_SIZE": "30s",
+                "QPS": "20",
+                "BURST": "20",
+                "LOG_LEVEL": "info",
+                "CLEANUP_WHEN_FINISH": "false",
+                "CLEANUP": "true",
+                "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
+            }
+        },
+        {
+            "name": "upgrades",
+            "workload": "upgrade-perf",
+            "command": "./run_upgrade_fromgit.sh",
+            "env": {
+                "LATEST": "true",
+                "ROSA_VERSION_CHANNEL": "candidate",
+                "TIMEOUT": "400",
+                "POLL_INTERVAL": "10",
+		"ES_INDEX": "managedservices-timings"
+            },
+	    "executor_image": "airflow-managed-services"
+        }
+   ]
+}
