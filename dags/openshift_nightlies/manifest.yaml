@@ -147,7 +147,7 @@ platforms:
           install: rosa/ovn-osd.json
           benchmarks: data-plane.json
       - name: ocm-api-load
-        schedule: "None"
+        schedule: 'None'
         config:
           install: rosa/ocm.json
           benchmarks: ocm-api-load.json
