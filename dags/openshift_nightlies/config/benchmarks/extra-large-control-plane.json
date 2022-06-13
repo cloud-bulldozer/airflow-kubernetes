@@ -62,6 +62,7 @@
         {
             "name": "node-density",
             "workload": "kube-burner",
+            "trigger_rule": "all_done",
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "node-density",
