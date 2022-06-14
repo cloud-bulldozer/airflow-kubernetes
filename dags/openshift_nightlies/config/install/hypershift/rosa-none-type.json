@@ -5,6 +5,7 @@
     "aws_secret_access_key": "",
     "rosa_environment": "staging",
     "rosa_cli_version": "master",
+    "hypershift_cli_version": "main",
     "ocm_environment": "stage",
     "openshift_worker_count": 9,
     "openshift_network_type": "OpenShiftSDN",

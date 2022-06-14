@@ -37,5 +37,8 @@
     "hosted_cluster_instance_type": "m5.2xlarge",
     "hosted_cluster_network_type": "OpenShiftSDN",    
     "hosted_control_plane_availability": "SingleReplica",
-    "hosted_cluster_release_image": ""
+    "hosted_cluster_release_image": "",
+    "rosa_cli_fork": "https://github.com/openshift/rosa",
+    "ocm_cli_fork": "https://github.com/openshift-online/ocm-cli",
+    "hypershift_cli_fork": "https://github.com/openshift/hypershift"
 }

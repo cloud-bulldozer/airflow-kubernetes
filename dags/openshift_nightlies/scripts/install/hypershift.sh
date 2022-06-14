@@ -53,8 +53,9 @@ setup(){
     export KUBECONFIG=/home/airflow/auth/config
     if [[ $INSTALL_METHOD == "osd" ]]; then
         export OCM_CLI_VERSION=$(cat ${json_file} | jq -r .ocm_cli_version)
-        if [[ ${OCM_CLI_VERSION} == "master" ]]; then
-            git clone https://github.com/openshift-online/ocm-cli
+        if [[ ${OCM_CLI_VERSION} != "null" ]]; then
+            OCM_CLI_FORK=$(cat ${json_file} | jq -r .ocm_cli_fork)
+            git clone -q --depth=1 --single-branch --branch ${OCM_CLI_VERSION} ${OCM_CLI_FORK}
             pushd ocm-cli
             sudo PATH=$PATH:/usr/bin:/usr/local/go/bin make
             sudo mv ocm /usr/local/bin/
@@ -64,8 +65,9 @@ setup(){
         ocm whoami
     else
         export ROSA_CLI_VERSION=$(cat ${json_file} | jq -r .rosa_cli_version)
-        if [[ ${ROSA_CLI_VERSION} == "master" ]]; then
-            git clone --depth=1 --single-branch --branch master https://github.com/openshift/rosa
+        if [[ ${ROSA_CLI_VERSION} != "null" ]]; then
+            ROSA_CLI_FORK=$(cat ${json_file} | jq -r .rosa_cli_fork)
+            git clone -q --depth=1 --single-branch --branch ${ROSA_CLI_VERSION} ${ROSA_CLI_FORK}
             pushd rosa
             make
             sudo mv rosa /usr/local/bin/
@@ -77,6 +79,18 @@ setup(){
         rosa whoami
         rosa verify quota
         rosa verify permissions
+    fi
+    export HYPERSHIFT_CLI_VERSION=$(cat ${json_file} | jq -r .hypershift_cli_version)
+    if [[ ${HYPERSHIFT_CLI_VERSION} != "null" ]]; then
+        HYPERSHIFT_CLI_FORK=$(cat ${json_file} | jq -r .hypershift_cli_fork)
+        echo "Remove current Hypershift CLI directory.."
+        rm -rf hypershift
+        rm /usr/local/bin/hypershift || true
+        git clone -q --depth=1 --single-branch --branch ${HYPERSHIFT_CLI_VERSION} ${HYPERSHIFT_CLI_FORK}    
+        pushd hypershift
+        make build
+        cp bin/hypershift /usr/local/bin
+        popd
     fi
     export BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
     echo [default] >> aws_credentials
