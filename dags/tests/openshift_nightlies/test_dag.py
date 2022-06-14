@@ -47,6 +47,7 @@ class TestDags():
             side_effect=variable_patch
             )
         environ['GIT_REPO'] = "https://github.com/FOO/repo"
+        environ['GIT_BRANCH'] = "BAR"
         with requests_mock.Mocker() as mock: 
             mock_response = {
                 "name": "foo",

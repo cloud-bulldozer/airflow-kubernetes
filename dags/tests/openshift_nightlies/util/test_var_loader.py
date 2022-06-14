@@ -5,6 +5,7 @@ from airflow.models import Variable
 class TestVarLoader():
     def test_get_git_user(self):
         environ['GIT_REPO'] = "https://github.com/FOO/repo"
+        environ['GIT_BRANCH'] = "BAR"
         assert var_loader.get_git_user() == "foo"
 
 

@@ -34,11 +34,12 @@ class OpenshiftRelease:
 
     def _generate_cluster_name(self):
         git_user = self._get_git_user()
+        git_branch = environ['GIT_BRANCH']
         release_name = self.get_release_name(delimiter="-")
         if git_user == 'cloud-bulldozer':
             cluster_name = f"ci-{release_name}"
         else:
-            cluster_name = f"{git_user}-{release_name}"
+            cluster_name = f"{git_user}-{git_branch}-{release_name}"
 
         if self.platform == 'rosa' or self.platform == 'rogcp' or self.platform == 'hypershift':
             #Only 15 chars are allowed
