@@ -1,16 +1,17 @@
 {
     "cluster_install_method": "osd",
-    "ocm_cli_version": "master",
     "hypershift_cli_version": "main",
     "ocm_environment": "stage",
     "rosa_environment": "staging",
-    "openshift_worker_count": 12,
+    "managed_channel_group": "nightly",
+    "managed_ocp_version": "latest",    
+    "openshift_worker_count": 3,
     "openshift_network_type": "OVNKubernetes",
     "openshift_worker_instance_type": "m5.4xlarge",
     "number_of_hosted_cluster": 1,
-    "control_plane_operator_image": "quay.io/hypershift/hypershift:latest",
-    "hosted_cluster_nodepool_size": 24,
-    "hosted_cluster_instance_type": "m5.4xlarge",
+    "control_plane_operator_image": "quay.io/hypershift/hypershift:4.11",
+    "hosted_cluster_nodepool_size": 10,
+    "hosted_cluster_instance_type": "m5.2xlarge",
     "hosted_cluster_network_type": "OVNKubernetes", 
     "hosted_control_plane_availability": "HighlyAvailable"   
  }
