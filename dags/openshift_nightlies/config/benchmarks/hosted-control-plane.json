@@ -1,72 +1,45 @@
 {
     "benchmarks": [
         {
-            "name": "baseline",
-            "workload": "baseline-performance",
-            "command": "./baseline_perf.sh",
-            "env": {
-                "STEP_SIZE": "60s",
-                "HYPERSHIFT": "true",
-                "METRICS_PROFILE": "metrics-profiles/hypershift-metrics.yaml"
-            }       
-        },      
-        {
-            "name": "node-density",
+            "name": "cluster-density-ms-p75",
             "workload": "kube-burner",
+            "trigger_rule": "all_done",
             "command": "./run.sh",
             "env": {
-                "WORKLOAD": "node-density",
-                "PODS_PER_NODE": "245",
-                "NODE_COUNT": "24",
+                "WORKLOAD": "cluster-density-ms",
+                "JOB_ITERATIONS": "75",
                 "JOB_TIMEOUT": "18000",
-                "QPS": "20",
-                "BURST": "20",
-                "STEP_SIZE": "60s",
+                "STEP_SIZE": "2m",
                 "HYPERSHIFT": "true",
                 "METRICS_PROFILE": "metrics-profiles/hypershift-metrics.yaml",
+                "QPS": "20",
+                "BURST": "20",
                 "LOG_LEVEL": "info",
+                "PLATFORM_ALERTS": "false",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "MUST_GATHER_EACH_TASK": "false"
             }
         },
         {
-            "name": "node-density-heavy",
+            "name": "cluster-density-ms-p95",
             "workload": "kube-burner",
+            "trigger_rule": "all_done",
             "command": "./run.sh",
             "env": {
-                "WORKLOAD": "node-density-heavy",
-                "PODS_PER_NODE": "245",
-                "NODE_COUNT": "24",
+                "WORKLOAD": "cluster-density-ms",
+                "JOB_ITERATIONS": "100",
                 "JOB_TIMEOUT": "18000",
-                "QPS": "20",
-                "BURST": "20",
-                "STEP_SIZE": "60s",
-                "HYPERSHIFT": "true",
-                "METRICS_PROFILE": "metrics-profiles/hypershift-metrics.yaml",
-                "LOG_LEVEL": "info",
-                "CLEANUP_WHEN_FINISH": "true",
-                "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
-            }
-        },
-        {
-            "name": "cluster-density",
-            "workload": "kube-burner",
-            "command": "./run.sh",
-            "env": {
-                "WORKLOAD": "cluster-density",
-                "JOB_ITERATIONS": "500",
-                "JOB_TIMEOUT": "18000",
-                "STEP_SIZE": "60s",
+                "STEP_SIZE": "2m",
                 "HYPERSHIFT": "true",
                 "METRICS_PROFILE": "metrics-profiles/hypershift-metrics.yaml",
                 "QPS": "20",
                 "BURST": "20",
                 "LOG_LEVEL": "info",
+                "PLATFORM_ALERTS": "false",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "MUST_GATHER_EACH_TASK": "false"
             }
         }
     ]
