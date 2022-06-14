@@ -89,7 +89,7 @@ setup(){
         git clone -q --depth=1 --single-branch --branch ${HYPERSHIFT_CLI_VERSION} ${HYPERSHIFT_CLI_FORK}    
         pushd hypershift
         make build
-        cp bin/hypershift /usr/local/bin
+        sudo cp bin/hypershift /usr/local/bin
         popd
     fi
     export BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
@@ -107,7 +107,7 @@ install(){
     aws s3api create-bucket --acl public-read --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --create-bucket-configuration LocationConstraint=$AWS_REGION --region $AWS_REGION || true
     echo "Wait till S3 bucket is ready.."
     aws s3api wait bucket-exists --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org 
-    hypershift install --oidc-storage-provider-s3-bucket-name $MGMT_CLUSTER_NAME-aws-rhperfscale-org --oidc-storage-provider-s3-credentials aws_credentials --oidc-storage-provider-s3-region $AWS_REGION  --enable-ocp-cluster-monitoring
+    hypershift install --oidc-storage-provider-s3-bucket-name $MGMT_CLUSTER_NAME-aws-rhperfscale-org --oidc-storage-provider-s3-credentials aws_credentials --oidc-storage-provider-s3-region $AWS_REGION  --enable-ocp-cluster-monitoring --metrics-set=All
     echo "Wait till Operator is ready.."
     cm=""
     while [[ $cm != "oidc-storage-provider-s3-config" ]]
@@ -162,7 +162,12 @@ create_empty_cluster(){
 postinstall(){
     echo "Create Hosted cluster secrets for benchmarks.."
     kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-admin-kubeconfig -o json | jq -r '.data.kubeconfig' | base64 -d > ./kubeconfig
-    PASSWORD=$(kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-kubeadmin-password -o json | jq -r '.data.password' | base64 -d)
+    PASSWORD=""
+    while [[ $PASSWORD == "" ]]
+    do
+        PASSWORD=$(kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-kubeadmin-password -o json | jq -r '.data.password' | base64 -d || true)
+        sleep 30
+    done
     unset KUBECONFIG # Unsetting Management cluster kubeconfig, will fall back to Airflow cluster kubeconfig
     kubectl delete secret $HOSTED_KUBECONFIG_NAME $HOSTED_KUBEADMIN_NAME || true
     kubectl create secret generic $HOSTED_KUBECONFIG_NAME --from-file=config=./kubeconfig
@@ -179,6 +184,7 @@ postinstall(){
             node=$(oc get nodes | grep worker | grep -i ready | grep -iv notready | wc -l)
             if [[ $node == $COMPUTE_WORKERS_NUMBER ]]; then
                 echo "All nodes are ready in cluster - $HOSTED_CLUSTER_NAME ..."
+                break
             else
                 echo "Available node(s) are $node, still waiting for remaining nodes"
                 sleep 300
