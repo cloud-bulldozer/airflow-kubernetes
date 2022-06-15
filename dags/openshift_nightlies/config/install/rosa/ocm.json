@@ -5,7 +5,7 @@
     "aws_authentication_method": "sts",
     "aws_account_id": "",
     "rosa_environment": "staging",
-    "rosa_cli_version": "master",
+    "rosa_cli_version": "container",
     "ocm_environment": "stage",
     "managed_channel_group": "nightly",
     "managed_ocp_version": "latest",
