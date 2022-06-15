@@ -22,7 +22,7 @@
             }
         },
         {
-            "name": "cluster-density-ms-p95",
+            "name": "cluster-density-ms-p90",
             "workload": "kube-burner",
             "trigger_rule": "all_done",
             "command": "./run.sh",
