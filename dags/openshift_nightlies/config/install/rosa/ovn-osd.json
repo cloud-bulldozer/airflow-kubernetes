@@ -4,7 +4,7 @@
     "aws_access_key_id": "",
     "aws_secret_access_key": "",
     "rosa_environment": "staging",
-    "rosa_cli_version": "master",
+    "rosa_cli_version": "container",
     "ocm_environment": "stage",
     "managed_channel_group": "nightly",
     "managed_ocp_version": "latest",
