@@ -5,9 +5,26 @@
             "workload": "api-load",
             "command": "./run.sh",
             "env": {
-		"TESTS": "list-clusters",
-		"RATE": "5/m",
-		"GATEWAY_URL": "https://api.integration.openshift.com/"
+		"TESTS": "self-access-token list-subscriptions access-review register-new-cluster register-existing-cluster create-cluster list-clusters get-current-account quota-cost resource-review cluster-authorizations self-terms-review certificates",
+		"RATE": "10/s",
+		"GATEWAY_URL": "https://api.integration.openshift.com/",
+		"JOB_TIMEOUT": "28800",
+		"DURATION": "30",
+		"COOLDOWN": "60",
+		"SLEEP": "300",
+		"SELF_ACCESS_TOKEN_RATE": "5/s",
+		"LIST_SUBSCRIPTIONS_RATE": "5/s",
+		"ACCESS_REVIEW_RATE": "100/s",
+		"REGISTER_EXISTING_CLUSTER_RATE": "100/s",
+		"CREATE_CLUSTER_DURATION": "5",
+		"LIST_CLUSTERS_RATE": "20/s",
+		"GET_CURRENT_ACCOUNT_DURATION": "10",
+		"RESOURCE_REVIEW_RATE": "5/s",
+		"CLUSTER_AUTHORIZATIONS_DURATION": "15",
+		"SELF_TERMS_RATE": "30/s",
+		"SELF_TERMS_DURATION": "10",
+		"CERTIFICATES_RATE": "15/s",
+		"CERTIFICATES_DURATION": "10"
             }
         }
     ]
