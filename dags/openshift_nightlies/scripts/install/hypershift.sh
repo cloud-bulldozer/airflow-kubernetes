@@ -84,8 +84,8 @@ setup(){
     if [[ ${HYPERSHIFT_CLI_VERSION} != "null" ]]; then
         HYPERSHIFT_CLI_FORK=$(cat ${json_file} | jq -r .hypershift_cli_fork)
         echo "Remove current Hypershift CLI directory.."
-        rm -rf hypershift
-        rm /usr/local/bin/hypershift || true
+        sudo rm -rf hypershift
+        sudo rm /usr/local/bin/hypershift || true
         git clone -q --depth=1 --single-branch --branch ${HYPERSHIFT_CLI_VERSION} ${HYPERSHIFT_CLI_FORK}    
         pushd hypershift
         make build
@@ -150,7 +150,11 @@ create_empty_cluster(){
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_network_type)
     export REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_control_plane_availability)   
     echo $PULL_SECRET > pull-secret
-    hypershift create cluster none --name $HOSTED_CLUSTER_NAME --node-pool-replicas=0 --base-domain $BASEDOMAIN --pull-secret pull-secret --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE --control-plane-operator-image=quay.io/hypershift/hypershift:latest
+    CPO_IMAGE_ARG=""
+    if [[ $CPO_IMAGE != "" ]] ; then
+        CPO_IMAGE_ARG="--control-plane-operator-image=$CPO_IMAGE"
+    fi    
+    hypershift create cluster none --name $HOSTED_CLUSTER_NAME --node-pool-replicas=0 --base-domain $BASEDOMAIN --pull-secret pull-secret --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE ${CPO_IMAGE_ARG}
     echo "Wait till hosted cluster got created and in progress.."
     kubectl wait --for=condition=available=false --timeout=60s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME
@@ -214,6 +218,25 @@ update_fw(){
     done
 }
 
+index_mgmt_cluster_stat(){
+    echo "Indexing Management cluster stat..."
+    cd /home/airflow/workspace    
+    echo "Installing kube-burner"
+    export KUBE_BURNER_RELEASE=${KUBE_BURNER_RELEASE:-0.16}
+    curl -L https://github.com/cloud-bulldozer/kube-burner/releases/download/v${KUBE_BURNER_RELEASE}/kube-burner-${KUBE_BURNER_RELEASE}-Linux-x86_64.tar.gz -o kube-burner.tar.gz
+    sudo tar -xvzf kube-burner.tar.gz -C /usr/local/bin/
+    echo "Cloning ${E2E_BENCHMARKING_REPO} from branch ${E2E_BENCHMARKING_BRANCH}"
+    git clone -q -b ${E2E_BENCHMARKING_BRANCH}  ${E2E_BENCHMARKING_REPO} --depth=1 --single-branch
+    export KUBECONFIG=/home/airflow/auth/config
+    export MGMT_CLUSTER_NAME=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}')
+    export HOSTED_CLUSTER_NS="clusters-$HOSTED_CLUSTER_NAME"
+    envsubst < /home/airflow/workspace/e2e-benchmarking/workloads/kube-burner/metrics-profiles/hypershift-metrics.yaml > hypershift-metrics.yaml
+    envsubst < /home/airflow/workspace/e2e-benchmarking/workloads/kube-burner/workloads/managed-services/baseconfig.yml > baseconfig.yml
+    echo "Running kube-burner index.." 
+    kube-burner index --uuid=$(uuidgen) --prometheus-url=${PROM_URL} --start=$START_TIME --end=$END_TIME --step 2m --metrics-profile hypershift-metrics.yaml --config baseconfig.yml
+    echo "Finished indexing results"
+}
+
 cleanup(){
     echo "Cleanup Hosted Cluster..."
     kubectl get hostedcluster -n clusters
@@ -243,6 +266,8 @@ cleanup(){
 cat ${json_file}
 export INSTALL_METHOD=$(cat ${json_file} | jq -r .cluster_install_method)
 setup
+echo "Set start time of prom scrape"
+export START_TIME=$(date +"%s")
 
 if [[ "$operation" == "cleanup" ]]; then
     printf "Running Cleanup Steps"
@@ -267,4 +292,6 @@ else
 	    exit 1
     fi
 fi
-
+echo "Set end time of prom scrape"
+export END_TIME=$(date +"%s")
+index_mgmt_cluster_stat
