@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# shellcheck disable=SC2155
 set -ex
 
 export INDEXDATA=()
@@ -16,9 +16,9 @@ done
 
 _get_cluster_id(){
     if [[ $INSTALL_METHOD == "osd" ]]; then
-        echo $(ocm list clusters --no-headers --columns id $1)
+        echo "$(ocm list clusters --no-headers --columns id $1)"
     else
-        echo $(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .id')
+        echo "$(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .id')"
     fi
 }
 
@@ -28,20 +28,20 @@ _download_kubeconfig(){
 
 _get_cluster_status(){
     if [[ $INSTALL_METHOD == "osd" ]]; then
-        echo $(ocm list clusters --no-headers --columns state $1)
-    else    
-        echo $(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .status.state')
+        echo "$(ocm list clusters --no-headers --columns state $1)"
+    else
+        echo "$(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .status.state')"
     fi
 }
 
 _wait_for_nodes_ready(){
-    _download_kubeconfig $(_get_cluster_id $1) ./kubeconfig
+    _download_kubeconfig "$(_get_cluster_id $1)" ./kubeconfig
     export KUBECONFIG=./kubeconfig
     ALL_READY_ITERATIONS=0
     ITERATIONS=0
     # Node count is number of workers + 3 masters + 3 infra
     NODES_COUNT=$(($2+6))
-    # 180 seconds per node, waiting 5 times 60 seconds (5*60 = 5 minutes) with all nodes ready to finalize 
+    # 180 seconds per node, waiting 5 times 60 seconds (5*60 = 5 minutes) with all nodes ready to finalize
     while [ ${ITERATIONS} -le ${NODES_COUNT} ] ; do
         NODES_READY_COUNT=$(oc get nodes | grep " Ready " | wc -l)
         if [ ${NODES_READY_COUNT} -ne ${NODES_COUNT} ] ; then
@@ -59,37 +59,6 @@ _wait_for_nodes_ready(){
                 sleep 60
             fi
         fi
-    done
-    echo "ERROR: Not all nodes (${NODES_READY_COUNT}/${NODES_COUNT}) are ready after about $((${NODES_COUNT}*3)) minutes, dumping oc get nodes..."
-    oc get nodes
-    exit 1
-}
-
-_wait_for_nodes_ready(){
-    _download_kubeconfig $(_get_cluster_id $1) ./kubeconfig
-    export KUBECONFIG=./kubeconfig
-    ALL_READY_ITERATIONS=0
-    ITERATIONS=0
-    # Node count is number of workers + 3 masters + 3 infra
-    NODES_COUNT=$(($2+6))
-    # 180 seconds per node, waiting 5 times 60 seconds (5*60 = 5 minutes) with all nodes ready to finalize 
-    while [ ${ITERATIONS} -le ${NODES_COUNT} ] ; do
-        NODES_READY_COUNT=$(oc get nodes | grep " Ready " | wc -l)
-	if [ ${NODES_READY_COUNT} -ne ${NODES_COUNT} ] ; then
-	    echo "WARNING: ${ITERATIONS}/${NODES_COUNT} iterations. ${NODES_READY_COUNT}/${NODES_COUNT} nodes ready. Waiting 180 seconds for next check"
-            ALL_READY_ITERATIONS=0
-            ITERATIONS=$((${ITERATIONS}+1))
-            sleep 180
-        else
-	    if [ ${ALL_READY_ITERATIONS} -eq 5 ] ; then
-                echo "INFO: ${ALL_READY_ITERATIONS}/5. All nodes ready, continuing process"
-                return 0
-            else
-                echo "INFO: ${ALL_READY_ITERATIONS}/5. All nodes ready. Waiting 60 seconds for next check"
-                ALL_READY_ITERATIONS=$((${ALL_READY_ITERATIONS}+1))
-                sleep 60
-	    fi
-	fi
     done
     echo "ERROR: Not all nodes (${NODES_READY_COUNT}/${NODES_COUNT}) are ready after about $((${NODES_COUNT}*3)) minutes, dumping oc get nodes..."
     oc get nodes
@@ -129,7 +98,7 @@ _wait_for_cluster_ready(){
             CURRENT_TIMER=$(date +%s)
             # Time since rosa cluster is ready until all nodes are ready
             DURATION=$(($CURRENT_TIMER - $START_TIMER))
-            INDEXDATA+=("day2operations"-"${DURATION}")
+            INDEXDATA+=("day2operations-${DURATION}")
             if [[ $INSTALL_METHOD == "osd" ]]; then
                 echo "INFO: Cluster and nodes on ready status.."
             else
@@ -150,7 +119,7 @@ _wait_for_cluster_ready(){
     done
     if [[ $INSTALL_METHOD == "osd" ]]; then
         echo "ERROR: Cluster $1 not installed after 3 hours.."
-    else    
+    else
         echo "ERROR: Cluster $1 not installed after 90 iterations, dumping installation logs..."
         rosa logs install -c $1
         rosa describe cluster -c $1
@@ -176,7 +145,7 @@ setup(){
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .openshift_worker_count)
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .openshift_network_type)
     export ES_SERVER=$(cat ${json_file} | jq -r .es_server)
-    export UUID=$(uuidgen)    
+    export UUID=$(uuidgen)
     if [[ $INSTALL_METHOD == "osd" ]]; then
         export OCM_CLI_VERSION=$(cat ${json_file} | jq -r .ocm_cli_version)
         if [[ ${OCM_CLI_VERSION} != "container" ]]; then
@@ -195,7 +164,7 @@ setup(){
         ocm whoami
         sleep 60 # it takes a few sec for new access key
         echo "Check AWS Username..."
-        aws iam get-user | jq -r .User.UserName        
+        aws iam get-user | jq -r .User.UserName
     else
         export ROSA_CLI_VERSION=$(cat ${json_file} | jq -r .rosa_cli_version)
         if [[ ${ROSA_CLI_VERSION} != "container" ]]; then
@@ -207,7 +176,7 @@ setup(){
             popd
         fi
         ocm login --url=https://api.stage.openshift.com --token="${ROSA_TOKEN}"
-        ocm whoami        
+        ocm whoami
         rosa login --env=${ROSA_ENVIRONMENT}
         rosa whoami
         rosa verify quota
@@ -256,31 +225,31 @@ install(){
 postinstall(){
     export WORKLOAD_TYPE=$(cat ${json_file} | jq -r .openshift_workload_node_instance_type)
     export EXPIRATION_TIME=$(cat ${json_file} | jq -r .rosa_expiration_time)
-    _download_kubeconfig $(_get_cluster_id ${CLUSTER_NAME}) ./kubeconfig
+    _download_kubeconfig "$(_get_cluster_id ${CLUSTER_NAME})" ./kubeconfig
     unset KUBECONFIG
     kubectl delete secret ${KUBECONFIG_NAME} || true
     kubectl create secret generic ${KUBECONFIG_NAME} --from-file=config=./kubeconfig
     if [[ $INSTALL_METHOD == "osd" ]]; then
         export PASSWORD=$(echo ${CLUSTER_NAME} | md5sum | awk '{print $1}')
         ocm create idp -n localauth -t htpasswd --username kubeadmin --password ${PASSWORD} -c ${CLUSTER_NAME}
-        ocm create user kubeadmin -c $(_get_cluster_id ${CLUSTER_NAME}) --group=cluster-admins
+        ocm create user kubeadmin -c "$(_get_cluster_id ${CLUSTER_NAME})" --group=cluster-admins
         if [[ $WORKLOAD_TYPE != "null" ]]; then
             # create machinepool for workload nodes
             ocm create machinepool -c ${CLUSTER_NAME} --instance-type ${WORKLOAD_TYPE} --labels 'node-role.kubernetes.io/workload=' --taints 'role=workload:NoSchedule' --replicas 3 workload
         fi
         # set expiration time
         EXPIRATION_STRING=$(date -d "${EXPIRATION_TIME} minutes" '+{"expiration_timestamp": "%FT%TZ"}')
-        ocm patch /api/clusters_mgmt/v1/clusters/$(_get_cluster_id ${CLUSTER_NAME}) <<< ${EXPIRATION_STRING}
+        ocm patch /api/clusters_mgmt/v1/clusters/"$(_get_cluster_id ${CLUSTER_NAME})" <<< ${EXPIRATION_STRING}
         echo "Cluster is ready, deleting OSD access keys now.."
         aws iam delete-access-key --user-name OsdCcsAdmin --access-key-id $AWS_ACCESS_KEY_ID || true
     else
-        PASSWORD=$(rosa create admin -c $(_get_cluster_id ${CLUSTER_NAME}) -y 2>/dev/null | grep "oc login" | awk '{print $7}')
+        PASSWORD=$(rosa create admin -c "$(_get_cluster_id ${CLUSTER_NAME})" -y 2>/dev/null | grep "oc login" | awk '{print $7}')
         if [[ $WORKLOAD_TYPE != "null" ]]; then
             # create machinepool for workload nodes
             rosa create machinepool -c ${CLUSTER_NAME} --instance-type ${WORKLOAD_TYPE} --name workload --labels node-role.kubernetes.io/workload= --taints role=workload:NoSchedule --replicas 3
         fi
         # set expiration to 24h
-        rosa edit cluster -c $(_get_cluster_id ${CLUSTER_NAME}) --expiration=${EXPIRATION_TIME}m
+        rosa edit cluster -c "$(_get_cluster_id ${CLUSTER_NAME})" --expiration=${EXPIRATION_TIME}m
     fi
     kubectl delete secret ${KUBEADMIN_NAME} || true
     kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=${PASSWORD}
@@ -289,7 +258,7 @@ postinstall(){
 
 index_metadata(){
     if [[ ! "${INDEXDATA[*]}" =~ "cleanup" ]] ; then
-        _download_kubeconfig $(_get_cluster_id ${CLUSTER_NAME}) ./kubeconfig
+        _download_kubeconfig "$(_get_cluster_id ${CLUSTER_NAME})" ./kubeconfig
         export KUBECONFIG=./kubeconfig
     fi
     if [[ $INSTALL_METHOD == "osd" ]]; then
@@ -319,7 +288,7 @@ EOF
 )
     INSTALL_TIME=0
     TOTAL_TIME=0
-    for i in ${INDEXDATA[@]} ; do IFS="-" ; set -- $i
+    for i in "${INDEXDATA[@]}" ; do IFS="-" ; set -- $i
         METADATA="${METADATA}, \"$1\":\"$2\""
 	if [ $1 != "day2operations" ] && [ $1 != "cleanup" ] ; then
 	    INSTALL_TIME=$((${INSTALL_TIME} + $2))
@@ -340,9 +309,9 @@ EOF
 
 cleanup(){
     if [[ $INSTALL_METHOD == "osd" ]]; then
-        ocm delete cluster $(_get_cluster_id ${CLUSTER_NAME})
+        ocm delete cluster "$(_get_cluster_id ${CLUSTER_NAME})"
         echo "Cluster is getting Uninstalled, deleting OSD access keys now.."
-        aws iam delete-access-key --user-name OsdCcsAdmin --access-key-id $AWS_ACCESS_KEY_ID || true    
+        aws iam delete-access-key --user-name OsdCcsAdmin --access-key-id $AWS_ACCESS_KEY_ID || true
     else
         ROSA_CLUSTER_ID=$(_get_cluster_id ${CLUSTER_NAME})
         CLEANUP_START_TIMING=$(date +%s)
@@ -353,7 +322,7 @@ cleanup(){
             rosa delete oidc-provider -c ${ROSA_CLUSTER_ID} -m auto --yes || true
         fi
         DURATION=$(($(date +%s) - $CLEANUP_START_TIMING))
-        INDEXDATA+=("cleanup"-"${DURATION}")
+        INDEXDATA+=("cleanup-${DURATION}")
     fi
     return 0
 }
