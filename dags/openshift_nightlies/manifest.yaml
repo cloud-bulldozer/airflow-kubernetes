@@ -165,10 +165,20 @@ platforms:
         config:
           install: rogcp/sdn.json
           benchmarks: control-plane.json
+      - name: ovn-control-plane
+        schedule:  "10 13 * * 1"
+        config:
+          install: rogcp/ovn.json
+          benchmarks: control-plane.json
       - name: sdn-data-plane
-        schedule: "05 13 * * 1"
+        schedule: "20 13 * * 3"
         config:
           install: rogcp/sdn.json
+          benchmarks: data-plane.json
+      - name: ovn-data-plane
+        schedule: "40 13 * * 1"
+        config:
+          install: rogcp/ovn.json
           benchmarks: data-plane.json
 
   hypershift:
