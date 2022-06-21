@@ -1,6 +1,16 @@
 {
     "benchmarks": [
         {
+            "name": "scale-27",
+            "workload": "scale-perf",
+            "command": "./run_scale_fromgit.sh",
+            "env": {
+                "SCALE": "27",
+                "METADATA_COLLECTION": "true",
+                "WORKLOAD_NODE_ROLE": "workload"
+            }
+        },
+        {
             "name": "host-network",
             "workload": "network-perf",
             "command": "./run.sh",

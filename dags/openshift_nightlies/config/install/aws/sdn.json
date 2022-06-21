@@ -3,7 +3,7 @@
     "aws_access_key_id": "",
     "aws_secret_access_key": "",
     "openshift_master_count": 3,
-    "openshift_worker_count": 27,
+    "openshift_worker_count": 3,
     "openshift_host_prefix": "22",
     "openshift_network_type": "OpenShiftSDN",
     "openshift_master_instance_type": "r5.4xlarge",
