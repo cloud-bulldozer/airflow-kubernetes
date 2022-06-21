@@ -291,7 +291,7 @@ else
         printf "INFO: Cluster ${MGMT_CLUSTER_NAME} already installed but not ready, exiting..."
 	    exit 1
     fi
+    echo "Set end time of prom scrape"
+    export END_TIME=$(date +"%s")
+    index_mgmt_cluster_stat
 fi
-echo "Set end time of prom scrape"
-export END_TIME=$(date +"%s")
-index_mgmt_cluster_stat
