@@ -128,7 +128,7 @@ class E2EBenchmarks():
                 retries=0,
                 trigger_rule=benchmark.get("trigger_rule", "all_success"),
                 dag=self.dag,
-                env=env,
+                env={ **env , "InstallUUID": '{{ ti.xcom_pull(task_ids="install")}}'},
                 do_xcom_push=True,
                 execution_timeout=timedelta(seconds=21600),
                 executor_config=self.exec_config

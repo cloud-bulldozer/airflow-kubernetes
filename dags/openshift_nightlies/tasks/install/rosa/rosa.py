@@ -35,5 +35,5 @@ class RosaInstaller(AbstractOpenshiftInstaller):
             dag=self.dag,
             trigger_rule=trigger_rule,
             executor_config=self.exec_config,
-            env=self.env
+            env={ **self.env , "InstallUUID": '{{ ti.xcom_pull(task_ids="install")}}'}
         )
