@@ -167,9 +167,15 @@ postinstall(){
     echo "Create Hosted cluster secrets for benchmarks.."
     kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-admin-kubeconfig -o json | jq -r '.data.kubeconfig' | base64 -d > ./kubeconfig
     PASSWORD=""
+    itr=0
     while [[ $PASSWORD == "" ]]
     do
         PASSWORD=$(kubectl get secret -n clusters $HOSTED_CLUSTER_NAME-kubeadmin-password -o json | jq -r '.data.password' | base64 -d || true)
+        itr=$((itr+1))
+        if [ $itr -gt 10 ]; then
+            echo "Kubeadmin Password is still not set, continue next step.."
+            break
+        fi
         sleep 30
     done
     unset KUBECONFIG # Unsetting Management cluster kubeconfig, will fall back to Airflow cluster kubeconfig
