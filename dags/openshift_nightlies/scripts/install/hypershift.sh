@@ -201,8 +201,8 @@ update_fw(){
         echo "Add rules to group $group.."
         aws ec2 authorize-security-group-ingress --group-id $group --protocol tcp --port 22 --cidr 0.0.0.0/0
         aws ec2 authorize-security-group-ingress --group-id $group --protocol tcp --port 2022 --cidr 0.0.0.0/0
-        aws ec2 authorize-security-group-ingress --group-id $group --protocol tcp --port 20000-30109 --cidr 0.0.0.0/0
-        aws ec2 authorize-security-group-ingress --group-id $group --protocol udp --port 20000-30109 --cidr 0.0.0.0/0
+        aws ec2 authorize-security-group-ingress --group-id $group --protocol tcp --port 20000-31000 --cidr 0.0.0.0/0
+        aws ec2 authorize-security-group-ingress --group-id $group --protocol udp --port 20000-31000 --cidr 0.0.0.0/0
         aws ec2 authorize-security-group-ingress --group-id $group --protocol tcp --port 32768-60999 --cidr 0.0.0.0/0
         aws ec2 authorize-security-group-ingress --group-id $group --protocol udp --port 32768-60999 --cidr 0.0.0.0/0
     done
