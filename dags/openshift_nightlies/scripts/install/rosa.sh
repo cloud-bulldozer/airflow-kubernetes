@@ -179,7 +179,7 @@ setup(){
     export UUID=$(uuidgen)    
     if [[ $INSTALL_METHOD == "osd" ]]; then
         export OCM_CLI_VERSION=$(cat ${json_file} | jq -r .ocm_cli_version)
-        if [[ ${OCM_CLI_VERSION} != "null" ]]; then
+        if [[ ${OCM_CLI_VERSION} != "container" ]]; then
             OCM_CLI_FORK=$(cat ${json_file} | jq -r .ocm_cli_fork)
             git clone -q --depth=1 --single-branch --branch ${OCM_CLI_VERSION} ${OCM_CLI_FORK}
             pushd ocm-cli
