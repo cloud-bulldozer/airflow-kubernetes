@@ -179,7 +179,7 @@ setup(){
     export UUID=$(uuidgen)    
     if [[ $INSTALL_METHOD == "osd" ]]; then
         export OCM_CLI_VERSION=$(cat ${json_file} | jq -r .ocm_cli_version)
-        if [[ ${OCM_CLI_VERSION} != "null" ]]; then
+        if [[ ${OCM_CLI_VERSION} != "container" ]]; then
             OCM_CLI_FORK=$(cat ${json_file} | jq -r .ocm_cli_fork)
             git clone -q --depth=1 --single-branch --branch ${OCM_CLI_VERSION} ${OCM_CLI_FORK}
             pushd ocm-cli
@@ -342,8 +342,7 @@ cleanup(){
     if [[ $INSTALL_METHOD == "osd" ]]; then
         ocm delete cluster $(_get_cluster_id ${CLUSTER_NAME})
         echo "Cluster is getting Uninstalled, deleting OSD access keys now.."
-        aws iam delete-access-key --user-name OsdCcsAdmin --access-key-id $AWS_ACCESS_KEY_ID || true        
-        ocm logout    
+        aws iam delete-access-key --user-name OsdCcsAdmin --access-key-id $AWS_ACCESS_KEY_ID || true    
     else
         ROSA_CLUSTER_ID=$(_get_cluster_id ${CLUSTER_NAME})
         CLEANUP_START_TIMING=$(date +%s)
@@ -383,4 +382,5 @@ elif [[ "$operation" == "cleanup" ]]; then
     cleanup
     index_metadata
     rosa logout
+    ocm logout    
 fi

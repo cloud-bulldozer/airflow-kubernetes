@@ -53,8 +53,9 @@ setup(){
     echo ${GCP_MANAGED_SERVICES_TOKEN} > ./serviceAccount.json
     export CLOUDSDK_PYTHON=python3.9
     export OCM_CLI_VERSION=$(cat ${json_file} | jq -r .ocm_cli_version)
-    if [[ ${OCM_CLI_VERSION} == "master" ]]; then
-        git clone --depth=1 --single-branch --branch main https://github.com/openshift-online/ocm-cli
+    if [[ ${OCM_CLI_VERSION} != "container" ]]; then
+        OCM_CLI_FORK=$(cat ${json_file} | jq -r .ocm_cli_fork)
+        git clone -q --depth=1 --single-branch --branch ${OCM_CLI_VERSION} ${OCM_CLI_FORK}
         pushd ocm-cli
         sudo PATH=$PATH:/usr/bin:/usr/local/go/bin make
         sudo mv ocm /usr/local/bin/

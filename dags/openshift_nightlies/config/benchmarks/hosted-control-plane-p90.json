@@ -1,0 +1,25 @@
+{
+    "benchmarks": [
+        {
+            "name": "cluster-density-ms-p90",
+            "workload": "kube-burner",
+            "trigger_rule": "all_done",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "cluster-density-ms",
+                "JOB_ITERATIONS": "100",
+                "JOB_TIMEOUT": "18000",
+                "STEP_SIZE": "2m",
+                "HYPERSHIFT": "true",
+                "METRICS_PROFILE": "metrics-profiles/hypershift-metrics.yaml",
+                "QPS": "20",
+                "BURST": "20",
+                "LOG_LEVEL": "info",
+                "PLATFORM_ALERTS": "false",
+                "CLEANUP_WHEN_FINISH": "true",
+                "CLEANUP": "true",
+                "MUST_GATHER_EACH_TASK": "false"
+            }
+        }
+    ]
+}

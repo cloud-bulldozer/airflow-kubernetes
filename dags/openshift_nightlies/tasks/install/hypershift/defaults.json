@@ -39,6 +39,9 @@
     "hosted_control_plane_availability": "SingleReplica",
     "hosted_cluster_release_image": "",
     "rosa_cli_fork": "https://github.com/openshift/rosa",
+    "rosa_cli_version": "container",
     "ocm_cli_fork": "https://github.com/openshift-online/ocm-cli",
-    "hypershift_cli_fork": "https://github.com/openshift/hypershift"
+    "ocm_cli_version": "container",
+    "hypershift_cli_fork": "https://github.com/openshift/hypershift",
+    "hypershift_cli_version": "container"
 }

@@ -40,6 +40,10 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
         self._setup_task(operation=operation)
         self.env = {
             "PULL_SECRET": self.hypershift_pull_secret,
+            "ES_SERVER": var_loader.get_secret('elasticsearch'),
+            "ES_INDEX": "ripsaw-kube-burner",
+            "THANOS_RECEIVER_URL": var_loader.get_secret("thanos_receiver_url"),
+            "PROM_URL": var_loader.get_secret("thanos_querier_url"),            
             **self.env
         }        
         env = {**self.env, **{"HOSTED_NAME": operation}}
