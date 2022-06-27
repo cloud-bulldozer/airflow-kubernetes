@@ -26,7 +26,7 @@ class RoGCPInstaller(AbstractOpenshiftInstaller):
     def _get_task(self, operation="install", trigger_rule="all_success"):
         self._setup_task(operation=operation)
         command=f"{constants.root_dag_dir}/scripts/install/ocm_gcp.sh -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}"
-        env={ **self.env , "InstallUUID": '{{ ti.xcom_pull(task_ids="install")}}'}
+        env={ **self.env , "Install_vars": '{{ ti.xcom_pull(task_ids="install")}}'}
         return BashOperator(
             task_id=f"{operation}",
             depends_on_past=False,

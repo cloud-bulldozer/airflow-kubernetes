@@ -341,7 +341,7 @@ EOF
 display_install_data(){
     IFS='@'
     # Read the xcom pushed by install task and store it into an array based on '@' as delimiter 
-    read -ra newarr <<< "$InstallUUID"
+    read -ra newarr <<< "$Install_vars"
     clustername="${newarr[0]}"
     installuuid="${newarr[1]}"
     echo "Cluster Name = ${clustername}"

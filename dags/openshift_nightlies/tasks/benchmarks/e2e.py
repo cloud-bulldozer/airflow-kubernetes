@@ -112,7 +112,7 @@ class E2EBenchmarks():
         benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):
-        env = {**self.env, "InstallUUID": '{{ ti.xcom_pull(task_ids="install")}}', **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch'), "KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
+        env = {**self.env, "Install_vars": '{{ ti.xcom_pull(task_ids="install")}}', **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch'), "KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
         # Fetch variables from a secret with the name <DAG_NAME>-<TASK_NAME>
         task_variables = var_loader.get_secret(f"{self.dag.dag_id}-{benchmark['name']}", True, False)
         env.update(task_variables)
