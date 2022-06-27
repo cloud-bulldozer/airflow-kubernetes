@@ -144,6 +144,7 @@ if [[ "$operation" == "install" ]]; then
         printf "INFO: Cluster ${CLUSTER_NAME} already installed but not ready, exiting..."
 	exit 1
     fi
+    echo "${CLUSTER_NAME}@${UUID}"
 
 elif [[ "$operation" == "cleanup" ]]; then
     printf "Running Cleanup Steps"

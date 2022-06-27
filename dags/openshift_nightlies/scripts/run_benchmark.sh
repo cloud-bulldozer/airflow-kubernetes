@@ -72,7 +72,7 @@ EOF
 }
 
 display_install_data(){    
-    if [[ $PLATFORM == "rosa" ]]; then
+    if [[ $PLATFORM == "rosa" || $PLATFORM == "rogcp" ]]; then
         IFS='@'
         # Read the xcom pushed by install task and store it into an array based on '@' as delimiter 
         read -ra newarr <<< "$InstallUUID"
