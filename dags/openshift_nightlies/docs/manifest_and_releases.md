@@ -21,13 +21,12 @@ Strictly speaking, a `release` is actually a unique combination of configuration
 
 ## Variants
 
-A `variant` is ultimately just a combination of install and benchmark configurations. This is not directly represented in code but is functionally defined in the manifest.  
+A `variant` is a combination of install and benchmark configurations. This is not directly represented in code but is functionally defined in the manifest.
 
 ## Manifest
 
 The manifest is just the `manifest.yaml` file that defines the releases. The `dag.py` script will read that file in and generate the DAGs accordingly.
 
-``` 
 Airflow will use the provided credentials to login to your specified cluster to run the benchmarks used for that dag.
 In the manifest the `version` and `provider` (cloud-only) fields are applied to all variants for that platform. So for instance:
 
@@ -50,11 +49,18 @@ platforms:
         config:
           install: openstack/sdn.json
           benchmarks: openstack.json
-
-
 ```
 
 would create a total of 8 dags ( 6 cloud-based, 2 openstack) with the naming convention being `$version-$provider-$variant`. This is because there is no fundamental parameter differences required between versions/providers, and this behavior gives us confidence that we're testing the same configurations across different versions and/or platforms.
+
+The children of the "config" section tell where under config to look for the definitions.
+For cloud platforms, each `provider` value is a sub-directory of `config/install`.
+See [variables.md](./variables.md) for more detail about variables.
+
+`./util/manifest.py` parses the manifest YAML and expands the variants to run, including:
+
+* resolving the installer and client binaries
+* expanding the versions/platforms/variants from `manifest.yaml` into OpenshiftReleases.
 
 ## Prebuilt Clusters
 

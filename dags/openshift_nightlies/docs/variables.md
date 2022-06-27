@@ -38,6 +38,34 @@ config
 
 This is because install is the only task that is not platform agnostic. 
 
+### Example: Finding config variables for a particular benchmark run
+Some specific examples from the structure today looks like:
+```
+config
+└── baremetal-benchmarks
+    └── install-bench.json
+└── benchmarks
+    └── control-plane.json
+└── install
+    └── aws
+        └── ovn.json
+```
+
+Three of these feilds (aws, ovn.json, and control-plane.json) are tied together in the manifest.yaml:
+```
+platforms:
+  cloud:
+    versions: ["4.10", 4.11]
+    providers: ["aws", "aws-arm", "gcp", "azure", "alibaba"]
+    variants:
+    - name: sdn-control-plane
+      schedule: "0 12 * * 3"
+      config:
+        install: sdn.json
+        benchmarks: control-plane.json
+```
+See [Manifests](./manifest_and_releases.md) for more detail around the Manifest.
+
 If using the `util.var_loader` module functions to load task variables, this pattern will automatically load the task defaults as well as the release specific configurations and apply them properly. 
 
 > Note: We require task developers to use the `util.var_loader.build_task_vars()` function to load your variables into your module. This has been tested to appropriately provide your module with a JSON-Compliant Dictionary with your configurations. 
@@ -55,3 +83,11 @@ To avoid ambiguity in task configurations, task writers should add all possible 
 Task writers are *required* to add a `defaults.json` file to their task with functional defaults. If there are no universal defaults, then the writer should add the configurations for all current releases that work with their task in the appropriate place and create a `defaults.json` file that is an empty json object `{}`. 
 
 KISS still applies here. If a task needs no variables, then do none of this! If a task works on all releases with no specific configurations, don't create any configs inside the `config` folder!
+
+# More on directories
+## `install`
+Each `platform` (or `provider` if platform==cloud) defined in the `manifest.yaml` is a unique directory here, where a JSON file can be used to specify variables unique to each cloud/provider/benchmark.  For example, AWS Instance Types may differ between a "small OVN" test (`install/aws/ovn.json`) and a "large OVN" test (`install/aws/ovn-large.json`).
+
+## `benchmarks`
+Each benchmark json contains the command, arguments, and variables to pass to the benchmark command, and is ultimately generates a fully-formed command via [e2e.py](dags/openshift_nightlies/tasks/benchmarks/e2e.py), to run [run_benchmark.sh](dags/openshift_nightlies/scripts/run_benchmark.sh).
+From `run_benchmark.sh`, the corresponding workload from [e2e-benchmarking repo](https://github.com/cloud-bulldozer/e2e-benchmarking) is executed.

@@ -49,7 +49,7 @@ def get_config_vars(release: OpenshiftRelease, task="install", config_dir=f"{con
 
 def get_default_task_vars(release: OpenshiftRelease, task="install", task_dir=f"{constants.root_dag_dir}/tasks"):
     if task == "install":
-        if release.platform == "aws" or release.platform == "azure" or release.platform == "gcp" or release.platform == "alibaba":
+        if release.platform in ( "aws" , "aws-arm" , "azure" , "gcp" , "alibaba" ):
             file_path = f"{task_dir}/{task}/cloud/defaults.json"
         else:
             file_path = f"{task_dir}/{task}/{release.platform}/defaults.json"

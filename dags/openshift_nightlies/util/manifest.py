@@ -5,6 +5,9 @@ from openshift_nightlies.models.release import OpenshiftRelease, BaremetalReleas
 from openshift_nightlies.util import var_loader
 
 class Manifest():
+    ARM64 = "arm64"
+    AMD64 = "amd64"
+
     def __init__(self, root_dag_dir):
         with open(f"{root_dag_dir}/manifest.yaml") as manifest_file:
             try:
@@ -15,23 +18,33 @@ class Manifest():
         self.release_stream_base_url = var_loader.get_secret("release_stream_base_url")
         self.get_latest_releases()
 
-    def get_latest_releases(self): 
+    def get_latest_releases(self):
         release_streams = [ version['releaseStream'] for version in self.yaml['versions']]
         self.latest_releases = {}
         for stream in release_streams:
+            # ARM binaries under its own CI.
+            base_url_arm = self.release_stream_base_url.replace("openshift-release",f"openshift-release-{self.ARM64}")
+            stream_arm = f"{stream}-{self.ARM64}"
+            latest_accepted_release,latest_accepted_release_url = self.request_for_payload(f"{base_url_arm}/{stream_arm}/latest")
+            self.latest_releases[stream_arm] = {
+                # Appending "-amd64" seems counterintuitive, but it is correct. Believe me :-)
+                "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{self.AMD64}-{latest_accepted_release}.tar.gz",
+                "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{self.AMD64}-{latest_accepted_release}.tar.gz"
+            }
+            # All other binaries under the "plain" ci URLs
             url = f"{self.release_stream_base_url}/{stream}/latest"
-            response  = requests.get(url)
-            if response.status_code != 200: 
-                raise Exception(f"Can't get latest release from OpenShift Release API, API Returned {response.status_code}, {url}")
-
-            payload = response.json()
-            latest_accepted_release = payload["name"]
-            latest_accepted_release_url = payload["downloadURL"]
+            latest_accepted_release,latest_accepted_release_url = self.request_for_payload(url)
             self.latest_releases[stream] = {
                 "openshift_client_location": f"{latest_accepted_release_url}/openshift-client-linux-{latest_accepted_release}.tar.gz",
                 "openshift_install_binary_url": f"{latest_accepted_release_url}/openshift-install-linux-{latest_accepted_release}.tar.gz"
             }
-                
+
+    def request_for_payload(self, url):
+        response  = requests.get(url)
+        if response.status_code != 200:
+            raise Exception(f"Can't get latest release from OpenShift Release API, API Returned {response.status_code}, {url}")
+        payload = response.json()
+        return payload["name"] , payload["downloadURL"]
 
     def get_cloud_releases(self):
         cloud = self.yaml['platforms']['cloud']
@@ -40,7 +53,11 @@ class Manifest():
                 for provider in cloud['providers']:
                     version_number = version['version']
                     release_stream = version['releaseStream']
-                    version_alias = version['releaseStream']
+                    version_alias = version['alias']
+                    if provider.endswith("arm"):
+                        latest_release_provider=self.latest_releases[f"{release_stream}-{self.ARM64}"]
+                    else:
+                        latest_release_provider=self.latest_releases[release_stream]
                     for variant in cloud['variants']:
                         platform_name = provider
                         config = variant['config'].copy()
@@ -49,7 +66,7 @@ class Manifest():
                             platform=platform_name,
                             version=version_number,
                             release_stream=release_stream,
-                            latest_release=self.latest_releases[release_stream],
+                            latest_release=latest_release_provider,
                             variant=variant['name'],
                             config=config,
                             version_alias=version_alias

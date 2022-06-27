@@ -29,8 +29,8 @@ dagConfig:
 platforms:
   cloud:
     versions: ["4.10", 4.11]
-    providers: ["aws", "gcp", "azure", "alibaba"]
-    variants: 
+    providers: ["aws", "aws-arm", "gcp", "azure", "alibaba"]
+    variants:
     - name: sdn-control-plane
       schedule: "0 12 * * 3"
       config: 

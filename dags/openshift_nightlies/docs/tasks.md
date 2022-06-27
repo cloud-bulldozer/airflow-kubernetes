@@ -65,3 +65,47 @@ You can run a task with any image so long as it has airflow installed on it. It'
 ensure compatibility
 
 You can change the image of a task by adding `executor_config` argument in the `Operator` you return. The `install` task does this as well.
+
+# Real Life Task Examples
+
+If you want to make quick sense of what tasks you will find in the current iteration, start here.
+
+## `install`
+
+Goal: Run an install to create a cluster.
+
+The base class is at `install/openshift.py`, and is extended by each platform type, allowing specific configurations for each platform.
+
+One important item to find here is the formatting of the install command (see 'scripts/install').
+
+For example, when installing on a cloud platform, we look in `install/cloud/openshift.py` which formats the install command as follows:
+
+```
+bash_command=f"{constants.root_dag_dir}/scripts/install/cloud.sh -p {self.release.platform} -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}",
+```
+
+which, in turn, contains the core of the install command: a playbook from `scale-ci-deploy`:
+
+```
+/home/airflow/.local/bin/ansible-playbook -vv -i inventory OCP-4.X/deploy-cluster.yml -e platform="$platform" --extra-vars "@${json_file}"
+```
+
+## `benchmark`
+
+Goal: Configure a Benchmark task when building a DAG.
+
+The `e2e.py` contains all the logic, with its core being the hand-off to the next script:
+
+```
+bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
+```
+
+and in `scripts/run_benchmark.sh`, you see the wiring of the workload and commands from `e2e-benchmarking` repo that are mapped from the `config/benchmarks` definitions.
+
+## `index`
+
+Goal: Post a document to elasticsearch for the associated task.
+
+Defines a StatusIndexer that invokes `scripts/index.sh`.
+
+Each install and benchmark task is created with a dependent StatusIndexer.
