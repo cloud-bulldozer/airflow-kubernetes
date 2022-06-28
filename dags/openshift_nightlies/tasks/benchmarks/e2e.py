@@ -79,6 +79,7 @@ class E2EBenchmarks():
         if self.release.platform == "hypershift":
             mgmt_cluster_name = release._generate_cluster_name()
             self.env = {
+                **self.env,
                 "THANOS_RECEIVER_URL": var_loader.get_secret("thanos_receiver_url"),
                 "PROM_URL": var_loader.get_secret("thanos_querier_url"),
                 "MGMT_CLUSTER_NAME": f"{mgmt_cluster_name}.*",

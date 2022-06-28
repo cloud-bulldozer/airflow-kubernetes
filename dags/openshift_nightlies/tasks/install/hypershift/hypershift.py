@@ -45,7 +45,8 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
             "THANOS_RECEIVER_URL": var_loader.get_secret("thanos_receiver_url"),
             "PROM_URL": var_loader.get_secret("thanos_querier_url"),            
             **self.env
-        }        
+        }
+        self.env.update(self.dag_config.dependencies)
         env = {**self.env, **{"HOSTED_NAME": operation}}
         command=f"{constants.root_dag_dir}/scripts/install/hypershift.sh -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}"
 
