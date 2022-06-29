@@ -338,6 +338,16 @@ EOF
     return 0
 }
 
+display_install_data(){
+    IFS='@'
+    # Read the xcom pushed by install task and store it into an array based on '@' as delimiter 
+    read -ra newarr <<< "$Install_vars"
+    clustername="${newarr[0]}"
+    installuuid="${newarr[1]}"
+    echo "Cluster Name = ${clustername}"
+    echo "Install UUID = ${installuuid}"
+}
+
 cleanup(){
     if [[ $INSTALL_METHOD == "osd" ]]; then
         ocm delete cluster $(_get_cluster_id ${CLUSTER_NAME})
@@ -376,9 +386,11 @@ if [[ "$operation" == "install" ]]; then
         printf "INFO: Cluster ${CLUSTER_NAME} already installed but not ready, exiting..."
 	    exit 1
     fi
+    echo "${CLUSTER_NAME}@${UUID}"
 
 elif [[ "$operation" == "cleanup" ]]; then
     printf "Running Cleanup Steps"
+    display_install_data
     cleanup
     index_metadata
     rosa logout

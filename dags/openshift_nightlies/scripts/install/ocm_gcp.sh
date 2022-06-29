@@ -104,6 +104,16 @@ postinstall(){
     gcloud compute firewall-rules create ${NETWORK_NAME}-hostnet --network ${NETWORK_NAME} --priority 105 --description 'scale-ci allow tcp,udp hostnetwork tests' --rules tcp:32768-60999,udp:32768-60999 --action allow
 }
 
+display_install_data(){
+    IFS='@'
+    # Read the xcom pushed by install task and store it into an array based on '@' as delimiter 
+    read -ra newarr <<< "$Install_vars"
+    clustername="${newarr[0]}"
+    installuuid="${newarr[1]}"
+    echo "Cluster Name = ${clustername}"
+    echo "Install UUID = ${installuuid}"
+}
+
 cleanup(){
     ocm delete cluster $(_get_cluster_id ${CLUSTER_NAME})
     ocm logout
@@ -145,8 +155,10 @@ if [[ "$operation" == "install" ]]; then
         printf "INFO: Cluster ${CLUSTER_NAME} already installed but not ready, exiting..."
 	exit 1
     fi
+    echo "${CLUSTER_NAME}@${UUID}"
 
 elif [[ "$operation" == "cleanup" ]]; then
     printf "Running Cleanup Steps"
+    display_install_data
     cleanup
 fi

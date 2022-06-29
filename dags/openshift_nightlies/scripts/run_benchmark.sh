@@ -70,6 +70,19 @@ EOF
         exit 1
     fi
 }
+
+display_install_data(){    
+    if [[ $PLATFORM == "rosa" || $PLATFORM == "rogcp" ]]; then
+        IFS='@'
+        # Read the xcom pushed by install task and store it into an array based on '@' as delimiter 
+        read -ra newarr <<< "$Install_vars"
+        clustername="${newarr[0]}"
+        installuuid="${newarr[1]}"
+        echo "Cluster Name = ${clustername}"
+        echo "Install UUID = ${installuuid}"
+    fi
+}
+
 export UUID=$(uuidgen | head -c8)-$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')
 echo "############################################"
 echo "# Benchmark UUID: ${UUID}"
@@ -80,6 +93,7 @@ if [[ $PLATFORM == "baremetal" ]]; then
     run_baremetal_benchmark
     echo $UUID
 else
+    display_install_data
     setup
     cd /home/airflow/workspace/e2e-benchmarking/workloads/$workload
     

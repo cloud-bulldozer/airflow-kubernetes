@@ -8,6 +8,7 @@ from airflow.operators.python import PythonOperator
 
 
 def final_status(**kwargs):
+    ti = kwargs['ti']
     failed_tasks=[]
     for task_instance in kwargs['dag_run'].get_task_instances():
         if "index" in task_instance.task_id:
