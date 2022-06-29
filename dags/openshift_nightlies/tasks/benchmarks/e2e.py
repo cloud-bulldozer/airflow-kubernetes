@@ -39,7 +39,7 @@ class E2EBenchmarks():
             "POSTGRES_SERVER_URL": self.postgres_creds['server'],
             "POSTGRES_USERNAME": self.postgres_creds['username'],
             "POSTGRES_PASSWORD": self.postgres_creds['password'],
-            "POSTGRES_DATABASE": self.postgres_creds['db'],
+            "POSTGRES_DATABASE": self.postgres_creds['database'],
             "GIT_USER": self.git_name,
             "PLATFORM": self.release.platform,
             "TASK_GROUP": self.task_group,
