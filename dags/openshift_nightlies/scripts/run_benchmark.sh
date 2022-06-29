@@ -86,7 +86,7 @@ else
     eval "$command"
     benchmark_rv=$?
 
-    if [[ ${benchmark_rv} -eq 0 && ${workload} == "kube-burner" ]] ; then 
+    if [[ ${benchmark_rv} -eq 0 && ${workload} == "kube-burner" && ${GIT_USER} == "perf-ci" ]] ; then 
         export PGPASSWORD=${POSTGRES_PASSWORD} 
         psql -h ${POSTGRES_SERVER_URL} -U ${POSTGRES_USERNAME} -d ${POSTGRES_DATABASE} -c "insert into ci_runs values('${UUID}',False);"
     fi
