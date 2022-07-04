@@ -3,11 +3,13 @@
 set -o pipefail
 set -ex
 
-while getopts j:o: flag
+while getopts v:a:j:o: flag
 do
     case "${flag}" in
+	v) version=${OPTARG};;
         j) json_file=${OPTARG};;
         o) operation=${OPTARG};;
+	*) echo "ERROR: invalid parameter ${flag}" ;;
     esac
 done
 
@@ -57,7 +59,7 @@ run_jetpack(){
             echo "[undercloud]" >> inventory
             echo "${ORCHESTRATION_HOST} ansible_user=${ORCHESTRATION_USER}" >> inventory
             time /home/airflow/.local/bin/ansible-playbook -i inventory -vv delete_single_ocp.yml --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-delete-ocp.timing
-            time /home/airflow/.local/bin/ansible-playbook -i inventory -vv ocp_on_osp.yml -e platform=osp --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-install-ocp.timing
+            time /home/airflow/.local/bin/ansible-playbook -i inventory -vv ocp_on_osp.yml -e ocp_release=latest-${version} -e platform=osp --extra-vars "@${json_file}" | tee $(date +"%Y%m%d-%H%M%S")-jetpack-install-ocp.timing
         fi
 
         printf "Running post-install Steps Using Scale-ci-deploy"
