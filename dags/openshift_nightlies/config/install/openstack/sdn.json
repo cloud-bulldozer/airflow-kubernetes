@@ -29,7 +29,6 @@
     "openstack_upload_image": "true",
     "ocp_base_domain": "rdu2.scalelab.redhat.com",
     "ocp_cluster_name": "vlan609",
-    "ocp_release": "latest-4.9",
     "ocp_dev_preview": "true",
     "master_nodes": "3",
     "worker_nodes": "3",

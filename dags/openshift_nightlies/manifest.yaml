@@ -91,9 +91,10 @@ platforms:
         benchmarks: baremetal-benchmarks
 
   openstack:
-    versions: [4.9, "4.10"]
+    versions: ["4.10"]
     variants:
       - name: sdn
+        schedule: "0 0 1-31/2 * *"
         config:
           install: openstack/sdn.json
           benchmarks: openstack.json
