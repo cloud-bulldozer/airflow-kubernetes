@@ -18,13 +18,13 @@ spec:
   source:
     repoURL: https://airflow.apache.org
     chart: airflow
-    targetRevision: "x.x.x"
+    targetRevision: "1.4.0"
     helm:
       releaseName: airflow
       values: |-
         defaultAirflowRepository: quay.io/cloud-bulldozer/airflow
-        defaultAirflowTag: 2.2.0
-        airflowVersion: 2.2.0
+        defaultAirflowTag: 2.3.2
+        airflowVersion: 2.3.2
         executor: KubernetesExecutor
         images:
           airflow:
