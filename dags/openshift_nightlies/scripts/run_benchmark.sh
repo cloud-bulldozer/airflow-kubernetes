@@ -25,7 +25,7 @@ setup(){
 
     export PATH=$PATH:$(pwd)
 
-    if [[ ! -z "$KUBEADMIN_PASSWORD" ]]; then
+    if [[ ! -z "$KUBEADMIN_PASSWORD" ]] && [[ $PLATFORM == "aro" ]]; then
         oc login -u kubeadmin -p $KUBEADMIN_PASSWORD --insecure-skip-tls-verify
     fi
 }
