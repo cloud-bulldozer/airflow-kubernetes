@@ -1,6 +1,6 @@
 {
     "cluster_install_method": "osd",
-    "hypershift_cli_version": "main",
+    "hypershift_cli_version": "release-4.11",
     "ocm_environment": "stage",
     "rosa_environment": "staging",
     "managed_channel_group": "nightly",
