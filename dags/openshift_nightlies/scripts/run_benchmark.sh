@@ -86,12 +86,6 @@ else
     eval "$command"
     benchmark_rv=$?
 
-    if [[ ${benchmark_rv} -eq 0 && ${workload} == "kube-burner" && ${GIT_USER} == "perf-ci" ]] ; then 
-        export PGPASSWORD=${POSTGRES_PASSWORD} 
-        psql -h ${POSTGRES_SERVER_URL} -U ${POSTGRES_USERNAME} -d ${POSTGRES_DATABASE} -c "insert into ci_runs values('${UUID}',False);" 2>/dev/null
-    fi
-
-
     if [[ ${MUST_GATHER_EACH_TASK} == "true" && ${benchmark_rv} -eq 1 ]] ; then
         echo -e "must gather collection enabled for this task"
         cd ../../utils/scale-ci-diagnosis
