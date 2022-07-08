@@ -24,6 +24,7 @@ class E2EBenchmarks():
         self.task_group = task_group
         self.dag_config = config
         self.snappy_creds = var_loader.get_secret("snappy_creds", deserialize_json=True)
+        self.postgres_creds = var_loader.get_secret("postgres_creds", deserialize_json=True)
         self.es_server_baseline = var_loader.get_secret("es_server_baseline")
 
         # Specific Task Configuration
@@ -35,6 +36,11 @@ class E2EBenchmarks():
             "SNAPPY_DATA_SERVER_USERNAME": self.snappy_creds['username'],
             "SNAPPY_DATA_SERVER_PASSWORD": self.snappy_creds['password'],
             "SNAPPY_USER_FOLDER": self.git_name,
+            "POSTGRES_SERVER_URL": self.postgres_creds['server'],
+            "POSTGRES_USERNAME": self.postgres_creds['username'],
+            "POSTGRES_PASSWORD": self.postgres_creds['password'],
+            "POSTGRES_DATABASE": self.postgres_creds['database'],
+            "GIT_USER": self.git_name,
             "PLATFORM": self.release.platform,
             "TASK_GROUP": self.task_group,
             "ES_SERVER_BASELINE": self.es_server_baseline
