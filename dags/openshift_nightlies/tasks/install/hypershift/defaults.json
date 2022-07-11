@@ -43,5 +43,6 @@
     "ocm_cli_fork": "https://github.com/openshift-online/ocm-cli",
     "ocm_cli_version": "container",
     "hypershift_cli_fork": "https://github.com/openshift/hypershift",
-    "hypershift_cli_version": "container"
+    "hypershift_cli_version": "container",
+    "hypershift_operator_image": ""
 }
