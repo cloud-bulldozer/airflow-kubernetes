@@ -31,7 +31,7 @@
     "openshift_prometheus_retention_period": "15d",
     "openshift_prometheus_storage_class": "alicloud-disk",
     "openshift_alertmanager_storage_class": "alicloud-disk",
-    "openshift_post_install_poll_attempts": "2000"
+    "openshift_post_install_poll_attempts": "2000",
     "openshift_prometheus_storage_size": "50Gi",
     "openshift_alertmanager_storage_size": "2Gi"
 }
