@@ -79,7 +79,8 @@ class E2EBenchmarks():
                 "AWS_SECRET_ACCESS_KEY": self.aws_creds['aws_secret_access_key'],
                 "AWS_DEFAULT_REGION": self.aws_creds['aws_region_for_openshift'],
                 "AWS_ACCOUNT_ID": self.aws_creds['aws_account_id'],
-                "OCM_TOKEN": self.ocm_creds['ocm_token']
+                "OCM_TOKEN": self.ocm_creds['ocm_token'],
+                "PROM_TOKEN": self.ocm_creds['prometheus_token']
             }
     
         if self.release.platform == "hypershift":

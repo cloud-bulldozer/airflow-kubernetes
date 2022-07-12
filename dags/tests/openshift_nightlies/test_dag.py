@@ -24,6 +24,7 @@ def variable_patch(name, deserialize_json=False):
             "orchestration_user": "stub",
             "orchestration_host": "stub",
             "ocm_token": "stub",
+            "prometheus_token": "stub",
             "database": "stub"
         }
     elif name == 'release_stream_base_url':
