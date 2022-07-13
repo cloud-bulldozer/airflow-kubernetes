@@ -2,7 +2,7 @@ import abc
 from openshift_nightlies.util import var_loader, executor, constants
 from openshift_nightlies.tasks.index.status import StatusIndexer
 from openshift_nightlies.models.release import OpenshiftRelease
-from openshift_nightlies.models.dag_config import DagConfig
+from common.models.dag_config import DagConfig
 from os import environ
 import json
 import requests

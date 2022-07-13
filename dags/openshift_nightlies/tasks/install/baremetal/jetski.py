@@ -4,7 +4,7 @@ from openshift_nightlies.util import var_loader, executor, constants
 from openshift_nightlies.tasks.install.baremetal import webfuse
 from openshift_nightlies.tasks.install.openshift import AbstractOpenshiftInstaller
 from openshift_nightlies.models.release import BaremetalRelease
-from openshift_nightlies.models.dag_config import DagConfig
+from common.models.dag_config import DagConfig
 
 
 import json

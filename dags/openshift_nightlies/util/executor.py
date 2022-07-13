@@ -1,6 +1,6 @@
 from kubernetes.client import models as k8s
 from openshift_nightlies.models.release import OpenshiftRelease
-from openshift_nightlies.models.dag_config import DagConfig
+from common.models.dag_config import DagConfig
 
 
 def get_default_executor_config(dag_config: DagConfig, executor_image='airflow-ansible'):

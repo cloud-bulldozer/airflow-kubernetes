@@ -1,4 +1,4 @@
-from openshift_nightlies.models.dag_config import DagConfig
+from common.models.dag_config import DagConfig
 
 class TestDagConfig():
     def test_create_empty_config(self):

@@ -2,7 +2,7 @@ from airflow.hooks.base import BaseHook
 from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 import logging
 from os import environ
-from openshift_nightlies.util import var_loader
+from common.util import var_loader
 
 SLACK_CONN_ID = 'slack'
 
