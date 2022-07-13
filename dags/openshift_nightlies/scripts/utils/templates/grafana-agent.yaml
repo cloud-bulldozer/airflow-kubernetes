@@ -71,6 +71,10 @@ spec:
               matchExpressions:
               - key: node-role.kubernetes.io/infra
                 operator: Exists
+      tolerations:
+      - key: node-role.kubernetes.io/infra
+        operator: Equal
+        effect: NoSchedule
       containers:
       - args:
         - --config.file=/etc/agent/agent.yaml
