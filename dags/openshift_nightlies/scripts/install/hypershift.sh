@@ -245,26 +245,20 @@ index_mgmt_cluster_stat(){
 
 cleanup(){
     echo "Cleanup Hosted Cluster..."
-    kubectl get hostedcluster -n clusters
-    LIST_OF_HOSTED_CLUSTER=$(kubectl get hostedcluster -n clusters --no-headers | awk '{print$1}')
     export NODEPOOL_SIZE=$(cat ${json_file} | jq -r .hosted_cluster_nodepool_size)    
-    for h in $LIST_OF_HOSTED_CLUSTER
-    do
-        echo "Destroy Hosted cluster $h ..."
-        if [ "${NODEPOOL_SIZE}" == "0" ] ; then
-            hypershift destroy cluster none --name $h
-        else
-            hypershift destroy cluster aws --name $h --aws-creds aws_credentials --region $AWS_REGION
-        fi
-        sleep 5 # pause a few secs before destroying next...
-    done
+    echo "Destroy Hosted cluster $HOSTED_CLUSTER_NAME ..."
+    if [ "${NODEPOOL_SIZE}" == "0" ] ; then
+        hypershift destroy cluster none --name $HOSTED_CLUSTER_NAME
+    else
+        hypershift destroy cluster aws --name $HOSTED_CLUSTER_NAME --aws-creds aws_credentials --region $AWS_REGION
+    fi
     echo "Delete AWS s3 bucket..."
     for o in $(aws s3api list-objects --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org | jq -r '.Contents[].Key' | uniq)
     do 
-        aws s3api delete-object --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --key=$o
+        aws s3api delete-object --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --key=$o || true
     done    
-    aws s3api delete-bucket --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org
-    aws s3api wait bucket-not-exists --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org
+    aws s3api delete-bucket --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org || true
+    aws s3api wait bucket-not-exists --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org || true
     ROUTE_ID=$(aws route53 list-hosted-zones --output text --query HostedZones | grep $BASEDOMAIN | grep hypershift | grep -v terraform | awk '{print$2}' | awk -F/ '{print$3}')
     for id in $ROUTE_ID; do aws route53 delete-hosted-zone --id=$id || true; done
 }

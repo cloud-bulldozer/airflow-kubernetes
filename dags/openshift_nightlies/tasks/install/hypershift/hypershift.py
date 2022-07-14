@@ -33,10 +33,19 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
 
         for iteration in range(config['number_of_hosted_cluster']):
             c_id = f"{'hosted-'+str(iteration+1)}" # adding 1 to name the cluster hosted-1, hosted-2..
-            yield c_id, self._get_task(operation=c_id)
+            yield c_id, self._get_task(operation="install", id=c_id)
+
+    def get_hosted_cleanup_task(self):
+        config = {
+            **self.vars
+        }
+
+        for iteration in range(config['number_of_hosted_cluster']):
+            c_id = f"{'hosted-'+str(iteration+1)}" # adding 1 to name the cluster hosted-1, hosted-2..
+            yield c_id, self._get_task(operation="install", id=c_id), self._get_task(operation="cleanup", id=c_id)
 
     # Create Airflow Task for Install/Cleanup steps
-    def _get_task(self, operation="hosted", trigger_rule="all_success"):
+    def _get_task(self, operation="install", id="hosted", trigger_rule="all_success"):
         self._setup_task(operation=operation)
         self.env = {
             "PULL_SECRET": self.hypershift_pull_secret,
@@ -47,11 +56,11 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
             **self.env
         }
         self.env.update(self.dag_config.dependencies)
-        env = {**self.env, **{"HOSTED_NAME": operation}}
+        env = {**self.env, **{"HOSTED_NAME": id}}
         command=f"{constants.root_dag_dir}/scripts/install/hypershift.sh -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}"
 
         task = BashOperator(
-            task_id=f"{operation}-cluster-install",
+            task_id=f"{id}-{operation}",
             depends_on_past=False,
             bash_command=command,
             retries=3,
