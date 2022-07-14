@@ -9,7 +9,7 @@
     "openshift_network_type": "OVNKubernetes",
     "openshift_worker_instance_type": "m5.4xlarge",
     "number_of_hosted_cluster": 1,
-    "control_plane_operator_image": "quay.io/hypershift/hypershift:4.11",
+    "hypershift_operator_image": "quay.io/hypershift/hypershift-operator:4.11",
     "hosted_cluster_nodepool_size": 7,
     "hosted_cluster_instance_type": "m5.2xlarge",
     "hosted_cluster_network_type": "OVNKubernetes", 

@@ -1,6 +1,7 @@
 {
     "cluster_install_method": "osd",
     "hypershift_cli_version": "release-4.11",
+    "hypershift_operator_image": "quay.io/hypershift/hypershift-operator:4.11",
     "ocm_environment": "stage",
     "rosa_environment": "staging",
     "managed_channel_group": "nightly",
