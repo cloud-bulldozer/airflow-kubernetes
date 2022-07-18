@@ -26,7 +26,7 @@ _download_kubeconfig(){
 
 _get_cluster_status(){
     if [[ $INSTALL_METHOD == "osd" ]]; then
-        echo $(ocm list clusters --no-headers --columns state $1)
+        echo $(ocm list clusters --no-headers --columns state $1 | xargs)
     else    
         echo $(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .status.state')
     fi
@@ -243,23 +243,28 @@ index_mgmt_cluster_stat(){
 }
 
 cleanup(){
-    echo "Cleanup Hosted Cluster..."
-    export NODEPOOL_SIZE=$(cat ${json_file} | jq -r .hosted_cluster_nodepool_size)    
-    echo "Destroy Hosted cluster $HOSTED_CLUSTER_NAME ..."
-    if [ "${NODEPOOL_SIZE}" == "0" ] ; then
-        hypershift destroy cluster none --name $HOSTED_CLUSTER_NAME
+    if [[ $HOSTED_NAME == "operator" ]]; then
+        echo "Delete AWS s3 bucket..."
+        for o in $(aws s3api list-objects --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org | jq -r '.Contents[].Key' | uniq)
+        do 
+            aws s3api delete-object --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --key=$o || true
+        done    
+        aws s3api delete-bucket --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org || true
+        aws s3api wait bucket-not-exists --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org || true
+        ROUTE_ID=$(aws route53 list-hosted-zones --output text --query HostedZones | grep $BASEDOMAIN | grep hypershift | grep -v terraform | awk '{print$2}' | awk -F/ '{print$3}')
+        for id in $ROUTE_ID; do aws route53 delete-hosted-zone --id=$id || true; done
+        echo "Delete hypershift namespace.."
+        oc delete project hypershift --force
     else
-        hypershift destroy cluster aws --name $HOSTED_CLUSTER_NAME --aws-creds aws_credentials --region $AWS_REGION
+        echo "Cleanup Hosted Cluster..."
+        export NODEPOOL_SIZE=$(cat ${json_file} | jq -r .hosted_cluster_nodepool_size)    
+        echo "Destroy Hosted cluster $HOSTED_CLUSTER_NAME ..."
+        if [ "${NODEPOOL_SIZE}" == "0" ] ; then
+            hypershift destroy cluster none --name $HOSTED_CLUSTER_NAME
+        else
+            hypershift destroy cluster aws --name $HOSTED_CLUSTER_NAME --aws-creds aws_credentials --region $AWS_REGION
+        fi
     fi
-    echo "Delete AWS s3 bucket..."
-    for o in $(aws s3api list-objects --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org | jq -r '.Contents[].Key' | uniq)
-    do 
-        aws s3api delete-object --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --key=$o || true
-    done    
-    aws s3api delete-bucket --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org || true
-    aws s3api wait bucket-not-exists --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org || true
-    ROUTE_ID=$(aws route53 list-hosted-zones --output text --query HostedZones | grep $BASEDOMAIN | grep hypershift | grep -v terraform | awk '{print$2}' | awk -F/ '{print$3}')
-    for id in $ROUTE_ID; do aws route53 delete-hosted-zone --id=$id || true; done
 }
 
 cat ${json_file}

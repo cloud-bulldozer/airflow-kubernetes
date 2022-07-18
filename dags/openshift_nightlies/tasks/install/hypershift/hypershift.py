@@ -44,6 +44,9 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
             c_id = f"{'hosted-'+str(iteration+1)}" # adding 1 to name the cluster hosted-1, hosted-2..
             yield c_id, self._get_task(operation="install", id=c_id), self._get_task(operation="cleanup", id=c_id)
 
+    def get_operator_cleanup_task(self):
+        return self._get_task(operation="cleanup", id="operator")
+
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", id="hosted", trigger_rule="all_success"):
         self._setup_task(operation=operation)
