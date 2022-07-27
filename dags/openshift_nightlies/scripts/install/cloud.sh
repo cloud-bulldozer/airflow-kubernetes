@@ -16,7 +16,7 @@ done
 setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
-    git clone --depth=1 --single-branch --branch master https://github.com/cloud-bulldozer/scale-ci-deploy
+    git clone --depth=1 --single-branch --branch 889-winc https://github.com/afcollins/scale-ci-deploy
     git clone --depth=1 --single-branch --branch master https://${SSHKEY_TOKEN}@github.com/redhat-performance/perf-dept.git
     export PUBLIC_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2.pub
     export PRIVATE_KEY=/home/airflow/workspace/perf-dept/ssh_keys/id_rsa_pbench_ec2 

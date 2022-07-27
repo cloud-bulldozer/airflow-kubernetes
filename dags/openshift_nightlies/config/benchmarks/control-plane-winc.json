@@ -1,0 +1,29 @@
+{
+    "benchmarks": [
+        {
+            "name": "node-density",
+            "workload": "kube-burner",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "node-density",
+                "PODS_PER_NODE": "175",
+                "NODE_COUNT": "9",
+                "JOB_TIMEOUT": "18000",
+                "QPS": "5",
+                "BURST": "5",
+                "STEP_SIZE": "30s",
+                "LOG_LEVEL": "info",
+                "CLEANUP_WHEN_FINISH": "false",
+                "POD_NODE_SELECTOR": "{kubernetes.io/os: windows}",
+                "NODE_POD_DENSITY_IMAGE": "mcr.microsoft.com/oss/kubernetes/pause:3.6",
+                "WORKER_NODE_LABEL": "kubernetes.io/os=windows",
+                "POD_TOLERATIONS": "[{key: os, value: Windows, Effect: NoSchedule}]",
+                "CLEANUP": "true",
+                "E2E_BENCHMARKING_REPO": "https://github.com/afcollins/e2e-benchmarking/",
+                "E2E_BENCHMARKING_BRANCH": "889-winc",
+                "MUST_GATHER_EACH_TASK": "true",
+                "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
+            }
+        }
+    ]
+}

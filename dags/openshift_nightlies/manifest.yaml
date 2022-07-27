@@ -41,6 +41,10 @@ platforms:
       config: 
         install: ovn-dp.json
         benchmarks: control-plane.json
+    - name: ovn-winc
+      config:
+        install: ovn-winc.json
+        benchmarks: control-plane-winc.json
     - name: sdn-data-plane
       schedule: "0 12 * * 1"
       config: 
