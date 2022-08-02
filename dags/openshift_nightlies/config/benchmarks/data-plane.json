@@ -1,16 +1,6 @@
 {
     "benchmarks": [
         {
-            "name": "scale-27",
-            "workload": "scale-perf",
-            "command": "./run_scale_fromgit.sh",
-            "env": {
-                "SCALE": "27",
-                "METADATA_COLLECTION": "true",
-                "WORKLOAD_NODE_ROLE": "workload"
-            }
-        },
-        {
             "name": "host-network",
             "workload": "network-perf",
             "command": "./run.sh",
@@ -36,12 +26,20 @@
             }
         },
         {
+            "name": "scale-27",
+            "workload": "scale-perf",
+            "command": "./run_scale_fromgit.sh",
+            "env": {
+                "SCALE": "27",
+                "METADATA_COLLECTION": "true",
+                "WORKLOAD_NODE_ROLE": "workload"
+            }
+        },
+        {
             "name": "router",
             "workload": "router-perf-v2",
             "command": "./ingress-performance.sh",
             "env": {
-                "THROUGHPUT_TOLERANCE": "10",
-                "LATENCY_TOLERANCE": "10",
                 "LARGE_SCALE_THRESHOLD": "19",
                 "ENGINE": "local",
                 "LARGE_SCALE_ROUTES": "500",
