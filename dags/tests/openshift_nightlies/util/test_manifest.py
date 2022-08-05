@@ -59,7 +59,6 @@ class TestManifest():
 
     def test_cloudreleases_amd(self,mocked_releases):
         releases = mocked_releases
-        assert len( releases ) == 145
         hits = 0
         for release in releases:
             release_name = release["release"].get_release_name()
@@ -71,7 +70,6 @@ class TestManifest():
 
     def test_cloudreleases_arm(self,mocked_releases):
         releases = mocked_releases
-        assert len( releases ) == 145
         hits = 0
         for release in releases:
             if "4.11-aws-arm" in release["release"].get_release_name():
