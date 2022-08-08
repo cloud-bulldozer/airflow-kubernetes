@@ -1,16 +1,16 @@
 versions:
-- version: 4.9
-  alias: previous
-  releaseStream: 4.9.0-0.nightly
-  baremetalReleaseStream: latest-4.9
 - version: "4.10"
-  alias: stable
+  alias: previous
   releaseStream: 4.10.0-0.nightly
   baremetalReleaseStream: latest-4.10
-- version: 4.11
-  alias: next
+- version: "4.11"
+  alias: stable
   releaseStream: 4.11.0-0.nightly
   baremetalReleaseStream: latest-4.11
+- version: "4.12"
+  alias: next
+  releaseStream: 4.12.0-0.nightly
+  baremetalReleaseStream: latest-4.12
 
 dagConfig:
   schedules:
@@ -28,7 +28,7 @@ dagConfig:
 
 platforms:
   cloud:
-    versions: ["4.10", 4.11]
+    versions: [4.11, 4.12]
     providers: ["aws", "aws-arm", "gcp", "azure", "alibaba"]
     variants:
     - name: sdn-control-plane
@@ -83,7 +83,7 @@ platforms:
 
   baremetal: 
     build: dev
-    versions: [4.11]
+    versions: [4.11, 4.12]
     variants: 
     - name: jetski
       config: 
@@ -91,7 +91,7 @@ platforms:
         benchmarks: baremetal-benchmarks
 
   openstack:
-    versions: ["4.10"]
+    versions: ["4.11", "4.12"]
     variants:
       - name: sdn
         schedule: "0 0 1-31/2 * *"
