@@ -21,7 +21,7 @@
     "openshift_worker_root_volume_iops": 0,
     "machineset_metadata_label_prefix": "machine.openshift.io",
     "openshift_infra_node_instance_type": "ecs.g6.8xlarge",
-    "openshift_workload_node_instance_type": "ecs.g6.4xlarge",
+    "openshift_workload_node_instance_type": "ecs.g6.8xlarge",
     "openshift_infra_node_volume_size": 100,
     "openshift_infra_node_volume_type": "cloud_essd",
     "openshift_infra_node_volume_iops": 0,

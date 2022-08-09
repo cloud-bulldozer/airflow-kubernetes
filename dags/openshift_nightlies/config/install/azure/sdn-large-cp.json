@@ -11,7 +11,7 @@
     "openshift_cidr": "10.128.0.0/14",
     "machineset_metadata_label_prefix": "machine.openshift.io",
     "openshift_infra_node_vm_size": "Standard_D16s_v3",
-    "openshift_workload_node_vm_size": "Standard_D32s_v3",
+    "openshift_workload_node_vm_size": "Standard_D8s_v3",
     "openshift_infra_node_volume_size": 128,
     "openshift_infra_node_volume_type": "Premium_LRS",
     "openshift_workload_node_volume_size": 512,

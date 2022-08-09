@@ -8,7 +8,7 @@
     "openshift_worker_instance_type": "n2-standard-8",
     "machineset_metadata_label_prefix": "machine.openshift.io",
     "openshift_infra_node_instance_type": "n2-standard-8",
-    "openshift_workload_node_instance_type": "n2-standard-16",
+    "openshift_workload_node_instance_type": "n2-standard-8",
     "openshift_infra_node_volume_size": 100,
     "openshift_infra_node_volume_type": "pd-ssd",
     "openshift_workload_node_volume_type": "pd-ssd",
