@@ -34,7 +34,7 @@ class OpenshiftRelease:
 
     def _generate_cluster_name(self):
         git_user = self._get_git_user()
-        git_branch = environ['GIT_BRANCH']
+        git_branch = str(environ['GIT_BRANCH']).replace("_","-").lower()
         release_name = self.get_release_name(delimiter="-")
         if git_user == 'cloud-bulldozer':
             cluster_name = f"ci-{release_name}"
