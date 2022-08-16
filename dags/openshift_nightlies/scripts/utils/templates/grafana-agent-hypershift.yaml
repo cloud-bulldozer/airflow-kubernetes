@@ -1,0 +1,156 @@
+apiVersion: v1                                                                                                                                                                                                                               
+kind: Namespace                                                                                                                                                                                                                              
+metadata:                                                                                                                                                                                                                                                                                                                                                                                                                                         
+  name: grafana-agent 
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: grafana-agent
+  namespace: grafana-agent
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: grafana-agent
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - nodes/proxy
+  - services
+  - endpoints
+  - pods
+  - namespaces
+  verbs:
+  - get
+  - list
+  - watch
+- nonResourceURLs:
+  - /metrics
+  - /federate
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: grafana-agent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: grafana-agent
+subjects:
+- kind: ServiceAccount
+  name: grafana-agent
+  namespace: grafana-agent
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-agent
+  namespace: grafana-agent
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: grafana-agent
+  template:
+    metadata:
+      labels:
+        name: grafana-agent
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: node-role.kubernetes.io/infra
+                operator: Exists
+      tolerations:
+      - key: node-role.kubernetes.io/infra
+        operator: Equal
+        effect: NoSchedule
+      containers:
+      - args:
+        - --config.file=/etc/agent/agent.yaml
+        - --log.level=debug
+        command:
+        - /bin/agent
+        env:
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        image: grafana/agent:v0.20.0
+        imagePullPolicy: IfNotPresent
+        name: agent
+        ports:
+        - containerPort: 12345
+          name: http-metrics
+        volumeMounts:
+        - mountPath: /etc/agent
+          name: grafana-agent
+      serviceAccount: grafana-agent
+      volumes:
+      - configMap:
+          name: grafana-agent
+        name: grafana-agent
+---
+kind: ConfigMap
+metadata:
+  name: grafana-agent
+  namespace: grafana-agent
+apiVersion: v1
+data:
+  agent.yaml: |
+    server:
+      http_listen_port: 12345
+    prometheus:
+      wal_directory: /tmp/grafana-agent-wal
+      global:
+        scrape_interval: 15s
+        external_labels:
+          openshift_cluster_name: $CLUSTER_NAME
+          openshift_network_type: $NETWORK_TYPE
+          openshift_version: $OPENSHIFT_VERSION
+          openshift_platform: $PLATFORM
+          dag_id: $DAG_ID
+      configs:
+        - name: integrations
+          remote_write:
+            - url: "$THANOS_RECEIVER_URL"
+              queue_config:
+                max_samples_per_send: 2000
+                max_shards: 1000
+                capacity: 5000
+          scrape_configs:
+            - job_name: cluster-monitoring
+              honor_labels: true
+              params:
+                'match[]': 
+                  - '{job=~"etcd|etcd-client|kube-apiserver|apiserver|kubelet|kube-state-metrics|crio|node-exporter|cluster-version-operator"}'
+              scrape_interval: 60s
+              scrape_timeout: 30s
+              metrics_path: /federate
+              scheme: https
+              kubernetes_sd_configs:
+              - role: endpoints
+                namespaces:
+                  names:
+                  - openshift-monitoring
+                selectors:
+                  - role: endpoints 
+                    label: app.kubernetes.io/name=prometheus
+              metric_relabel_configs:
+              - source_labels: [__name__]
+                regex: "apiserver_request_total|apiserver_request_duration_seconds_bucket|container_cpu_usage_seconds_total|container_memory_rss|container_memory_cache|cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests|cluster:namespace:pod_memory:active:kube_pod_container_resource_requests|process_cpu_seconds_total|process_resident_memory_bytes|container_runtime_crio_operations_latency_microseconds|node_cpu_seconds_total|node_memory_MemAvailable_bytes|node_memory_MemTotal_bytes|etcd_server_leader_changes_seen_total|etcd_disk_backend_commit_duration_seconds_bucket|etcd_disk_wal_fsync_duration_seconds_bucket|etcd_network_peer_round_trip_time_seconds_bucket|etcd_cluster_version|etcd_request_duration_seconds_bucket|kube_namespace_status_phase|kube_pod_status_phase|kube_secret_info|kube_deployment_labels|kube_configmap_info|kube_service_info|kube_node_role|kube_node_status_condition|cluster_version"
+                action: keep                    
+              authorization:
+                credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+              tls_config:
+                insecure_skip_verify: true

@@ -28,7 +28,7 @@ _download_kubeconfig(){
 
 _get_cluster_status(){
     if [[ $INSTALL_METHOD == "osd" ]]; then
-        echo "$(ocm list clusters --no-headers --columns state $1)"
+        echo "$(ocm list clusters --no-headers --columns state $1 | xargs)"
     else
         echo "$(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .status.state')"
     fi

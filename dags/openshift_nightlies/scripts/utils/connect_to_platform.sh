@@ -28,7 +28,11 @@ cleanup_old_resources(){
 }
 
 install_grafana_agent(){
-    envsubst < $SCRIPT_DIR/templates/grafana-agent.yaml | kubectl apply -f -
+    if [[$REL_PLATFORM == "hypershift" ]]; then 
+        envsubst < $SCRIPT_DIR/templates/grafana-agent-hypershift.yaml | kubectl apply -f -
+    else
+        envsubst < $SCRIPT_DIR/templates/grafana-agent.yaml | kubectl apply -f -
+    fi
 }
 
 install_promtail(){
