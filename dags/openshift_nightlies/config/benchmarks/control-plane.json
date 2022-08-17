@@ -36,8 +36,8 @@
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "node-density-cni",
-                "PODS_PER_NODE": "45",
-                "NODE_COUNT": "20",
+                "PODS_PER_NODE": "245",
+                "NODE_COUNT": "27",
                 "JOB_TIMEOUT": "18000",
                 "QPS": "20",
                 "BURST": "20",
