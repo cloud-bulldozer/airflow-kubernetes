@@ -125,9 +125,9 @@ data:
           remote_write:
             - url: "$THANOS_RECEIVER_URL"
               queue_config:
-                max_samples_per_send: 2000
-                max_shards: 1000
-                capacity: 5000
+                max_samples_per_send: 4000
+                max_shards: 2000
+                capacity: 10000
           scrape_configs:
             - job_name: cluster-monitoring
               honor_labels: true
