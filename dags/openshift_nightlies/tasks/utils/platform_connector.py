@@ -23,7 +23,8 @@ class PlatformConnectorTask():
         self.env = {
             "REL_PLATFORM": self.release.platform,
             "THANOS_RECEIVER_URL": var_loader.get_secret("thanos_receiver_url"),
-            "LOKI_RECEIVER_URL": var_loader.get_secret("loki_receiver_url")
+            "LOKI_RECEIVER_URL": var_loader.get_secret("loki_receiver_url"),
+            "TASK_GROUP": self.task_group
         }
 
         if self.release.platform == "baremetal":
