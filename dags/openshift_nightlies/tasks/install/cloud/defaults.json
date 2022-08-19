@@ -2,6 +2,7 @@
     "orchestration_user": "",
     "orchestration_host": "",
     "sshkey_token": "",
+    "cluster_owner": "",
     "openshift_client_location": "",
     "openshift_base_domain": "perfscale.devcluster.openshift.com",
     "openshift_cluster_name": "",
