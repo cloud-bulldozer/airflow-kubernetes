@@ -83,6 +83,7 @@ class AbstractOpenshiftInstaller(ABC):
         self.config = {**self.config,
                        ** self._get_playbook_operations(operation)}
         self.config['openshift_cluster_name'] = self.cluster_name
+        self.config['cluster_owner'] = self.cluster_name.split("-")[0]
         self.config['dynamic_deploy_path'] = f"{self.config['openshift_cluster_name']}"
         self.config['kubeconfig_path'] = f"/root/{self.config['dynamic_deploy_path']}/auth/kubeconfig"
         self.env = {
