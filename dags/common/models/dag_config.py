@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Optional
 from datetime import timedelta, datetime
-from openshift_nightlies.util import slack_integration
+from common.util import slack_integration
 
 @dataclass
 class DagConfig:

@@ -1,6 +1,6 @@
 import yaml
 import requests
-from openshift_nightlies.models.dag_config import DagConfig
+from common.models.dag_config import DagConfig
 from openshift_nightlies.models.release import OpenshiftRelease, BaremetalRelease
 from openshift_nightlies.util import var_loader
 
