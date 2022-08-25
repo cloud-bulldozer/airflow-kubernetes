@@ -104,15 +104,20 @@ setup(){
 
 install(){
     export HYPERSHIFT_OPERATOR_IMAGE=$(cat ${json_file} | jq -r .hypershift_operator_image)
+    export HCP_PLATFORM_MONITORING=$(cat ${json_file} | jq -r .hcp_platform_monitoring)
     HO_IMAGE_ARG=""
+    HCP_P_MONITOR=""
     if [[ $HYPERSHIFT_OPERATOR_IMAGE != "" ]]; then
             HO_IMAGE_ARG="--hypershift-image $HYPERSHIFT_OPERATOR_IMAGE"
+    fi
+    if [[ $HCP_PLATFORM_MONITORING != "" ]]; then
+            HCP_P_MONITOR="--platform-monitoring $HCP_PLATFORM_MONITORING"
     fi
     echo "Create S3 bucket.."
     aws s3api create-bucket --acl public-read --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --create-bucket-configuration LocationConstraint=$AWS_REGION --region $AWS_REGION || true
     echo "Wait till S3 bucket is ready.."
     aws s3api wait bucket-exists --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org 
-    hypershift install $HO_IMAGE_ARG  --oidc-storage-provider-s3-bucket-name $MGMT_CLUSTER_NAME-aws-rhperfscale-org --oidc-storage-provider-s3-credentials aws_credentials --oidc-storage-provider-s3-region $AWS_REGION  --platform-monitoring All --metrics-set All
+    hypershift install $HO_IMAGE_ARG  --oidc-storage-provider-s3-bucket-name $MGMT_CLUSTER_NAME-aws-rhperfscale-org --oidc-storage-provider-s3-credentials aws_credentials --oidc-storage-provider-s3-region $AWS_REGION $HCP_P_MONITOR --metrics-set All
     echo "Wait till Operator is ready.."
     kubectl wait --for=condition=available --timeout=600s deployments/operator -n hypershift
 }

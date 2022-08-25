@@ -143,6 +143,7 @@ data:
                 namespaces:
                   names:
                   - openshift-monitoring
+                  - openshift-user-workload-monitoring # to collect HCP metrics
                 selectors:
                   - role: endpoints 
                     label: app.kubernetes.io/name=prometheus                 
