@@ -216,7 +216,8 @@ class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         connect_to_platform = self._get_platform_connector().get_task()
 
         rosa_post_installation = self._get_rosa_postinstall_setup()._get_rosa_postinstallation()
-
+        wait_task = hosted_installer.wait_task()
+        wait_beforce_cleanup = hosted_installer.wait_task(id="wait_beforce_cleanup")
         if self.config.cleanup_on_success:
             cleanup_mgmt_cluster = mgmt_installer.get_cleanup_task()
             cleanup_hosted_cluster = hosted_installer.get_hosted_cleanup_task()
@@ -225,15 +226,15 @@ class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
                 benchmark = self._add_benchmarks(task_group=c_id)
                 hc_connect_to_platform = self._get_hc_platform_connector(task_group=c_id).get_task()            
                 install_mgmt_cluster >> rosa_post_installation >> connect_to_platform
-                connect_to_platform >> install_hc >> [hc_connect_to_platform, benchmark]
-                [hc_connect_to_platform, benchmark] >> cleanup_hc >> cleanup_operator >> cleanup_mgmt_cluster
+                connect_to_platform >> install_hc >> wait_task >> [hc_connect_to_platform, benchmark]
+                [hc_connect_to_platform, benchmark] >> wait_beforce_cleanup >> cleanup_hc >> cleanup_operator >> cleanup_mgmt_cluster
         else:
             install_hosted_cluster = hosted_installer.get_hosted_install_task()
             for c_id, install_hc in install_hosted_cluster:
                 benchmark = self._add_benchmarks(task_group=c_id)
                 hc_connect_to_platform = self._get_hc_platform_connector(task_group=c_id).get_task()            
                 install_mgmt_cluster >> rosa_post_installation >> connect_to_platform
-                connect_to_platform >> install_hc >> hc_connect_to_platform >> benchmark
+                connect_to_platform >> install_hc >> wait_task >> hc_connect_to_platform >> benchmark
 
     def _get_openshift_installer(self):
         return rosa.RosaInstaller(self.dag, self.config, self.release)
