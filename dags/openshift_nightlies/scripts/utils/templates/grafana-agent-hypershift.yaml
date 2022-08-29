@@ -69,11 +69,11 @@ spec:
           - weight: 100
             preference:
               matchExpressions:
-              - key: node-role.kubernetes.io/infra
+              - key: node-role.kubernetes.io/workload
                 operator: Exists
       tolerations:
-      - key: node-role.kubernetes.io/infra
-        operator: Equal
+      - key: role
+        value: workload
         effect: NoSchedule
       containers:
       - args:
@@ -151,3 +151,19 @@ data:
                 credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token
               tls_config:
                 insecure_skip_verify: true
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-workload-monitoring-config
+  namespace: openshift-user-workload-monitoring
+data:
+  config.yaml: >
+    prometheus:
+      nodeSelector:
+        node-role.kubernetes.io/workload: ""
+      tolerations:
+        - effect: NoSchedule
+          key: role
+          value: workload
