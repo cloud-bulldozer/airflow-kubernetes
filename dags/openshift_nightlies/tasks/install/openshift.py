@@ -2,7 +2,7 @@ import abc
 from openshift_nightlies.util import var_loader, executor, constants
 from openshift_nightlies.tasks.index.status import StatusIndexer
 from openshift_nightlies.models.release import OpenshiftRelease
-from openshift_nightlies.models.dag_config import DagConfig
+from common.models.dag_config import DagConfig
 from os import environ
 import json
 import requests
@@ -83,6 +83,7 @@ class AbstractOpenshiftInstaller(ABC):
         self.config = {**self.config,
                        ** self._get_playbook_operations(operation)}
         self.config['openshift_cluster_name'] = self.cluster_name
+        self.config['cluster_owner'] = self.cluster_name.split("-")[0]
         self.config['dynamic_deploy_path'] = f"{self.config['openshift_cluster_name']}"
         self.config['kubeconfig_path'] = f"/root/{self.config['dynamic_deploy_path']}/auth/kubeconfig"
         self.env = {

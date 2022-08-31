@@ -40,12 +40,16 @@ output_info() {
     _airflow_password="REDACTED"
 
     printf "\n\n Airflow Configs (Password was user defined so this script doesn't know it!)"
-    printf "\n Host: $_airflow_url \n User: $_airflow_user \n Password: $_airflow_password"
+    printf "\n Host: $_airflow_url \n User: $_airflow_user \n Password: $_airflow_password\n\n"
 
     _results_dashboard_url=$(oc get route/perf-dashboard -o jsonpath='{.spec.host}' -n dashboard)
-    _results_api_url=$(oc get route/perf-dashboard-api -o jsonpath='{.spec.host}' -n dashboard)
+    if [ -z "$_results_dashboard_url" ]; then
+        printf "Dashboard is not present\n\n"
+    else
+        _results_api_url=$(oc get route/perf-dashboard-api -o jsonpath='{.spec.host}' -n dashboard)
 
-    printf "\n\n Results Dashboard Configs"
-    printf "\n Dashboard URL: $_results_dashboard_url \n API Endpoint: $_results_api_url \n"
+        printf "\n\n Results Dashboard Configs"
+        printf "\n Dashboard URL: $_results_dashboard_url \n API Endpoint: $_results_api_url \n"
+    fi
 
 }

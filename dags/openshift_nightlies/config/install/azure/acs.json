@@ -3,7 +3,6 @@
     "openshift_worker_count": 3,
     "openshift_base_domain": "ats.azure.devcluster.openshift.com",
     "openshift_host_prefix": "23",
-    "openshift_network_type": "OpenShiftSDN",
     "openshift_master_vm_size": "Standard_E16s_v3",
     "openshift_worker_vm_size": "Standard_D8s_v3",
     "openshift_master_root_volume_size": 256,

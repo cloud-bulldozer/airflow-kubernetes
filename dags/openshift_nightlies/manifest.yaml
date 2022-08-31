@@ -34,47 +34,47 @@ platforms:
     - name: sdn-control-plane
       schedule: "0 12 * * 3"
       config: 
-        install: sdn.json
+        install: sdn-cp.json
         benchmarks: control-plane.json
     - name: ovn-control-plane
       schedule: "0 12 * * 3"
       config: 
-        install: ovn.json
+        install: ovn-dp.json
         benchmarks: control-plane.json
     - name: sdn-data-plane
       schedule: "0 12 * * 1"
       config: 
-        install: sdn.json
+        install: sdn-dp.json
         benchmarks: data-plane.json
     - name: ovn-data-plane
       schedule: "0 12 * * 1"
       config:
-        install: ovn.json
+        install: ovn-dp.json
         benchmarks: data-plane.json
     - name: sdn-medium
       schedule: "0 12 * * 1"
       config: 
-        install: sdn-medium.json
+        install: sdn-large-cp.json
         benchmarks: medium-control-plane.json
     - name: ovn-medium
       schedule: "0 12 * * 1"
       config: 
-        install: ovn-medium.json
+        install: ovn-large-cp.json
         benchmarks: medium-control-plane.json
     - name: sdn-extra-large
       schedule: "0 12 15 * *"
       config:
-        install: sdn-extra-large.json
+        install: sdn-large-cp.json
         benchmarks: extra-large-control-plane.json
     - name: sdn-large
       schedule: "0 12 15 * *"
       config: 
-        install: sdn-large.json
+        install: sdn-large-cp.json
         benchmarks: large-control-plane.json
     - name: ovn-large
       schedule: "0 12 15 * *"
       config: 
-        install: ovn-large.json
+        install: ovn-large-cp.json
         benchmarks: large-control-plane.json
     - name: acs
       config: 
@@ -183,7 +183,7 @@ platforms:
           benchmarks: data-plane.json
 
   hypershift:
-    versions: ["4.10", "4.11"]
+    versions: ["4.11"]
     variants:
       - name: sdn-control-plane
         schedule:  "30 2 * * 1,3,5" # an hour gap for OSD to avoid OsdCcsAdmin key limit
@@ -205,6 +205,14 @@ platforms:
         config:
           install: hypershift/ovn-p90.json
           benchmarks: hosted-control-plane-p90.json          
+      - name: chaos-ovn-control-plane-p75
+        config:
+          install: hypershift/ovn-p75.json
+          benchmarks: hosted-control-plane-chaos-p75.json
+      - name: chaos-ovn-control-plane-p90
+        config:
+          install: hypershift/ovn-p90.json
+          benchmarks: hosted-control-plane-chaos-p90.json
 
   prebuilt:
     versions: ["4.x"]

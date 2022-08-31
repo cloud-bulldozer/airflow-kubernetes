@@ -14,7 +14,7 @@ from airflow.models.param import Param
 
 # Configure Path to have the Python Module on it
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-from openshift_nightlies.models.dag_config import DagConfig
+from common.models.dag_config import DagConfig
 from openshift_nightlies.models.release import OpenshiftRelease, BaremetalRelease
 from openshift_nightlies.tasks.install.cloud import openshift
 from openshift_nightlies.tasks.install.openstack import jetpack

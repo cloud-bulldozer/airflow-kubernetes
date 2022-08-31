@@ -7,8 +7,7 @@ RUN dnf -y install python3.8 gcc platform-python-devel epel-release --nodocs
 RUN dnf --enablerepo=epel -y install sudo sshpass openssh-clients git ipmitool ansible python3-dns python3-netaddr ipmitool --nodocs
 
 RUN pip3.8 install update
-RUN pip3.8 install click idna==2.10 kubernetes==11.0.0 openshift==0.11.2 # due to apache-airflow dependency version limit
-RUN pip3.8 install elasticsearch==7.13 jmespath==0.9.5 click==7.1.2 pyjwt==1.7.1 pytz==2020.4 psycopg2-binary apache-airflow apache-airflow-providers-slack apache-airflow-providers-amazon apache-airflow-providers-elasticsearch apache-airflow-providers-hashicorp j2cli openshift netaddr
+RUN pip3.8 install requests==2.28.0 click==7.1.2 WTForms==2.3.3 idna==3.3 kubernetes==23.6.0 elasticsearch==7.13.4 jmespath==1.0.1 pyjwt==1.7.1 pytz==2022.1 psycopg2-binary==2.9.3 apache-airflow==2.3.2 apache-airflow-providers-slack==4.2.3 apache-airflow-providers-amazon==3.4.0 apache-airflow-providers-elasticsearch==4.2.0 apache-airflow-providers-hashicorp==2.2.0 j2cli openshift netaddr
 
 # Hammercli
 # epel-release is needed, but was installed above.

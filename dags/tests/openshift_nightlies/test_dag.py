@@ -23,7 +23,8 @@ def variable_patch(name, deserialize_json=False):
             "osp_orchestration_host": "stub",
             "orchestration_user": "stub",
             "orchestration_host": "stub",
-            "ocm_token": "stub"
+            "ocm_token": "stub",
+            "prometheus_token": "stub"
         }
     elif name == 'release_stream_base_url':
         return "http://test.com"

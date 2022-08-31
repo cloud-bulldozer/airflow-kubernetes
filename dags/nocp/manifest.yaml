@@ -1,0 +1,10 @@
+dagConfig:
+  schedules:
+    enabled: true
+    default: "0 12 * * 1,3,5"
+    nocp:
+      ocm: "0 0 * * 5"
+  cleanupOnSuccess: true
+  executorImages:
+    repository: quay.io/cloud-bulldozer
+    tag: 2.3.2
