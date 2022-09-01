@@ -237,7 +237,7 @@ install(){
 	elif [ "${MANAGED_OCP_VERSION}" == "prelatest" ] ; then
             export OCM_VERSION=$(ocm list versions --channel-group ${MANAGED_CHANNEL_GROUP} | grep ^${version} | sort -rV | head -2 | tail -1)
 	else
-            export OCM_VERSION=$(ocm list versions --channel-group ${MANAGED_CHANNEL_GROUP} | grep ^${MANAGED_OCP_VERSION}$)
+            export OCM_VERSION=$(ocm list versions --channel-group ${MANAGED_CHANNEL_GROUP} | grep ^${MANAGED_OCP_VERSION})
 	fi
         [ -z ${OCM_VERSION} ] && echo "ERROR: Image not found for version (${version}) on OCM ${MANAGED_CHANNEL_GROUP} channel group" && exit 1
         ocm create cluster --ccs --provider aws --region ${AWS_REGION} --aws-account-id ${AWS_ACCOUNT_ID} --aws-access-key-id ${AWS_ACCESS_KEY_ID} --aws-secret-access-key ${AWS_SECRET_ACCESS_KEY} --channel-group ${MANAGED_CHANNEL_GROUP} --version ${OCM_VERSION} --multi-az --compute-nodes ${COMPUTE_WORKERS_NUMBER} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --network-type ${NETWORK_TYPE} ${CLUSTER_NAME}
