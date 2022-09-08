@@ -267,7 +267,6 @@ cleanup(){
     fi
 }
 
-cat ${json_file}
 export INSTALL_METHOD=$(cat ${json_file} | jq -r .cluster_install_method)
 setup
 echo "Set start time of prom scrape"

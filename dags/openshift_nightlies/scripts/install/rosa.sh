@@ -333,7 +333,6 @@ cleanup(){
     return 0
 }
 
-cat ${json_file}
 export INSTALL_METHOD=$(cat ${json_file} | jq -r .cluster_install_method)
 setup
 

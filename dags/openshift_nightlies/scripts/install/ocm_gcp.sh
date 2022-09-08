@@ -277,7 +277,6 @@ preclean(){
         gcloud compute networks delete $i --quiet || true
     done
 }
-cat ${json_file}
 
 setup
 exitcode=$(($exitcode + $?))
