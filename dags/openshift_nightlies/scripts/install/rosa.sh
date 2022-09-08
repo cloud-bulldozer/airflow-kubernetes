@@ -156,6 +156,12 @@ setup(){
             sudo mv ocm /usr/local/bin/
             popd
         fi
+        echo "Clean-up existing OSD access keys.."
+        DELETE_KEYS=$(aws iam list-access-keys --user-name OsdCcsAdmin | awk '{print$2}')
+        for i in $DELETE_KEYS
+        do
+            aws iam delete-access-key --access-key-id $i --user-name OsdCcsAdmin
+        done
         echo "Create new OSD access key.."
         export ADMIN_KEY=$(aws iam create-access-key --user-name OsdCcsAdmin)
         export AWS_ACCESS_KEY_ID=$(echo $ADMIN_KEY | jq -r '.AccessKey.AccessKeyId')
