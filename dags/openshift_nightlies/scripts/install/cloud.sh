@@ -29,7 +29,6 @@ setup(){
     echo "[orchestration]" > inventory
     echo "${ORCHESTRATION_HOST}" >> inventory
     cat inventory
-    cat ${json_file}
 
     sed -i 's/timeout = 30/timeout = 60/g' ansible.cfg
     echo "retries = 3" >> ansible.cfg
