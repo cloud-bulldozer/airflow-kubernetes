@@ -157,11 +157,10 @@ setup(){
             popd
         fi
         echo "Clean-up existing OSD access keys.."
-        DELETE_KEYS=$(aws iam list-access-keys --user-name OsdCcsAdmin | awk '{print$2}')
-        for i in $DELETE_KEYS
-        do
-            aws iam delete-access-key --access-key-id $i --user-name OsdCcsAdmin
-        done
+        aws_key=$(aws iam list-access-keys --user-name OsdCcsAdmin --output text --query 'AccessKeyMetadata[1].AccessKeyId')
+        if [[ $aws_key != None ]]; then
+            aws iam delete-access-key --user-name OsdCcsAdmin --access-key-id $aws_key
+        fi
         echo "Create new OSD access key.."
         export ADMIN_KEY=$(aws iam create-access-key --user-name OsdCcsAdmin)
         export AWS_ACCESS_KEY_ID=$(echo $ADMIN_KEY | jq -r '.AccessKey.AccessKeyId')
