@@ -38,11 +38,13 @@ run_ocm_benchmark(){
     cat /tmp/environment_new.txt
     rm -rf /tmp/environment_new.txt vars.sh
 
-    echo "Creating aws key with admin user for OCM testing"
-    aws_key=\$(/usr/bin/aws iam list-access-keys --user-name OsdCcsAdmin --output text --query 'AccessKeyMetadata[1].AccessKeyId')
-    if [[ \$aws_key != None ]]; then
-        /usr/bin/aws iam delete-access-key --user-name OsdCcsAdmin --access-key-id \$aws_key
+    echo "Clean-up existing OSD access keys.."
+    AWS_KEY=$(aws iam list-access-keys --user-name OsdCcsAdmin --output text --query 'AccessKeyMetadata[*].AccessKeyId')
+    LEN_AWS_KEY=`echo $AWS_KEY | wc -w`
+    if [[  ${LEN_AWS_KEY} -eq 2 ]]; then
+        aws iam delete-access-key --user-name OsdCcsAdmin --access-key-id `printf ${AWS_KEY[0]}`
     fi
+    echo "Creating aws key with admin user for OCM testing"
     admin_key=\$(/usr/bin/aws iam create-access-key --user-name OsdCcsAdmin --output json)
     export AWS_ACCESS_KEY_ID=\$(echo \$admin_key | jq -r '.AccessKey.AccessKeyId')
     export AWS_SECRET_ACCESS_KEY=\$(echo \$admin_key | jq -r '.AccessKey.SecretAccessKey')
