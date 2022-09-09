@@ -189,16 +189,22 @@ setup(){
         fi
         echo "Clean-up existing OSD access keys.."
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 34cd807 (Update variable info.)
         AWS_KEY=$(aws iam list-access-keys --user-name OsdCcsAdmin --output text --query 'AccessKeyMetadata[*].AccessKeyId')
         LEN_AWS_KEY=`echo $AWS_KEY | wc -w`
         if [[  ${LEN_AWS_KEY} -eq 2 ]]; then
             aws iam delete-access-key --user-name OsdCcsAdmin --access-key-id `printf ${AWS_KEY[0]}`
+<<<<<<< HEAD
 =======
         aws_key=$(aws iam list-access-keys --user-name OsdCcsAdmin --output text --query 'AccessKeyMetadata[*].AccessKeyId')
 	    len_aws_key=`echo $aws_key | wc -w`
 	    if [[  len_aws_key -eq 2 ]]; then
             aws iam delete-access-key --user-name OsdCcsAdmin --access-key-id `printf ${aws_key[0]}`
 >>>>>>> f7a8b69 (Delete the last active key)
+=======
+>>>>>>> 34cd807 (Update variable info.)
         fi
         echo "Create new OSD access key.."
         export ADMIN_KEY=$(aws iam create-access-key --user-name OsdCcsAdmin)
