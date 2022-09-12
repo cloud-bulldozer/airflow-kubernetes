@@ -280,7 +280,7 @@ cleanup(){
         if [ "${NODEPOOL_SIZE}" == "0" ] ; then
             hypershift destroy cluster none --name $HOSTED_CLUSTER_NAME
         else
-            hypershift destroy cluster aws --name $HOSTED_CLUSTER_NAME --aws-creds aws_credentials --region $AWS_REGION
+            hypershift destroy cluster aws --name $HOSTED_CLUSTER_NAME --aws-creds aws_credentials --region $AWS_REGION --destroy-cloud-resources
         fi
     fi
 }
