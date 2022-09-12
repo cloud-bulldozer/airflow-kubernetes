@@ -45,5 +45,6 @@
     "hypershift_cli_fork": "https://github.com/openshift/hypershift",
     "hypershift_cli_version": "container",
     "hypershift_operator_image": "",
-    "hcp_platform_monitoring": ""
+    "hcp_platform_monitoring": "",
+    "hc_install_interval": 0
 }

@@ -288,6 +288,9 @@ cleanup(){
 cat ${json_file}
 export INSTALL_METHOD=$(cat ${json_file} | jq -r .cluster_install_method)
 setup
+export HC_INTERVAL=$(cat ${json_file} | jq -r .hc_install_interval)
+SKEW_FACTOR=$(echo $HOSTED_NAME|awk -F- '{print$2}')
+sleep $(($HC_INTERVAL*$SKEW_FACTOR))
 echo "Set start time of prom scrape"
 export START_TIME=$(date +"%s")
 
