@@ -25,7 +25,7 @@ _download_kubeconfig(){
 
 _get_cluster_status(){
     if [[ $INSTALL_METHOD == "osd" ]]; then
-        echo "$(ocm list clusters --no-headers --columns state $1 | xargs)"
+        echo "$(ocm list clusters --no-headers --columns state $1 | tr -d '[:space:]')"
     else
         echo "$(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .status.state')"
     fi
@@ -50,6 +50,7 @@ setup(){
     export HOSTED_KUBECONFIG_NAME=$(echo "${KUBECONFIG_NAME}" | awk -F-kubeconfig '{print$1}')-"${HOSTED_NAME}"-kubeconfig
     export HOSTED_KUBEADMIN_NAME=$(echo "${KUBEADMIN_NAME}" | awk -F-kubeadmin '{print$1}')-"${HOSTED_NAME}"-kubeadmin
     export KUBECONFIG=/home/airflow/auth/config
+    export STRESS_HOSTED_CLUSTER_NAME_SEED=$(cat "${json_file}" | jq -r .strees_hosted_cluster_name_seed)
     if [[ $INSTALL_METHOD == "osd" ]]; then
         export OCM_CLI_VERSION=$(cat "${json_file}" | jq -r .ocm_cli_version)
         if [[ "${OCM_CLI_VERSION}" != "container" ]]; then
@@ -116,10 +117,44 @@ install(){
     aws s3api create-bucket --acl public-read --bucket "${MGMT_CLUSTER_NAME}"-aws-rhperfscale-org --create-bucket-configuration LocationConstraint="${AWS_REGION}" --region "${AWS_REGION}" || true
     echo "Wait till S3 bucket is ready.."
     aws s3api wait bucket-exists --bucket "${MGMT_CLUSTER_NAME}"-aws-rhperfscale-org
-    hypershift install "${HO_IMAGE_ARG}"  --oidc-storage-provider-s3-bucket-name "${MGMT_CLUSTER_NAME}"-aws-rhperfscale-org --oidc-storage-provider-s3-credentials aws_credentials --oidc-storage-provider-s3-region "${AWS_REGION}"  --platform-monitoring All --metrics-set All
+    hypershift install --oidc-storage-provider-s3-bucket-name "${MGMT_CLUSTER_NAME}"-aws-rhperfscale-org --oidc-storage-provider-s3-credentials aws_credentials --oidc-storage-provider-s3-region "${AWS_REGION}"  --platform-monitoring All --metrics-set All
     echo "Wait till Operator is ready.."
     kubectl wait --for=condition=available --timeout=600s deployments/operator -n hypershift
 }
+
+launch_throotled_script(){
+    echo "Launching perfscale-managed-services/hypershift/hosted-wrapper.py script"
+    export NUMBER_OF_HOSTED_CLUSTER=$(cat "${json_file}" | jq -r .number_of_hosted_cluster)
+    export COMPUTE_WORKERS_NUMBER=$(cat "${json_file}" | jq -r .hosted_cluster_nodepool_size)
+    export JOBS_PER_WORKER=$(cat "${json_file}" | jq -r .hosted_cluster_jobs_per_worker)
+    export JOBS_VARIATION=$(cat "${json_file}" | jq -r .hosted_cluster_jobs_variation)
+    export ES_SERVER=$(cat "${json_file}" | jq -r .es_server)
+    export ES_INDEX=$(cat "${json_file}" | jq -r .stress_es_index)
+    echo "${PULL_SECRET}" > pull-secret
+    git clone -q --depth=1 --single-branch --branch hypershift_density_tests https://github.com/cloud-bulldozer/perfscale-managed-services.git
+    pushd perfscale-managed-services
+    pip install -r libs/requirements.txt
+    pip install -r hypershift/requirements.txt
+    python hypershift/hosted-wrapper.py --cluster-name-seed "${STRESS_HOSTED_CLUSTER_NAME_SEED}" \
+        --cluster-count "${NUMBER_OF_HOSTED_CLUSTER}" \
+	--hypershift-cli /usr/local/bin/hypershift \
+	--ocm-cli /usr/local/bin/ocm \
+        --aws-account-file ../aws_credentials \
+        --aws-profile default \
+        --ocm-token "${ROSA_TOKEN}" \
+        --pull-secret-file /home/airflow/workspace/pull-secret \
+        --mgmt-cluster "${MGMT_CLUSTER_NAME}" \
+        --workers "${COMPUTE_WORKERS_NUMBER}" \
+        --es-url  "${ES_SERVER}" \
+        --es-index "${ES_INDEX}" \
+        --es-insecure \
+	--add-cluster-load \
+	--cluster-load-jobs-per-worker "${JOBS_PER_WORKER}" \
+	--cluster-load-job-variation "${JOBS_VARIATION}" \
+	--log-level DEBUG \
+        --cleanup-clusters
+}
+
 
 create_cluster(){
     echo "Create Hosted cluster.."
@@ -295,6 +330,17 @@ export START_TIME=$(date +"%s")
 if [[ "${operation}" == "cleanup" ]]; then
     printf "Running Cleanup Steps"
     cleanup
+elif [[ "${operation}" == "throotled" ]]; then
+  printf "INFO: Checking if management cluster is installed and ready"
+  CLUSTER_STATUS=$(_get_cluster_status "${MGMT_CLUSTER_NAME}")
+  if [ -z "${CLUSTER_STATUS}" ] ; then
+      printf "INFO: Cluster not found, need a Management cluster to be available first"
+      exit 1
+  elif [ "${CLUSTER_STATUS}" == "ready" ] ; then
+      printf "INFO: Cluster ${MGMT_CLUSTER_NAME} already installed and ready, using..."
+      install
+      launch_throotled_script
+  fi
 else
     printf "INFO: Checking if management cluster is installed and ready"
     CLUSTER_STATUS=$(_get_cluster_status "${MGMT_CLUSTER_NAME}")
@@ -303,7 +349,7 @@ else
         exit 1
     elif [ "${CLUSTER_STATUS}" == "ready" ] ; then
         printf "INFO: Cluster ${MGMT_CLUSTER_NAME} already installed and ready, using..."
-	    install
+	      install
         export NODEPOOL_SIZE=$(cat "${json_file}" | jq -r .hosted_cluster_nodepool_size)
         if [ "${NODEPOOL_SIZE}" == "0" ] ; then
             create_empty_cluster

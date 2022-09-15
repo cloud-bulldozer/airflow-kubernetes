@@ -1,3 +1,17 @@
+from openshift_nightlies.tasks.utils import rosa_post_install, scale_ci_diagnosis, platform_connector, final_dag_status
+from abc import ABC, abstractmethod
+from openshift_nightlies.util import var_loader, manifest, constants
+from openshift_nightlies.tasks.index import status
+from openshift_nightlies.tasks.benchmarks import e2e
+from openshift_nightlies.tasks.install.prebuilt import initialize_cluster
+from openshift_nightlies.tasks.install.hypershift import hypershift
+from openshift_nightlies.tasks.install.rogcp import rogcp
+from openshift_nightlies.tasks.install.rosa import rosa
+from openshift_nightlies.tasks.install.baremetal import jetski, webfuse
+from openshift_nightlies.tasks.install.openstack import jetpack
+from openshift_nightlies.tasks.install.cloud import openshift
+from openshift_nightlies.models.release import OpenshiftRelease, BaremetalRelease
+from common.models.dag_config import DagConfig
 import sys
 import os
 import logging
@@ -14,20 +28,6 @@ from airflow.models.param import Param
 
 # Configure Path to have the Python Module on it
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-from common.models.dag_config import DagConfig
-from openshift_nightlies.models.release import OpenshiftRelease, BaremetalRelease
-from openshift_nightlies.tasks.install.cloud import openshift
-from openshift_nightlies.tasks.install.openstack import jetpack
-from openshift_nightlies.tasks.install.baremetal import jetski, webfuse
-from openshift_nightlies.tasks.install.rosa import rosa
-from openshift_nightlies.tasks.install.rogcp import rogcp
-from openshift_nightlies.tasks.install.hypershift import hypershift
-from openshift_nightlies.tasks.install.prebuilt import initialize_cluster
-from openshift_nightlies.tasks.benchmarks import e2e
-from openshift_nightlies.tasks.utils import rosa_post_install, scale_ci_diagnosis, platform_connector,final_dag_status
-from openshift_nightlies.tasks.index import status
-from openshift_nightlies.util import var_loader, manifest, constants
-from abc import ABC, abstractmethod
 
 # Set Task Logger to INFO for better task logs
 log = logging.getLogger("airflow.task")
@@ -92,7 +92,7 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         connect_to_platform = self._get_platform_connector().get_task()
-        final_status=final_dag_status.get_task(self.dag)
+        final_status = final_dag_status.get_task(self.dag)
 
         with TaskGroup("utils", prefix_group_id=False, dag=self.dag) as utils:
             utils_tasks = self._get_scale_ci_diagnosis().get_utils()
@@ -127,8 +127,8 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         benchmark_stg_3 = self._add_benchmarks(task_group="webfuse-bench")
         connect_to_platform = self._get_platform_connector().get_task()
         install_cluster >> connect_to_platform
-        connect_to_platform >> benchmark_stg_1 
-        connect_to_platform >> scaleup_cluster >> benchmark_stg_2 
+        connect_to_platform >> benchmark_stg_1
+        connect_to_platform >> scaleup_cluster >> benchmark_stg_2
         scaleup_cluster >> deploy_webfuse >> benchmark_stg_3
 
     def _get_openshift_installer(self):
@@ -146,12 +146,13 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
             chain(*benchmark_tasks)
         return benchmarks
 
+
 class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         connect_to_platform = self._get_platform_connector().get_task()
-        final_status=final_dag_status.get_task(self.dag)
+        final_status = final_dag_status.get_task(self.dag)
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
@@ -171,11 +172,11 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         connect_to_platform = self._get_platform_connector().get_task()
-        final_status=final_dag_status.get_task(self.dag)
+        final_status = final_dag_status.get_task(self.dag)
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
-        
+
         rosa_post_installation = self._get_rosa_postinstall_setup()._get_rosa_postinstallation()
 
         if self.config.cleanup_on_success:
@@ -193,11 +194,10 @@ class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         connect_to_platform = self._get_platform_connector().get_task()
-        final_status=final_dag_status.get_task(self.dag)
+        final_status = final_dag_status.get_task(self.dag)
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
-        
 
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
@@ -207,6 +207,7 @@ class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
 
     def _get_openshift_installer(self):
         return rogcp.RoGCPInstaller(self.dag, self.config, self.release)
+
 
 class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):
@@ -219,22 +220,34 @@ class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         wait_task = hosted_installer.wait_task()
         wait_beforce_cleanup = hosted_installer.wait_task(id="wait_beforce_cleanup")
         if self.config.cleanup_on_success:
-            cleanup_mgmt_cluster = mgmt_installer.get_cleanup_task()
-            cleanup_hosted_cluster = hosted_installer.get_hosted_cleanup_task()
-            cleanup_operator = hosted_installer.get_operator_cleanup_task()
-            for c_id, install_hc, cleanup_hc in cleanup_hosted_cluster:
-                benchmark = self._add_benchmarks(task_group=c_id)
-                hc_connect_to_platform = self._get_hc_platform_connector(task_group=c_id).get_task()            
+            if hosted_installer.is_throotled_installer():
+                throotled_install = hosted_installer.get_throotled_install_task()
+                cleanup_mgmt_cluster = mgmt_installer.get_cleanup_task()
+                cleanup_operator = hosted_installer.get_operator_cleanup_task()
                 install_mgmt_cluster >> rosa_post_installation >> connect_to_platform
-                connect_to_platform >> install_hc >> wait_task >> [hc_connect_to_platform, benchmark]
-                [hc_connect_to_platform, benchmark] >> wait_beforce_cleanup >> cleanup_hc >> cleanup_operator >> cleanup_mgmt_cluster
+                connect_to_platform >> throotled_install >> wait_beforce_cleanup >> cleanup_operator >> cleanup_mgmt_cluster
+            else:
+                cleanup_mgmt_cluster = mgmt_installer.get_cleanup_task()
+                cleanup_hosted_cluster = hosted_installer.get_hosted_cleanup_task()
+                cleanup_operator = hosted_installer.get_operator_cleanup_task()
+                for c_id, install_hc, cleanup_hc in cleanup_hosted_cluster:
+                    benchmark = self._add_benchmarks(task_group=c_id)
+                    hc_connect_to_platform = self._get_hc_platform_connector(task_group=c_id).get_task()
+                    install_mgmt_cluster >> rosa_post_installation >> connect_to_platform
+                    connect_to_platform >> install_hc >> wait_task >> [hc_connect_to_platform, benchmark]
+                    [hc_connect_to_platform, benchmark] >> wait_beforce_cleanup >> cleanup_hc >> cleanup_operator >> cleanup_mgmt_cluster
         else:
-            install_hosted_cluster = hosted_installer.get_hosted_install_task()
-            for c_id, install_hc in install_hosted_cluster:
-                benchmark = self._add_benchmarks(task_group=c_id)
-                hc_connect_to_platform = self._get_hc_platform_connector(task_group=c_id).get_task()            
+            if hosted_installer.is_throotled_installer():
+                throotled_install = hosted_installer.get_throotled_install_task()
                 install_mgmt_cluster >> rosa_post_installation >> connect_to_platform
-                connect_to_platform >> install_hc >> wait_task >> hc_connect_to_platform >> benchmark
+                connect_to_platform >> throotled_install >> cleanup_operator >> cleanup_mgmt_cluster
+            else:
+                install_hosted_cluster = hosted_installer.get_hosted_install_task()
+                for c_id, install_hc in install_hosted_cluster:
+                    benchmark = self._add_benchmarks(task_group=c_id)
+                    hc_connect_to_platform = self._get_hc_platform_connector(task_group=c_id).get_task()
+                    install_mgmt_cluster >> rosa_post_installation >> connect_to_platform
+                    connect_to_platform >> install_hc >> wait_task >> hc_connect_to_platform >> benchmark
 
     def _get_openshift_installer(self):
         return rosa.RosaInstaller(self.dag, self.config, self.release)
@@ -254,6 +267,7 @@ class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def _get_hc_platform_connector(self, task_group):
         return platform_connector.PlatformConnectorTask(self.dag, self.config, self.release, task_group=task_group)
 
+
 class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def __init__(self, Release: OpenshiftRelease, Config: DagConfig):
         AbstractOpenshiftNightlyDAG.__init__(self, release=Release, config=Config)
@@ -272,8 +286,8 @@ class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
                 'KUBEURL': Param('<Enter cluster URL>')
             }
         )
-    
-    def build(self):       
+
+    def build(self):
 
         installer = self._get_openshift_installer()
         initialize_cluster = installer.initialize_cluster_task()
@@ -288,9 +302,10 @@ class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
             chain(*benchmark_tasks)
 
         initialize_cluster >> connect_to_platform >> benchmarks >> utils
-        
+
     def _get_openshift_installer(self):
         return initialize_cluster.InitializePrebuiltCluster(self.dag, self.config, self.release)
+
 
 def build_releases():
     release_manifest = manifest.Manifest(constants.root_dag_dir)

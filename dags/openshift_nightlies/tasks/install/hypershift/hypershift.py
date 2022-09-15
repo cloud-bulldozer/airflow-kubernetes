@@ -15,6 +15,15 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
         self.hypershift_pull_secret = var_loader.get_secret(
             "hypershift_pull_secret")
 
+    def is_throotled_installer(self):
+        config = {
+            **self.vars
+        }
+        return True if 'strees_hosted_cluster_name_seed' in config else False
+
+    def get_throotled_install_task(self):
+        return self._get_task(operation="throotled", id="operator")
+
     def get_hosted_install_task(self):
         config = {
             **self.vars

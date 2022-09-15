@@ -28,7 +28,7 @@ _download_kubeconfig(){
 
 _get_cluster_status(){
     if [[ $INSTALL_METHOD == "osd" ]]; then
-        echo "$(ocm list clusters --no-headers --columns state $1 | xargs)"
+        echo "$(ocm list clusters --no-headers --columns state $1 | tr -d '[:space:]')"
     else
         echo "$(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .status.state')"
     fi
@@ -388,5 +388,5 @@ elif [[ "$operation" == "cleanup" ]]; then
     cleanup
     index_metadata
     rosa logout
-    ocm logout    
+    ocm logout
 fi
