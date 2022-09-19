@@ -95,6 +95,7 @@ class Manifest():
                         release_stream=release_stream,
                         variant=variant['name'],
                         config=variant['config'],
+                        step=variant['step'],
                         version_alias=version_alias,
                         latest_release={}, # baremetal builds dont use this
                         build=build

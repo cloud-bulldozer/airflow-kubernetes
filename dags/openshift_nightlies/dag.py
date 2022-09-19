@@ -124,12 +124,16 @@ class BaremetalOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         benchmark_stg_2 = self._add_benchmarks(task_group="scaleup-bench")
 
         scaleup_cluster = bm_installer.get_scaleup_task()
-        benchmark_stg_3 = self._add_benchmarks(task_group="webfuse-bench")
+        benchmark_stg_3 = self._add_benchmarks(task_group="benchmarks")
         connect_to_platform = self._get_platform_connector().get_task()
         install_cluster >> connect_to_platform
-        connect_to_platform >> benchmark_stg_1 
-        connect_to_platform >> scaleup_cluster >> benchmark_stg_2 
-        scaleup_cluster >> deploy_webfuse >> benchmark_stg_3
+        connect_to_platform >> benchmark_stg_1
+        connect_to_platform >> scaleup_cluster >> benchmark_stg_2
+        if self.release.step == "telco":
+            scaleup_cluster >> deploy_webfuse >> benchmark_stg_3
+        elif self.release.step == "general":
+            scaleup_cluster >> benchmark_stg_3
+         
 
     def _get_openshift_installer(self):
         return jetski.BaremetalOpenshiftInstaller(self.dag, self.config, self.release)
