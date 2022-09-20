@@ -57,6 +57,7 @@ class OpenshiftRelease:
 class BaremetalRelease(OpenshiftRelease):
     """Class for baremetal releases as it needs a build field"""
     build: str
+    step: str # Step of baremetal release testing. TODO Could use better explanation here.
 
     # Baremetal doesn't get it's release from a release stream
     def get_latest_release(self) -> dict:
