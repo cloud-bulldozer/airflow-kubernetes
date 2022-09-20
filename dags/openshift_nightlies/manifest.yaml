@@ -90,12 +90,10 @@ platforms:
     versions: ["4.11", "4.12"]
     variants: 
     - name: jetski-telco
-      step: telco
       config: 
         install: baremetal/jetski.json
         benchmarks: baremetal-benchmarks
-    - name: jetski-gen
-      step: general
+    - name: jetski-general
       config:
         install: baremetal/jetski.json
         benchmarks: baremetal-benchmarks-general
