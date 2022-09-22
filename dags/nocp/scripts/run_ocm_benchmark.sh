@@ -59,7 +59,7 @@ run_ocm_benchmark(){
 
     start_time=\$(date +%s)
     echo "Running the ocm-load-test test"
-    build/ocm-load-test --config-file config.yaml &> ${UUID}_ocm-load-test
+    build/ocm-load-test --config-file config.yaml --log-file ${UUID}_ocm-load-test
     cp ${UUID}_ocm-load-test /tmp/${UUID}/results/${UUID}_ocm-load-test.json
 
     end_time=\$(date +%s)
