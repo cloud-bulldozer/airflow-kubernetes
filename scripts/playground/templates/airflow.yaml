@@ -50,6 +50,8 @@ spec:
             killed_task_cleanup_time: 604800
             dag_file_processor_timeout: 300
             dagbag_import_error_traceback_depth: 4
+            parallelism: 200
+            max_active_tasks_per_dag: 200
           scheduler:
             scheduler_heartbeat_sec: 10
             processor_poll_interval: 30

@@ -12,5 +12,7 @@
     "hypershift_operator_image": "quay.io/hypershift/hypershift-operator:4.11",
     "hosted_cluster_nodepool_size": 0,
     "hosted_cluster_network_type": "OpenShiftSDN", 
-    "hosted_control_plane_availability": "HighlyAvailable" 
+    "hosted_control_plane_availability": "HighlyAvailable", 
+    "openshift_workload_node_instance_type": "r5.4xlarge",
+    "hc_install_interval": 60
 }

@@ -26,7 +26,7 @@ _download_kubeconfig(){
 
 _get_cluster_status(){
     if [[ $INSTALL_METHOD == "osd" ]]; then
-        echo $(ocm list clusters --no-headers --columns state $1 | xargs)
+        echo $(ocm list clusters --no-headers --columns state $1)
     else    
         echo $(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .status.state')
     fi
@@ -104,15 +104,20 @@ setup(){
 
 install(){
     export HYPERSHIFT_OPERATOR_IMAGE=$(cat ${json_file} | jq -r .hypershift_operator_image)
+    export HCP_PLATFORM_MONITORING=$(cat ${json_file} | jq -r .hcp_platform_monitoring)
     HO_IMAGE_ARG=""
+    HCP_P_MONITOR=""
     if [[ $HYPERSHIFT_OPERATOR_IMAGE != "" ]]; then
             HO_IMAGE_ARG="--hypershift-image $HYPERSHIFT_OPERATOR_IMAGE"
+    fi
+    if [[ $HCP_PLATFORM_MONITORING != "" ]]; then
+            HCP_P_MONITOR="--platform-monitoring $HCP_PLATFORM_MONITORING"
     fi
     echo "Create S3 bucket.."
     aws s3api create-bucket --acl public-read --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org --create-bucket-configuration LocationConstraint=$AWS_REGION --region $AWS_REGION || true
     echo "Wait till S3 bucket is ready.."
     aws s3api wait bucket-exists --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org 
-    hypershift install $HO_IMAGE_ARG  --oidc-storage-provider-s3-bucket-name $MGMT_CLUSTER_NAME-aws-rhperfscale-org --oidc-storage-provider-s3-credentials aws_credentials --oidc-storage-provider-s3-region $AWS_REGION  --platform-monitoring All --metrics-set All
+    hypershift install $HO_IMAGE_ARG  --oidc-storage-provider-s3-bucket-name $MGMT_CLUSTER_NAME-aws-rhperfscale-org --oidc-storage-provider-s3-credentials aws_credentials --oidc-storage-provider-s3-region $AWS_REGION $HCP_P_MONITOR --metrics-set All
     echo "Wait till Operator is ready.."
     kubectl wait --for=condition=available --timeout=600s deployments/operator -n hypershift
 }
@@ -244,6 +249,19 @@ index_mgmt_cluster_stat(){
 
 cleanup(){
     if [[ $HOSTED_NAME == "operator" ]]; then
+        echo "Re-checking Hosted Clusters if any..."
+        LIST_OF_HOSTED_CLUSTER=$(kubectl get hostedcluster -n clusters --no-headers | awk '{print$1}')
+        export NODEPOOL_SIZE=$(cat ${json_file} | jq -r .hosted_cluster_nodepool_size)    
+        for h in $LIST_OF_HOSTED_CLUSTER
+        do
+            echo "Destroy Hosted cluster $h ..."
+            if [ "${NODEPOOL_SIZE}" == "0" ] ; then
+                hypershift destroy cluster none --name $h
+            else
+                hypershift destroy cluster aws --name $h --aws-creds aws_credentials --region $AWS_REGION
+            fi
+            sleep 5 # pause a few secs before destroying next...
+        done
         echo "Delete AWS s3 bucket..."
         for o in $(aws s3api list-objects --bucket $MGMT_CLUSTER_NAME-aws-rhperfscale-org | jq -r '.Contents[].Key' | uniq)
         do 
@@ -254,7 +272,7 @@ cleanup(){
         ROUTE_ID=$(aws route53 list-hosted-zones --output text --query HostedZones | grep $BASEDOMAIN | grep hypershift | grep -v terraform | awk '{print$2}' | awk -F/ '{print$3}')
         for id in $ROUTE_ID; do aws route53 delete-hosted-zone --id=$id || true; done
         echo "Delete hypershift namespace.."
-        oc delete project hypershift --force
+        oc delete project hypershift clusters --force
     else
         echo "Cleanup Hosted Cluster..."
         export NODEPOOL_SIZE=$(cat ${json_file} | jq -r .hosted_cluster_nodepool_size)    
@@ -262,13 +280,16 @@ cleanup(){
         if [ "${NODEPOOL_SIZE}" == "0" ] ; then
             hypershift destroy cluster none --name $HOSTED_CLUSTER_NAME
         else
-            hypershift destroy cluster aws --name $HOSTED_CLUSTER_NAME --aws-creds aws_credentials --region $AWS_REGION
+            hypershift destroy cluster aws --name $HOSTED_CLUSTER_NAME --aws-creds aws_credentials --region $AWS_REGION --destroy-cloud-resources
         fi
     fi
 }
 
 export INSTALL_METHOD=$(cat ${json_file} | jq -r .cluster_install_method)
 setup
+export HC_INTERVAL=$(cat ${json_file} | jq -r .hc_install_interval)
+SKEW_FACTOR=$(echo $HOSTED_NAME|awk -F- '{print$2}')
+sleep $(($HC_INTERVAL*$SKEW_FACTOR))
 echo "Set start time of prom scrape"
 export START_TIME=$(date +"%s")
 

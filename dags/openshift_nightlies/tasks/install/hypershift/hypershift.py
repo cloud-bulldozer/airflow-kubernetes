@@ -47,6 +47,13 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
     def get_operator_cleanup_task(self):
         return self._get_task(operation="cleanup", id="operator")
 
+    def wait_task(self, id="wait_task"):
+        return BashOperator(task_id=f"{id}",
+                            depends_on_past=False,
+                            trigger_rule="all_success",
+                            dag=self.dag,
+                            bash_command="sleep 60s")
+
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", id="hosted", trigger_rule="all_success"):
         self._setup_task(operation=operation)

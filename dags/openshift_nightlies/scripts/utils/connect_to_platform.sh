@@ -28,7 +28,11 @@ cleanup_old_resources(){
 }
 
 install_grafana_agent(){
-    envsubst < $SCRIPT_DIR/templates/grafana-agent.yaml | kubectl apply -f -
+    if [[$REL_PLATFORM == "hypershift" ]] and [[ -z $TASK_GROUP ]]; then   # if platform is hypershift and not hosted/guest cluster
+        envsubst < $SCRIPT_DIR/templates/grafana-agent-hypershift.yaml | kubectl apply -f -
+    else
+        envsubst < $SCRIPT_DIR/templates/grafana-agent.yaml | kubectl apply -f -
+    fi
 }
 
 install_promtail(){
@@ -124,5 +128,7 @@ else
     cleanup_old_resources
     generate_external_labels
     install_grafana_agent
-    install_promtail
+    if [[$REL_PLATFORM != "hypershift" ]]; then
+        install_promtail
+    fi
 fi

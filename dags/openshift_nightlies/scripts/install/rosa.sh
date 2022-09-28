@@ -28,7 +28,7 @@ _download_kubeconfig(){
 
 _get_cluster_status(){
     if [[ $INSTALL_METHOD == "osd" ]]; then
-        echo "$(ocm list clusters --no-headers --columns state $1)"
+        echo "$(ocm list clusters --no-headers --columns state $1 | xargs)"
     else
         echo "$(rosa list clusters -o json | jq -r '.[] | select(.name == '\"$1\"') | .status.state')"
     fi
@@ -61,6 +61,37 @@ _wait_for_nodes_ready(){
         fi
     done
     echo "ERROR: Not all nodes (${NODES_READY_COUNT}/${NODES_COUNT}) are ready after about $((${NODES_COUNT}*3)) minutes, dumping oc get nodes..."
+    oc get nodes
+    exit 1
+}
+
+_wait_for_workload_nodes_ready(){
+    _download_kubeconfig "$(_get_cluster_id $1)" ./kubeconfig
+    export KUBECONFIG=./kubeconfig
+    ALL_READY_ITERATIONS=0
+    ITERATIONS=0
+    # Node count is number of workers + 3 masters + 3 infra
+    NODES_COUNT=3
+    # 180 seconds per node, waiting 5 times 60 seconds (5*60 = 5 minutes) with all nodes ready to finalize
+    while [ ${ITERATIONS} -le ${NODES_COUNT} ] ; do
+        NODES_READY_COUNT=$(oc get nodes | grep -i workload | grep " Ready " | wc -l)
+        if [ ${NODES_READY_COUNT} -ne ${NODES_COUNT} ] ; then
+            echo "WARNING: ${ITERATIONS}/${NODES_COUNT} iterations. ${NODES_READY_COUNT}/${NODES_COUNT} nodes ready. Waiting 180 seconds for next check"
+            ALL_READY_ITERATIONS=0
+            ITERATIONS=$((${ITERATIONS}+1))
+            sleep 180
+        else
+            if [ ${ALL_READY_ITERATIONS} -eq 5 ] ; then
+                echo "INFO: ${ALL_READY_ITERATIONS}/5. All nodes ready, continuing process"
+                return 0
+            else
+                echo "INFO: ${ALL_READY_ITERATIONS}/5. All nodes ready. Waiting 60 seconds for next check"
+                ALL_READY_ITERATIONS=$((${ALL_READY_ITERATIONS}+1))
+                sleep 60
+            fi
+        fi
+    done
+    echo "ERROR: Workload nodes (${NODES_READY_COUNT}/${NODES_COUNT}) are ready after about $((${NODES_COUNT}*3)) minutes, dumping oc get nodes..."
     oc get nodes
     exit 1
 }
@@ -212,7 +243,7 @@ install(){
 	elif [ "${MANAGED_OCP_VERSION}" == "prelatest" ] ; then
             export OCM_VERSION=$(ocm list versions --channel-group ${MANAGED_CHANNEL_GROUP} | grep ^${version} | sort -rV | head -2 | tail -1)
 	else
-            export OCM_VERSION=$(ocm list versions --channel-group ${MANAGED_CHANNEL_GROUP} | grep ^${MANAGED_OCP_VERSION}$)
+            export OCM_VERSION=$(ocm list versions --channel-group ${MANAGED_CHANNEL_GROUP} | grep ^${MANAGED_OCP_VERSION})
 	fi
         [ -z ${OCM_VERSION} ] && echo "ERROR: Image not found for version (${version}) on OCM ${MANAGED_CHANNEL_GROUP} channel group" && exit 1
         ocm create cluster --ccs --provider aws --region ${AWS_REGION} --aws-account-id ${AWS_ACCOUNT_ID} --aws-access-key-id ${AWS_ACCESS_KEY_ID} --aws-secret-access-key ${AWS_SECRET_ACCESS_KEY} --channel-group ${MANAGED_CHANNEL_GROUP} --version ${OCM_VERSION} --multi-az --compute-nodes ${COMPUTE_WORKERS_NUMBER} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --network-type ${NETWORK_TYPE} ${CLUSTER_NAME}
@@ -343,6 +374,7 @@ if [[ "$operation" == "install" ]]; then
         printf "INFO: Cluster not found, installing..."
         install
         index_metadata
+        _wait_for_workload_nodes_ready ${CLUSTER_NAME}
     elif [ "${CLUSTER_STATUS}" == "ready" ] ; then
         printf "INFO: Cluster ${CLUSTER_NAME} already installed and ready, reusing..."
 	    postinstall
