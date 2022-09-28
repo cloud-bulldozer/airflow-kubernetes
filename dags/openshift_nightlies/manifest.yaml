@@ -213,6 +213,10 @@ platforms:
         config:
           install: hypershift/ovn-p90.json
           benchmarks: hosted-control-plane-chaos-p90.json
+      - name: chaos-ovn-control-plane-high-load
+        config:
+          install: hypershift/ovn-p90.json
+          benchmarks: hosted-control-plane-chaos-high-load.json
 
   prebuilt:
     versions: ["4.x"]
