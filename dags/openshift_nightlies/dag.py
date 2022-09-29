@@ -1,3 +1,4 @@
+from sqlite3 import connect
 import sys
 import os
 import logging
@@ -24,7 +25,7 @@ from openshift_nightlies.tasks.install.rogcp import rogcp
 from openshift_nightlies.tasks.install.hypershift import hypershift
 from openshift_nightlies.tasks.install.prebuilt import initialize_cluster
 from openshift_nightlies.tasks.benchmarks import e2e
-from openshift_nightlies.tasks.utils import rosa_post_install, scale_ci_diagnosis, platform_connector,final_dag_status
+from openshift_nightlies.tasks.utils import rosa_post_install, aro_post_install, scale_ci_diagnosis, platform_connector,final_dag_status
 from openshift_nightlies.tasks.index import status
 from openshift_nightlies.util import var_loader, manifest, constants
 from abc import ABC, abstractmethod
@@ -86,6 +87,8 @@ class AbstractOpenshiftNightlyDAG(ABC):
     def _get_rosa_postinstall_setup(self):
         return rosa_post_install.Diagnosis(self.dag, self.config, self.release)
 
+    def _get_aro_postinstall_setup(self):
+        return aro_post_install.Diagnosis(self.dag, self.config, self.release)
 
 class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):
@@ -187,6 +190,26 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
     def _get_openshift_installer(self):
         return rosa.RosaInstaller(self.dag, self.config, self.release)
 
+class AroNightlyDAG(AbstractOpenshiftNightlyDAG):
+    def build(self):
+        installer = self._get_openshift_installer()
+        install_cluster = installer.get_install_task()
+        connect_to_platform = self._get_platform_connector().get_task()
+        final_status=final_dag_status.get_task(self.dag)
+        with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
+            benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
+            chain(*benchmark_tasks)
+
+        aro_post_installation = self._get_aro_postinstall_setup()._get_aro_postinstallation()
+
+        if self.config.cleanup_on_success:
+            cleanup_cluster = installer.get_cleanup_task()
+            install_cluster >> aro_post_installation >> connect_to_platform >> benchmarks >> cleanup_cluster >> final_status
+        else:
+            install_cluster >> aro_post_installation >> connect_to_platform >> benchmarks
+
+    def _get_openshift_installer(self):
+        return aro.AroInstaller(self.dag, self.config, self.release)
 
 class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):
@@ -305,6 +328,8 @@ def build_releases():
             nightly = OpenstackNightlyDAG(openshift_release, dag_config)
         elif openshift_release.platform == "rosa":
             nightly = RosaNightlyDAG(openshift_release, dag_config)
+        elif openshift_release.platform == 'azure':
+            nightly = AroNightlyDAG(openshift_release, dag_config)
         elif openshift_release.platform == "rogcp":
             nightly = RoGCPNightlyDAG(openshift_release, dag_config)
         elif openshift_release.platform == "hypershift":
