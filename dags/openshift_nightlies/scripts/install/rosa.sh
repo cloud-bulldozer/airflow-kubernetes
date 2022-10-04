@@ -252,7 +252,7 @@ install(){
         if [ $AWS_AUTHENTICATION_METHOD == "sts" ] ; then
             INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --sts -m auto --yes"
         fi
-        rosa create cluster --tags=github_id:${GITHUB_USERNAME} --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --multi-az --compute-machine-type ${COMPUTE_WORKERS_TYPE} --compute-nodes ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS}
+        rosa create cluster --tags=User:${GITHUB_USERNAME} --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --multi-az --compute-machine-type ${COMPUTE_WORKERS_TYPE} --compute-nodes ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS}
     fi
     _wait_for_cluster_ready ${CLUSTER_NAME}
     postinstall
