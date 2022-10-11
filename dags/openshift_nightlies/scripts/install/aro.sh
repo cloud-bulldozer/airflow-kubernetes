@@ -61,8 +61,7 @@ install(){
     az network vnet subnet update --name ${AZ_CLUSTERNAME}-master-subnet --resource-group ${AZ_RESOURCEGROUP} --vnet-name ${AZ_CLUSTERNAME}-vnet --disable-private-link-service-network-policies true
 
     echo "INFO: Creating the cluster..."
-    # Add tags to the cluster creation for better "cloud-management"
-    az aro create cluster --resource-group ${AZ_RESOURCEGROUP} --name ${AZ_CLUSTERNAME} --vnet ${AZ_CLUSTERNAME}-vnet --master-subnet ${AZ_CLUSTERNAME}-master-subnet --worker-subnet ${AZ_CLUSTERNAME}-worker-subnet --pull-secret @pull-secret.txt
+    az aro create cluster --resource-group ${AZ_RESOURCEGROUP} --name ${AZ_CLUSTERNAME} --vnet ${AZ_CLUSTERNAME}-vnet --master-subnet ${AZ_CLUSTERNAME}-master-subnet --worker-subnet ${AZ_CLUSTERNAME}-worker-subnet --pull-secret @pull-secret.txt --tags=User:${GITHUB_USERNAME}
     postinstall
 }
 
