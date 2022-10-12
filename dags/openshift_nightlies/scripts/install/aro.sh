@@ -28,6 +28,7 @@ setup(){
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .openshift_worker_count)
     export COMPUTE_WORKERS_TYPE=$(cat ${json_file} | jq -r .openshift_worker_instance_type)
     export AZ_RESOURCEGROUP=${AZ_RESOURCEGROUP:-${AZ_CLUSTERNAME}-rg}
+    export AZ_NETWORK_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_network_type)
 
     echo "INFO: Updating OCP Pull Secret..."
     cat ${json_file} | jq -r .openshift_install_pull_secret > pull-secret.txt
@@ -39,12 +40,27 @@ setup(){
     echo "INFO: Login via Azure-cli..."
     az login --service-principal --username ${AZ_USERNAME} --password ./PerfScaleManagedServices.pem --tenant ${AZ_TENANT}
 
+    echo "INFO: Checking the current Subscription Quota..."
+    az vm list-usage -l ${AZ_LOCATION} --query "[?contains(name.value, 'standardDSv3Family')]" -o table
+
+    echo "INFO: Register the resources providers..."
+    az provider register -n Microsoft.RedHatOpenShift --wait
+    az provider register -n Microsoft.Compute --wait
+    az provider register -n Microsoft.Storage --wait
+    az provider register -n Microsoft.Authorization --wait
+
+    echo "INFO: Download and install aro preview extension"
+    # Clean-up if any aro extension is pre-installed
+    az extension remove --name aro || true
+
+    # Revisit once OVN with 4.11 is GA'd on ARO
+    curl -L https://aka.ms/az-aroext-latest.whl --output $PWD/aro-1.0.6-py2.py3-none-any.whl
+    az extension add --upgrade --source $PWD/aro-1.0.6-py2.py3-none-any.whl --yes
+
     echo "INFO: Get details of the subscription..."
     az account show
     oc version --client
-
-    echo "INFO: Checking the current Subscription Quota..."
-    az vm list-usage -l ${AZ_LOCATION} --query "[?contains(name.value, 'standardDSv3Family')]" -o table
+    az extension list
 }
 
 install(){
@@ -61,7 +77,7 @@ install(){
     az network vnet subnet update --name ${AZ_CLUSTERNAME}-master-subnet --resource-group ${AZ_RESOURCEGROUP} --vnet-name ${AZ_CLUSTERNAME}-vnet --disable-private-link-service-network-policies true
 
     echo "INFO: Creating the cluster..."
-    az aro create cluster --resource-group ${AZ_RESOURCEGROUP} --name ${AZ_CLUSTERNAME} --vnet ${AZ_CLUSTERNAME}-vnet --master-subnet ${AZ_CLUSTERNAME}-master-subnet --worker-subnet ${AZ_CLUSTERNAME}-worker-subnet --pull-secret @pull-secret.txt --tags=User:${GITHUB_USERNAME}
+    az aro create cluster --resource-group ${AZ_RESOURCEGROUP} --name ${AZ_CLUSTERNAME} --sdn-type ${AZ_NETWORK_TYPE} --vnet ${AZ_CLUSTERNAME}-vnet --master-subnet ${AZ_CLUSTERNAME}-master-subnet --worker-subnet ${AZ_CLUSTERNAME}-worker-subnet --pull-secret @pull-secret.txt --tags=User:${GITHUB_USERNAME}
     postinstall
 }
 
