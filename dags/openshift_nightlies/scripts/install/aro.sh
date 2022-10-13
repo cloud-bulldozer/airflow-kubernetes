@@ -25,10 +25,12 @@ setup(){
     export AZ_CLUSTERNAME=$(cat ${json_file} | jq -r .openshift_cluster_name)
     export AZ_USERNAME=$(cat ${json_file} | jq -r .aro_username)
     export AZ_TENANT=$(cat ${json_file} | jq -r .aro_tenant)
-    export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .openshift_worker_count)
-    export COMPUTE_WORKERS_TYPE=$(cat ${json_file} | jq -r .openshift_worker_instance_type)
+    export AZ_COMPUTE_WORKER_NUMBER=$(cat ${json_file} | jq -r .openshift_worker_count)
+    export AZ_COMPUTE_WORKER_SIZE=$(cat ${json_file} | jq -r .openshift_worker_vm_size)
+    export AZ_MASTER_SIZE=$(cat ${json_file} | jq -r .openshift_master_vm_size)
+    export AZ_COMPUTE_WORKER_VOLUME=$(cat ${json_file} | jq -r .openshift_worker_root_volume_size)
     export AZ_RESOURCEGROUP=${AZ_RESOURCEGROUP:-${AZ_CLUSTERNAME}-rg}
-    export AZ_NETWORK_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_network_type)
+    export AZ_NETWORK_TYPE=$(cat ${json_file} | jq -r .openshift_network_type)
 
     echo "INFO: Updating OCP Pull Secret..."
     cat ${json_file} | jq -r .openshift_install_pull_secret > pull-secret.txt
@@ -50,10 +52,10 @@ setup(){
     az provider register -n Microsoft.Authorization --wait
 
     echo "INFO: Download and install aro preview extension"
-    # Clean-up if any aro extension is pre-installed
+    # Clean-up pre-installed aro extension 
     az extension remove --name aro || true
 
-    # Revisit once OVN with 4.11 is GA'd on ARO
+    # Update this once OVN with 4.11 is GA'd on ARO
     curl -L https://aka.ms/az-aroext-latest.whl --output $PWD/aro-1.0.6-py2.py3-none-any.whl
     az extension add --upgrade --source $PWD/aro-1.0.6-py2.py3-none-any.whl --yes
 
@@ -77,7 +79,7 @@ install(){
     az network vnet subnet update --name ${AZ_CLUSTERNAME}-master-subnet --resource-group ${AZ_RESOURCEGROUP} --vnet-name ${AZ_CLUSTERNAME}-vnet --disable-private-link-service-network-policies true
 
     echo "INFO: Creating the cluster..."
-    az aro create cluster --resource-group ${AZ_RESOURCEGROUP} --name ${AZ_CLUSTERNAME} --sdn-type ${AZ_NETWORK_TYPE} --vnet ${AZ_CLUSTERNAME}-vnet --master-subnet ${AZ_CLUSTERNAME}-master-subnet --worker-subnet ${AZ_CLUSTERNAME}-worker-subnet --pull-secret @pull-secret.txt --tags=User:${GITHUB_USERNAME}
+    az aro create cluster --resource-group ${AZ_RESOURCEGROUP} --name ${AZ_CLUSTERNAME} --sdn-type ${AZ_NETWORK_TYPE} --vnet ${AZ_CLUSTERNAME}-vnet --master-subnet ${AZ_CLUSTERNAME}-master-subnet --master-vm-size ${AZ_MASTER_SIZE} --worker-subnet ${AZ_CLUSTERNAME}-worker-subnet --worker-vm-size ${AZ_COMPUTE_WORKER_SIZE} --worker-vm-disk-size-gb ${AZ_COMPUTE_WORKER_VOLUME} --worker-count ${AZ_COMPUTE_WORKER_NUMBER} --pull-secret @pull-secret.txt --tags=User:${GITHUB_USERNAME}
     postinstall
 }
 
