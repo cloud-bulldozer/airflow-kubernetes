@@ -130,6 +130,7 @@ create_cluster(){
     export REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_control_plane_availability)
     export CPO_IMAGE=$(cat ${json_file} | jq -r .control_plane_operator_image)
     export RELEASE_IMAGE=$(cat ${json_file} | jq -r .hosted_cluster_release_image)
+    export HC_MULTI_AZ=$(cat ${json_file} | jq -r .hc_multi_az)
     echo $PULL_SECRET > pull-secret
     CPO_IMAGE_ARG=""
     if [[ $CPO_IMAGE != "" ]] ; then
@@ -139,7 +140,10 @@ create_cluster(){
     if [[ $RELEASE_IMAGE != "" ]]; then
         RELEASE="--release-image=$RELEASE_IMAGE"
     fi
-    hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --additional-tags User:${GITHUB_USERNAME}, mgmt-cluster:${MGMT_CLUSTER_NAME} --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE --instance-type $COMPUTE_WORKERS_TYPE ${RELEASE} ${CPO_IMAGE_ARG}
+    if [[ $HC_MULTI_AZ != "false" ]]; then
+        ZONES="--zones ${AWS_REGION}a, ${AWS_REGION}b, ${AWS_REGION}c"
+    fi
+    hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --additional-tags User:${GITHUB_USERNAME}, mgmt-cluster:${MGMT_CLUSTER_NAME} --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE --instance-type $COMPUTE_WORKERS_TYPE ${RELEASE} ${CPO_IMAGE_ARG} ${ZONES}
     echo "Wait till hosted cluster got created and in progress.."
     kubectl wait --for=condition=available=false --timeout=3600s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME

@@ -46,5 +46,6 @@
     "hypershift_cli_version": "container",
     "hypershift_operator_image": "",
     "hcp_platform_monitoring": "",
-    "hc_install_interval": 0
+    "hc_install_interval": 0,
+    "hc_multi_az": true
 }
