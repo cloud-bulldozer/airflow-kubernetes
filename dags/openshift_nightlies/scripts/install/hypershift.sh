@@ -127,7 +127,8 @@ create_cluster(){
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .hosted_cluster_nodepool_size)
     export COMPUTE_WORKERS_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_instance_type)
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_network_type)
-    export REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_control_plane_availability)
+    export CONTROLPLANE_REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_control_plane_availability)
+    export INFRA_REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_infra_availability)
     export CPO_IMAGE=$(cat ${json_file} | jq -r .control_plane_operator_image)
     export RELEASE_IMAGE=$(cat ${json_file} | jq -r .hosted_cluster_release_image)
     echo $PULL_SECRET > pull-secret
@@ -139,7 +140,7 @@ create_cluster(){
     if [[ $RELEASE_IMAGE != "" ]]; then
         RELEASE="--release-image=$RELEASE_IMAGE"
     fi
-    hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --additional-tags User:${GITHUB_USERNAME}, mgmt-cluster:${MGMT_CLUSTER_NAME} --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE --instance-type $COMPUTE_WORKERS_TYPE ${RELEASE} ${CPO_IMAGE_ARG}
+    hypershift create cluster aws --name $HOSTED_CLUSTER_NAME --additional-tags User:${GITHUB_USERNAME}, mgmt-cluster:${MGMT_CLUSTER_NAME} --node-pool-replicas=$COMPUTE_WORKERS_NUMBER --base-domain $BASEDOMAIN --pull-secret pull-secret --aws-creds aws_credentials --region $AWS_REGION --control-plane-availability-policy $CONTROLPLANE_REPLICA_TYPE --infra-availability-policy $INFRA_REPLICA_TYPE --network-type $NETWORK_TYPE --instance-type $COMPUTE_WORKERS_TYPE ${RELEASE} ${CPO_IMAGE_ARG}
     echo "Wait till hosted cluster got created and in progress.."
     kubectl wait --for=condition=available=false --timeout=3600s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME
@@ -152,13 +153,14 @@ create_cluster(){
 create_empty_cluster(){
     echo "Create None type Hosted cluster.."    
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .hosted_cluster_network_type)
-    export REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_control_plane_availability)   
+    export CONTROLPLANE_REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_control_plane_availability)   
+    export INFRA_REPLICA_TYPE=$(cat ${json_file} | jq -r .hosted_infra_availability)
     echo $PULL_SECRET > pull-secret
     CPO_IMAGE_ARG=""
     if [[ $CPO_IMAGE != "" ]] ; then
         CPO_IMAGE_ARG="--control-plane-operator-image=$CPO_IMAGE"
     fi    
-    hypershift create cluster none --name $HOSTED_CLUSTER_NAME --node-pool-replicas=0 --base-domain $BASEDOMAIN --pull-secret pull-secret --control-plane-availability-policy $REPLICA_TYPE --network-type $NETWORK_TYPE ${CPO_IMAGE_ARG}
+    hypershift create cluster none --name $HOSTED_CLUSTER_NAME --node-pool-replicas=0 --base-domain $BASEDOMAIN --pull-secret pull-secret --control-plane-availability-policy $CONTROLPLANE_REPLICA_TYPE --infra-availability-policy $INFRA_REPLICA_TYPE --network-type $NETWORK_TYPE ${CPO_IMAGE_ARG}
     echo "Wait till hosted cluster got created and in progress.."
     kubectl wait --for=condition=available=false --timeout=60s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME

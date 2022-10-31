@@ -17,5 +17,6 @@
     "hosted_cluster_nodepool_size": 0,
     "hosted_cluster_network_type": "OpenShiftSDN", 
     "hosted_control_plane_availability": "HighlyAvailable",   
+    "hosted_infra_availability": "HighlyAvailable",
     "openshift_workload_node_instance_type": "r5.4xlarge" 
 }
