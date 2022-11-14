@@ -93,15 +93,15 @@ setup(){
         sudo cp bin/hypershift /usr/local/bin
         popd
     fi
-    echo "Create external DNS for this iteration.."
     export MGMT_BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
     if [[ $HC_EXTERNAL_DNS != "false" ]]; then
+        echo "Create external DNS for this iteration.."
         export BASEDOMAIN=hyp.${MGMT_BASEDOMAIN}
-        export MGMT_AWS_HZ_ID=$(aws route53 list-hosted-zones | jq -r '.HostedZones[] | select(.Name=="${MGMT_BASEDOMAIN}.")' | jq -r '.Id')
-        AWS_HZ=$(aws route53 list-hosted-zones | jq -r '.HostedZones[] | select(.Name=="${BASEDOMAIN}.")')
+        export MGMT_AWS_HZ_ID=$(aws route53 list-hosted-zones | jq -r '.HostedZones[] | select(.Name=="'${MGMT_BASEDOMAIN}'.")' | jq -r '.Id')
+        AWS_HZ=$(aws route53 list-hosted-zones | jq -r '.HostedZones[] | select(.Name=="'${BASEDOMAIN}'.")')
         if [[ ${AWS_HZ} == "" ]]; then
             AWS_HZ_ID=$(aws route53 create-hosted-zone --name $BASEDOMAIN --caller-reference ${HOSTED_CLUSTER_NAME}-$(echo $(uuidgen) | cut -c 1-5) | jq -r '.HostedZone.Id')
-            DS_VALUE=$(aws route53 list-resource-record-sets --hosted-zone-id $AWS_HZ_ID  | jq -r '.ResourceRecordSets[] | select(.Name=="'"$BASEDOMAIN"'.") | select(.Type=="NS")' | jq -r '.ResourceRecords')
+            DS_VALUE=$(aws route53 list-resource-record-sets --hosted-zone-id $AWS_HZ_ID  | jq -r '.ResourceRecordSets[] | select(.Name=="'"$BASEDOMAIN"'.") | select(.Type=="NS")' | jq -c '.ResourceRecords')
             aws route53 change-resource-record-sets --hosted-zone-id  $MGMT_AWS_HZ_ID \
                 --change-batch '{ "Comment": "Creating a record set" , "Changes": [{"Action": "CREATE", "ResourceRecordSet": {"Name": "'"$BASEDOMAIN"'", "Type": "NS", "TTL": 300, "ResourceRecords" : '"$DS_VALUE"'}}]}'
         fi
@@ -171,7 +171,7 @@ create_cluster(){
     fi
     ZONES=""
     if [[ $HC_MULTI_AZ != "false" ]]; then
-        ZONES="--zones ${AWS_REGION}a, ${AWS_REGION}b, ${AWS_REGION}c"
+        ZONES="--zones ${AWS_REGION}a,${AWS_REGION}b,${AWS_REGION}c"
     fi
     EXT_DNS_ARG=""
     if [[ $HC_EXTERNAL_DNS != "false" ]]; then
@@ -179,7 +179,7 @@ create_cluster(){
     fi    
     hypershift create cluster aws \
         --name $HOSTED_CLUSTER_NAME \
-        --additional-tags User:${GITHUB_USERNAME}, mgmt-cluster:${MGMT_CLUSTER_NAME} \
+        --additional-tags "User=${GITHUB_USERNAME},mgmt-cluster=${MGMT_CLUSTER_NAME}" \
         --node-pool-replicas=$COMPUTE_WORKERS_NUMBER \
         --base-domain $BASEDOMAIN \
         --pull-secret pull-secret \
