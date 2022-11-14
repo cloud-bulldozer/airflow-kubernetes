@@ -31,6 +31,12 @@
 		"SELF_TERMS_DURATION": "10",
 		"CERTIFICATES_RATE": "15/s",
 		"CERTIFICATES_DURATION": "10",
+		"CREATE_SERVICES_RATE": "1/m",
+		"CREATE_SERVICES_DURATION": "1",
+		"GET_SERVICES_RATE": "1/m",
+		"GET_SERVICES_DURATION": "1",
+		"PATCH_SERVICES_RATE": "1/m",
+		"PATCH_SERVICES_DURATION": "1",
 		"KUBE_BURNER_RELEASE_URL": "https://github.com/cloud-bulldozer/kube-burner/releases/download/v0.16.1/kube-burner-0.16.1-Linux-x86_64.tar.gz",
 		"PROM_URL": "https://prometheus.app-sre-stage-01.devshift.net"
             }
