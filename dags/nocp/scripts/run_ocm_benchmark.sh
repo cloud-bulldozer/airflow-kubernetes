@@ -26,7 +26,7 @@ run_ocm_benchmark(){
     echo "Cleanup previous UUIDs"
     rm -rf /tmp/*api-load*
     mkdir /tmp/${UUID}
-    git clone --single-branch --branch ci_test https://github.com/venkataanil/ocm-api-load /tmp/${UUID}
+    git clone https://github.com/cloud-bulldozer/ocm-api-load /tmp/${UUID}
     cd /tmp/${UUID}
     echo "Building the binary"
     go mod download
