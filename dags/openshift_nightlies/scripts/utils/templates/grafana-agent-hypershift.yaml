@@ -1,7 +1,22 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-workload-monitoring-config
+  namespace: openshift-user-workload-monitoring
+data:
+  config.yaml: >
+    prometheus:
+      nodeSelector:
+        node-role.kubernetes.io/workload: ""
+      tolerations:
+        - effect: NoSchedule
+          key: role
+          value: workload
+---
+apiVersion: v1
 kind: Namespace
 metadata:
-  name: grafana-agent 
+  name: grafana-agent
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -71,6 +86,17 @@ spec:
               matchExpressions:
               - key: node-role.kubernetes.io/workload
                 operator: Exists
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/component: prometheus
+                app.kubernetes.io/instance: user-workload
+                app.kubernetes.io/name: prometheus
+                app.kubernetes.io/part-of: openshift-monitoring
+            namespaces:
+            - openshift-user-workload-monitoring
+            topologyKey: kubernetes.io/hostname
       tolerations:
       - key: role
         value: workload
@@ -152,18 +178,3 @@ data:
               tls_config:
                 insecure_skip_verify: true
 
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: user-workload-monitoring-config
-  namespace: openshift-user-workload-monitoring
-data:
-  config.yaml: >
-    prometheus:
-      nodeSelector:
-        node-role.kubernetes.io/workload: ""
-      tolerations:
-        - effect: NoSchedule
-          key: role
-          value: workload
