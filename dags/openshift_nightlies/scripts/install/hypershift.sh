@@ -95,7 +95,7 @@ setup(){
     fi
     export MGMT_BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
     export MGMT_AWS_HZ_ID=$(aws route53 list-hosted-zones | jq -r '.HostedZones[] | select(.Name=="'${MGMT_BASEDOMAIN}'.")' | jq -r '.Id')
-    if [[ $HC_EXTERNAL_DNS != "false" ]]; then
+    if [[ $HC_EXTERNAL_DNS == "true" ]]; then
         echo "Create external DNS for this iteration.."
         export BASEDOMAIN=hyp.${MGMT_BASEDOMAIN}
         AWS_HZ=$(aws route53 list-hosted-zones | jq -r '.HostedZones[] | select(.Name=="'${BASEDOMAIN}'.")')
@@ -126,10 +126,10 @@ install(){
     if [[ $HYPERSHIFT_OPERATOR_IMAGE != "" ]]; then
         HO_IMAGE_ARG="--hypershift-image $HYPERSHIFT_OPERATOR_IMAGE"
     fi
-    if [[ $HCP_PLATFORM_MONITORING != "" ]]; then
+    if [[ $HCP_PLATFORM_MONITORING == "true" ]]; then
         HCP_P_MONITOR="--platform-monitoring $HCP_PLATFORM_MONITORING"
     fi
-    if [[ $HC_EXTERNAL_DNS != "false" ]]; then
+    if [[ $HC_EXTERNAL_DNS == "true" ]]; then
         EXT_DNS_ARG="--external-dns-provider=aws --external-dns-credentials=aws_credentials --external-dns-domain-filter=$BASEDOMAIN"
     fi
     echo "Create S3 bucket.."
@@ -170,11 +170,11 @@ create_cluster(){
         RELEASE="--release-image=$RELEASE_IMAGE"
     fi
     ZONES=""
-    if [[ $HC_MULTI_AZ != "false" ]]; then
+    if [[ $HC_MULTI_AZ == "true" ]]; then
         ZONES="--zones ${AWS_REGION}a,${AWS_REGION}b,${AWS_REGION}c"
     fi
     EXT_DNS_ARG=""
-    if [[ $HC_EXTERNAL_DNS != "false" ]]; then
+    if [[ $HC_EXTERNAL_DNS == "true" ]]; then
         EXT_DNS_ARG="--external-dns-domain=$BASEDOMAIN"
     fi    
     hypershift create cluster aws \
@@ -211,7 +211,7 @@ create_empty_cluster(){
         CPO_IMAGE_ARG="--control-plane-operator-image=$CPO_IMAGE"
     fi
     EXT_DNS_ARG=""
-    if [[ $HC_EXTERNAL_DNS != "false" ]]; then
+    if [[ $HC_EXTERNAL_DNS == "true" ]]; then
         EXT_DNS_ARG="--external-dns-domain=$BASEDOMAIN"
     fi   
     hypershift create cluster none --name $HOSTED_CLUSTER_NAME \
@@ -255,7 +255,7 @@ postinstall(){
     if [ "${NODEPOOL_SIZE}" == "0" ] ; then
         echo "None type cluster with nodepool size set to 0"
     else
-        if [[ $HC_MULTI_AZ != "false" ]]; then
+        if [[ $HC_MULTI_AZ == "true" ]]; then
             COMPUTE_WORKERS_NUMBER=$((3*$COMPUTE_WORKERS_NUMBER))
         fi
         itr=0
@@ -351,7 +351,7 @@ cleanup(){
             done
             aws route53 delete-hosted-zone --id=$_ID || true
         done
-        if [[ $HC_EXTERNAL_DNS != "false" ]]; then
+        if [[ $HC_EXTERNAL_DNS == "true" ]]; then
             echo "Delete recordset in mgmt hostedzone"
             RS_VALUE=$(aws route53 list-resource-record-sets --hosted-zone-id $MGMT_AWS_HZ_ID | jq -c '.ResourceRecordSets[] | select(.Name=="'"$BASEDOMAIN"'.") | select(.Type=="NS")')
             aws route53 change-resource-record-sets --hosted-zone-id $MGMT_AWS_HZ_ID \
