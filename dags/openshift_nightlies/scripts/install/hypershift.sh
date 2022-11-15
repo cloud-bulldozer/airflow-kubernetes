@@ -255,6 +255,9 @@ postinstall(){
     if [ "${NODEPOOL_SIZE}" == "0" ] ; then
         echo "None type cluster with nodepool size set to 0"
     else
+        if [[ $HC_MULTI_AZ != "false" ]]; then
+            COMPUTE_WORKERS_NUMBER=$((3*$COMPUTE_WORKERS_NUMBER))
+        fi
         itr=0
         while [ $itr -lt 12 ]
         do
