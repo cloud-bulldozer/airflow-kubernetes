@@ -94,10 +94,10 @@ setup(){
         popd
     fi
     export MGMT_BASEDOMAIN=$(_get_base_domain $(_get_cluster_id ${MGMT_CLUSTER_NAME}))
+    export MGMT_AWS_HZ_ID=$(aws route53 list-hosted-zones | jq -r '.HostedZones[] | select(.Name=="'${MGMT_BASEDOMAIN}'.")' | jq -r '.Id')
     if [[ $HC_EXTERNAL_DNS != "false" ]]; then
         echo "Create external DNS for this iteration.."
         export BASEDOMAIN=hyp.${MGMT_BASEDOMAIN}
-        export MGMT_AWS_HZ_ID=$(aws route53 list-hosted-zones | jq -r '.HostedZones[] | select(.Name=="'${MGMT_BASEDOMAIN}'.")' | jq -r '.Id')
         AWS_HZ=$(aws route53 list-hosted-zones | jq -r '.HostedZones[] | select(.Name=="'${BASEDOMAIN}'.")')
         if [[ ${AWS_HZ} == "" ]]; then
             AWS_HZ_ID=$(aws route53 create-hosted-zone --name $BASEDOMAIN --caller-reference ${HOSTED_CLUSTER_NAME}-$(echo $(uuidgen) | cut -c 1-5) | jq -r '.HostedZone.Id')
@@ -342,17 +342,18 @@ cleanup(){
                 read -r name type <<<$(echo $(jq -r '.Name,.Type' <<<"$resourcerecordset"))
                 if [ $type != "NS" -a $type != "SOA" ]; then
                     aws route53 change-resource-record-sets --hosted-zone-id $_ID \
-                        --change-batch '{"Changes":[{"Action":"DELETE","ResourceRecordSet":'"$resourcerecordset"'
-                    }]}' --output text --query 'ChangeInfo.Id'
+                        --change-batch '{"Changes":[{"Action":"DELETE","ResourceRecordSet":'"$resourcerecordset"'}]}' \
+                        --output text --query 'ChangeInfo.Id'
                 fi
             done
             aws route53 delete-hosted-zone --id=$_ID || true
         done
         if [[ $HC_EXTERNAL_DNS != "false" ]]; then
             echo "Delete recordset in mgmt hostedzone"
+            RS_VALUE=$(aws route53 list-resource-record-sets --hosted-zone-id $MGMT_AWS_HZ_ID | jq -c '.ResourceRecordSets[] | select(.Name=="'"$BASEDOMAIN"'.") | select(.Type=="NS")')
             aws route53 change-resource-record-sets --hosted-zone-id $MGMT_AWS_HZ_ID \
-                --change-batch '{"Changes":[{"Action":"DELETE","ResourceRecordSet":"'"$BASEDOMAIN"'."
-            }]}' --output text --query 'ChangeInfo.Id'
+                --change-batch '{"Changes":[{"Action":"DELETE","ResourceRecordSet": '"$RS_VALUE"'}]}' \
+                --output text --query 'ChangeInfo.Id'
         fi
         echo "Delete hypershift namespace.."
         oc delete project hypershift clusters --force
