@@ -1,7 +1,22 @@
-apiVersion: v1                                                                                                                                                                                                                               
-kind: Namespace                                                                                                                                                                                                                              
-metadata:                                                                                                                                                                                                                                                                                                                                                                                                                                         
-  name: grafana-agent 
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-workload-monitoring-config
+  namespace: openshift-user-workload-monitoring
+data:
+  config.yaml: >
+    prometheus:
+      nodeSelector:
+        node-role.kubernetes.io/workload: ""
+      tolerations:
+        - effect: NoSchedule
+          key: role
+          value: workload
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: grafana-agent
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -71,6 +86,17 @@ spec:
               matchExpressions:
               - key: node-role.kubernetes.io/workload
                 operator: Exists
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/component: prometheus
+                app.kubernetes.io/instance: user-workload
+                app.kubernetes.io/name: prometheus
+                app.kubernetes.io/part-of: openshift-monitoring
+            namespaces:
+            - openshift-user-workload-monitoring
+            topologyKey: kubernetes.io/hostname
       tolerations:
       - key: role
         value: workload
@@ -133,7 +159,7 @@ data:
               honor_labels: true
               params:
                 'match[]': 
-                  - '{__name__=~"apiserver_request_total|apiserver_request_duration_seconds_bucket|container_cpu_usage_seconds_total|container_memory_rss|container_memory_cache|cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests|cluster:namespace:pod_memory:active:kube_pod_container_resource_requests|process_cpu_seconds_total|process_resident_memory_bytes|container_runtime_crio_operations_latency_microseconds|node_cpu_seconds_total|cluster:nodes_roles|node_memory_MemAvailable_bytes|node_memory_MemTotal_bytes|etcd_server_leader_changes_seen_total|etcd_disk_backend_commit_duration_seconds_bucket|etcd_disk_wal_fsync_duration_seconds_bucket|etcd_network_peer_round_trip_time_seconds_bucket|etcd_cluster_version|etcd_request_duration_seconds_bucket|kube_namespace_status_phase|kube_pod_status_phase|kube_secret_info|kube_deployment_labels|kube_configmap_info|kube_service_info|kube_node_role|kube_node_status_condition|cluster_version"}'
+                  - '{__name__=~"apiserver_request_total|apiserver_request_duration_seconds_bucket|container_cpu_usage_seconds_total|container_memory_rss|container_memory_cache|cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests|cluster:namespace:pod_memory:active:kube_pod_container_resource_requests|process_cpu_seconds_total|process_resident_memory_bytes|container_runtime_crio_operations_latency_microseconds|node_cpu_seconds_total|cluster:nodes_roles|node_memory_MemAvailable_bytes|node_memory_MemTotal_bytes|etcd_server_leader_changes_seen_total|etcd_disk_backend_commit_duration_seconds_bucket|etcd_disk_wal_fsync_duration_seconds_bucket|etcd_network_peer_round_trip_time_seconds_bucket|etcd_cluster_version|etcd_request_duration_seconds_bucket|kube_namespace_status_phase|kube_pod_status_phase|kube_secret_info|kube_deployment_labels|kube_configmap_info|kube_service_info|kube_node_role|kube_node_status_condition|cluster_version|node_disk_reads_completed_total|node_disk_writes_completed_total"}'
               scrape_interval: 60s
               scrape_timeout: 60s
               metrics_path: /federate
@@ -152,18 +178,3 @@ data:
               tls_config:
                 insecure_skip_verify: true
 
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: user-workload-monitoring-config
-  namespace: openshift-user-workload-monitoring
-data:
-  config.yaml: >
-    prometheus:
-      nodeSelector:
-        node-role.kubernetes.io/workload: ""
-      tolerations:
-        - effect: NoSchedule
-          key: role
-          value: workload
