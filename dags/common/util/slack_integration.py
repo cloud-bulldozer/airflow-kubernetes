@@ -17,7 +17,7 @@ def alert_members(context):
     elif any(term in dag_id for term in perf_core_terms):
         members=" @perfscale-core-team"
     elif "openstack" in dag_id:
-        members=" @asagtani @masco"
+        members=" @Masco"
     else:
         members=""
     return members    
