@@ -1,0 +1,75 @@
+{
+    "benchmarks": [
+        {
+            "name": "scale-27",
+            "workload": "scale-perf",
+            "command": "./run_scale_fromgit.sh",
+            "env": {
+                "SCALE": "27",
+                "METADATA_COLLECTION": "false",
+                "WORKLOAD_NODE_ROLE": "workload"
+            }
+        },
+        {
+            "name": "scale-120",
+            "workload": "scale-perf",
+            "command": "./run_scale_fromgit.sh",
+            "env": {
+                "SCALE": "120",
+                "METADATA_COLLECTION": "false",
+                "WORKLOAD_NODE_ROLE": "workload"
+            }
+        },
+        {
+            "name": "scale-252",
+            "workload": "scale-perf",
+            "command": "./run_scale_fromgit.sh",
+            "env": {
+                "SCALE": "252",
+                "METADATA_COLLECTION": "false",
+                "WORKLOAD_NODE_ROLE": "workload"
+            }
+        },
+        {
+            "name": "cluster-density-3000",
+            "workload": "kube-burner",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "cluster-density",
+                "JOB_ITERATIONS": "3000",
+                "JOB_TIMEOUT": "18000",
+                "STEP_SIZE": "2m",
+                "QPS": "20",
+                "BURST": "20",
+                "LOG_LEVEL": "info",
+                "CLEANUP_WHEN_FINISH": "true",
+                "CLEANUP": "true",
+                "MUST_GATHER_EACH_TASK": "true",
+                "CLEANUP_TIMEOUT": "1h",
+                "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
+            }
+        },
+        {
+            "name": "node-density",
+            "workload": "kube-burner",
+            "trigger_rule": "all_done",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "node-density",
+                "PODS_PER_NODE": "245",
+                "NODE_COUNT": "252",
+                "JOB_TIMEOUT": "18000",
+                "QPS": "20",
+                "BURST": "20",
+                "STEP_SIZE": "2m",
+                "LOG_LEVEL": "info",
+                "CLEANUP_WHEN_FINISH": "true",
+                "CLEANUP": "true",
+                "MUST_GATHER_EACH_TASK": "true",
+                "CLEANUP_TIMEOUT": "2h",
+                "METRICS_PROFILE": "metrics-profiles/metrics-aggregated.yaml",
+                "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
+            }
+        }
+    ]
+}
