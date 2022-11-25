@@ -5,7 +5,14 @@ set -x
 run_ocm_api_load(){
     echo "Cleanup previous UUIDs"
     cd ~/
-    export $(cat environment.txt | xargs)
+    # Export environment variables provided by airflow, however don't override local shell variables like PWD
+    env > /tmp/local_env.txt
+    while IFS="=" read -r key value; do
+        if ! grep -q "$key=" /tmp/local_env.txt; then
+                export $key=$value
+        fi
+    done < environment.txt
+
     export UUID=$(uuidgen | head -c8)-$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')
     echo "# Benchmark UUID: ${UUID}"
     rm -rf ocm-api-load
