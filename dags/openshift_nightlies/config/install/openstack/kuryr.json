@@ -50,9 +50,9 @@
     "openshift_workload_node_volume_type": "",
     "openshift_workload_node_volume_iops": "0",
     "openshift_prometheus_retention_period": "15d",
-    "openshift_prometheus_storage_class": "standard",
+    "openshift_prometheus_storage_class": "standard-csi",
     "openshift_prometheus_storage_size": "25Gi",
-    "openshift_alertmanager_storage_class": "standard",
+    "openshift_alertmanager_storage_class": "standard-csi",
     "openshift_alertmanager_storage_size": "5Gi",
     "openshift_toggle_workload_node": "false",
     "job_iterations": "1"
