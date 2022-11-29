@@ -16,7 +16,7 @@ run_ocm_api_load(){
     export UUID=$(uuidgen | head -c8)-$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')
     echo "# Benchmark UUID: ${UUID}"
     rm -rf ocm-api-load
-    git clone https://github.com/cloud-bulldozer/ocm-api-load
+    git clone https://github.com/venkataanil/ocm-api-load
     cd ocm-api-load
     echo "Building the binary"
     go mod download
