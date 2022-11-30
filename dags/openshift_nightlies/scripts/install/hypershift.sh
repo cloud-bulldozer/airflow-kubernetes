@@ -220,8 +220,7 @@ create_empty_cluster(){
         --pull-secret pull-secret \
         --control-plane-availability-policy $CONTROLPLANE_REPLICA_TYPE \
         --infra-availability-policy $INFRA_REPLICA_TYPE \
-        --network-type $NETWORK_TYPE \
-        --endpoint-access=Public ${EXT_DNS_ARG} ${CPO_IMAGE_ARG}
+        --network-type $NETWORK_TYPE ${CPO_IMAGE_ARG}
     echo "Wait till hosted cluster got created and in progress.."
     kubectl wait --for=condition=available=false --timeout=60s hostedcluster -n clusters $HOSTED_CLUSTER_NAME
     kubectl get hostedcluster -n clusters $HOSTED_CLUSTER_NAME
