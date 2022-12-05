@@ -1,6 +1,7 @@
 import yaml
 import requests
 from common.models.dag_config import DagConfig
+from nocp.util import var_loader
 
 class Manifest():
 
@@ -15,7 +16,7 @@ class Manifest():
     # Returns app name (example, ocm) and schedule as part of config
     def get_nocp_configs(self):
         for app,schedule in self.yaml['dagConfig']['schedules']['nocp'].items():
-            if schedule == 'None':
+            if schedule == 'None' or var_loader.get_git_user() != "cloud-bulldozer":
                 schedule = None
             dag_config = self._build_dag_config(schedule)
             self.nocp_configs.append(
