@@ -79,6 +79,22 @@ class NOCPBenchmarks():
                 benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
         return benchmarks
 
+    def _add_cleaner(self, benchmark, env):
+        if self.app == "ocm":
+            command = f'UUID={{{{ ti.xcom_pull("{benchmark.task_id}") }}}} {constants.root_dag_dir}/scripts/run_ocm_benchmark.sh -o cleanup'
+
+        cleaner = BashOperator(
+            task_id=f"cleanup-{benchmark.task_id}",
+            depends_on_past=False,
+            bash_command=command,
+            retries=0,
+            dag=self.dag,
+            trigger_rule="all_done",
+            env=env
+        )
+
+        benchmark >> cleaner
+
     def _get_benchmark(self, benchmark):
         env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch')}}
         # Fetch variables from a secret with the name <DAG_NAME>-<TASK_NAME>
@@ -88,7 +104,7 @@ class NOCPBenchmarks():
         timeout = 21600
         bash_command = None
         if self.app == "ocm":
-            bash_command = f"{constants.root_dag_dir}/scripts/run_ocm_benchmark.sh "
+            bash_command = f"{constants.root_dag_dir}/scripts/run_ocm_benchmark.sh -o ocm-api-load"
             timeout = 28800
 
         task = BashOperator(
@@ -102,5 +118,8 @@ class NOCPBenchmarks():
                 do_xcom_push=True,
                 execution_timeout=timedelta(seconds=timeout),
         )
+
+        if self.app == "ocm":
+            self._add_cleaner(task, env)
 
         return task
