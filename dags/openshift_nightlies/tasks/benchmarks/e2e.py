@@ -94,7 +94,7 @@ class E2EBenchmarks():
         git_username = var_loader.get_git_user()
         if git_username == 'cloud-bulldozer':
             return f"perf-ci"
-        else: 
+        else:
             return f"{git_username}"
 
     def _get_benchmarks(self, benchmarks):
@@ -104,7 +104,7 @@ class E2EBenchmarks():
             elif 'group' in benchmark:
                 with TaskGroup(benchmark['group'], prefix_group_id=False, dag=self.dag) as task_group:
                     benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
-            else: 
+            else:
                 benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
         return benchmarks
 
@@ -122,10 +122,15 @@ class E2EBenchmarks():
             self.exec_config = executor.get_executor_config_with_cluster_access(self.dag_config, self.release, executor_image=benchmark['executor_image'], task_group=self.task_group)
         else:
             self.exec_config = executor.get_executor_config_with_cluster_access(self.dag_config, self.release, task_group=self.task_group)
+        if 'custom_cmd' in benchmark:
+            # Surround argument by single quotes to avoid variable substitution
+            cmd = f"{constants.root_dag_dir}/scripts/run_benchmark.sh -c '{benchmark['custom_cmd']}'"
+        else:
+            cmd = f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} "
         task = BashOperator(
                 task_id=f"{task_prefix if self.task_group != 'benchmarks' else ''}{benchmark['name']}",
                 depends_on_past=False,
-                bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
+                bash_command=cmd,
                 retries=0,
                 trigger_rule=benchmark.get("trigger_rule", "all_success"),
                 dag=self.dag,

@@ -94,13 +94,20 @@ which, in turn, contains the core of the install command: a playbook from `scale
 
 Goal: Configure a Benchmark task when building a DAG.
 
-The `e2e.py` contains all the logic, with its core being the hand-off to the next script:
+The `e2e.py` file, contains a function that creates a BashOperator instance with a `bash_command` argument that follows the logic below:
+
+When the `custom_cmd` field is set
 
 ```
-bash_command=f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']} ",
-```
+cmd = f"{constants.root_dag_dir}/scripts/run_benchmark.sh -c '{benchmark['custom_cmd']}'"
 
-and in `scripts/run_benchmark.sh`, you see the wiring of the workload and commands from `e2e-benchmarking` repo that are mapped from the `config/benchmarks` definitions.
+```
+With the previous logic, `run_benchmark.sh` will run an arbitrary command.
+
+Otherwise, `run_benchmarh.sh` will run an e2e-benchmarking based script based on the `workload` and `command` passed:
+```
+cmd = f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']}",
+```
 
 ## `index`
 
