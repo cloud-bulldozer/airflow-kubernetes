@@ -23,7 +23,6 @@ def final_status(**kwargs):
 def get_task(dag):
     return PythonOperator(
         task_id='final_status',
-        provide_context=True,
         python_callable=final_status,
         trigger_rule='all_done',
         retries=0,
