@@ -69,9 +69,7 @@ run_baremetal_benchmark(){
         eval "$command"
     fi
 EOF
-    if [[ $? != 0 ]]; then
-        exit 1
-    fi
+    benchmark_rv=1
 }
 export UUID=$(uuidgen | head -c8)-$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')
 echo "############################################"
@@ -104,5 +102,6 @@ else
         export WORKLOAD=$AIRFLOW_CTX_TASK_ID-must-gather
         ./ocp_diagnosis.sh > /dev/null
     fi
-    exit $benchmark_rv
 fi
+echo $UUID
+exit $benchmark_rv

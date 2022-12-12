@@ -81,7 +81,7 @@ platforms:
         install: acs.json
         benchmarks: acs.json
     - name: ovn-control-plane-custom
-      config: 
+      config:
         install: ocn-cp.json
         benchmarks: control-plane-custom.json
 
