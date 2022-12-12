@@ -5,7 +5,14 @@ set -x
 run_ocm_api_load(){
     echo "Cleanup previous UUIDs"
     cd ~/
-    export $(cat environment.txt | xargs)
+    # Export environment variables provided by airflow, however don't override local shell variables like PWD
+    env > /tmp/local_env.txt
+    while IFS="=" read -r key value; do
+        if ! grep -q "$key=" /tmp/local_env.txt; then
+                export $key=$value
+        fi
+    done < environment.txt
+
     export UUID=$(uuidgen | head -c8)-$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')
     echo "# Benchmark UUID: ${UUID}"
     rm -rf ocm-api-load
@@ -57,6 +64,14 @@ run_ocm_api_load(){
 
     echo "Removing configuration files"
     rm -f config.yaml kube-burner-am-config.yaml kube-burner-cs-config.yaml
+
+    echo "converting start and end times into milliseconds"
+    start_time=`expr $start_time \* 1000`
+    end_time=`expr $end_time \* 1000`
+
+    echo "Results URLs"
+    echo "Account Manager Dashboard https://grafana.apps.observability.perfscale.devcluster.openshift.com/d/uhc-account-manager/uhc-account-manager?orgId=1&var-uuid=${UUID}&var-datasource=ocm-uhc-acct-mngr&from=$start_time&to=$end_time"
+    echo "Clusters Service Dashboard https://grafana.apps.observability.perfscale.devcluster.openshift.com/d/uhc-clusters-service/uhc-clusters-service?orgId=1&var-datasource=ocm-uhc-clusters-service&var-uuid=${UUID}&from=$start_time&to=$end_time"
 }
 
 run_ocm_api_load

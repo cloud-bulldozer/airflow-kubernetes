@@ -93,15 +93,36 @@ platforms:
   openstack:
     versions: ["4.11", "4.12"]
     variants:
-      - name: sdn
-        schedule: "0 0 1-31/2 * *"
+      - name: sdn-control-plane
+        schedule: "0 0 * * 1"
         config:
           install: openstack/sdn.json
-          benchmarks: openstack.json
-      - name: kuryr
+          benchmarks: osp-large-control-plane.json
+      - name: sdn-data-plane
+        schedule: "0 0 * * 2"
+        config:
+          install: openstack/sdn.json
+          benchmarks: osp-data-plane.json
+      - name: ovnk-control-plane
+        schedule: "0 0 * * 3"
+        config:
+          install: openstack/ovnk.json
+          benchmarks: osp-large-control-plane.json
+      - name: ovnk-data-plane
+        schedule: "0 0 * * 4"
+        config:
+          install: openstack/ovnk.json
+          benchmarks: osp-data-plane.json
+      - name: kuryr-control-plane
+        schedule: "0 0 * * 5"
         config:
           install: openstack/kuryr.json
-          benchmarks: openstack.json
+          benchmarks: osp-large-control-plane.json
+      - name: kuryr-data-plane
+        schedule: "0 0 * * 6"
+        config:
+          install: openstack/kuryr.json
+          benchmarks: osp-data-plane.json
 
 # Do not program concurrent builds of ROSA/ROGCP/ARO
   rosa:

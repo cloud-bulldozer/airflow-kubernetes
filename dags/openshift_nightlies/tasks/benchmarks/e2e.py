@@ -83,7 +83,9 @@ class E2EBenchmarks():
                 "THANOS_RECEIVER_URL": var_loader.get_secret("thanos_receiver_url"),
                 "PROM_URL": var_loader.get_secret("thanos_querier_url"),
                 "MGMT_CLUSTER_NAME": f"{mgmt_cluster_name}.*",
-                "HOSTED_CLUSTER_NS": f"clusters-hcp-{mgmt_cluster_name}-{self.task_group}"
+                "HOSTED_CLUSTER_NS": f"clusters-hyp-{mgmt_cluster_name}-{self.task_group}",
+                "MGMT_KUBECONFIG_SECRET": f"{release.get_release_name()}-kubeconfig",
+                **self._insert_kube_env()
             }
 
     def get_benchmarks(self):
@@ -137,3 +139,8 @@ class E2EBenchmarks():
 
         self._add_indexer(task)
         return task
+
+    # This Helper Injects Airflow environment variables into the task execution runtime
+    # This allows the task to interface with the Kubernetes cluster Airflow is hosted on.
+    def _insert_kube_env(self):
+        return {key: value for (key, value) in environ.items() if "KUBERNETES" in key}
