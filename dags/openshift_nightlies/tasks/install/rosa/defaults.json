@@ -34,5 +34,6 @@
     "rosa_expiration_time": "2880",
     "rosa_cli_fork": "https://github.com/openshift/rosa",
     "ocm_cli_fork": "https://github.com/openshift-online/ocm-cli",
-    "ocm_cli_version": "container"
+    "ocm_cli_version": "container",
+    "rosa_hcp": "false"
 }
