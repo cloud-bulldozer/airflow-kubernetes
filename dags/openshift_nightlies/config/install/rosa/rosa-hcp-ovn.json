@@ -14,6 +14,6 @@
     "openshift_worker_instance_type": "m5.2xlarge",
     "machineset_metadata_label_prefix": "machine.openshift.io",
     "openshift_workload_node_instance_type": "m5.2xlarge",
-    "number_of_hostedcluster": "1",
+    "number_of_hostedcluster": 2,
     "hcp_install_interval": 60
 }
