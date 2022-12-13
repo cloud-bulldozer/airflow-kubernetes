@@ -22,18 +22,31 @@ class RosaInstaller(AbstractOpenshiftInstaller):
         super().__init__(dag, config, release)
         self.exec_config = executor.get_default_executor_config(self.dag_config, executor_image="airflow-managed-services")
 
+    def _get_type(self):
+        if self.config['rosa_hcp'] == "true":
+            return "rosa_hcp"
+        else:
+            return None
+
+    def get_install_hcp_task(self):
+        for iteration in range(self.config['number_of_hostedcluster']):
+            c_id = f"{'hcp-'+str(iteration+1)}" # adding 1 to name the cluster hcp-1, hcp-2..
+            yield c_id, self._get_task(operation="install", id=c_id), self._get_task(operation="cleanup", id=c_id)
+
     # Create Airflow Task for Install/Cleanup steps
-    def _get_task(self, operation="install", trigger_rule="all_success"):
+    def _get_task(self, operation="install", id="", trigger_rule="all_success"):
         self._setup_task(operation=operation)
+        task_prefix=f"{id}-"
+        env = {**self.env, **{"HOSTED_ID": id}}
         command=f"{constants.root_dag_dir}/scripts/install/rosa.sh -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}"
 
         return BashOperator(
-            task_id=f"{operation}",
+            task_id=f"{task_prefix if id != '' else ''}{operation}",
             depends_on_past=False,
             bash_command=command,
             retries=3,
             dag=self.dag,
             trigger_rule=trigger_rule,
             executor_config=self.exec_config,
-            env=self.env
+            env=env
         )

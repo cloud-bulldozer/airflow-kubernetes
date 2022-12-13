@@ -255,11 +255,19 @@ install(){
         fi
         ocm create cluster --ccs --provider aws --region ${AWS_REGION} --aws-account-id ${AWS_ACCOUNT_ID} --aws-access-key-id ${AWS_ACCESS_KEY_ID} --aws-secret-access-key ${AWS_SECRET_ACCESS_KEY} --channel-group ${MANAGED_CHANNEL_GROUP} --version ${OCM_VERSION} --multi-az  --compute-machine-type ${COMPUTE_WORKERS_TYPE} --network-type ${NETWORK_TYPE} ${CLUSTER_NAME} ${CLUSTER_SIZE}
     else
+        export HCP=$(cat ${json_file} | jq -r .rosa_hcp)
         export INSTALLATION_PARAMS=""
+        export ROSA_HCP_PARAMS=""
         if [ $AWS_AUTHENTICATION_METHOD == "sts" ] ; then
             INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --sts -m auto --yes"
         fi
-        rosa create cluster --tags=User:${GITHUB_USERNAME} --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --multi-az --compute-machine-type ${COMPUTE_WORKERS_TYPE} --compute-nodes ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS}
+        if [ $HCP == "true" ]
+            export CLUSTER_NAME="${CLUSTER_NAME}-${HOSTED_ID}" # perf-413-as3k-hcp-1, perf-413-as3k-hcp-2..
+            export KUBECONFIG_NAME=$(echo $KUBECONFIG_NAME | awk -F-kubeconfig '{print$1}')-$HOSTED_ID-kubeconfig
+            export KUBEADMIN_NAME=$(echo $KUBEADMIN_NAME | awk -F-kubeadmin '{print$1}')-$HOSTED_ID-kubeadmin    
+            ROSA_HCP_PARAMS="--hosted-cp"
+        fi
+        rosa create cluster --tags=User:${GITHUB_USERNAME} --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --multi-az --compute-machine-type ${COMPUTE_WORKERS_TYPE} --compute-nodes ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS} ${ROSA_HCP_PARAMS}
     fi
     _wait_for_cluster_ready ${CLUSTER_NAME}
     postinstall
@@ -372,6 +380,9 @@ cleanup(){
 }
 
 export INSTALL_METHOD=$(cat ${json_file} | jq -r .cluster_install_method)
+export HC_INTERVAL=$(cat ${json_file} | jq -r .hcp_install_interval)
+SKEW_FACTOR=$(echo $HOSTED_ID|awk -F- '{print$2}')
+sleep $(($HC_INTERVAL*$SKEW_FACTOR)) # 60*1, 60*2..
 setup
 
 if [[ "$operation" == "install" ]]; then
