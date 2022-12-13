@@ -77,13 +77,14 @@ class E2EBenchmarks():
             }
             self.install_vars = var_loader.build_task_vars(
                 release, task="install") 
-            if self.install_vars['rosa_hcp'] == "true":          
+            if self.install_vars['rosa_hcp'] == "true":
+                mgmt_cluster_name = release._generate_cluster_name()         
                 self.env = {
                     **self.env,
                     "THANOS_RECEIVER_URL": var_loader.get_secret("thanos_receiver_url"),
                     "PROM_URL": var_loader.get_secret("thanos_querier_url"),
                     "MGMT_CLUSTER_NAME": f"{self.install_vars['staging_mgmt_cluster_name']}.*",
-                    "HOSTED_CLUSTER_NS": f"clusters-hyp-{mgmt_cluster_name}-{self.task_group}",
+                    "HOSTED_CLUSTER_NS": f"clusters-{mgmt_cluster_name}-{self.task_group}",
                     "MGMT_KUBECONFIG_SECRET": f"{release.get_release_name()}-kubeconfig",
                     **self._insert_kube_env()
                 }
