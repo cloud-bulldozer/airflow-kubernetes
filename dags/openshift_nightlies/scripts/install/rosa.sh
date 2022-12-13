@@ -237,6 +237,7 @@ setup(){
 
 install(){
     export COMPUTE_WORKERS_TYPE=$(cat ${json_file} | jq -r .openshift_worker_instance_type)
+    export CLUSTER_AUTOSCALE=$(cat ${json_file} | jq -r .cluster_autoscale)
     if [[ $INSTALL_METHOD == "osd" ]]; then
 	if [ "${MANAGED_OCP_VERSION}" == "latest" ] ; then
             export OCM_VERSION=$(ocm list versions --channel-group ${MANAGED_CHANNEL_GROUP} | grep ^${version} | sort -rV | head -1)
@@ -246,7 +247,13 @@ install(){
             export OCM_VERSION=$(ocm list versions --channel-group ${MANAGED_CHANNEL_GROUP} | grep ^${MANAGED_OCP_VERSION})
 	fi
         [ -z ${OCM_VERSION} ] && echo "ERROR: Image not found for version (${version}) on OCM ${MANAGED_CHANNEL_GROUP} channel group" && exit 1
-        ocm create cluster --ccs --provider aws --region ${AWS_REGION} --aws-account-id ${AWS_ACCOUNT_ID} --aws-access-key-id ${AWS_ACCESS_KEY_ID} --aws-secret-access-key ${AWS_SECRET_ACCESS_KEY} --channel-group ${MANAGED_CHANNEL_GROUP} --version ${OCM_VERSION} --multi-az --compute-nodes ${COMPUTE_WORKERS_NUMBER} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --network-type ${NETWORK_TYPE} ${CLUSTER_NAME}
+        if [[ $CLUSTER_AUTOSCALE == "true" ]]; then
+            export MIN_COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .min_openshift_worker_count) 
+            export CLUSTER_SIZE="--enable-autoscaling --min-replicas ${MIN_COMPUTE_WORKERS_NUMBER} --max-replicas ${COMPUTE_WORKERS_NUMBER}"
+        else
+            export CLUSTER_SIZE="--compute-nodes ${COMPUTE_WORKERS_NUMBER}"
+        fi
+        ocm create cluster --ccs --provider aws --region ${AWS_REGION} --aws-account-id ${AWS_ACCOUNT_ID} --aws-access-key-id ${AWS_ACCESS_KEY_ID} --aws-secret-access-key ${AWS_SECRET_ACCESS_KEY} --channel-group ${MANAGED_CHANNEL_GROUP} --version ${OCM_VERSION} --multi-az  --compute-machine-type ${COMPUTE_WORKERS_TYPE} --network-type ${NETWORK_TYPE} ${CLUSTER_NAME} ${CLUSTER_SIZE}
     else
         export INSTALLATION_PARAMS=""
         if [ $AWS_AUTHENTICATION_METHOD == "sts" ] ; then
