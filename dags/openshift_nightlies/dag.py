@@ -179,7 +179,7 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
         rosa_post_installation = self._get_rosa_postinstall_setup()._get_rosa_postinstallation()
 
         if self.config.cleanup_on_success:
-            if installer._get_type() == "rosa_hcp":
+            if installer.get_type() == "rosa_hcp":
                 install_cluster = installer.get_install_hcp_task()
                 hosted_installer = self._get_hypershift_openshift_installer()
                 wait_task = hosted_installer.wait_task()

@@ -22,11 +22,11 @@ class RosaInstaller(AbstractOpenshiftInstaller):
         super().__init__(dag, config, release)
         self.exec_config = executor.get_default_executor_config(self.dag_config, executor_image="airflow-managed-services")
 
-    def _get_type(self):
+    def get_type(self):
         if self.config['rosa_hcp'] == "true":
             return "rosa_hcp"
         else:
-            return None
+            return "rosa"
 
     def get_install_hcp_task(self):
         for iteration in range(self.config['number_of_hostedcluster']):
