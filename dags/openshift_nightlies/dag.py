@@ -169,15 +169,6 @@ class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
 class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):
         installer = self._get_openshift_installer()
-        install_cluster = installer.get_install_task()
-        connect_to_platform = self._get_platform_connector().get_task()
-        final_status=final_dag_status.get_task(self.dag)
-        with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
-            benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
-            chain(*benchmark_tasks)
-        
-        rosa_post_installation = self._get_rosa_postinstall_setup()._get_rosa_postinstallation()
-
         if self.config.cleanup_on_success:
             if installer.get_type() == "rosa_hcp":
                 install_cluster = installer.get_install_hcp_task()
@@ -189,9 +180,23 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
                     hc_connect_to_platform = self._get_hc_platform_connector(task_group=c_id).get_task()                
                     install_hc >> wait_task >> [hc_connect_to_platform, benchmark] >> wait_beforce_cleanup >> cleanup_hc
             else:
+                install_cluster = installer.get_install_task()
+                connect_to_platform = self._get_platform_connector().get_task()
+                final_status=final_dag_status.get_task(self.dag)
+                with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
+                    benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
+                    chain(*benchmark_tasks)
+                rosa_post_installation = self._get_rosa_postinstall_setup()._get_rosa_postinstallation()
                 cleanup_cluster = installer.get_cleanup_task()
                 install_cluster >> rosa_post_installation >> connect_to_platform >> benchmarks >> cleanup_cluster >> final_status
         else:
+            install_cluster = installer.get_install_task()
+            connect_to_platform = self._get_platform_connector().get_task()
+            final_status=final_dag_status.get_task(self.dag)
+            with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
+                benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
+                chain(*benchmark_tasks)
+            rosa_post_installation = self._get_rosa_postinstall_setup()._get_rosa_postinstallation()
             install_cluster >> rosa_post_installation >> connect_to_platform >> benchmarks
 
     def _get_openshift_installer(self):
