@@ -197,7 +197,7 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
     def _get_openshift_installer(self):
         return rosa.RosaInstaller(self.dag, self.config, self.release)
 
-    def _get_e2e_benchmarks(self, task_group):
+    def _get_e2e_benchmarks(self, task_group="benchmarks"):
         return e2e.E2EBenchmarks(self.dag, self.config, self.release, task_group)
 
     def _add_benchmarks(self, task_group):
