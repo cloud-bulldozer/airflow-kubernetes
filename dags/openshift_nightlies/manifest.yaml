@@ -126,7 +126,7 @@ platforms:
 
 # Do not program concurrent builds of ROSA/ROGCP/ARO
   rosa:
-    versions: ["4.10", "4.11"]
+    versions: ["4.10", "4.11", "4.12"]
     variants:
       - name: sts-sdn-control-plane
         schedule:  "0 12 * * 3"
@@ -180,7 +180,7 @@ platforms:
           benchmarks: upgrade.json
 
   rogcp:
-    versions: ["4.10", "4.11"]
+    versions: ["4.10", "4.11", "4.12"]
     variants:
       - name: sdn-control-plane
         schedule:  "00 13 * * 3"
@@ -204,7 +204,7 @@ platforms:
           benchmarks: data-plane.json
 
   hypershift:
-    versions: ["4.11"]
+    versions: ["4.11", "4.12"]
     variants:
       - name: sdn-control-plane
         schedule:  "30 2 * * 1,3,5" # an hour gap for OSD to avoid OsdCcsAdmin key limit
