@@ -1,4 +1,8 @@
 versions:
+- version: "4.10"
+  alias: previous
+  releaseStream: 4.10.0-0.nightly
+  baremetalReleaseStream: latest-4.10
 - version: "4.11"
   alias: stable
   releaseStream: 4.11.0-0.nightly
@@ -176,7 +180,7 @@ platforms:
           benchmarks: upgrade.json
 
   rogcp:
-    versions: ["4.10", "4.11", "4.12"]
+    versions: ["4.11", "4.12"]
     variants:
       - name: sdn-control-plane
         schedule:  "00 13 * * 3"
