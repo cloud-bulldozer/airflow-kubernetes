@@ -80,6 +80,10 @@ platforms:
       config: 
         install: acs.json
         benchmarks: acs.json
+    - name: ovn-control-plane-custom
+      config:
+        install: ocn-cp.json
+        benchmarks: control-plane-custom.json
 
   baremetal: 
     build: dev

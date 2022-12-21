@@ -8,15 +8,18 @@ do
     esac
 done
 
+if [[ -z ${command} ]]; then
+  echo "Missing -c flag"
+  exit 1
+fi
+
 
 setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
-    echo "Cloning ${E2E_BENCHMARKING_REPO} from branch ${E2E_BENCHMARKING_BRANCH}"
-    git clone -q -b ${E2E_BENCHMARKING_BRANCH} ${E2E_BENCHMARKING_REPO} --depth=1 --single-branch
     cp /home/airflow/auth/config /home/airflow/workspace/config
     export KUBECONFIG=/home/airflow/workspace/config
-    curl http://dell-r510-01.perf.lab.eng.rdu2.redhat.com/msheth/gsheet_key.json > /tmp/key.json
+    curl -sS http://dell-r510-01.perf.lab.eng.rdu2.redhat.com/msheth/gsheet_key.json -o /tmp/key.json
     export GSHEET_KEY_LOCATION=/tmp/key.json
     export RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}/$AIRFLOW_CTX_TASK_ID
     export SNAPPY_RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}
@@ -72,9 +75,7 @@ run_baremetal_benchmark(){
         eval "$command"
     fi
 EOF
-    if [[ $? != 0 ]]; then
-        exit 1
-    fi
+    benchmark_rv=1
 }
 export UUID=$(uuidgen | head -c8)-$AIRFLOW_CTX_TASK_ID-$(date '+%Y%m%d')
 echo "############################################"
@@ -84,12 +85,16 @@ echo "############################################"
 if [[ $PLATFORM == "baremetal" ]]; then
     env >> /tmp/environment.txt
     run_baremetal_benchmark
-    echo $UUID
 else
     setup
-    cd /home/airflow/workspace/e2e-benchmarking/workloads/$workload
+    if [[ -n ${workload} ]]; then
+        echo "Cloning ${E2E_BENCHMARKING_REPO} from branch ${E2E_BENCHMARKING_BRANCH}"
+        git clone -q -b ${E2E_BENCHMARKING_BRANCH} ${E2E_BENCHMARKING_REPO} --depth=1 --single-branch
+        cd /home/airflow/workspace/e2e-benchmarking/workloads/$workload
+    fi
     
-    eval "$command"
+    echo "Running: ${command}"
+    eval $command
     benchmark_rv=$?
 
     if [[ ${MUST_GATHER_EACH_TASK} == "true" && ${benchmark_rv} -eq 1 ]] ; then
@@ -103,6 +108,6 @@ else
         export WORKLOAD=$AIRFLOW_CTX_TASK_ID-must-gather
         ./ocp_diagnosis.sh > /dev/null
     fi
-    echo $UUID
-    exit $benchmark_rv
 fi
+echo $UUID
+exit $benchmark_rv
