@@ -31,55 +31,59 @@ platforms:
     versions: ["4.11", "4.12"]
     providers: ["aws", "aws-arm", "gcp", "azure", "alibaba"]
     variants:
-      - name: sdn-control-plane
-        schedule: "0 12 * * 3"
-        config:
-          install: sdn-cp.json
-          benchmarks: control-plane.json
-      - name: ovn-control-plane
-        schedule: "0 12 * * 3"
-        config:
-          install: ovn-dp.json
-          benchmarks: control-plane.json
-      - name: sdn-data-plane
-        schedule: "0 12 * * 1"
-        config:
-          install: sdn-dp.json
-          benchmarks: data-plane.json
-      - name: ovn-data-plane
-        schedule: "0 12 * * 1"
-        config:
-          install: ovn-dp.json
-          benchmarks: data-plane.json
-      - name: sdn-medium
-        schedule: "0 12 * * 1"
-        config:
-          install: sdn-large-cp.json
-          benchmarks: medium-control-plane.json
-      - name: ovn-medium
-        schedule: "0 12 * * 1"
-        config:
-          install: ovn-large-cp.json
-          benchmarks: medium-control-plane.json
-      - name: sdn-extra-large
-        schedule: "0 12 15 * *"
-        config:
-          install: sdn-large-cp.json
-          benchmarks: extra-large-control-plane.json
-      - name: sdn-large
-        schedule: "0 12 15 * *"
-        config:
-          install: sdn-large-cp.json
-          benchmarks: large-control-plane.json
-      - name: ovn-large
-        schedule: "0 12 15 * *"
-        config:
-          install: ovn-large-cp.json
-          benchmarks: large-control-plane.json
-      - name: acs
-        config:
-          install: acs.json
-          benchmarks: acs.json
+    - name: sdn-control-plane
+      schedule: "0 12 * * 3"
+      config: 
+        install: sdn-cp.json
+        benchmarks: control-plane.json
+    - name: ovn-control-plane
+      schedule: "0 12 * * 3"
+      config: 
+        install: ovn-dp.json
+        benchmarks: control-plane.json
+    - name: sdn-data-plane
+      schedule: "0 12 * * 1"
+      config: 
+        install: sdn-dp.json
+        benchmarks: data-plane.json
+    - name: ovn-data-plane
+      schedule: "0 12 * * 1"
+      config:
+        install: ovn-dp.json
+        benchmarks: data-plane.json
+    - name: sdn-medium
+      schedule: "0 12 * * 1"
+      config: 
+        install: sdn-large-cp.json
+        benchmarks: medium-control-plane.json
+    - name: ovn-medium
+      schedule: "0 12 * * 1"
+      config: 
+        install: ovn-large-cp.json
+        benchmarks: medium-control-plane.json
+    - name: sdn-extra-large
+      schedule: "0 12 15 * *"
+      config:
+        install: sdn-large-cp.json
+        benchmarks: extra-large-control-plane.json
+    - name: sdn-large
+      schedule: "0 12 15 * *"
+      config: 
+        install: sdn-large-cp.json
+        benchmarks: large-control-plane.json
+    - name: ovn-large
+      schedule: "0 12 15 * *"
+      config: 
+        install: ovn-large-cp.json
+        benchmarks: large-control-plane.json
+    - name: acs
+      config: 
+        install: acs.json
+        benchmarks: acs.json
+    - name: ovn-control-plane-custom
+      config:
+        install: ocn-cp.json
+        benchmarks: control-plane-custom.json
 
   baremetal:
     build: dev
