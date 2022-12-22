@@ -1,16 +1,16 @@
 versions:
-- version: "4.10"
-  alias: previous
-  releaseStream: 4.10.0-0.nightly
-  baremetalReleaseStream: latest-4.10
-- version: "4.11"
-  alias: stable
-  releaseStream: 4.11.0-0.nightly
-  baremetalReleaseStream: latest-4.11
-- version: "4.12"
-  alias: next
-  releaseStream: 4.12.0-0.nightly
-  baremetalReleaseStream: latest-4.12
+  - version: "4.11"
+    alias: previous
+    releaseStream: 4.11.0-0.nightly
+    baremetalReleaseStream: latest-4.11
+  - version: "4.12"
+    alias: stable
+    releaseStream: 4.12.0-0.nightly
+    baremetalReleaseStream: latest-4.12
+  - version: "4.13"
+    alias: next
+    releaseStream: 4.13.0-0.nightly
+    baremetalReleaseStream: latest-4.13
 
 dagConfig:
   schedules:
@@ -85,14 +85,14 @@ platforms:
         install: ocn-cp.json
         benchmarks: control-plane-custom.json
 
-  baremetal: 
+  baremetal:
     build: dev
     versions: ["4.11", "4.12"]
-    variants: 
-    - name: jetski
-      config: 
-        install: baremetal/jetski.json
-        benchmarks: baremetal-benchmarks
+    variants:
+      - name: jetski
+        config:
+          install: baremetal/jetski.json
+          benchmarks: baremetal-benchmarks
 
   openstack:
     versions: ["4.11", "4.12"]
@@ -128,12 +128,12 @@ platforms:
           install: openstack/kuryr.json
           benchmarks: osp-data-plane.json
 
-# Do not program concurrent builds of ROSA/ROGCP/ARO
+  # Do not program concurrent builds of ROSA/ROGCP/ARO
   rosa:
-    versions: ["4.10", "4.11"]
+    versions: ["4.11", "4.12"]
     variants:
       - name: sts-sdn-control-plane
-        schedule:  "0 12 * * 3"
+        schedule: "0 12 * * 3"
         config:
           install: rosa/sdn.json
           benchmarks: control-plane.json
@@ -143,7 +143,7 @@ platforms:
           install: rosa/sdn.json
           benchmarks: data-plane.json
       - name: sts-ovn-control-plane
-        schedule:  "10 12 * * 3"
+        schedule: "10 12 * * 3"
         config:
           install: rosa/ovn.json
           benchmarks: control-plane.json
@@ -153,17 +153,17 @@ platforms:
           install: rosa/ovn.json
           benchmarks: data-plane.json
       - name: iam-ovn-control-plane
-        schedule: 'None'
+        schedule: "None"
         config:
           install: rosa/iam-ovn.json
           benchmarks: control-plane.json
       - name: iam-sdn-control-plane
-        schedule: 'None'
+        schedule: "None"
         config:
           install: rosa/iam-sdn.json
-          benchmarks: control-plane.json          
+          benchmarks: control-plane.json
       - name: osd-ovn-control-plane
-        schedule:  "30 12 * * 1,3,5"
+        schedule: "30 12 * * 1,3,5"
         config:
           install: rosa/ovn-osd.json
           benchmarks: control-plane.json
@@ -173,26 +173,26 @@ platforms:
           install: rosa/ovn-osd.json
           benchmarks: data-plane.json
       - name: ocm-api-load
-        schedule: 'None'
+        schedule: "None"
         config:
           install: rosa/ocm.json
           benchmarks: ocm-api-load.json
       - name: rosa-upgrade
-        schedule:  "20 12 * * 3"
+        schedule: "20 12 * * 3"
         config:
           install: rosa/upgrade.json
           benchmarks: upgrade.json
 
   rogcp:
-    versions: ["4.10", "4.11"]
+    versions: ["4.11", "4.12"]
     variants:
       - name: sdn-control-plane
-        schedule:  "00 13 * * 3"
+        schedule: "00 13 * * 3"
         config:
           install: rogcp/sdn.json
           benchmarks: control-plane.json
       - name: ovn-control-plane
-        schedule:  "10 13 * * 1"
+        schedule: "10 13 * * 1"
         config:
           install: rogcp/ovn.json
           benchmarks: control-plane.json
@@ -208,28 +208,23 @@ platforms:
           benchmarks: data-plane.json
 
   hypershift:
-    versions: ["4.11"]
+    versions: ["4.11", "4.12"]
     variants:
-      - name: sdn-control-plane
-        schedule:  "30 2 * * 1,3,5" # an hour gap for OSD to avoid OsdCcsAdmin key limit
-        config:
-          install: hypershift/sdn.json
-          benchmarks: hosted-control-plane-p75.json
       - name: management-control-plane
-        schedule:  "30 3 * * 1,3,5" # an hour gap for OSD to avoid OsdCcsAdmin key limit 
+        schedule: "30 3 * * 1,3,5" # an hour gap for OSD to avoid OsdCcsAdmin key limit
         config:
           install: hypershift/none-type.json
           benchmarks: management-control-plane.json
       - name: ovn-control-plane-p75
-        schedule:  "30 4 * * 1,3,5" # an hour gap for OSD to avoid OsdCcsAdmin key limit
+        schedule: "30 4 * * 1,3,5" # an hour gap for OSD to avoid OsdCcsAdmin key limit
         config:
           install: hypershift/ovn-p75.json
           benchmarks: hosted-control-plane-p75.json
       - name: ovn-control-plane-p90
-        schedule:  "30 5 * * 1,3,5" # an hour gap for OSD to avoid OsdCcsAdmin key limit
+        schedule: "30 5 * * 1,3,5" # an hour gap for OSD to avoid OsdCcsAdmin key limit
         config:
           install: hypershift/ovn-p90.json
-          benchmarks: hosted-control-plane-p90.json          
+          benchmarks: hosted-control-plane-p90.json
       - name: chaos-ovn-control-plane-p75
         config:
           install: hypershift/ovn-p75.json
@@ -243,15 +238,15 @@ platforms:
     versions: ["4.x"]
     variants:
       - name: control-plane
-        config: 
+        config:
           install: None
           benchmarks: control-plane.json
       - name: data-plane
-        config: 
+        config:
           install: None
           benchmarks: data-plane.json
       - name: ovn-control-plane
-        schedule:  "0 12 * * 1,3,5"
+        schedule: "0 12 * * 1,3,5"
         config:
           install: rogcp/ovn.json
           benchmarks: control-plane.json
@@ -260,4 +255,3 @@ platforms:
         config:
           install: rogcp/ovn.json
           benchmarks: data-plane.json
-

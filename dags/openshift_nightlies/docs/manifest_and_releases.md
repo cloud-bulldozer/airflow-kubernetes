@@ -34,7 +34,7 @@ In the manifest the `version` and `provider` (cloud-only) fields are applied to 
 
 platforms:
   cloud:
-    versions: [4.9, "4.10"]
+    versions: ["4.11", "4.12"]
     providers: ["aws", "gcp", "azure"]
     variants: 
     - name: sdn-control-plane
@@ -43,7 +43,7 @@ platforms:
         install: sdn.json
         benchmarks: control-plane.json  
   openstack:
-    versions: [4.9, "4.10"]
+    versions: ["4.11", "4.12"]
     variants:
       - name: sdn
         config:
