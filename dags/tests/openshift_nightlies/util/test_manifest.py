@@ -66,7 +66,7 @@ class TestManifest():
                 self.assert_amd_installer(release["release"].get_latest_release()[self.INSTALL_BINARY])
                 self.assert_amd_client(release["release"].get_latest_release()[self.CLIENT_BINARY])
                 hits += 1
-        assert hits == 10
+        assert hits == 11
 
     def test_cloudreleases_arm(self,mocked_releases):
         releases = mocked_releases
@@ -76,7 +76,7 @@ class TestManifest():
                 self.assert_arm_installer(release["release"].get_latest_release()[self.INSTALL_BINARY])
                 self.assert_arm_client(release["release"].get_latest_release()[self.CLIENT_BINARY])
                 hits += 1
-        assert hits == 10
+        assert hits == 11
 
 
     def test_endwith(self):
