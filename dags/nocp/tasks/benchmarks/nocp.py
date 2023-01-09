@@ -38,6 +38,8 @@ class NOCPBenchmarks():
             "GIT_USER": self.git_name,
             "TASK_GROUP": self.task_group,
             "ES_SERVER_BASELINE": self.es_server_baseline,
+            "ES_SERVER": var_loader.get_secret('elasticsearch'),
+            "GRAFANA_URL": var_loader.get_secret('grafana'),
         }
         self.env.update(self.dag_config.dependencies)
         if self.app == "ocm":
@@ -46,8 +48,6 @@ class NOCPBenchmarks():
             self.env = {
                 **self.env,
                 "SSHKEY_TOKEN": self.ocm_creds['sshkey_token'],
-                "ORCHESTRATION_USER": self.ocm_creds['orchestration_user'],
-                "ORCHESTRATION_HOST": self.ocm_creds['orchestration_host'],
                 "OCM_TOKEN": self.ocm_creds['ocm_token'],
                 "PROM_TOKEN": self.ocm_creds['prometheus_token'],
                 "AWS_ACCESS_KEY_ID": self.aws_creds['aws_access_key_id'],
@@ -96,7 +96,12 @@ class NOCPBenchmarks():
         benchmark >> cleaner
 
     def _get_benchmark(self, benchmark):
-        env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch')}}
+        env = {**self.env, **benchmark.get('env', {})}
+        if env["ORCHESTRATION_USER"] == "":
+            env["ORCHESTRATION_USER"] = self.ocm_creds['orchestration_user']
+        if env["ORCHESTRATION_HOST"] == "":
+            env["ORCHESTRATION_HOST"] =  self.ocm_creds['orchestration_host']
+
         # Fetch variables from a secret with the name <DAG_NAME>-<TASK_NAME>
         task_variables = var_loader.get_secret(f"{self.dag.dag_id}-{benchmark['name']}", True, False)
         env.update(task_variables)

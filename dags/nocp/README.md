@@ -1,6 +1,6 @@
 # Non-OCP workloads
 
-Dags defined here doesn't need a OCP cluster and instead use an orchestration host to run the workloads.
+Dags defined here don't need a OCP cluster and instead use an orchestration host to run the workloads.
 Dag definition file (airflow-kubernetes/dags/nocp/dag.py) defines these dags (i.e non OCP based applications).
 “OCM” is an example of such an application. Other non-OCP applications can utilize this DAG later.
 

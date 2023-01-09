@@ -8,8 +8,8 @@
 		"JOB_TIMEOUT": "28800",
 		"COOLDOWN": "60",
 		"SLEEP": "300",
-		"ORCHESTRATION_USER": "root",
-		"ORCHESTRATION_HOST": "airflow-ocm-jumphost.rdu2.scalelab.redhat.com",
+		"ORCHESTRATION_USER": "",
+		"ORCHESTRATION_HOST": "",
 		"KUBE_BURNER_RELEASE_URL": "https://github.com/cloud-bulldozer/kube-burner/releases/download/v0.16.1/kube-burner-0.16.1-Linux-x86_64.tar.gz",
 		"PROM_URL": "https://prometheus.app-sre-stage-01.devshift.net"
             }
