@@ -5,7 +5,7 @@
     "aws_secret_access_key": "",
     "aws_authentication_method": "sts",
     "rosa_environment": "staging",
-    "rosa_cli_version": "container",
+    "rosa_cli_version": "master",
     "ocm_environment": "stage",
     "managed_channel_group": "nightly",
     "managed_ocp_version": "latest",
@@ -14,7 +14,10 @@
     "openshift_worker_instance_type": "m5.2xlarge",
     "machineset_metadata_label_prefix": "machine.openshift.io",
     "openshift_workload_node_instance_type": "m5.2xlarge",
-    "staging_mgmt_cluster_name": "hypershift-mc-1", 
+    "staging_mgmt_cluster_name": "hs-mc-mdqo7k4u0-pjj8f", 
+    "staging_mgmt_provisioner_shards": "0085c398-726e-11ed-a42d-0a580a810706",
+    "public_subnet": "subnet-049e1ebe7f078f4b8",
+    "private_subnet": "subnet-0e6cea56f04ac9854",
     "number_of_hostedcluster": 2,
     "hcp_install_interval": 60
 }

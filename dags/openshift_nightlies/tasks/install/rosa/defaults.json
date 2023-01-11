@@ -35,5 +35,7 @@
     "rosa_cli_fork": "https://github.com/openshift/rosa",
     "ocm_cli_fork": "https://github.com/openshift-online/ocm-cli",
     "ocm_cli_version": "container",
-    "rosa_hcp": "false"
+    "rosa_hcp": "false",
+    "staging_mgmt_cluster_name": "",
+    "staging_mgmt_provisioner_shards": ""
 }

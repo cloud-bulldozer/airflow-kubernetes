@@ -226,11 +226,6 @@ setup(){
             export ROSA_VERSION=$(rosa list versions -o json --channel-group=${MANAGED_CHANNEL_GROUP} | jq -r '.[] | select(.raw_id|startswith('\"${version}\"')) | .raw_id' | grep ^${MANAGED_OCP_VERSION}$)
         fi
         [ -z "${ROSA_VERSION}" ] && echo "ERROR: Image not found for version (${version}) on ROSA ${MANAGED_CHANNEL_GROUP} channel group" && exit 1
-        if [ "${MANAGED_CHANNEL_GROUP}" == "nightly" ] ; then
-            ROSA_VERSION="${ROSA_VERSION}-nightly"
-        elif [ "${MANAGED_CHANNEL_GROUP}" == "candidate" ] ; then
-            ROSA_VERSION="${ROSA_VERSION}-candidate"
-        fi
         return 0
     fi
 }
@@ -262,12 +257,21 @@ install(){
             INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --sts -m auto --yes"
         fi
         if [ $HCP == "true" ]; then
+            export STAGE_CONFIG=""
             export CLUSTER_NAME="${CLUSTER_NAME}-${HOSTED_ID}" # perf-413-as3k-hcp-1, perf-413-as3k-hcp-2..
             export KUBECONFIG_NAME=$(echo $KUBECONFIG_NAME | awk -F-kubeconfig '{print$1}')-$HOSTED_ID-kubeconfig
-            export KUBEADMIN_NAME=$(echo $KUBEADMIN_NAME | awk -F-kubeadmin '{print$1}')-$HOSTED_ID-kubeadmin    
-            ROSA_HCP_PARAMS="--hosted-cp"
+            export KUBEADMIN_NAME=$(echo $KUBEADMIN_NAME | awk -F-kubeadmin '{print$1}')-$HOSTED_ID-kubeadmin
+            STAGE_PROV_SHARD=$(cat ${json_file} | jq -r .staging_mgmt_provisioner_shards)
+            PUB_SUB=$(cat ${json_file} | jq -r .public_subnet)
+            PRI_SUB=$(cat ${json_file} | jq -r .private_subnet)
+            if [ $STAGE_PROV_SHARD != "" ]; then
+                STAGE_CONFIG="--properties provision_shard_id:${STAGE_PROV_SHARD}"
+            fi
+            ROSA_HCP_PARAMS="--hosted-cp ${STAGE_CONFIG} --subnet-ids $PUB_SUB,$PRI_SUB --machine-cidr 10.0.0.0/16"
+        else
+            INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --sts -m auto --yes --multi-az"
         fi
-        rosa create cluster --tags=User:${GITHUB_USERNAME} --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --multi-az --compute-machine-type ${COMPUTE_WORKERS_TYPE} --replicas ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS} ${ROSA_HCP_PARAMS}
+        rosa create cluster --tags=User:${GITHUB_USERNAME} --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --replicas ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS} ${ROSA_HCP_PARAMS}
     fi
     _wait_for_cluster_ready ${CLUSTER_NAME}
     postinstall
