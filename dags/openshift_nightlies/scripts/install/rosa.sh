@@ -46,7 +46,7 @@ _wait_for_nodes_ready(){
         NODES_COUNT=$(($2+6))
     fi
     # 180 seconds per node, waiting 5 times 60 seconds (5*60 = 5 minutes) with all nodes ready to finalize
-    while [ ${ITERATIONS} -le ${NODES_COUNT} ] ; do
+    while [ ${ITERATIONS} -le $((${NODES_COUNT}+2)) ] ; do
         NODES_READY_COUNT=$(oc get nodes | grep " Ready " | wc -l)
         if [ ${NODES_READY_COUNT} -ne ${NODES_COUNT} ] ; then
             echo "WARNING: ${ITERATIONS}/${NODES_COUNT} iterations. ${NODES_READY_COUNT}/${NODES_COUNT} nodes ready. Waiting 180 seconds for next check"
