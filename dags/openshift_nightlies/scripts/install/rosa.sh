@@ -129,9 +129,7 @@ _wait_for_cluster_ready(){
         fi
         if [ ${CLUSTER_STATUS} == "ready" ] ; then
             START_TIMER=$(date +%s)
-            if [ $HCP != "true" ]; then 
-                _wait_for_nodes_ready $1 ${COMPUTE_WORKERS_NUMBER}
-            fi
+            if [ $HCP != "true" ]; then _wait_for_nodes_ready $1 ${COMPUTE_WORKERS_NUMBER}; fi
             CURRENT_TIMER=$(date +%s)
             # Time since rosa cluster is ready until all nodes are ready
             DURATION=$(($CURRENT_TIMER - $START_TIMER))
@@ -403,8 +401,8 @@ if [[ "$operation" == "install" ]]; then
         printf "INFO: Cluster not found, installing..."
         install
         index_metadata
-        _wait_for_nodes_ready ${CLUSTER_NAME} ${COMPUTE_WORKERS_NUMBER}
-        _wait_for_workload_nodes_ready ${CLUSTER_NAME}
+        if [ $HCP == "true" ]; then _wait_for_nodes_ready ${CLUSTER_NAME} ${COMPUTE_WORKERS_NUMBER}; fi
+        if [[ $WORKLOAD_TYPE != "null" ]]; then _wait_for_workload_nodes_ready ${CLUSTER_NAME}; fi
     elif [ "${CLUSTER_STATUS}" == "ready" ] ; then
         printf "INFO: Cluster ${CLUSTER_NAME} already installed and ready, reusing..."
 	    postinstall
