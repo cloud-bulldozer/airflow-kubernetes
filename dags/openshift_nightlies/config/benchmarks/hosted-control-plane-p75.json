@@ -7,7 +7,7 @@
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "cluster-density-ms",
-                "JOB_ITERATIONS": "25",
+                "JOB_ITERATIONS": "75",
                 "JOB_TIMEOUT": "18000",
                 "STEP_SIZE": "2m",
                 "HYPERSHIFT": "true",
