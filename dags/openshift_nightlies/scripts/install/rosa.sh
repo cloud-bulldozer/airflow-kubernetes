@@ -39,8 +39,12 @@ _wait_for_nodes_ready(){
     export KUBECONFIG=./kubeconfig
     ALL_READY_ITERATIONS=0
     ITERATIONS=0
-    # Node count is number of workers + 3 masters + 3 infra
-    NODES_COUNT=$(($2+6))
+    if [ $HCP == "true" ]; then
+        NODES_COUNT=$2
+    else
+        # Node count is number of workers + 3 masters + 3 infra
+        NODES_COUNT=$(($2+6))
+    fi
     # 180 seconds per node, waiting 5 times 60 seconds (5*60 = 5 minutes) with all nodes ready to finalize
     while [ ${ITERATIONS} -le ${NODES_COUNT} ] ; do
         NODES_READY_COUNT=$(oc get nodes | grep " Ready " | wc -l)
@@ -70,7 +74,7 @@ _wait_for_workload_nodes_ready(){
     export KUBECONFIG=./kubeconfig
     ALL_READY_ITERATIONS=0
     ITERATIONS=0
-    # Node count is number of workers + 3 masters + 3 infra
+    # Node count is number of workload nodes, which is 3
     NODES_COUNT=3
     # 180 seconds per node, waiting 5 times 60 seconds (5*60 = 5 minutes) with all nodes ready to finalize
     while [ ${ITERATIONS} -le ${NODES_COUNT} ] ; do
@@ -125,7 +129,9 @@ _wait_for_cluster_ready(){
         fi
         if [ ${CLUSTER_STATUS} == "ready" ] ; then
             START_TIMER=$(date +%s)
-            _wait_for_nodes_ready $1 ${COMPUTE_WORKERS_NUMBER}
+            if [ $HCP != "true" ]; then 
+                _wait_for_nodes_ready $1 ${COMPUTE_WORKERS_NUMBER}
+            fi
             CURRENT_TIMER=$(date +%s)
             # Time since rosa cluster is ready until all nodes are ready
             DURATION=$(($CURRENT_TIMER - $START_TIMER))
@@ -332,13 +338,14 @@ index_metadata(){
 "aws_authentication_method": "${AWS_AUTHENTICATION_METHOD}",
 "cluster_version": "${CLUSTER_VERSION}",
 "cluster_major_version" : "${version}",
-"master_count": "$(oc get node -l node-role.kubernetes.io/master= --no-headers 2>/dev/null | wc -l)",
+"master_count": "$(oc get node -l node-role.kubernetes.io/master= --no-headers --ignore-not-found 2>/dev/null | wc -l)",
 "worker_count": "${COMPUTE_WORKERS_NUMBER}",
 "infra_count": "$(oc get node -l node-role.kubernetes.io/infra= --no-headers --ignore-not-found 2>/dev/null | wc -l)",
 "workload_count": "$(oc get node -l node-role.kubernetes.io/workload= --no-headers --ignore-not-found 2>/dev/null | wc -l)",
 "total_node_count": "$(oc get nodes 2>/dev/null | wc -l)",
 "ocp_cluster_name": "$(oc get infrastructure.config.openshift.io cluster -o json 2>/dev/null | jq -r .status.infrastructureName)",
 "cluster_name": "${CLUSTER_NAME}",
+"hosted_cp": "${HCP}",
 "timestamp": "$(date +%s%3N)"
 EOF
 )
@@ -396,6 +403,7 @@ if [[ "$operation" == "install" ]]; then
         printf "INFO: Cluster not found, installing..."
         install
         index_metadata
+        _wait_for_nodes_ready ${CLUSTER_NAME} ${COMPUTE_WORKERS_NUMBER}
         _wait_for_workload_nodes_ready ${CLUSTER_NAME}
     elif [ "${CLUSTER_STATUS}" == "ready" ] ; then
         printf "INFO: Cluster ${CLUSTER_NAME} already installed and ready, reusing..."
