@@ -55,7 +55,7 @@ Three of these feilds (aws, ovn.json, and control-plane.json) are tied together 
 ```
 platforms:
   cloud:
-    versions: ["4.10", 4.11]
+    versions: ["4.11", "4.12"]
     providers: ["aws", "aws-arm", "gcp", "azure", "alibaba"]
     variants:
     - name: sdn-control-plane
