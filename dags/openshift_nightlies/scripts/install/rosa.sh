@@ -167,7 +167,7 @@ setup(){
     cd /home/airflow/workspace
     export PATH=$PATH:/usr/bin:/usr/local/go/bin
     export HOME=/home/airflow
-    export AWS_REGION=us-west-2
+    export AWS_REGION=$(cat ${json_file} | jq -r .aws_region)
     export AWS_ACCOUNT_ID=$(cat ${json_file} | jq -r .aws_account_id)
     export AWS_ACCESS_KEY_ID=$(cat ${json_file} | jq -r .aws_access_key_id)
     export AWS_SECRET_ACCESS_KEY=$(cat ${json_file} | jq -r .aws_secret_access_key)

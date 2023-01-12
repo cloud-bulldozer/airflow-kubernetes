@@ -37,5 +37,6 @@
     "ocm_cli_version": "container",
     "rosa_hcp": "false",
     "staging_mgmt_cluster_name": "",
-    "staging_mgmt_provisioner_shards": ""
+    "staging_mgmt_provisioner_shards": "",
+    "aws_region": "us-west-2"
 }

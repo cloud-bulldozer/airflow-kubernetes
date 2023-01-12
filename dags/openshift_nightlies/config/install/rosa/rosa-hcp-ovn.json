@@ -4,6 +4,7 @@
     "aws_access_key_id": "",
     "aws_secret_access_key": "",
     "aws_authentication_method": "sts",
+    "aws_region": "us-east-2",
     "rosa_environment": "staging",
     "rosa_cli_version": "master",
     "ocm_environment": "stage",
