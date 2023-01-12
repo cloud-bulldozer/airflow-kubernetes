@@ -271,7 +271,7 @@ install(){
             if [ $STAGE_PROV_SHARD != "" ]; then
                 STAGE_CONFIG="--properties provision_shard_id:${STAGE_PROV_SHARD}"
             fi
-            ROSA_HCP_PARAMS="--hosted-cp ${STAGE_CONFIG} --subnet-ids $PUB_SUB,$PRI_SUB --machine-cidr 10.0.0.0/16"
+            ROSA_HCP_PARAMS="--hosted-cp ${STAGE_CONFIG} --subnet-ids $PRI_SUB,$PUB_SUB --machine-cidr 10.0.0.0/16"
         else
             INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --sts -m auto --yes --multi-az"
         fi
