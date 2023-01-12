@@ -181,6 +181,12 @@ setup(){
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .openshift_network_type)
     export ES_SERVER=$(cat ${json_file} | jq -r .es_server)
     export UUID=$(uuidgen)
+    if [ $HCP == "true" ]; then
+        export STAGE_CONFIG=""
+        export CLUSTER_NAME="${CLUSTER_NAME}-${HOSTED_ID}" # perf-413-as3k-hcp-1, perf-413-as3k-hcp-2..
+        export KUBECONFIG_NAME=$(echo $KUBECONFIG_NAME | awk -F-kubeconfig '{print$1}')-$HOSTED_ID-kubeconfig
+        export KUBEADMIN_NAME=$(echo $KUBEADMIN_NAME | awk -F-kubeadmin '{print$1}')-$HOSTED_ID-kubeadmin
+    fi
     if [[ $INSTALL_METHOD == "osd" ]]; then
         export OCM_CLI_VERSION=$(cat ${json_file} | jq -r .ocm_cli_version)
         if [[ ${OCM_CLI_VERSION} != "container" ]]; then
@@ -261,10 +267,6 @@ install(){
             INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --sts -m auto --yes"
         fi
         if [ $HCP == "true" ]; then
-            export STAGE_CONFIG=""
-            export CLUSTER_NAME="${CLUSTER_NAME}-${HOSTED_ID}" # perf-413-as3k-hcp-1, perf-413-as3k-hcp-2..
-            export KUBECONFIG_NAME=$(echo $KUBECONFIG_NAME | awk -F-kubeconfig '{print$1}')-$HOSTED_ID-kubeconfig
-            export KUBEADMIN_NAME=$(echo $KUBEADMIN_NAME | awk -F-kubeadmin '{print$1}')-$HOSTED_ID-kubeadmin
             STAGE_PROV_SHARD=$(cat ${json_file} | jq -r .staging_mgmt_provisioner_shards)
             PUB_SUB=$(cat ${json_file} | jq -r .public_subnet)
             PRI_SUB=$(cat ${json_file} | jq -r .private_subnet)
