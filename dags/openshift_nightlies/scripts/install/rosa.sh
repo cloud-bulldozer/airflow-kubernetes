@@ -181,6 +181,7 @@ setup(){
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .openshift_network_type)
     export ES_SERVER=$(cat ${json_file} | jq -r .es_server)
     export UUID=$(uuidgen)
+    export HCP=$(cat ${json_file} | jq -r .rosa_hcp)
     if [ $HCP == "true" ]; then
         export STAGE_CONFIG=""
         export CLUSTER_NAME="${CLUSTER_NAME}-${HOSTED_ID}" # perf-413-as3k-hcp-1, perf-413-as3k-hcp-2..
@@ -260,7 +261,6 @@ install(){
         fi
         ocm create cluster --ccs --provider aws --region ${AWS_REGION} --aws-account-id ${AWS_ACCOUNT_ID} --aws-access-key-id ${AWS_ACCESS_KEY_ID} --aws-secret-access-key ${AWS_SECRET_ACCESS_KEY} --channel-group ${MANAGED_CHANNEL_GROUP} --version ${OCM_VERSION} --multi-az  --compute-machine-type ${COMPUTE_WORKERS_TYPE} --network-type ${NETWORK_TYPE} ${CLUSTER_NAME} ${CLUSTER_SIZE}
     else
-        export HCP=$(cat ${json_file} | jq -r .rosa_hcp)
         export INSTALLATION_PARAMS=""
         export ROSA_HCP_PARAMS=""
         if [ $AWS_AUTHENTICATION_METHOD == "sts" ] ; then
