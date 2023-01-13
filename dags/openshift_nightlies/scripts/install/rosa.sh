@@ -275,7 +275,7 @@ install(){
             fi
             ROSA_HCP_PARAMS="--hosted-cp ${STAGE_CONFIG} --subnet-ids $PRI_SUB,$PUB_SUB --machine-cidr 10.0.0.0/16"
         else
-            INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --sts -m auto --yes --multi-az"
+            INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --multi-az"  # Multi AZ is not supported on hosted-cp cluster
         fi
         rosa create cluster --tags=User:${GITHUB_USERNAME} --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --replicas ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS} ${ROSA_HCP_PARAMS}
     fi
