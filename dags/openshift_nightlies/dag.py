@@ -174,11 +174,11 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
                 install_cluster = installer.get_install_hcp_task()
                 hosted_installer = self._get_hypershift_openshift_installer()
                 wait_task = hosted_installer.wait_task()
-                wait_beforce_cleanup = hosted_installer.wait_task(id="wait_beforce_cleanup")
+                wait_before_cleanup = hosted_installer.wait_task(id="wait_before_cleanup")
                 for c_id, install_hc, cleanup_hc in install_cluster:
                     benchmark = self._add_benchmarks(task_group=c_id)
                     hc_connect_to_platform = self._get_hc_platform_connector(task_group=c_id).get_task()                
-                    install_hc >> wait_task >> [hc_connect_to_platform, benchmark] >> wait_beforce_cleanup >> cleanup_hc
+                    install_hc >> wait_task >> [hc_connect_to_platform, benchmark] >> wait_before_cleanup >> cleanup_hc
             else:
                 install_cluster = installer.get_install_task()
                 connect_to_platform = self._get_platform_connector().get_task()
@@ -246,7 +246,7 @@ class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 
         rosa_post_installation = self._get_rosa_postinstall_setup()._get_rosa_postinstallation()
         wait_task = hosted_installer.wait_task()
-        wait_beforce_cleanup = hosted_installer.wait_task(id="wait_beforce_cleanup")
+        wait_before_cleanup = hosted_installer.wait_task(id="wait_before_cleanup")
         if self.config.cleanup_on_success:
             cleanup_mgmt_cluster = mgmt_installer.get_cleanup_task()
             cleanup_hosted_cluster = hosted_installer.get_hosted_cleanup_task()
@@ -256,7 +256,7 @@ class HypershiftNightlyDAG(AbstractOpenshiftNightlyDAG):
                 hc_connect_to_platform = self._get_hc_platform_connector(task_group=c_id).get_task()            
                 install_mgmt_cluster >> rosa_post_installation >> connect_to_platform
                 connect_to_platform >> install_hc >> wait_task >> [hc_connect_to_platform, benchmark]
-                [hc_connect_to_platform, benchmark] >> wait_beforce_cleanup >> cleanup_hc >> cleanup_operator >> cleanup_mgmt_cluster
+                [hc_connect_to_platform, benchmark] >> wait_before_cleanup >> cleanup_hc >> cleanup_operator >> cleanup_mgmt_cluster
         else:
             install_hosted_cluster = hosted_installer.get_hosted_install_task()
             for c_id, install_hc in install_hosted_cluster:
