@@ -6,17 +6,7 @@
             "command": "./run_scale_fromgit.sh",
             "env": {
                 "SCALE": "24",
-                "METADATA_COLLECTION": "false",
-                "WORKLOAD_NODE_ROLE": "workload"
-            }
-        },
-        {
-            "name": "scale-120",
-            "workload": "scale-perf",
-            "command": "./run_scale_fromgit.sh",
-            "env": {
-                "SCALE": "120",
-                "METADATA_COLLECTION": "false",
+                "METADATA_COLLECTION": "true",
                 "WORKLOAD_NODE_ROLE": "workload"
             }
         },
@@ -27,14 +17,27 @@
             "custom_cmd": "kube-burner ocp node-density --uuid=${UUID} --pods-per-node=245 --timeout=2h --pod-ready-threshold=5s --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner"
         },
         {
+            "name": "node-density-heavy",
+            "workload": "kube-burner",
+            "trigger_rule": "all_done",
+            "custom_cmd": "kube-burner ocp node-density-heavy --uuid=${UUID} --pods-per-node=245 --timeout=2h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner"
+        },
+        {
+            "name": "node-density-cni",
+            "workload": "kube-burner",
+            "trigger_rule": "all_done",
+            "custom_cmd": "kube-burner ocp node-density-cni --uuid=${UUID} --pods-per-node=245 --timeout=2h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner"
+        },
+        {
             "name": "cluster-density",
             "workload": "kube-burner",
             "trigger_rule": "all_done",
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "cluster-density",
-                "JOB_ITERATIONS": "1000",
+                "JOB_ITERATIONS": "500",
                 "JOB_TIMEOUT": "18000",
+                "STEP_SIZE": "30s",
                 "QPS": "20",
                 "BURST": "20",
                 "LOG_LEVEL": "info",
@@ -49,7 +52,7 @@
             "name": "cluster-density-v2",
             "workload": "kube-burner",
             "trigger_rule": "all_done",
-            "custom_cmd": "kube-burner ocp cluster-density --uuid=${UUID} --iterations=750 --timeout=3h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --churn=true --churn-delay=2m --churn-duration=1h --churn-percent=10"
+            "custom_cmd": "kube-burner ocp cluster-density --uuid=${UUID} --iterations=500 --timeout=3h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner"
         }
     ]
 }

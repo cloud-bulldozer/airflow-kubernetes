@@ -1,11 +1,11 @@
 {
     "benchmarks": [
         {
-            "name": "scale-27",
+            "name": "scale-24",
             "workload": "scale-perf",
             "command": "./run_scale_fromgit.sh",
             "env": {
-                "SCALE": "27",
+                "SCALE": "24",
                 "METADATA_COLLECTION": "false",
                 "WORKLOAD_NODE_ROLE": "workload"
             }
@@ -31,45 +31,35 @@
             }
         },
         {
+            "name": "node-density",
+            "workload": "kube-burner",
+            "trigger_rule": "all_done",
+            "custom_cmd": "kube-burner ocp node-density --uuid=${UUID} --pods-per-node=245 --timeout=2h --pod-ready-threshold=5s --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner"
+        },
+        {
             "name": "cluster-density",
             "workload": "kube-burner",
+            "trigger_rule": "all_done",
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "cluster-density",
                 "JOB_ITERATIONS": "4000",
                 "JOB_TIMEOUT": "18000",
-                "STEP_SIZE": "2m",
                 "QPS": "20",
                 "BURST": "20",
                 "LOG_LEVEL": "info",
+                "PLATFORM_ALERTS": "false",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
                 "MUST_GATHER_EACH_TASK": "true",
-                "CLEANUP_TIMEOUT": "2h",
                 "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
             }
         },
         {
-            "name": "node-density",
+            "name": "cluster-density-v2",
             "workload": "kube-burner",
             "trigger_rule": "all_done",
-            "command": "./run.sh",
-            "env": {
-                "WORKLOAD": "node-density",
-                "PODS_PER_NODE": "245",
-                "NODE_COUNT": "252",
-                "JOB_TIMEOUT": "18000",
-                "QPS": "20",
-                "BURST": "20",
-                "STEP_SIZE": "2m",
-                "LOG_LEVEL": "info",
-                "CLEANUP_WHEN_FINISH": "true",
-                "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true",
-                "CLEANUP_TIMEOUT": "2h",
-                "METRICS_PROFILE": "metrics-profiles/metrics-aggregated.yaml",
-                "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
-            }
+            "custom_cmd": "kube-burner ocp cluster-density --uuid=${UUID} --iterations=3000 --timeout=6h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --churn=true --churn-delay=2m --churn-duration=1h --churn-percent=10"
         }
     ]
 }
