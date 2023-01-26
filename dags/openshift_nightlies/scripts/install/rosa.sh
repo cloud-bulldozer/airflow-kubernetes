@@ -162,6 +162,31 @@ _wait_for_cluster_ready(){
     exit 1
 }
 
+_create_aws_vpc(){
+    echo "Allocate Elastic IP"
+    export E_IP=$(aws ec2 allocate-address  --tag-specifications ResourceType=elastic-ip,Tags='[{Key=HostedClusterName,Value="$CLUSTER_NAME"},{Key=Name,Value="vpc-$CLUSTER_NAME"}]' --output json | jq -r "AllocationId")
+    echo "Create Internet Gateway"
+    export IGW=$(aws ec2 create-internet-gateway --tag-specifications ResourceType=internet-gateway,Tags='[{Key=HostedClusterName,Value="$CLUSTER_NAME"},{Key=Name,Value="igw-$CLUSTER_NAME"}]' --output json | jq -r "InternetGateway.InternetGatewayId")
+    echo "Create VPC and attach internet gateway"
+    export VPC=$(aws ec2 create-vpc --cidr-block 10.0.0.0/16 --tag-specifications ResourceType=vpc,Tags='[{Key=HostedClusterName,Value="$CLUSTER_NAME"},{Key=Name,Value="vpc-$CLUSTER_NAME"}]' --output json | jq -r "Vpc.VpcId")
+    aws ec2 modify-vpc-attribute --vpc-id $VPC --enable-dns-support "{\"Value\":true}" 
+    aws ec2 modify-vpc-attribute --vpc-id $VPC --enable-dns-hostnames "{\"Value\":true}"
+    aws ec2 attach-internet-gateway --vpc-id $VPC --internet-gateway-id $IGW
+    echo "Create Subnets and Route tables"
+    export PUB_SUB=$(aws ec2 create-subnet --vpc-id $VPC --cidr-block 10.0.1.0/24 --tag-specifications ResourceType=subnet,Tags='[{Key=HostedClusterName,Value="$CLUSTER_NAME"},{Key=Name,Value="public-subnet-$CLUSTER_NAME"}]' --output json | jq -r "Subnet.SubnetId")
+    export NGW=$(aws ec2 create-nat-gateway --subnet-id $PUB_SUB --allocation-id $E_IP --tag-specifications ResourceType=natgateway,Tags='[{Key=HostedClusterName,Value="$CLUSTER_NAME"},{Key=Name,Value="ngw-$CLUSTER_NAME"}]' --output json | jq -r "NatGateway.NatGatewayId")
+    export PUB_RT_TB=$(aws ec2 create-route-table --vpc-id $VPC --allocation-id $E_IP --tag-specifications ResourceType=route-table,Tags='[{Key=HostedClusterName,Value="$CLUSTER_NAME"},{Key=Name,Value="public-rt-table-$CLUSTER_NAME"}]' --output json | jq -r "RouteTable.RouteTableId")
+    aws ec2 associate-route-table --route-table-id $PUB_RT_TB --subnet-id $PUB_SUB
+    aws ec2 create-route --route-table-id $PUB_RT_TB --destination-cidr-block 0.0.0.0/0 --gateway-id $IGW
+    export PRI_SUB=$(aws ec2 create-subnet --vpc-id $VPC --cidr-block 10.0.2.0/24 --tag-specifications ResourceType=subnet,Tags='[{Key=HostedClusterName,Value="$CLUSTER_NAME"},{Key=Name,Value="private-subnet-$CLUSTER_NAME"}]' --output json | jq -r "Subnet.SubnetId")
+    export PRI_RT_TB=$(aws ec2 create-route-table --vpc-id $VPC --allocation-id $E_IP --tag-specifications ResourceType=route-table,Tags='[{Key=HostedClusterName,Value="$CLUSTER_NAME"},{Key=Name,Value="private-rt-table-$CLUSTER_NAME"}]' --output json | jq -r "RouteTable.RouteTableId")
+    aws ec2 associate-route-table --route-table-id $PRI_RT_TB --subnet-id $PRI_SUB
+    aws ec2 create-route --route-table-id $PRI_RT_TB --destination-cidr-block 0.0.0.0/0 --gateway-id $NGW
+    echo "Create private VPC endpoint to S3"
+    aws ec2 create-vpc-endpoint --vpc-id $VPC --service-name com.amazonaws.$AWS_REGION.s3 --route-table-ids $PRI_RT_TB --tag-specifications ResourceType=vpc-endpoint,Tags='[{Key=HostedClusterName,Value="$CLUSTER_NAME"},{Key=Name,Value="vpce-$CLUSTER_NAME"}]'
+}
+
+
 setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
@@ -272,6 +297,10 @@ install(){
             PRI_SUB=$(cat ${json_file} | jq -r .private_subnet)
             if [ $STAGE_PROV_SHARD != "" ]; then
                 STAGE_CONFIG="--properties provision_shard_id:${STAGE_PROV_SHARD}"
+            fi
+            if [ $PUB_SUB == "" ] || [ $PRI_SUB == "" ]; then 
+                echo "Create VPCs and Subnets.."
+                _create_aws_vpc
             fi
             ROSA_HCP_PARAMS="--hosted-cp ${STAGE_CONFIG} --subnet-ids $PRI_SUB,$PUB_SUB --machine-cidr 10.0.0.0/16"
         else

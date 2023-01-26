@@ -128,7 +128,7 @@ else
     cleanup_old_resources
     generate_external_labels
     install_grafana_agent
-    if [[$REL_PLATFORM != "hypershift" ]]; then
+    if [[ $REL_PLATFORM != "hypershift" ]]; then
         install_promtail
     fi
 fi
