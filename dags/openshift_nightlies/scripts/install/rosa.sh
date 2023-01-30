@@ -374,7 +374,9 @@ if [[ "$operation" == "install" ]]; then
         printf "INFO: Cluster not found, installing..."
         install
         index_metadata
-        _wait_for_workload_nodes_ready ${CLUSTER_NAME}
+        if [[ $WORKLOAD_TYPE != "null" ]]; then
+          _wait_for_workload_nodes_ready ${CLUSTER_NAME}
+        fi
     elif [ "${CLUSTER_STATUS}" == "ready" ] ; then
         printf "INFO: Cluster ${CLUSTER_NAME} already installed and ready, reusing..."
 	    postinstall
