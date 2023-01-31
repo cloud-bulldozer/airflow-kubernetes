@@ -41,6 +41,7 @@ _wait_for_nodes_ready(){
     ITERATIONS=0
     if [ $HCP == "true" ]; then
         NODES_COUNT=$2
+        ALL_READY_ITERATIONS=5
     else
         # Node count is number of workers + 3 masters + 3 infra
         NODES_COUNT=$(($2+6))
@@ -52,7 +53,7 @@ _wait_for_nodes_ready(){
             echo "WARNING: ${ITERATIONS}/${NODES_COUNT} iterations. ${NODES_READY_COUNT}/${NODES_COUNT} nodes ready. Waiting 180 seconds for next check"
             ALL_READY_ITERATIONS=0
             ITERATIONS=$((${ITERATIONS}+1))
-            sleep 180
+            sleep $PAUSE
         else
             if [ ${ALL_READY_ITERATIONS} -eq 5 ] ; then
                 echo "INFO: ${ALL_READY_ITERATIONS}/5. All nodes ready, continuing process"
