@@ -227,7 +227,7 @@ _delete_aws_vpc(){
     
     export IGW=$(aws ec2 describe-internet-gateways --filters "Name=tag:Name,Values=igw-$CLUSTER_NAME" --output json | jq -r ".InternetGateways[0].InternetGatewayId")
     aws ec2 detach-internet-gateway --internet-gateway-id $IGW --vpc-id $VPC 
-    aws ec2 delete-internet-gateway --internet-gateway-id  
+    aws ec2 delete-internet-gateway --internet-gateway-id $IGW
 
     echo "Delete Security Group Rules"
     for g in $(aws ec2 describe-security-groups --filters "Name=vpc-id,Values=$VPC" --output json | jq -r ".SecurityGroups[]" | jq -r 'select(.GroupName != "default")' | jq -r ".GroupId"); 
