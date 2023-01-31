@@ -207,40 +207,6 @@ platforms:
           install: rogcp/ovn.json
           benchmarks: data-plane.json
 
-  aro:
-    versions: ["4.10", "4.11"]
-    variants:
-      - name: sdn-control-plane
-        schedule:  "00 13 * * 3"
-        config:
-          install: azure/sdn-cp.json
-          benchmarks: control-plane.json
-      - name: ovn-control-plane
-        schedule:  "10 13 * * 1"
-        config:
-          install: azure/ovn-cp.json
-          benchmarks: control-plane.json
-      - name: sdn-data-plane
-        schedule: "20 13 * * 3"
-        config:
-          install: azure/sdn-dp.json
-          benchmarks: data-plane.json
-      - name: ovn-data-plane
-        schedule: "30 13 * * 3"
-        config:
-          install: azure/ovn-dp.json
-          benchmarks: data-plane.json
-      - name: ovn-large-control-plane
-        schedule: "40 13 * * 3"
-        config:
-          install: azure/ovn-large-cp.json
-          benchmarks: control-plane.json
-      - name: sdn-large-control-plane
-        schedule: "50 13 * * 3"
-        config:
-          install: azure/sdn-large-cp.json
-          benchmarks: control-plane.json
-
   hypershift:
     versions: ["4.11", "4.12"]
     variants:
