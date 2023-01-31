@@ -165,7 +165,7 @@ _wait_for_cluster_ready(){
 _create_aws_vpc(){
 
     echo "Allocate Elastic IP"
-    export E_IP=$(aws ec2 allocate-address  --tag-specifications ResourceType=elastic-ip,Tags='[{Key=HostedClusterName,Value="$CLUSTER_NAME"},{Key=Name,Value="vpc-$CLUSTER_NAME"}]' --output json | jq -r "AllocationId")
+    export E_IP=$(aws ec2 allocate-address  --tag-specifications ResourceType=elastic-ip,Tags='[{Key=HostedClusterName,Value="$CLUSTER_NAME"},{Key=Name,Value="eip-$CLUSTER_NAME"}]' --output json | jq -r "AllocationId")
 
     echo "Create Internet Gateway"
     export IGW=$(aws ec2 create-internet-gateway --tag-specifications ResourceType=internet-gateway,Tags='[{Key=HostedClusterName,Value="$CLUSTER_NAME"},{Key=Name,Value="igw-$CLUSTER_NAME"}]' --output json | jq -r "InternetGateway.InternetGatewayId")
