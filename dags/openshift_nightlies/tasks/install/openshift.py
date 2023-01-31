@@ -1,16 +1,16 @@
 import abc
-import json
-from abc import ABC, abstractmethod
-from os import environ
-
-import requests
-from airflow.models import Variable
-from airflow.operators.bash import BashOperator
-from common.models.dag_config import DagConfig
-from kubernetes.client import models as k8s
-from openshift_nightlies.models.release import OpenshiftRelease
+from openshift_nightlies.util import var_loader, executor, constants
 from openshift_nightlies.tasks.index.status import StatusIndexer
-from openshift_nightlies.util import constants, executor, var_loader
+from openshift_nightlies.models.release import OpenshiftRelease
+from common.models.dag_config import DagConfig
+from os import environ
+import json
+import requests
+from abc import ABC, abstractmethod
+
+from airflow.operators.bash import BashOperator
+from airflow.models import Variable
+from kubernetes.client import models as k8s
 
 class AbstractOpenshiftInstaller(ABC):
     def __init__(self, dag, config: DagConfig, release: OpenshiftRelease):
@@ -33,9 +33,8 @@ class AbstractOpenshiftInstaller(ABC):
         self.install_secrets = var_loader.get_secret(
             f"openshift_install_config", deserialize_json=True)
         self.aws_creds = var_loader.get_secret("aws_creds", deserialize_json=True)
-        self.azure_creds = var_loader.get_secret("azure_creds", deserialize_json=True)
         self.gcp_creds = var_loader.get_secret("gcp_creds", deserialize_json=True)
-        self.azure_creds = var_loader.get_secret("azure_creds")
+        self.azure_creds = var_loader.get_secret("azure_creds", deserialize_json=True)
         self.alibaba_creds = var_loader.get_secret("alibaba_creds", deserialize_json=True)
         self.ocp_pull_secret = var_loader.get_secret("osp_ocp_pull_creds")
         self.openstack_creds = var_loader.get_secret("openstack_creds", deserialize_json=True)
@@ -97,7 +96,6 @@ class AbstractOpenshiftInstaller(ABC):
             "KUBECONFIG_NAME": f"{self.release_name}-kubeconfig",
             "KUBEADMIN_NAME": f"{self.release_name}-kubeadmin",
             "OPENSHIFT_INSTALL_PULL_SECRET": self.ocp_pull_secret,
-            "AZ_MANAGED_SERVICES": self.azure_creds,
             "GCP_MANAGED_SERVICES_TOKEN": self.rogcp_creds,
             "GITHUB_USERNAME": self.github_username,
             "AWS_REGION": self.config['aws_region_for_openshift'],
