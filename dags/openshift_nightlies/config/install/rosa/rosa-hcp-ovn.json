@@ -16,8 +16,6 @@
     "machineset_metadata_label_prefix": "machine.openshift.io",
     "staging_mgmt_cluster_name": "hs-mc-mdqo7k4u0-pjj8f", 
     "staging_mgmt_provisioner_shards": "0085c398-726e-11ed-a42d-0a580a810706",
-    "public_subnet": "",
-    "private_subnet": "",
     "number_of_hostedcluster": 2,
     "hcp_install_interval": 60
 }

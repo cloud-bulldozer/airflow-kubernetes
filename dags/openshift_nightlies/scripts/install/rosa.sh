@@ -344,15 +344,10 @@ install(){
             INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --sts -m auto --yes"
         fi
         if [ $HCP == "true" ]; then
+            _create_aws_vpc
             STAGE_PROV_SHARD=$(cat ${json_file} | jq -r .staging_mgmt_provisioner_shards)
-            PUB_SUB=$(cat ${json_file} | jq -r .public_subnet)
-            PRI_SUB=$(cat ${json_file} | jq -r .private_subnet)
             if [ $STAGE_PROV_SHARD != "" ]; then
                 STAGE_CONFIG="--properties provision_shard_id:${STAGE_PROV_SHARD}"
-            fi
-            if [ $PUB_SUB == "" ] || [ $PRI_SUB == "" ]; then 
-                echo "Create VPCs and Subnets.."
-                _create_aws_vpc
             fi
             ROSA_HCP_PARAMS="--hosted-cp ${STAGE_CONFIG} --subnet-ids $PRI_SUB,$PUB_SUB --machine-cidr 10.0.0.0/16"
         else
