@@ -185,14 +185,14 @@ _create_aws_vpc(){
     export PUB_SUB=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=public-subnet-$CLUSTER_NAME" --output json | jq -r ".Subnets[0].SubnetId")
     aws ec2 create-nat-gateway --subnet-id $PUB_SUB --allocation-id $E_IP --tag-specifications ResourceType=natgateway,Tags="[{Key=HostedClusterName,Value=$CLUSTER_NAME},{Key=Name,Value=ngw-$CLUSTER_NAME}]" --output json
     export NGW=$(aws ec2 describe-nat-gateways --filter "Name=tag:Name,Values=ngw-$CLUSTER_NAME" --output json | jq -r ".NatGateways[0].NatGatewayId")
-    aws ec2 create-route-table --vpc-id $VPC --allocation-id $E_IP --tag-specifications ResourceType=route-table,Tags="[{Key=HostedClusterName,Value=$CLUSTER_NAME},{Key=Name,Value=public-rt-table-$CLUSTER_NAME}]" --output json
+    aws ec2 create-route-table --vpc-id $VPC --tag-specifications ResourceType=route-table,Tags="[{Key=HostedClusterName,Value=$CLUSTER_NAME},{Key=Name,Value=public-rt-table-$CLUSTER_NAME}]" --output json
     export PUB_RT_TB=$(aws ec2 describe-route-tables --filters "Name=tag:Name,Values=public-rt-table-$CLUSTER_NAME" --output json | jq -r '.RouteTables[0].RouteTableId')
     aws ec2 associate-route-table --route-table-id $PUB_RT_TB --subnet-id $PUB_SUB
     aws ec2 create-route --route-table-id $PUB_RT_TB --destination-cidr-block 0.0.0.0/0 --gateway-id $IGW
 
     aws ec2 create-subnet --vpc-id $VPC --cidr-block 10.0.2.0/24 --tag-specifications ResourceType=subnet,Tags="[{Key=HostedClusterName,Value=$CLUSTER_NAME},{Key=Name,Value=private-subnet-$CLUSTER_NAME}]" --output json
     export PRI_SUB=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=private-subnet-$CLUSTER_NAME" --output json | jq -r ".Subnets[0].SubnetId")
-    aws ec2 create-route-table --vpc-id $VPC --allocation-id $E_IP --tag-specifications ResourceType=route-table,Tags="[{Key=HostedClusterName,Value=$CLUSTER_NAME},{Key=Name,Value=private-rt-table-$CLUSTER_NAME}]" --output json
+    aws ec2 create-route-table --vpc-id $VPC --tag-specifications ResourceType=route-table,Tags="[{Key=HostedClusterName,Value=$CLUSTER_NAME},{Key=Name,Value=private-rt-table-$CLUSTER_NAME}]" --output json
     export PRI_RT_TB=$(aws ec2 describe-route-tables --filters "Name=tag:Name,Values=private-rt-table-$CLUSTER_NAME" --output json | jq -r '.RouteTables[0].RouteTableId')
     aws ec2 associate-route-table --route-table-id $PRI_RT_TB --subnet-id $PRI_SUB
     aws ec2 create-route --route-table-id $PRI_RT_TB --destination-cidr-block 0.0.0.0/0 --gateway-id $NGW
