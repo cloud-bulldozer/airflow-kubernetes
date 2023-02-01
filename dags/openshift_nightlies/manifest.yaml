@@ -39,7 +39,7 @@ platforms:
     - name: ovn-control-plane
       schedule: "0 12 * * 3"
       config: 
-        install: ovn-dp.json
+        install: ovn-cp.json
         benchmarks: control-plane.json
     - name: sdn-data-plane
       schedule: "0 12 * * 1"
