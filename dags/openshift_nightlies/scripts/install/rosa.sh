@@ -250,24 +250,29 @@ _delete_aws_vpc(){
     if [ $IGW != null ]; then _aws_cmd "delete-internet-gateway --internet-gateway-id $IGW"; fi
 
     echo "Delete Security Group Rules"
-    for g in $(aws ec2 describe-security-groups --filters "Name=vpc-id,Values=$VPC" --output json | jq -r ".SecurityGroups[]" | jq -r 'select(.GroupName != "default")' | jq -r ".GroupId"); 
-        do 
-            for r in $(aws ec2 describe-security-group-rules --filters "Name=group-id,Values=$g" --output json | jq -r ".SecurityGroupRules[]" | jq -r "select(.IsEgress == false)" | jq -r ".SecurityGroupRuleId");
-                do 
-                    aws ec2 revoke-security-group-ingress --security-group-rule-ids $r  --group-id  $g
-                done
+    for g in $(aws ec2 describe-security-groups --filters "Name=vpc-id,Values=$VPC" --output json | jq -r ".SecurityGroups[].GroupId"); 
+    do 
+        for r in $(aws ec2 describe-security-group-rules --filters "Name=group-id,Values=$g" --output json | jq -r ".SecurityGroupRules[]" | jq -r "select(.IsEgress == false)" | jq -r ".SecurityGroupRuleId");
+            do 
+                aws ec2 revoke-security-group-ingress --security-group-rule-ids $r  --group-id  $g
+            done
 
-            for r in $(aws ec2 describe-security-group-rules --filters "Name=group-id,Values=$g" --output json | jq -r ".SecurityGroupRules[]" | jq -r "select(.IsEgress == true)" | jq -r ".SecurityGroupRuleId");
-                do 
-                    aws ec2 revoke-security-group-egress --security-group-rule-ids $r  --group-id  $g
-                done
-            echo "Delete Security Groups $g"
-            _aws_cmd "delete-security-group --group-id $g"
-        done
+        for r in $(aws ec2 describe-security-group-rules --filters "Name=group-id,Values=$g" --output json | jq -r ".SecurityGroupRules[]" | jq -r "select(.IsEgress == true)" | jq -r ".SecurityGroupRuleId");
+            do 
+                aws ec2 revoke-security-group-egress --security-group-rule-ids $r  --group-id  $g
+            done
+    done
+
+    for g in $(aws ec2 describe-security-groups --filters "Name=vpc-id,Values=$VPC" --output json | jq -r ".SecurityGroups[]" | jq -r 'select(.GroupName != "default")' | jq -r ".GroupId"); 
+    do 
+        echo "Delete Security Groups $g"
+        _aws_cmd "delete-security-group --group-id $g"
+    done
 
     echo "Delete VPC $VPC"
     if [ $VPC != null ]; then _aws_cmd "delete-vpc --vpc-id $VPC"; fi
 }
+
 setup(){
     mkdir /home/airflow/workspace
     cd /home/airflow/workspace
