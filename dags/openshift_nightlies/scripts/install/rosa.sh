@@ -73,13 +73,12 @@ _wait_for_nodes_ready(){
 _aws_cmd(){
     ITR=0
     while [ $ITR -le 5 ]; do
-        aws ec2 $1
-        if [ $? -ne 0 ]; then
+        if [ $(aws ec2 $1) ]; then
+            return 0
+        else
             echo "Failed to $1, retrying after 30 seconds"
             ITR=$(($ITR+1))
             sleep 30
-        else
-            return 0
         fi
     done
 }
