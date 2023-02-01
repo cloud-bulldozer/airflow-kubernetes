@@ -25,6 +25,13 @@ class E2EBenchmarks():
         self.dag_config = config
         self.snappy_creds = var_loader.get_secret("snappy_creds", deserialize_json=True)
         self.es_server_baseline = var_loader.get_secret("es_server_baseline")
+        self.gsheet = var_loader.get_secret("gsheet_key")
+
+        # Write gsheet data to /tmp/key.json
+        if len(self.gsheet) > 1 :
+            f = open("/tmp/key.json","w")
+            f.write(json.dumps(self.gsheet))
+            f.close()
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
@@ -38,6 +45,7 @@ class E2EBenchmarks():
             "PLATFORM": self.release.platform,
             "TASK_GROUP": self.task_group,
             "ES_SERVER_BASELINE": self.es_server_baseline
+
         }
         self.env.update(self.dag_config.dependencies)
 
