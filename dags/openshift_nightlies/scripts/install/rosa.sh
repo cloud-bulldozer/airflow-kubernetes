@@ -70,6 +70,20 @@ _wait_for_nodes_ready(){
     exit 1
 }
 
+_aws_cmd(){
+    ITR=0
+    while [ $ITR -le 5 ]; do
+        aws ec2 $1
+        if [ $? -ne 0 ]; then
+            echo "Failed to $1, retrying after 30 seconds"
+            ITR=$(($ITR+1))
+            sleep 30
+        else
+            return 0
+        fi
+    done
+}
+
 _wait_for_workload_nodes_ready(){
     _download_kubeconfig "$(_get_cluster_id $1)" ./kubeconfig
     export KUBECONFIG=./kubeconfig
@@ -205,30 +219,35 @@ _create_aws_vpc(){
 _delete_aws_vpc(){
     echo "Delete VPC Endpoints"
     export VPC=$(aws ec2 describe-vpcs --filters "Name=tag:HostedClusterName,Values=$CLUSTER_NAME" --output json | jq -r '.Vpcs[0].VpcId')
-    aws ec2 delete-vpc-endpoints --vpc-endpoint-ids $(aws ec2 describe-vpc-endpoints --filters "Name=tag:Name,Values=vpce-$CLUSTER_NAME" --output json | jq -r '.VpcEndpoints[0].VpcEndpointId')
+    export VPCE=$(aws ec2 describe-vpc-endpoints --filters "Name=tag:Name,Values=vpce-$CLUSTER_NAME" --output json | jq -r '.VpcEndpoints[0].VpcEndpointId')
+    if [ $VPCE != null ]; then _aws_cmd "delete-vpc-endpoints --vpc-endpoint-ids $VPCE"; fi
 
     echo "Delete Subnets and Route tables"
     export PRI_RT_TB=$(aws ec2 describe-route-tables --filters "Name=tag:Name,Values=private-rt-table-$CLUSTER_NAME" --output json | jq -r '.RouteTables[0].RouteTableId')
     export RT_TB_ASSO_ID=$(aws ec2 describe-route-tables --filters "Name=tag:Name,Values=private-rt-table-$CLUSTER_NAME" --output json | jq -r '.RouteTables[0].Associations[0].RouteTableAssociationId')
+    export PRI_SUB=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=private-subnet-$CLUSTER_NAME" --output json | jq -r ".Subnets[0].SubnetId")
 
-    aws ec2 delete-route --route-table-id $PRI_RT_TB --destination-cidr-block 0.0.0.0/0
-    aws ec2 disassociate-route-table --association-id $RT_TB_ASSO_ID 
-    aws ec2 delete-route-table --route-table-id $PRI_RT_TB 
-    aws ec2 delete-subnet --subnet-id $(aws ec2 describe-subnets --filters "Name=tag:Name,Values=private-subnet-$CLUSTER_NAME" --output json | jq -r ".Subnets[0].SubnetId")
+    if [ $PRI_RT_TB != null ]; then _aws_cmd "delete-route --route-table-id $PRI_RT_TB --destination-cidr-block 0.0.0.0/0"; fi
+    if [ $RT_TB_ASSO_ID != null ]; then _aws_cmd "disassociate-route-table --association-id $RT_TB_ASSO_ID"; fi
+    if [ $PRI_RT_TB != null ]; then _aws_cmd "delete-route-table --route-table-id $PRI_RT_TB"; fi
+    if [ $PRI_SUB != null ]; then _aws_cmd "delete-subnet --subnet-id $PRI_SUB"; fi
 
     export PUB_RT_TB=$(aws ec2 describe-route-tables --filters "Name=tag:Name,Values=public-rt-table-$CLUSTER_NAME" --output json | jq -r '.RouteTables[0].RouteTableId')
     export RT_TB_ASSO_ID=$(aws ec2 describe-route-tables --filters "Name=tag:Name,Values=public-rt-table-$CLUSTER_NAME" --output json | jq -r '.RouteTables[0].Associations[0].RouteTableAssociationId')
+    export NGW=$(aws ec2 describe-nat-gateways --filter "Name=tag:Name,Values=ngw-$CLUSTER_NAME" --output json | jq -r ".NatGateways[0].NatGatewayId")
+    export PUB_SUB=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=public-subnet-$CLUSTER_NAME" --output json | jq -r ".Subnets[0].SubnetId")
+    export E_IP=$(aws ec2 describe-addresses --filters "Name=tag:Name,Values=eip-$CLUSTER_NAME" --output json | jq -r ".Addresses[0].AllocationId")
 
-    aws ec2 delete-route --route-table-id $PUB_RT_TB --destination-cidr-block 0.0.0.0/0
-    aws ec2 disassociate-route-table --association-id $RT_TB_ASSO_ID 
-    aws ec2 delete-route-table --route-table-id $PUB_RT_TB 
-    aws ec2 delete-nat-gateway --nat-gateway-id $(aws ec2 describe-nat-gateways --filter "Name=tag:Name,Values=ngw-$CLUSTER_NAME" --output json | jq -r ".NatGateways[0].NatGatewayId")
-    aws ec2 delete-subnet --subnet-id $(aws ec2 describe-subnets --filters "Name=tag:Name,Values=public-subnet-$CLUSTER_NAME" --output json | jq -r ".Subnets[0].SubnetId")
-    aws ec2 release-address --allocation-id $(aws ec2 describe-addresses --filters "Name=tag:Name,Values=eip-$CLUSTER_NAME" --output json | jq -r ".Addresses[0].AllocationId")
+    if [ $PUB_RT_TB != null ]; then _aws_cmd "delete-route --route-table-id $PUB_RT_TB --destination-cidr-block 0.0.0.0/0"; fi
+    if [ $RT_TB_ASSO_ID != null ]; then _aws_cmd "disassociate-route-table --association-id $RT_TB_ASSO_ID"; fi
+    if [ $PUB_RT_TB != null ]; then _aws_cmd "delete-route-table --route-table-id $PUB_RT_TB"; fi
+    if [ $NGW != null ]; then _aws_cmd "delete-nat-gateway --nat-gateway-id $NGW"; fi
+    if [ $PUB_SUB != null ]; then _aws_cmd "delete-subnet --subnet-id $PUB_SUB"; fi
+    if [ $E_IP != null ]; then _aws_cmd "release-address --allocation-id $E_IP"; fi
     
     export IGW=$(aws ec2 describe-internet-gateways --filters "Name=tag:Name,Values=igw-$CLUSTER_NAME" --output json | jq -r ".InternetGateways[0].InternetGatewayId")
-    aws ec2 detach-internet-gateway --internet-gateway-id $IGW --vpc-id $VPC 
-    aws ec2 delete-internet-gateway --internet-gateway-id $IGW
+    if [ $IGW != null ]; then _aws_cmd "detach-internet-gateway --internet-gateway-id $IGW --vpc-id $VPC"; fi
+    if [ $IGW != null ]; then _aws_cmd "delete-internet-gateway --internet-gateway-id $IGW"; fi
 
     echo "Delete Security Group Rules"
     for g in $(aws ec2 describe-security-groups --filters "Name=vpc-id,Values=$VPC" --output json | jq -r ".SecurityGroups[]" | jq -r 'select(.GroupName != "default")' | jq -r ".GroupId"); 
@@ -243,11 +262,11 @@ _delete_aws_vpc(){
                     aws ec2 revoke-security-group-egress --security-group-rule-ids $r  --group-id  $g
                 done
             echo "Delete Security Groups $g"
-            aws ec2 delete-security-group --group-id $g 
+            _aws_cmd "delete-security-group --group-id $g"
         done
 
     echo "Delete VPC $VPC"
-    aws ec2 delete-vpc --vpc-id $VPC
+    if [ $VPC != null ]; then _aws_cmd "delete-vpc --vpc-id $VPC"; fi
 }
 setup(){
     mkdir /home/airflow/workspace
