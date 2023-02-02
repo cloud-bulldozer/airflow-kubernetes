@@ -67,7 +67,11 @@ class TestManifest():
                 self.assert_amd_installer(release["release"].get_latest_release()[self.INSTALL_BINARY])
                 self.assert_amd_client(release["release"].get_latest_release()[self.CLIENT_BINARY])
                 hits += 1
+<<<<<<< HEAD
         assert hits == 6
+=======
+        assert hits == 5
+>>>>>>> b76fdf0 (Remove OpenShiftSDN DAGs)
 
     def test_cloudreleases_arm(self,mocked_releases):
         releases = mocked_releases
@@ -77,7 +81,12 @@ class TestManifest():
                 self.assert_arm_installer(release["release"].get_latest_release()[self.INSTALL_BINARY])
                 self.assert_arm_client(release["release"].get_latest_release()[self.CLIENT_BINARY])
                 hits += 1
+<<<<<<< HEAD
         assert hits == 6
+=======
+        assert hits == 5
+
+>>>>>>> b76fdf0 (Remove OpenShiftSDN DAGs)
 
     def test_endwith(self):
         assert "aws-arm".endswith("arm")
