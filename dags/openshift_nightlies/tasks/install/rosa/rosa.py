@@ -8,6 +8,7 @@ from common.models.dag_config import DagConfig
 from openshift_nightlies.models.release import OpenshiftRelease
 
 import requests
+import uuid
 
 from airflow.operators.bash import BashOperator
 from airflow.models import Variable
@@ -37,7 +38,7 @@ class RosaInstaller(AbstractOpenshiftInstaller):
     def _get_task(self, operation="install", id="", trigger_rule="all_success"):
         self._setup_task(operation=operation)
         task_prefix=f"{id}-"
-        env = {**self.env, **{"HOSTED_ID": id}}
+        env = {**self.env, **{"UUID": uuid.uuid4(), "HOSTED_ID": id}}
         command=f"{constants.root_dag_dir}/scripts/install/rosa.sh -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}"
 
         return BashOperator(

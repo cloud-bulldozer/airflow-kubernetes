@@ -53,7 +53,7 @@ _wait_for_nodes_ready(){
             echo "WARNING: ${ITERATIONS}/${NODES_COUNT} iterations. ${NODES_READY_COUNT}/${NODES_COUNT} nodes ready. Waiting 180 seconds for next check"
             ALL_READY_ITERATIONS=0
             ITERATIONS=$((${ITERATIONS}+1))
-            sleep $PAUSE
+            sleep 180
         else
             if [ ${ALL_READY_ITERATIONS} -eq 5 ] ; then
                 echo "INFO: ${ALL_READY_ITERATIONS}/5. All nodes ready, continuing process"
@@ -65,6 +65,7 @@ _wait_for_nodes_ready(){
             fi
         fi
     done
+    END_CLUSTER_STATUS="Ready. No Workers"
     echo "ERROR: Not all nodes (${NODES_READY_COUNT}/${NODES_COUNT}) are ready after about $((${NODES_COUNT}*3)) minutes, dumping oc get nodes..."
     oc get nodes
     exit 1
@@ -72,7 +73,7 @@ _wait_for_nodes_ready(){
 
 _aws_cmd(){
     ITR=0
-    while [ $ITR -le 5 ]; do
+    while [ $ITR -le 20 ]; do
         if [[ "$(aws ec2 $1 2>&1)" == *"error"* ]]; then
             echo "Failed to $1, retrying after 30 seconds"
             ITR=$(($ITR+1))
@@ -81,6 +82,27 @@ _aws_cmd(){
             return 0
         fi
     done
+}
+
+_login_check(){
+    echo "Trying to oc login with password"
+    ITR=1
+    START_TIMER=$(date +%s)
+    while [ $ITR -le 100 ]; do
+        if [[ "$(oc login $1 --username cluster-admin --password $2 --insecure-skip-tls-verify=true --request-timeout=30s 2>&1)" == *"failed"* ]]; then
+            echo "Attempt $ITR: Failed to login $1, retrying after 5 seconds"
+            ITR=$(($ITR+1))
+            sleep 5
+        else
+            CURRENT_TIMER=$(date +%s)
+            # Time since rosa cluster is ready until all nodes are ready
+            DURATION=$(($CURRENT_TIMER - $START_TIMER))
+            INDEXDATA+=("login-${DURATION}")
+            return 0
+        fi
+    done    
+    END_CLUSTER_STATUS="Ready. Not Access"
+    echo "Failed to login after 100 attempts with 5 sec interval"
 }
 
 _wait_for_workload_nodes_ready(){
@@ -109,6 +131,7 @@ _wait_for_workload_nodes_ready(){
             fi
         fi
     done
+    END_CLUSTER_STATUS="Ready. No Workers"
     echo "ERROR: Workload nodes (${NODES_READY_COUNT}/${NODES_COUNT}) are ready after about $((${NODES_COUNT}*3)) minutes, dumping oc get nodes..."
     oc get nodes
     exit 1
@@ -142,8 +165,9 @@ _wait_for_cluster_ready(){
             fi
         fi
         if [ ${CLUSTER_STATUS} == "ready" ] ; then
+            END_CLUSTER_STATUS="Ready"
             START_TIMER=$(date +%s)
-            if [ $HCP != "true" ]; then _wait_for_nodes_ready $1 ${COMPUTE_WORKERS_NUMBER}; fi
+            _wait_for_nodes_ready $1 ${COMPUTE_WORKERS_NUMBER}
             CURRENT_TIMER=$(date +%s)
             # Time since rosa cluster is ready until all nodes are ready
             DURATION=$(($CURRENT_TIMER - $START_TIMER))
@@ -169,6 +193,7 @@ _wait_for_cluster_ready(){
     if [[ $INSTALL_METHOD == "osd" ]]; then
         echo "ERROR: Cluster $1 not installed after 3 hours.."
     else
+        END_CLUSTER_STATUS="Not Ready"
         echo "ERROR: Cluster $1 not installed after 90 iterations, dumping installation logs..."
         rosa logs install -c $1
         rosa describe cluster -c $1
@@ -293,13 +318,18 @@ setup(){
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .openshift_worker_count)
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .openshift_network_type)
     export ES_SERVER=$(cat ${json_file} | jq -r .es_server)
-    export UUID=$(uuidgen)
     export HCP=$(cat ${json_file} | jq -r .rosa_hcp)
     if [ $HCP == "true" ]; then
         export STAGE_CONFIG=""
-        export CLUSTER_NAME="${CLUSTER_NAME}-${HOSTED_ID}" # perf-413-as3k-hcp-1, perf-413-as3k-hcp-2..
+        export MGMT_CLUSTER_NAME=$(cat ${json_file} | jq -r .staging_mgmt_cluster_name)
+        export CLUSTER_NAME="${CLUSTER_NAME}-${HOSTED_ID}" # perf-as3-hcp-1, perf-as3-hcp-2..
         export KUBECONFIG_NAME=$(echo $KUBECONFIG_NAME | awk -F-kubeconfig '{print$1}')-$HOSTED_ID-kubeconfig
         export KUBEADMIN_NAME=$(echo $KUBEADMIN_NAME | awk -F-kubeadmin '{print$1}')-$HOSTED_ID-kubeadmin
+        echo "Read Management cluster details"
+        export MGMT_CLUSTER_DETAILS=$(ocm get /api/clusters_mgmt/v1/clusters | jq -r ".items[]" | jq -r 'select(.name == '\"$MGMT_CLUSTER_NAME\"')')
+        export NUMBER_OF_HC=$(cat ${json_file} | jq -r .number_of_hostedcluster)
+        echo "Index Managment cluster info"
+        index_metadata "management"
     fi
     if [[ $INSTALL_METHOD == "osd" ]]; then
         export OCM_CLI_VERSION=$(cat ${json_file} | jq -r .ocm_cli_version)
@@ -381,7 +411,7 @@ install(){
         fi
         if [ $HCP == "true" ]; then
             _create_aws_vpc
-            STAGE_PROV_SHARD=$(cat ${json_file} | jq -r .staging_mgmt_provisioner_shards)
+            export STAGE_PROV_SHARD=$(cat ${json_file} | jq -r .staging_mgmt_provisioner_shards)
             if [ $STAGE_PROV_SHARD != "" ]; then
                 STAGE_CONFIG="--properties provision_shard_id:${STAGE_PROV_SHARD}"
             fi
@@ -417,7 +447,9 @@ postinstall(){
         echo "Cluster is ready, deleting OSD access keys now.."
         aws iam delete-access-key --user-name OsdCcsAdmin --access-key-id $AWS_ACCESS_KEY_ID || true
     else
+        URL=$(rosa describe cluster -c $CLUSTER_NAME --output json | jq -r ".api.url")
         PASSWORD=$(rosa create admin -c "$(_get_cluster_id ${CLUSTER_NAME})" -y 2>/dev/null | grep "oc login" | awk '{print $7}')
+        if [ $HCP == "true" ]; then _login_check $URL $PASSWORD; fi
         if [[ $WORKLOAD_TYPE != "null" ]]; then
             # create machinepool for workload nodes
             rosa create machinepool -c ${CLUSTER_NAME} --instance-type ${WORKLOAD_TYPE} --name workload --labels node-role.kubernetes.io/workload= --taints role=workload:NoSchedule --replicas 3
@@ -427,6 +459,7 @@ postinstall(){
     fi
     kubectl delete secret ${KUBEADMIN_NAME} || true
     kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=${PASSWORD}
+    index_metadata "cluster-install"
     return 0
 }
 
@@ -442,7 +475,84 @@ index_metadata(){
         export PLATFORM="ROSA"
         export CLUSTER_VERSION="${ROSA_VERSION}"
     fi
-    METADATA=$(cat << EOF
+    if [ $HCP == "true" ]; then
+        if [ "$1" ==  "management" ]; then
+            METADATA=$(cat << EOF
+{
+"uuid" : "${UUID}",
+"aws_authentication_method": "${AWS_AUTHENTICATION_METHOD}",
+"version": "$(echo $MGMT_CLUSTER_DETAILS | jq -r ".openshift_version")",
+"infra_id": "$(echo $MGMT_CLUSTER_DETAILS | jq -r ".infra_id")",
+"cluster_id": "$(echo $MGMT_CLUSTER_DETAILS | jq -r "id")",
+"base_domain": "$(echo $MGMT_CLUSTER_DETAILS | jq -r ".dns.base_domain")",
+"aws_region": "$(echo $MGMT_CLUSTER_DETAILS | jq -r ".region.id")",
+"workers": "$(echo $MGMT_CLUSTER_DETAILS | jq -r ".nodes.autoscale_compute.max_replicas")",
+"workers_type": "$(echo $MGMT_CLUSTER_DETAILS | jq -r ".nodes.compute_machine_type.id")",
+"network_type": "$(echo $MGMT_CLUSTER_DETAILS | jq -r ".network.type")",
+"install_method": "rosa",
+"provision_shard": "$STAGE_PROV_SHARD",
+"hostedclusters": "$NUMBER_OF_HC"
+}
+EOF
+)
+        elif [ "$1" == "cluster-install" ]; then
+            METADATA=$(cat << EOF
+{
+"uuid" : "${UUID}",
+"aws_authentication_method": "${AWS_AUTHENTICATION_METHOD}",
+"mgmt_cluster_name": "$MGMT_CLUSTER_NAME",
+"workers": "$COMPUTE_WORKERS_NUMBER",
+"cluster_name": "${CLUSTER_NAME}",
+"cluster_id": "$(_get_cluster_id ${CLUSTER_NAME})",
+"network_type": "${NETWORK_TYPE}",
+"version": "${CLUSTER_VERSION}",
+"operation": "install",
+"install_method": "rosa",
+"status": "$END_CLUSTER_STATUS",
+"timestamp": "$(date +%s%3N)"
+EOF
+)
+            INSTALL_TIME=0
+            TOTAL_TIME=0
+            for i in "${INDEXDATA[@]}" ; do IFS="-" ; set -- $i
+                METADATA="${METADATA}, \"$1\":\"$2\""
+            if [ $1 != "day2operations" ] && [ $1 != "login" ] ; then
+                INSTALL_TIME=$((${INSTALL_TIME} + $2))
+            elif [ $1 == "day2operations" ]; then
+                WORKER_READY_TIME=$2
+            elif [ $1 == "login" ]; then
+                LOGIN_TIME=$2
+            else
+                TOTAL_TIME=$2
+            fi
+            done
+            IFS=" "
+            METADATA="${METADATA}, \"duration\":\"${INSTALL_TIME}\""
+            METADATA="${METADATA}, \"workers_ready\":\"$(($INSTALL_TIME + $WORKER_READY_TIME))\""
+            METADATA="${METADATA}, \"cluster-admin-login\":\"${LOGIN_TIME}}\""
+            METADATA="${METADATA} }"
+        else
+           METADATA=$(cat << EOF
+{
+"uuid" : "${UUID}",
+"mgmt_cluster_name": "$MGMT_CLUSTER_NAME",
+"workers": "$COMPUTE_WORKERS_NUMBER",
+"cluster_name": "${CLUSTER_NAME}",
+"cluster_id": "$(_get_cluster_id ${CLUSTER_NAME})",
+"network_type": "${NETWORK_TYPE}",
+"version": "${CLUSTER_VERSION}",
+"operation": "destroy",
+"install_method": "rosa",
+"duration": "$DURATION",
+"timestamp": "$(date +%s%3N)"
+}
+EOF
+)
+        fi
+        printf "Indexing installation timings to ES"
+        curl -k -sS -X POST -H "Content-type: application/json" ${ES_SERVER}/hypershift-wrapper-timers/_doc -d "${METADATA}" -o /dev/null
+    else
+        METADATA=$(cat << EOF
 {
 "uuid" : "${UUID}",
 "platform": "${PLATFORM}",
@@ -457,27 +567,28 @@ index_metadata(){
 "total_node_count": "$(oc get nodes 2>/dev/null | wc -l)",
 "ocp_cluster_name": "$(oc get infrastructure.config.openshift.io cluster -o json 2>/dev/null | jq -r .status.infrastructureName)",
 "cluster_name": "${CLUSTER_NAME}",
-"hosted_cp": "${HCP}",
 "timestamp": "$(date +%s%3N)"
 EOF
 )
-    INSTALL_TIME=0
-    TOTAL_TIME=0
-    for i in "${INDEXDATA[@]}" ; do IFS="-" ; set -- $i
-        METADATA="${METADATA}, \"$1\":\"$2\""
-	if [ $1 != "day2operations" ] && [ $1 != "cleanup" ] ; then
-	    INSTALL_TIME=$((${INSTALL_TIME} + $2))
-	    TOTAL_TIME=$((${TOTAL_TIME} + $2))
-	else
-	    TOTAL_TIME=$((${TOTAL_TIME} + $2))
-	fi
-    done
-    IFS=" "
-    METADATA="${METADATA}, \"install_time\":\"${INSTALL_TIME}\""
-    METADATA="${METADATA}, \"total_time\":\"${TOTAL_TIME}\""
-    METADATA="${METADATA} }"
-    printf "Indexing installation timings to ES"
-    curl -k -sS -X POST -H "Content-type: application/json" ${ES_SERVER}/managedservices-timings/_doc -d "${METADATA}" -o /dev/null
+    
+        INSTALL_TIME=0
+        TOTAL_TIME=0
+        for i in "${INDEXDATA[@]}" ; do IFS="-" ; set -- $i
+            METADATA="${METADATA}, \"$1\":\"$2\""
+        if [ $1 != "day2operations" ] && [ $1 != "cleanup" ] ; then
+            INSTALL_TIME=$((${INSTALL_TIME} + $2))
+            TOTAL_TIME=$((${TOTAL_TIME} + $2))
+        else
+            TOTAL_TIME=$((${TOTAL_TIME} + $2))
+        fi
+        done
+        IFS=" "
+        METADATA="${METADATA}, \"install_time\":\"${INSTALL_TIME}\""
+        METADATA="${METADATA}, \"total_time\":\"${TOTAL_TIME}\""
+        METADATA="${METADATA} }"
+        printf "Indexing installation timings to ES"
+        curl -k -sS -X POST -H "Content-type: application/json" ${ES_SERVER}/managedservices-timings/_doc -d "${METADATA}" -o /dev/null
+    fi
     unset KUBECONFIG
     return 0
 }
@@ -519,7 +630,6 @@ if [[ "$operation" == "install" ]]; then
         if [ $HCP == "true" ]; then echo "pre-clean AWS resources"; _delete_aws_vpc; fi
         install
         index_metadata
-        if [ $HCP == "true" ]; then _wait_for_nodes_ready ${CLUSTER_NAME} ${COMPUTE_WORKERS_NUMBER}; fi
         if [[ $WORKLOAD_TYPE != "null" ]]; then _wait_for_workload_nodes_ready ${CLUSTER_NAME}; fi
     elif [ "${CLUSTER_STATUS}" == "ready" ] ; then
         printf "INFO: Cluster ${CLUSTER_NAME} already installed and ready, reusing..."
