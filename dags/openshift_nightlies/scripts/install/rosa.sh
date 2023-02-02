@@ -226,11 +226,6 @@ setup(){
             export ROSA_VERSION=$(rosa list versions -o json --channel-group=${MANAGED_CHANNEL_GROUP} | jq -r '.[] | select(.raw_id|startswith('\"${version}\"')) | .raw_id' | grep ^${MANAGED_OCP_VERSION}$)
         fi
         [ -z "${ROSA_VERSION}" ] && echo "ERROR: Image not found for version (${version}) on ROSA ${MANAGED_CHANNEL_GROUP} channel group" && exit 1
-        if [ "${MANAGED_CHANNEL_GROUP}" == "nightly" ] ; then
-            ROSA_VERSION="${ROSA_VERSION}-nightly"
-        elif [ "${MANAGED_CHANNEL_GROUP}" == "candidate" ] ; then
-            ROSA_VERSION="${ROSA_VERSION}-candidate"
-        fi
         return 0
     fi
 }
@@ -252,7 +247,7 @@ install(){
         if [ $AWS_AUTHENTICATION_METHOD == "sts" ] ; then
             INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --sts -m auto --yes"
         fi
-        rosa create cluster --tags=User:${GITHUB_USERNAME} --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --multi-az --compute-machine-type ${COMPUTE_WORKERS_TYPE} --compute-nodes ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS}
+        rosa create cluster --tags=User:${GITHUB_USERNAME} --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --multi-az --compute-machine-type ${COMPUTE_WORKERS_TYPE} --replicas=${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS}
     fi
     _wait_for_cluster_ready ${CLUSTER_NAME}
     postinstall
