@@ -51,7 +51,7 @@ _wait_for_nodes_ready(){
         NODES_READY_COUNT=$(oc get nodes | grep " Ready " | wc -l)
         if [ ${NODES_READY_COUNT} -ne ${NODES_COUNT} ] ; then
             echo "WARNING: ${ITERATIONS}/${NODES_COUNT} iterations. ${NODES_READY_COUNT}/${NODES_COUNT} nodes ready. Waiting 180 seconds for next check"
-            ALL_READY_ITERATIONS=0
+            # ALL_READY_ITERATIONS=0
             ITERATIONS=$((${ITERATIONS}+1))
             sleep 180
         else
