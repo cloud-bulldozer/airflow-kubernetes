@@ -19,7 +19,6 @@ setup(){
     cd /home/airflow/workspace
     cp /home/airflow/auth/config /home/airflow/workspace/config
     export KUBECONFIG=/home/airflow/workspace/config
-    curl -sS http://dell-r510-01.perf.lab.eng.rdu2.redhat.com/msheth/gsheet_key.json -o /tmp/key.json
     export GSHEET_KEY_LOCATION=/tmp/key.json
     export RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}/$AIRFLOW_CTX_TASK_ID
     export SNAPPY_RUN_ID=${AIRFLOW_CTX_DAG_ID}/${AIRFLOW_CTX_DAG_RUN_ID}
