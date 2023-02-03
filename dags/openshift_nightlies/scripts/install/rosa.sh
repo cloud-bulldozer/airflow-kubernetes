@@ -319,17 +319,15 @@ setup(){
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .openshift_network_type)
     export ES_SERVER=$(cat ${json_file} | jq -r .es_server)
     export HCP=$(cat ${json_file} | jq -r .rosa_hcp)
+    export UUID=$(uuidgen)
     if [ $HCP == "true" ]; then
         export STAGE_CONFIG=""
         export MGMT_CLUSTER_NAME=$(cat ${json_file} | jq -r .staging_mgmt_cluster_name)
         export CLUSTER_NAME="${CLUSTER_NAME}-${HOSTED_ID}" # perf-as3-hcp-1, perf-as3-hcp-2..
         export KUBECONFIG_NAME=$(echo $KUBECONFIG_NAME | awk -F-kubeconfig '{print$1}')-$HOSTED_ID-kubeconfig
         export KUBEADMIN_NAME=$(echo $KUBEADMIN_NAME | awk -F-kubeadmin '{print$1}')-$HOSTED_ID-kubeadmin
-        echo "Read Management cluster details"
-        export MGMT_CLUSTER_DETAILS=$(ocm get /api/clusters_mgmt/v1/clusters | jq -r ".items[]" | jq -r 'select(.name == '\"$MGMT_CLUSTER_NAME\"')')
-        export NUMBER_OF_HC=$(cat ${json_file} | jq -r .number_of_hostedcluster)
-        echo "Index Managment cluster info"
-        index_metadata "management"
+        UUID=$(echo $AIRFLOW_CTX_DAG_RUN_ID | base64 | cut -c 1-32 )
+        export UUID=${UUID,,}
     fi
     if [[ $INSTALL_METHOD == "osd" ]]; then
         export OCM_CLI_VERSION=$(cat ${json_file} | jq -r .ocm_cli_version)
@@ -410,6 +408,11 @@ install(){
             INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --sts -m auto --yes"
         fi
         if [ $HCP == "true" ]; then
+            echo "Read Management cluster details"
+            export MGMT_CLUSTER_DETAILS=$(ocm get /api/clusters_mgmt/v1/clusters | jq -r ".items[]" | jq -r 'select(.name == '\"$MGMT_CLUSTER_NAME\"')')
+            export NUMBER_OF_HC=$(cat ${json_file} | jq -r .number_of_hostedcluster)
+            echo "Index Managment cluster info"
+            index_metadata "management"  
             _create_aws_vpc
             export STAGE_PROV_SHARD=$(cat ${json_file} | jq -r .staging_mgmt_provisioner_shards)
             if [ $STAGE_PROV_SHARD != "" ]; then
@@ -529,7 +532,7 @@ EOF
             IFS=" "
             METADATA="${METADATA}, \"duration\":\"${INSTALL_TIME}\""
             METADATA="${METADATA}, \"workers_ready\":\"$(($INSTALL_TIME + $WORKER_READY_TIME))\""
-            METADATA="${METADATA}, \"cluster-admin-login\":\"${LOGIN_TIME}}\""
+            METADATA="${METADATA}, \"cluster-admin-login\":\"${LOGIN_TIME}\""
             METADATA="${METADATA} }"
         else
            METADATA=$(cat << EOF
@@ -538,7 +541,7 @@ EOF
 "mgmt_cluster_name": "$MGMT_CLUSTER_NAME",
 "workers": "$COMPUTE_WORKERS_NUMBER",
 "cluster_name": "${CLUSTER_NAME}",
-"cluster_id": "$(_get_cluster_id ${CLUSTER_NAME})",
+"cluster_id": "$ROSA_CLUSTER_ID",
 "network_type": "${NETWORK_TYPE}",
 "version": "${CLUSTER_VERSION}",
 "operation": "destroy",
@@ -599,7 +602,7 @@ cleanup(){
         echo "Cluster is getting Uninstalled, deleting OSD access keys now.."
         aws iam delete-access-key --user-name OsdCcsAdmin --access-key-id $AWS_ACCESS_KEY_ID || true
     else
-        ROSA_CLUSTER_ID=$(_get_cluster_id ${CLUSTER_NAME})
+        export ROSA_CLUSTER_ID=$(_get_cluster_id ${CLUSTER_NAME})
         CLEANUP_START_TIMING=$(date +%s)
         rosa delete cluster -c ${ROSA_CLUSTER_ID} -y
         rosa logs uninstall -c ${ROSA_CLUSTER_ID} --watch
@@ -627,9 +630,14 @@ if [[ "$operation" == "install" ]]; then
     CLUSTER_STATUS=$(_get_cluster_status ${CLUSTER_NAME})
     if [ -z "${CLUSTER_STATUS}" ] ; then
         printf "INFO: Cluster not found, installing..."
-        if [ $HCP == "true" ]; then echo "pre-clean AWS resources"; _delete_aws_vpc; fi
-        install
-        index_metadata
+        if [ $HCP == "true" ]; then 
+            echo "pre-clean AWS resources" 
+            _delete_aws_vpc
+            install
+        else
+            install
+            index_metadata
+        fi
         if [[ $WORKLOAD_TYPE != "null" ]]; then _wait_for_workload_nodes_ready ${CLUSTER_NAME}; fi
     elif [ "${CLUSTER_STATUS}" == "ready" ] ; then
         printf "INFO: Cluster ${CLUSTER_NAME} already installed and ready, reusing..."
