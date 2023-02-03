@@ -408,13 +408,13 @@ install(){
             INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --sts -m auto --yes"
         fi
         if [ $HCP == "true" ]; then
+            export STAGE_PROV_SHARD=$(cat ${json_file} | jq -r .staging_mgmt_provisioner_shards)
             echo "Read Management cluster details"
             export MGMT_CLUSTER_DETAILS=$(ocm get /api/clusters_mgmt/v1/clusters | jq -r ".items[]" | jq -r 'select(.name == '\"$MGMT_CLUSTER_NAME\"')')
             export NUMBER_OF_HC=$(cat ${json_file} | jq -r .number_of_hostedcluster)
             echo "Index Managment cluster info"
             index_metadata "management"  
             _create_aws_vpc
-            export STAGE_PROV_SHARD=$(cat ${json_file} | jq -r .staging_mgmt_provisioner_shards)
             if [ $STAGE_PROV_SHARD != "" ]; then
                 STAGE_CONFIG="--properties provision_shard_id:${STAGE_PROV_SHARD}"
             fi
@@ -486,7 +486,8 @@ index_metadata(){
 "aws_authentication_method": "${AWS_AUTHENTICATION_METHOD}",
 "version": "$(echo $MGMT_CLUSTER_DETAILS | jq -r ".openshift_version")",
 "infra_id": "$(echo $MGMT_CLUSTER_DETAILS | jq -r ".infra_id")",
-"cluster_id": "$(echo $MGMT_CLUSTER_DETAILS | jq -r "id")",
+"cluster_name": "$MGMT_CLUSTER_NAME",
+"cluster_id": "$(echo $MGMT_CLUSTER_DETAILS | jq -r ".id")",
 "base_domain": "$(echo $MGMT_CLUSTER_DETAILS | jq -r ".dns.base_domain")",
 "aws_region": "$(echo $MGMT_CLUSTER_DETAILS | jq -r ".region.id")",
 "workers": "$(echo $MGMT_CLUSTER_DETAILS | jq -r ".nodes.autoscale_compute.max_replicas")",
