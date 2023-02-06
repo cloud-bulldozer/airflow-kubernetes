@@ -462,7 +462,7 @@ postinstall(){
     fi
     kubectl delete secret ${KUBEADMIN_NAME} || true
     kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=${PASSWORD}
-    index_metadata "cluster-install"
+    if [ $HCP == "true" ]; then index_metadata "cluster-install"; fi
     return 0
 }
 
