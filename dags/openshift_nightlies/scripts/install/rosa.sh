@@ -614,12 +614,28 @@ index_mgmt_cluster_stat(){
     export MGMT_CLUSTER_NAME="$MGMT_CLUSTER_NAME.*"
     export SVC_CLUSTER_NAME="$SVC_CLUSTER_NAME.*"
     export HOSTED_CLUSTER_NS=".*$CLUSTER_NAME"
-    export HOSTED_CLUSTER_NAME=$1
+    export HOSTED_CLUSTER_NAME="$1-$CLUSTER_NAME"
     export Q_TIME=$(date +"%s")
     envsubst < /home/airflow/workspace/e2e-benchmarking/workloads/kube-burner/metrics-profiles/hypershift-metrics.yaml > hypershift-metrics.yaml
     envsubst < /home/airflow/workspace/e2e-benchmarking/workloads/kube-burner/workloads/managed-services/baseconfig.yml > baseconfig.yml
+    METADATA=$(cat << EOF
+{
+"uuid":"${UUID}",
+"platform":"${PLATFORM}",
+"sdn_type":"${NETWORK_TYPE}",
+"timestamp":"${START_TIME}",
+"end_date":"${END_TIME}",
+"cluster_name": "${HOSTED_CLUSTER_NAME}",
+"mgmt_cluster_name": "${MGMT_CLUSTER_NAME}",
+"svc_cluster_name": "${SVC_CLUSTER_NAME}"
+}
+EOF
+)
+    printf "Indexing metadata to ES"
+    curl -k -sS -X POST -H "Content-type: application/json" ${ES_SERVER}/${ES_INDEX}/_doc -d "${METADATA}" -o /dev/null
+
     echo "Running kube-burner index.." 
-    kube-burner index --uuid=$(uuidgen) --prometheus-url=${PROM_URL} --start=$START_TIME --end=$END_TIME --step 2m --metrics-profile hypershift-metrics.yaml --config baseconfig.yml
+    kube-burner index --uuid=${UUID} --prometheus-url=${PROM_URL} --start=$START_TIME --end=$END_TIME --step 2m --metrics-profile hypershift-metrics.yaml --config baseconfig.yml
     echo "Finished indexing results"
 }
 
