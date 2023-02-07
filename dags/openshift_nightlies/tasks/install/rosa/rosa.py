@@ -38,6 +38,13 @@ class RosaInstaller(AbstractOpenshiftInstaller):
     def _get_task(self, operation="install", id="", trigger_rule="all_success"):
         self._setup_task(operation=operation)
         task_prefix=f"{id}-"
+        self.env = {
+            "ES_SERVER": var_loader.get_secret('elasticsearch'),
+            "ES_INDEX": "ripsaw-kube-burner",
+            "THANOS_RECEIVER_URL": var_loader.get_secret("thanos_receiver_url"),
+            "PROM_URL": var_loader.get_secret("thanos_querier_url"),       
+            **self.env
+        }
         env = {**self.env, **{"HOSTED_ID": id}}
         command=f"{constants.root_dag_dir}/scripts/install/rosa.sh -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}"
 

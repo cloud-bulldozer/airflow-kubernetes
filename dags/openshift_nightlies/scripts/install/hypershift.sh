@@ -297,7 +297,7 @@ index_mgmt_cluster_stat(){
     echo "Indexing Management cluster stat..."
     cd /home/airflow/workspace    
     echo "Installing kube-burner"
-    export KUBE_BURNER_RELEASE=${KUBE_BURNER_RELEASE:-0.16}
+    export KUBE_BURNER_RELEASE=${KUBE_BURNER_RELEASE:-1.3}
     curl -L https://github.com/cloud-bulldozer/kube-burner/releases/download/v${KUBE_BURNER_RELEASE}/kube-burner-${KUBE_BURNER_RELEASE}-Linux-x86_64.tar.gz -o kube-burner.tar.gz
     sudo tar -xvzf kube-burner.tar.gz -C /usr/local/bin/
     echo "Cloning ${E2E_BENCHMARKING_REPO} from branch ${E2E_BENCHMARKING_BRANCH}"
@@ -305,6 +305,8 @@ index_mgmt_cluster_stat(){
     export KUBECONFIG=/home/airflow/auth/config
     export MGMT_CLUSTER_NAME=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}')
     export HOSTED_CLUSTER_NS="clusters-$HOSTED_CLUSTER_NAME"
+    export HOSTED_CLUSTER_NAME="install-metrics"
+    export Q_TIME=$(date +"%s")
     envsubst < /home/airflow/workspace/e2e-benchmarking/workloads/kube-burner/metrics-profiles/hypershift-metrics.yaml > hypershift-metrics.yaml
     envsubst < /home/airflow/workspace/e2e-benchmarking/workloads/kube-burner/workloads/managed-services/baseconfig.yml > baseconfig.yml
     echo "Running kube-burner index.." 
@@ -382,6 +384,9 @@ export START_TIME=$(date +"%s")
 if [[ "$operation" == "cleanup" ]]; then
     printf "Running Cleanup Steps"
     cleanup
+    echo "Set end time of prom scrape"
+    export END_TIME=$(date +"%s")
+    index_mgmt_cluster_stat "destroy-metrics"    
 else
     printf "INFO: Checking if management cluster is installed and ready"
     CLUSTER_STATUS=$(_get_cluster_status ${MGMT_CLUSTER_NAME})
@@ -403,5 +408,5 @@ else
     fi
     echo "Set end time of prom scrape"
     export END_TIME=$(date +"%s")
-    index_mgmt_cluster_stat
+    index_mgmt_cluster_stat "install-metrics"
 fi

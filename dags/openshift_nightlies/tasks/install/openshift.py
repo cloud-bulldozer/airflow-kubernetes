@@ -102,6 +102,8 @@ class AbstractOpenshiftInstaller(ABC):
             **self._insert_kube_env()
         }
 
+        self.env.update(self.dag_config.dependencies)
+
         # Dump all vars to json file for Ansible to pick up
         with open(f"/tmp/{self.release_name}-{operation}-task.json", 'w') as json_file:
             json.dump(self.config, json_file, sort_keys=True, indent=4)

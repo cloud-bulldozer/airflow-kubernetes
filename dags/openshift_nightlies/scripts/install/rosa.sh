@@ -166,6 +166,8 @@ _wait_for_cluster_ready(){
         fi
         if [ ${CLUSTER_STATUS} == "ready" ] ; then
             END_CLUSTER_STATUS="Ready"
+            echo "Set end time of prom scrape"
+            export END_TIME=$(date +"%s")       
             START_TIMER=$(date +%s)
             _wait_for_nodes_ready $1 ${COMPUTE_WORKERS_NUMBER}
             CURRENT_TIMER=$(date +%s)
@@ -323,6 +325,7 @@ setup(){
     if [ $HCP == "true" ]; then
         export STAGE_CONFIG=""
         export MGMT_CLUSTER_NAME=$(cat ${json_file} | jq -r .staging_mgmt_cluster_name)
+        export SVC_CLUSTER_NAME=$(cat ${json_file} | jq -r .staging_svc_cluster_name)
         export CLUSTER_NAME="${CLUSTER_NAME}-${HOSTED_ID}" # perf-as3-hcp-1, perf-as3-hcp-2..
         export KUBECONFIG_NAME=$(echo $KUBECONFIG_NAME | awk -F-kubeconfig '{print$1}')-$HOSTED_ID-kubeconfig
         export KUBEADMIN_NAME=$(echo $KUBEADMIN_NAME | awk -F-kubeadmin '{print$1}')-$HOSTED_ID-kubeadmin
@@ -415,6 +418,8 @@ install(){
             echo "Index Managment cluster info"
             index_metadata "management"  
             _create_aws_vpc
+            echo "Set start time of prom scrape"
+            export START_TIME=$(date +"%s")
             if [ $STAGE_PROV_SHARD != "" ]; then
                 STAGE_CONFIG="--properties provision_shard_id:${STAGE_PROV_SHARD}"
             fi
@@ -597,6 +602,27 @@ EOF
     return 0
 }
 
+index_mgmt_cluster_stat(){
+    echo "Indexing Management cluster stat..."
+    cd /home/airflow/workspace    
+    echo "Installing kube-burner"
+    export KUBE_BURNER_RELEASE=${KUBE_BURNER_RELEASE:-1.3}
+    curl -L https://github.com/cloud-bulldozer/kube-burner/releases/download/v${KUBE_BURNER_RELEASE}/kube-burner-${KUBE_BURNER_RELEASE}-Linux-x86_64.tar.gz -o kube-burner.tar.gz
+    sudo tar -xvzf kube-burner.tar.gz -C /usr/local/bin/
+    echo "Cloning ${E2E_BENCHMARKING_REPO} from branch ${E2E_BENCHMARKING_BRANCH}"
+    git clone -q -b ${E2E_BENCHMARKING_BRANCH}  ${E2E_BENCHMARKING_REPO} --depth=1 --single-branch
+    export MGMT_CLUSTER_NAME="$MGMT_CLUSTER_NAME.*"
+    export SVC_CLUSTER_NAME="$SVC_CLUSTER_NAME.*"
+    export HOSTED_CLUSTER_NS=".*$CLUSTER_NAME"
+    export HOSTED_CLUSTER_NAME=$1
+    export Q_TIME=$(date +"%s")
+    envsubst < /home/airflow/workspace/e2e-benchmarking/workloads/kube-burner/metrics-profiles/hypershift-metrics.yaml > hypershift-metrics.yaml
+    envsubst < /home/airflow/workspace/e2e-benchmarking/workloads/kube-burner/workloads/managed-services/baseconfig.yml > baseconfig.yml
+    echo "Running kube-burner index.." 
+    kube-burner index --uuid=$(uuidgen) --prometheus-url=${PROM_URL} --start=$START_TIME --end=$END_TIME --step 2m --metrics-profile hypershift-metrics.yaml --config baseconfig.yml
+    echo "Finished indexing results"
+}
+
 cleanup(){
     if [[ $INSTALL_METHOD == "osd" ]]; then
         ocm delete cluster "$(_get_cluster_id ${CLUSTER_NAME})"
@@ -605,6 +631,7 @@ cleanup(){
     else
         export ROSA_CLUSTER_ID=$(_get_cluster_id ${CLUSTER_NAME})
         CLEANUP_START_TIMING=$(date +%s)
+        export START_TIME=$CLEANUP_START_TIMING
         rosa delete cluster -c ${ROSA_CLUSTER_ID} -y
         rosa logs uninstall -c ${ROSA_CLUSTER_ID} --watch
         if [ $AWS_AUTHENTICATION_METHOD == "sts" ] ; then
@@ -613,6 +640,7 @@ cleanup(){
         fi
         DURATION=$(($(date +%s) - $CLEANUP_START_TIMING))
         INDEXDATA+=("cleanup-${DURATION}")
+        export END_TIME=$(date +"%s")
         if [ $HCP == "true" ]; then
             _delete_aws_vpc
         fi
@@ -635,6 +663,7 @@ if [[ "$operation" == "install" ]]; then
             echo "pre-clean AWS resources" 
             _delete_aws_vpc
             install
+            index_mgmt_cluster_stat "install-metrics"
         else
             install
             index_metadata
@@ -652,6 +681,7 @@ elif [[ "$operation" == "cleanup" ]]; then
     printf "Running Cleanup Steps"
     cleanup
     index_metadata
+    if [ $HCP == "true" ]; then index_mgmt_cluster_stat "destroy-metrics"; fi
     rosa logout
     ocm logout    
 fi
