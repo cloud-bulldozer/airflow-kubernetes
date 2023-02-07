@@ -225,7 +225,7 @@ _create_aws_vpc(){
     aws ec2 create-subnet --vpc-id $VPC --cidr-block 10.0.1.0/24 --tag-specifications ResourceType=subnet,Tags="[{Key=HostedClusterName,Value=$CLUSTER_NAME},{Key=Name,Value=public-subnet-$CLUSTER_NAME}]" --output json
     export PUB_SUB=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=public-subnet-$CLUSTER_NAME" --output json | jq -r ".Subnets[0].SubnetId")
     aws ec2 create-nat-gateway --subnet-id $PUB_SUB --allocation-id $E_IP --tag-specifications ResourceType=natgateway,Tags="[{Key=HostedClusterName,Value=$CLUSTER_NAME},{Key=Name,Value=ngw-$CLUSTER_NAME}]" --output json
-    export NGW=$(aws ec2 describe-nat-gateways --filter "Name=tag:Name,Values=ngw-$CLUSTER_NAME" --output json | jq -r ".NatGateways[0].NatGatewayId")
+    export NGW=$(aws ec2 describe-nat-gateways --filter "Name=tag:Name,Values=ngw-$CLUSTER_NAME" --output json | jq -r ".NatGateways[]" | jq -r 'select(.State == "available" or .State  == "pending")' | jq -r ".NatGatewayId")
     aws ec2 create-route-table --vpc-id $VPC --tag-specifications ResourceType=route-table,Tags="[{Key=HostedClusterName,Value=$CLUSTER_NAME},{Key=Name,Value=public-rt-table-$CLUSTER_NAME}]" --output json
     export PUB_RT_TB=$(aws ec2 describe-route-tables --filters "Name=tag:Name,Values=public-rt-table-$CLUSTER_NAME" --output json | jq -r '.RouteTables[0].RouteTableId')
     aws ec2 associate-route-table --route-table-id $PUB_RT_TB --subnet-id $PUB_SUB
@@ -262,7 +262,7 @@ _delete_aws_vpc(){
 
         export PUB_RT_TB=$(aws ec2 describe-route-tables --filters "Name=tag:Name,Values=public-rt-table-$CLUSTER_NAME" --output json | jq -r '.RouteTables[0].RouteTableId')
         export RT_TB_ASSO_ID=$(aws ec2 describe-route-tables --filters "Name=tag:Name,Values=public-rt-table-$CLUSTER_NAME" --output json | jq -r '.RouteTables[0].Associations[0].RouteTableAssociationId')
-        export NGW=$(aws ec2 describe-nat-gateways --filter "Name=tag:Name,Values=ngw-$CLUSTER_NAME" --output json | jq -r ".NatGateways[0].NatGatewayId")
+        export NGW=$(aws ec2 describe-nat-gateways --filter "Name=tag:Name,Values=ngw-$CLUSTER_NAME" --output json | jq -r ".NatGateways[]" | jq -r 'select(.State == "available")' | jq -r ".NatGatewayId")
         export PUB_SUB=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=public-subnet-$CLUSTER_NAME" --output json | jq -r ".Subnets[0].SubnetId")
         export E_IP=$(aws ec2 describe-addresses --filters "Name=tag:Name,Values=eip-$CLUSTER_NAME" --output json | jq -r ".Addresses[0].AllocationId")
 
