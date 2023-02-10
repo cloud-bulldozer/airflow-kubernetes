@@ -623,8 +623,7 @@ index_mgmt_cluster_stat(){
 "uuid":"${UUID}",
 "platform":"${PLATFORM}",
 "sdn_type":"${NETWORK_TYPE}",
-"timestamp":"${START_TIME}",
-"end_date":"${END_TIME}",
+"timestamp": "$(date +%s%3N)",
 "cluster_name": "${HOSTED_CLUSTER_NAME}",
 "mgmt_cluster_name": "${MGMT_CLUSTER_NAME}",
 "svc_cluster_name": "${SVC_CLUSTER_NAME}"

@@ -14,9 +14,9 @@
     "openshift_network_type": "OVNKubernetes",
     "openshift_worker_instance_type": "m5.2xlarge",
     "machineset_metadata_label_prefix": "machine.openshift.io",
-    "staging_mgmt_cluster_name": "hs-mc-6ec47vj4g", 
-    "staging_mgmt_provisioner_shards": "0085c398-726e-11ed-a42d-0a580a810706",
-    "staging_svc_cluster_name": "hs-sc-mdqo7k4rg",
+    "staging_mgmt_cluster_name": "hs-mc-0vfs0e6gg", 
+    "staging_mgmt_provisioner_shards": "b4bb294b-a76c-11ed-91b2-0a580a831ba1",
+    "staging_svc_cluster_name": "hs-sc-0vfs0cl5g",
     "number_of_hostedcluster": 2,
     "hcp_install_interval": 60
 }
