@@ -7,7 +7,7 @@
             "env": {
                 "SCALE": "24",
                 "METADATA_COLLECTION": "false",
-                "WORKLOAD_NODE_ROLE": "workload"
+                "WORKLOAD_NODE_ROLE": "worker"
             }
         },
         {
@@ -17,7 +17,7 @@
             "env": {
                 "SCALE": "120",
                 "METADATA_COLLECTION": "false",
-                "WORKLOAD_NODE_ROLE": "workload"
+                "WORKLOAD_NODE_ROLE": "worker"
             }
         },
         {
