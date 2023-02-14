@@ -1,7 +1,7 @@
 {
     "rosa_environment": "staging",
     "ocm_environment": "stage",
-    "openshift_worker_count": 27,
+    "openshift_worker_count": 24,
     "ocm_cli_version": "container",
     "managed_channel_group": "nightly",
     "managed_ocp_version": "prelatest",

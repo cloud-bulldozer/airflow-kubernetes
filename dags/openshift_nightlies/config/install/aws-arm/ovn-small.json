@@ -1,12 +1,13 @@
 {
-    "openshift_client_location": "",
-    "openshift_install_binary_url": "",
+    "aws_install_architecture": "arm64",
     "openshift_master_count": 3,
     "openshift_worker_count": 3,
+    "openshift_client_location": "",
+    "openshift_install_binary_url": "",
     "openshift_host_prefix": "22",
     "openshift_network_type": "OVNKubernetes",
-    "openshift_master_instance_type": "r5.xlarge",
-    "openshift_worker_instance_type": "m5.2xlarge",
+    "openshift_master_instance_type": "m6g.4xlarge",
+    "openshift_worker_instance_type": "m6g.2xlarge",
     "openshift_master_root_volume_size": 100,
     "openshift_master_root_volume_type": "gp3",
     "openshift_master_root_volume_iops": 3000,
@@ -14,7 +15,8 @@
     "openshift_worker_root_volume_type": "gp3",
     "openshift_worker_root_volume_iops": 0,
     "machineset_metadata_label_prefix": "machine.openshift.io",
-    "openshift_infra_node_instance_type": "m5.12xlarge",
+    "openshift_infra_node_instance_type": "m6g.4xlarge",
+    "openshift_toggle_workload_node": "false",
     "openshift_infra_node_volume_size": 50,
     "openshift_infra_node_volume_type": "gp3",
     "openshift_infra_node_volume_iops": 0,
@@ -22,9 +24,5 @@
     "openshift_prometheus_storage_class": "gp3-csi",
     "openshift_prometheus_storage_size": "50Gi",
     "openshift_alertmanager_storage_class": "gp3-csi",
-    "openshift_alertmanager_storage_size": "2Gi",
-    "openshift_workload_node_instance_type": "m5.4xlarge",
-    "openshift_workload_node_volume_size": 50,
-    "openshift_workload_node_volume_type": "gp3",
-    "openshift_workload_node_volume_iops": 0
+    "openshift_alertmanager_storage_size": "2Gi"
  }

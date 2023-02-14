@@ -1,7 +1,4 @@
 {
-    "aws_profile": "",
-    "aws_access_key_id": "",
-    "aws_secret_access_key": "",
     "openshift_client_location": "",
     "openshift_install_binary_url": "",
     "openshift_master_count": 3,
@@ -18,16 +15,13 @@
     "openshift_worker_root_volume_iops": 0,
     "machineset_metadata_label_prefix": "machine.openshift.io",
     "openshift_infra_node_instance_type": "m5.4xlarge",
-    "openshift_workload_node_instance_type": "m5.2xlarge",
     "openshift_infra_node_volume_size": 50,
     "openshift_infra_node_volume_type": "gp3",
     "openshift_infra_node_volume_iops": 0,
-    "openshift_workload_node_volume_size": 50,
-    "openshift_workload_node_volume_type": "gp3",
-    "openshift_workload_node_volume_iops": 0,
     "openshift_prometheus_retention_period": "15d",
     "openshift_prometheus_storage_class": "gp3-csi",
     "openshift_prometheus_storage_size": "50Gi",
     "openshift_alertmanager_storage_class": "gp3-csi",
-    "openshift_alertmanager_storage_size": "2Gi"
+    "openshift_alertmanager_storage_size": "2Gi",
+    "openshift_toggle_workload_node": "false"
  }
