@@ -168,12 +168,15 @@ setup(){
     export AWS_ACCESS_KEY_ID=$(cat ${json_file} | jq -r .aws_access_key_id)
     export AWS_SECRET_ACCESS_KEY=$(cat ${json_file} | jq -r .aws_secret_access_key)
     export AWS_AUTHENTICATION_METHOD=$(cat ${json_file} | jq -r .aws_authentication_method)
+    export CUSTOM_MACHINE_TYPE=$(cat ${json_file} | jq -r .custom_machine_type)
     export ROSA_ENVIRONMENT=$(cat ${json_file} | jq -r .rosa_environment)
     export ROSA_TOKEN=$(cat ${json_file} | jq -r .rosa_token_${ROSA_ENVIRONMENT})
     export MANAGED_OCP_VERSION=$(cat ${json_file} | jq -r .managed_ocp_version)
     export MANAGED_CHANNEL_GROUP=$(cat ${json_file} | jq -r .managed_channel_group)
     export CLUSTER_NAME=$(cat ${json_file} | jq -r .openshift_cluster_name)
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .openshift_worker_count)
+    export INFRA_MACHINE_TYPE=$(cat ${json_file} | jq -r .openshift_infra_instance_type)
+    export MASTER_MACHINE_TYPE=$(cat ${json_file} | jq -r .openshift_master_instance_type)
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .openshift_network_type)
     export ES_SERVER=$(cat ${json_file} | jq -r .es_server)
     export UUID=$(uuidgen)
@@ -241,7 +244,18 @@ install(){
             export OCM_VERSION=$(ocm list versions --channel-group ${MANAGED_CHANNEL_GROUP} | grep ^${MANAGED_OCP_VERSION})
 	fi
         [ -z ${OCM_VERSION} ] && echo "ERROR: Image not found for version (${version}) on OCM ${MANAGED_CHANNEL_GROUP} channel group" && exit 1
-        ocm create cluster --ccs --provider aws --region ${AWS_REGION} --aws-account-id ${AWS_ACCOUNT_ID} --aws-access-key-id ${AWS_ACCESS_KEY_ID} --aws-secret-access-key ${AWS_SECRET_ACCESS_KEY} --channel-group ${MANAGED_CHANNEL_GROUP} --version ${OCM_VERSION} --multi-az --compute-nodes ${COMPUTE_WORKERS_NUMBER} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --network-type ${NETWORK_TYPE} ${CLUSTER_NAME}
+        
+        if [[ ${CUSTOM_MACHINE_TYPE}  == "false" ]]; then
+            ocm create cluster --ccs --provider aws --region ${AWS_REGION} --aws-account-id ${AWS_ACCOUNT_ID} --aws-access-key-id ${AWS_ACCESS_KEY_ID} --aws-secret-access-key ${AWS_SECRET_ACCESS_KEY} --channel-group ${MANAGED_CHANNEL_GROUP} --version ${OCM_VERSION} --multi-az --compute-nodes ${COMPUTE_WORKERS_NUMBER} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --network-type ${NETWORK_TYPE} ${CLUSTER_NAME}
+        else
+            echo "Cluster creation started"
+            pushd $HOME/workspace/dags/openshift_nightlies/scripts
+            cat utils/templates/payload_original.json
+            envsubst < utils/templates/payload_original.json > payload.json
+            ocm post /api/clusters_mgmt/v1/clusters --body payload.json --debug
+            popd
+        fi
+
     else
         export INSTALLATION_PARAMS=""
         if [ $AWS_AUTHENTICATION_METHOD == "sts" ] ; then

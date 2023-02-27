@@ -1,0 +1,43 @@
+{
+    "aws": {
+        "access_key_id": "${AWS_ACCESS_KEY_ID}",
+        "account_id": "${AWS_ACCOUNT_ID}",
+        "secret_access_key": "${AWS_SECRET_ACCESS_KEY}",
+        "tags": {
+            "User": "${GITHUB_USERNAME}"
+        }
+    },
+    "ccs": {
+        "enabled": true
+    },
+    "flavour": {
+        "id": "osd-4"
+    },
+    "nodes": {
+        "compute_machine_type": {
+            "id": "${COMPUTE_WORKERS_TYPE}"
+        },
+        "infra_machine_type": {
+            "id": "${INFRA_MACHINE_TYPE}"
+        },
+        "master_machine_type": {
+            "id": "${MASTER_MACHINE_TYPE}"
+        },
+        "compute": ${COMPUTE_WORKERS_NUMBER}
+    },
+    "network": {
+        "type": "${NETWORK_TYPE}"
+    },
+    "version": {
+        "kind": "Version",
+        "id": "openshift-v${MANAGED_OCP_VERSION}-${MANAGED_CHANNEL_GROUP}",
+        "channel_group": "${MANAGED_CHANNEL_GROUP}",
+        "raw_id": "${MANAGED_OCP_VERSION}"
+      },
+    "multi_az": true,
+    "name": "${CLUSTER_NAME}",
+    "region": {
+        "id": "${AWS_REGION}",
+        "ccs_only": true
+    }
+}
