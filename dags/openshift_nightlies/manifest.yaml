@@ -28,66 +28,38 @@ dagConfig:
 
 platforms:
   cloud:
-    versions: ["4.11", "4.12"]
-    providers: ["aws", "aws-arm", "gcp", "azure", "alibaba"]
+    versions: ["4.11", "4.12", "4.13"]
+    providers: ["aws", "aws-arm"]
+    # Leave only aws and aws-arm enabled by default
+    # providers: ["aws", "gcp", "azure", "alibaba"]
     variants:
-    - name: sdn-control-plane
+    - name: ovn-small-cp
       schedule: "0 12 * * 3"
       config: 
-        install: sdn-cp.json
-        benchmarks: control-plane.json
-    - name: ovn-control-plane
-      schedule: "0 12 * * 3"
-      config: 
-        install: ovn-cp.json
-        benchmarks: control-plane.json
-    - name: sdn-data-plane
+        install: ovn-small.json
+        benchmarks: small-control-plane.json
+    - name: ovn-medium-cp
       schedule: "0 12 * * 1"
       config: 
-        install: sdn-dp.json
-        benchmarks: data-plane.json
+        install: ovn-medium.json
+        benchmarks: medium-control-plane.json
+    - name: ovn-large-cp
+      schedule: "0 12 15 * *"
+      config: 
+        install: ovn-large.json
+        benchmarks: large-control-plane.json
     - name: ovn-data-plane
       schedule: "0 12 * * 1"
       config:
         install: ovn-dp.json
         benchmarks: data-plane.json
-    - name: sdn-medium
-      schedule: "0 12 * * 1"
-      config: 
-        install: sdn-large-cp.json
-        benchmarks: medium-control-plane.json
-    - name: ovn-medium
-      schedule: "0 12 * * 1"
-      config: 
-        install: ovn-large-cp.json
-        benchmarks: medium-control-plane.json
-    - name: sdn-extra-large
-      schedule: "0 12 15 * *"
-      config:
-        install: sdn-large-cp.json
-        benchmarks: extra-large-control-plane.json
-    - name: sdn-large
-      schedule: "0 12 15 * *"
-      config: 
-        install: sdn-large-cp.json
-        benchmarks: large-control-plane.json
-    - name: ovn-large
-      schedule: "0 12 15 * *"
-      config: 
-        install: ovn-large-cp.json
-        benchmarks: large-control-plane.json
     - name: acs
       config: 
         install: acs.json
         benchmarks: acs.json
-    - name: ovn-control-plane-custom
-      config:
-        install: ocn-cp.json
-        benchmarks: control-plane-custom.json
-
   baremetal:
     build: dev
-    versions: ["4.11", "4.12"]
+    versions: ["4.11", "4.12", "4.13"]
     variants:
       - name: jetski
         config:
@@ -95,18 +67,8 @@ platforms:
           benchmarks: baremetal-benchmarks
 
   openstack:
-    versions: ["4.11", "4.12"]
+    versions: ["4.11", "4.12", "4.13"]
     variants:
-      - name: sdn-control-plane
-        schedule: "0 0 * * 1"
-        config:
-          install: openstack/sdn.json
-          benchmarks: osp-large-control-plane.json
-      - name: sdn-data-plane
-        schedule: "0 0 * * 2"
-        config:
-          install: openstack/sdn.json
-          benchmarks: osp-data-plane.json
       - name: ovnk-control-plane
         schedule: "0 0 * * 3"
         config:
@@ -117,46 +79,36 @@ platforms:
         config:
           install: openstack/ovnk.json
           benchmarks: osp-data-plane.json
-      - name: kuryr-control-plane
-        schedule: "0 0 * * 5"
-        config:
-          install: openstack/kuryr.json
-          benchmarks: osp-large-control-plane.json
-      - name: kuryr-data-plane
-        schedule: "0 0 * * 6"
-        config:
-          install: openstack/kuryr.json
-          benchmarks: osp-data-plane.json
 
   # Do not program concurrent builds of ROSA/ROGCP/ARO
   rosa:
     versions: ["4.12", "4.13"]
     variants:
-      - name: sts-sdn-control-plane
+      - name: sts-ovn-small-cp
         schedule: "0 12 * * 3"
         config:
-          install: rosa/sdn.json
-          benchmarks: control-plane.json
-      - name: sts-sdn-data-plane
+          install: rosa/ovn-small.json
+          benchmarks: small-control-plane-mgs.json
+      - name: sts-ovn-medium-cp
         schedule: "5 12 * * 1"
         config:
-          install: rosa/sdn.json
-          benchmarks: data-plane.json
-      - name: sts-ovn-control-plane
+          install: rosa/ovn-medium.json
+          benchmarks: medium-control-plane-mgs.json
+      - name: sts-ovn-large-cp
         schedule: "10 12 * * 3"
         config:
-          install: rosa/ovn.json
-          benchmarks: control-plane.json
+          install: rosa/ovn-large.json
+          benchmarks: large-control-plane-mgs.json
       - name: sts-ovn-data-plane
-        schedule: "15 12 * * 1"
+        schedule: "10 12 * * 3"
         config:
-          install: rosa/ovn.json
-          benchmarks: data-plane.json
+          install: rosa/ovn-small-dp.json
+          benchmarks: data-plane-mgs.json
       - name: iam-ovn-control-plane
         schedule: "None"
         config:
           install: rosa/iam-ovn.json
-          benchmarks: control-plane.json  
+          benchmarks: control-plane.json
       - name: osd-ovn-control-plane
         schedule: "30 12 * * 1,3,5"
         config:
@@ -166,7 +118,7 @@ platforms:
         schedule: "30 1 * * 1,3,5" # an hour gap for OSD to avoid OsdCcsAdmin key limit
         config:
           install: rosa/ovn-osd.json
-          benchmarks: data-plane.json
+          benchmarks: data-plane-mgs.json
       - name: ocm-api-load
         schedule: "None"
         config:
@@ -190,15 +142,15 @@ platforms:
         schedule: "10 13 * * 1"
         config:
           install: rogcp/ovn.json
-          benchmarks: control-plane.json
+          benchmarks: small-control-plane-mgs.json
       - name: ovn-data-plane
         schedule: "40 13 * * 1"
         config:
           install: rogcp/ovn.json
-          benchmarks: data-plane.json
+          benchmarks: data-plane-mgs.json
 
   hypershift:
-    versions: ["4.13"]
+    versions: ["4.12", "4.13"]
     variants:
       - name: management-control-plane
         schedule: "30 3 * * 1,3,5" # an hour gap for OSD to avoid OsdCcsAdmin key limit
@@ -230,18 +182,18 @@ platforms:
       - name: control-plane
         config:
           install: None
-          benchmarks: control-plane.json
+          benchmarks: small-control-plane-mgs.json
       - name: data-plane
         config:
           install: None
-          benchmarks: data-plane.json
+          benchmarks: data-plane-mgs.json
       - name: ovn-control-plane
         schedule: "0 12 * * 1,3,5"
         config:
           install: rogcp/ovn.json
-          benchmarks: control-plane.json
+          benchmarks: small-control-plane-mgs.json
       - name: ovn-data-plane
         schedule: "0 12 * * 1"
         config:
           install: rogcp/ovn.json
-          benchmarks: data-plane.json
+          benchmarks: data-plane-mgs.json
