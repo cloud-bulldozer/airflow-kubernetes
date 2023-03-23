@@ -8,8 +8,8 @@ from unittest.mock import patch
 
 class TestManifest():
     release_stream_base_url = "https://openshift-release.apps.ci.l2s4.p1.openshiftapps.com/api/v1/releasestream"
-    stream = "4.11.0-0.nightly"
-    versions = { "4.11" }
+    stream = "4.12.0-0.nightly"
+    versions = { "4.12" }
     year = "2023"
     INSTALL_BINARY="openshift_install_binary_url"
     CLIENT_BINARY="openshift_client_location"
@@ -26,17 +26,17 @@ class TestManifest():
         return mocked_manifest.get_releases()
 
     def test_manifest_patched_secret_populates(self,mocked_manifest):
-        assert len( mocked_manifest.latest_releases ) == 6
+        assert len( mocked_manifest.latest_releases ) == 8 
 
     def assert_amd_installer(self,stream):
         assert "arm64" not in stream
-        assert "openshift-release-artifacts.apps.ci.l2s4.p1.openshiftapps.com/4.11.0-0.nightly-"+ self.year in stream
-        assert "openshift-install-linux-4.11.0-0.nightly-"+ self.year in stream
+        assert "openshift-release-artifacts.apps.ci.l2s4.p1.openshiftapps.com/4.12.0-0.nightly-"+ self.year in stream
+        assert "openshift-install-linux-4.12.0-0.nightly-"+ self.year in stream
 
     def assert_amd_client(self,stream):
         assert "arm64" not in stream
-        assert "openshift-release-artifacts.apps.ci.l2s4.p1.openshiftapps.com/4.11.0-0.nightly-"+ self.year in stream
-        assert "openshift-client-linux-4.11.0-0.nightly-"+ self.year in stream
+        assert "openshift-release-artifacts.apps.ci.l2s4.p1.openshiftapps.com/4.12.0-0.nightly-"+ self.year in stream
+        assert "openshift-client-linux-4.12.0-0.nightly-"+ self.year in stream
 
     def test_manifest_amd(self,mocked_manifest):
         stream = mocked_manifest.latest_releases[self.stream]
@@ -45,13 +45,13 @@ class TestManifest():
 
     def assert_arm_installer(self,stream):
         assert "arm64" in stream
-        assert "openshift-release-artifacts-arm64.apps.ci.l2s4.p1.openshiftapps.com/4.11.0-0.nightly-arm64-"+ self.year in stream
-        assert "openshift-install-linux-amd64-4.11.0-0.nightly-arm64-"+ self.year in stream
+        assert "openshift-release-artifacts-arm64.apps.ci.l2s4.p1.openshiftapps.com/4.12.0-0.nightly-arm64-"+ self.year in stream
+        assert "openshift-install-linux-amd64-4.12.0-0.nightly-arm64-"+ self.year in stream
 
     def assert_arm_client(self,stream):
         assert "arm64" in stream
-        assert "openshift-release-artifacts-arm64.apps.ci.l2s4.p1.openshiftapps.com/4.11.0-0.nightly-arm64-"+self.year in stream
-        assert "openshift-client-linux-amd64-4.11.0-0.nightly-arm64-"+self.year in stream
+        assert "openshift-release-artifacts-arm64.apps.ci.l2s4.p1.openshiftapps.com/4.12.0-0.nightly-arm64-"+self.year in stream
+        assert "openshift-client-linux-amd64-4.12.0-0.nightly-arm64-"+self.year in stream
 
     def test_manifest_arm(self,mocked_manifest):
         stream = mocked_manifest.latest_releases[f"{self.stream}-arm64"]
@@ -63,7 +63,7 @@ class TestManifest():
         hits = 0
         for release in releases:
             release_name = release["release"].get_release_name()
-            if "4.11-aws" in release_name and "arm" not in release_name:
+            if "4.12-aws" in release_name and "arm" not in release_name:
                 self.assert_amd_installer(release["release"].get_latest_release()[self.INSTALL_BINARY])
                 self.assert_amd_client(release["release"].get_latest_release()[self.CLIENT_BINARY])
                 hits += 1
@@ -73,7 +73,7 @@ class TestManifest():
         releases = mocked_releases
         hits = 0
         for release in releases:
-            if "4.11-aws-arm" in release["release"].get_release_name():
+            if "4.12-aws-arm" in release["release"].get_release_name():
                 self.assert_arm_installer(release["release"].get_latest_release()[self.INSTALL_BINARY])
                 self.assert_arm_client(release["release"].get_latest_release()[self.CLIENT_BINARY])
                 hits += 1

@@ -1,6 +1,6 @@
 versions:
   - version: "4.11"
-    alias: previous
+    alias: old 
     releaseStream: 4.11.0-0.nightly
     baremetalReleaseStream: latest-4.11
   - version: "4.12"
@@ -11,6 +11,11 @@ versions:
     alias: next
     releaseStream: 4.13.0-0.nightly
     baremetalReleaseStream: latest-4.13
+  - version: "4.14"
+    alias: future
+    releaseStream: 4.14.0-0.nightly
+    baremetalReleaseStream: latest-4.14
+
 
 dagConfig:
   schedules:
@@ -28,8 +33,8 @@ dagConfig:
 
 platforms:
   cloud:
-    versions: ["4.11", "4.12", "4.13"]
-    providers: ["aws", "aws-arm"]
+    versions: ["4.12", "4.13", "4.14"]
+    providers: ["aws", "aws-arm","azure","gcp"]
     # Leave only aws and aws-arm enabled by default
     # providers: ["aws", "gcp", "azure", "alibaba"]
     variants:
