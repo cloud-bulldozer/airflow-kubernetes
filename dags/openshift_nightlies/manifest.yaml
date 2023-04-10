@@ -28,8 +28,8 @@ dagConfig:
     tag: 2.3.2
   dependencies:
     e2e_benchmarking:
-      repo: https://github.com/cloud-bulldozer/e2e-benchmarking.git
-      branch: master
+      repo: https://github.com/mukrishn/e2e-benchmarking.git
+      branch: hypershift
 
 platforms:
   cloud:
@@ -87,7 +87,7 @@ platforms:
 
   # Do not program concurrent builds of ROSA/ROGCP/ARO
   rosa:
-    versions: ["4.11", "4.12", "4.13"]
+    versions: ["4.12", "4.13"]
     variants:
       - name: sts-ovn-small-cp
         schedule: "0 12 * * 3"
@@ -134,9 +134,14 @@ platforms:
         config:
           install: rosa/upgrade.json
           benchmarks: upgrade.json
+      - name: rosa-hcp-control-plane
+        schedule:  "0 12 * * 3"
+        config:
+          install: rosa/rosa-hcp-ovn.json
+          benchmarks: hosted-control-plane-p75.json
 
   rogcp:
-    versions: ["4.11", "4.12", "4.13"]
+    versions: ["4.12", "4.13"]
     variants:
       - name: ovn-control-plane
         schedule: "10 13 * * 1"
@@ -150,7 +155,7 @@ platforms:
           benchmarks: data-plane-mgs.json
 
   hypershift:
-    versions: ["4.11", "4.12", "4.13"]
+    versions: ["4.12", "4.13"]
     variants:
       - name: management-control-plane
         schedule: "30 3 * * 1,3,5" # an hour gap for OSD to avoid OsdCcsAdmin key limit

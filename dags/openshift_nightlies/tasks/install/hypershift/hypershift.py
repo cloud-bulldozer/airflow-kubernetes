@@ -32,7 +32,7 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
         }
 
         for iteration in range(config['number_of_hosted_cluster']):
-            c_id = f"{'hosted-'+str(iteration+1)}" # adding 1 to name the cluster hosted-1, hosted-2..
+            c_id = f"{'hcp-'+str(iteration+1)}" # adding 1 to name the cluster hcp-1, hcp-2..
             yield c_id, self._get_task(operation="install", id=c_id)
 
     def get_hosted_cleanup_task(self):
@@ -41,7 +41,7 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
         }
 
         for iteration in range(config['number_of_hosted_cluster']):
-            c_id = f"{'hosted-'+str(iteration+1)}" # adding 1 to name the cluster hosted-1, hosted-2..
+            c_id = f"{'hcp-'+str(iteration+1)}" # adding 1 to name the cluster hcp-1, hcp-2..
             yield c_id, self._get_task(operation="install", id=c_id), self._get_task(operation="cleanup", id=c_id)
 
     def get_operator_cleanup_task(self):
@@ -55,7 +55,7 @@ class HypershiftInstaller(AbstractOpenshiftInstaller):
                             bash_command="sleep 60s")
 
     # Create Airflow Task for Install/Cleanup steps
-    def _get_task(self, operation="install", id="hosted", trigger_rule="all_success"):
+    def _get_task(self, operation="install", id="hcp", trigger_rule="all_success"):
         self._setup_task(operation=operation)
         self.env = {
             "PULL_SECRET": self.hypershift_pull_secret,

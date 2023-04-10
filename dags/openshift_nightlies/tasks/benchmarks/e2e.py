@@ -83,7 +83,21 @@ class E2EBenchmarks():
                 "AWS_ACCOUNT_ID": self.aws_creds['aws_account_id'],
                 "OCM_TOKEN": self.ocm_creds['ocm_token']
             }
-    
+            self.install_vars = var_loader.build_task_vars(
+                release, task="install") 
+            if self.install_vars['rosa_hcp'] == "true":
+                cluster_name = release._generate_cluster_name()         
+                self.env = {
+                    **self.env,
+                    "THANOS_RECEIVER_URL": var_loader.get_secret("thanos_receiver_url"),
+                    "PROM_URL": var_loader.get_secret("thanos_querier_url"),
+                    "MGMT_CLUSTER_NAME": f"{self.install_vars['staging_mgmt_cluster_name']}.*",
+                    "SVC_CLUSTER_NAME": f"{self.install_vars['staging_svc_cluster_name']}.*",
+                    "HOSTED_CLUSTER_NS": f".*-{cluster_name}-{self.task_group}",
+                    "MGMT_KUBECONFIG_SECRET": f"{release.get_release_name()}-kubeconfig",
+                    **self._insert_kube_env()
+                }
+
         if self.release.platform == "hypershift":
             mgmt_cluster_name = release._generate_cluster_name()
             self.env = {

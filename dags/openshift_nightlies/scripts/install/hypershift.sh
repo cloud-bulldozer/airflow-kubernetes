@@ -297,7 +297,7 @@ index_mgmt_cluster_stat(){
     echo "Indexing Management cluster stat..."
     cd /home/airflow/workspace    
     echo "Installing kube-burner"
-    export KUBE_BURNER_RELEASE=${KUBE_BURNER_RELEASE:-0.16}
+    export KUBE_BURNER_RELEASE=${KUBE_BURNER_RELEASE:-1.3}
     curl -L https://github.com/cloud-bulldozer/kube-burner/releases/download/v${KUBE_BURNER_RELEASE}/kube-burner-${KUBE_BURNER_RELEASE}-Linux-x86_64.tar.gz -o kube-burner.tar.gz
     sudo tar -xvzf kube-burner.tar.gz -C /usr/local/bin/
     echo "Cloning ${E2E_BENCHMARKING_REPO} from branch ${E2E_BENCHMARKING_BRANCH}"
@@ -305,10 +305,30 @@ index_mgmt_cluster_stat(){
     export KUBECONFIG=/home/airflow/auth/config
     export MGMT_CLUSTER_NAME=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}')
     export HOSTED_CLUSTER_NS="clusters-$HOSTED_CLUSTER_NAME"
+    export HOSTED_CLUSTER_NAME="$1-$CLUSTER_NAME"
+    export Q_TIME=$(date +"%s")
+    export UUID=$(uuidgen)
     envsubst < /home/airflow/workspace/e2e-benchmarking/workloads/kube-burner/metrics-profiles/hypershift-metrics.yaml > hypershift-metrics.yaml
     envsubst < /home/airflow/workspace/e2e-benchmarking/workloads/kube-burner/workloads/managed-services/baseconfig.yml > baseconfig.yml
+    METADATA=$(cat << EOF
+{
+"uuid":"${UUID}",
+"platform":"AWS",
+"sdn_type":"${NETWORK_TYPE}",
+"timestamp":"${START_TIME}",
+"end_date":"${END_TIME}",
+"cluster_name": "${HOSTED_CLUSTER_NAME}",
+"mgmt_cluster_name": "${MGMT_CLUSTER_NAME}",
+"svc_cluster_name": ""
+}
+EOF
+)
+    printf "Indexing metadata to ES"
+    curl -k -sS -X POST -H "Content-type: application/json" ${ES_SERVER}/${ES_INDEX}/_doc -d "${METADATA}" -o /dev/null
+
+
     echo "Running kube-burner index.." 
-    kube-burner index --uuid=$(uuidgen) --prometheus-url=${PROM_URL} --start=$START_TIME --end=$END_TIME --step 2m --metrics-profile hypershift-metrics.yaml --config baseconfig.yml
+    kube-burner index --uuid=${UUID} --prometheus-url=${PROM_URL} --start=$START_TIME --end=$END_TIME --step 2m --metrics-profile hypershift-metrics.yaml --config baseconfig.yml
     echo "Finished indexing results"
 }
 
@@ -382,6 +402,9 @@ export START_TIME=$(date +"%s")
 if [[ "$operation" == "cleanup" ]]; then
     printf "Running Cleanup Steps"
     cleanup
+    echo "Set end time of prom scrape"
+    export END_TIME=$(date +"%s")
+    index_mgmt_cluster_stat "destroy-metrics"    
 else
     printf "INFO: Checking if management cluster is installed and ready"
     CLUSTER_STATUS=$(_get_cluster_status ${MGMT_CLUSTER_NAME})
@@ -403,5 +426,5 @@ else
     fi
     echo "Set end time of prom scrape"
     export END_TIME=$(date +"%s")
-    index_mgmt_cluster_stat
+    index_mgmt_cluster_stat "install-metrics"
 fi

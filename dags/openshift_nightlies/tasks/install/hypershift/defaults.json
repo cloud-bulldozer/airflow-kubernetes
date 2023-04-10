@@ -47,6 +47,7 @@
     "hypershift_operator_image": "",
     "hcp_platform_monitoring": "",
     "hc_install_interval": 0,
-    "hc_external_dns": "true",
-    "hc_multi_az": true
+    "hc_multi_az": true,
+    "cluster_autoscale": false,
+    "hc_external_dns": "true"
 }

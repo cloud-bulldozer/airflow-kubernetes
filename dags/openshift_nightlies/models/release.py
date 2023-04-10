@@ -44,7 +44,7 @@ class OpenshiftRelease:
         if self.platform == 'rosa' or self.platform == 'rogcp' or self.platform == 'hypershift':
             #Only 15 chars are allowed
             cluster_version = str(self.version).replace(".","")
-            return "perf-"+cluster_version+"-"+md5(cluster_name.encode("ascii")).hexdigest()[:4]
+            return "perf-"+md5(cluster_name.encode("ascii")).hexdigest()[:3]
         elif self.platform == 'alibaba':
             # "." is not allowed in the cluster name while creating private network.
             cluster_name = str(cluster_name).replace(".","-")
