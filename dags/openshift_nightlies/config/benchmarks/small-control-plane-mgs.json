@@ -46,7 +46,7 @@
             "name": "cluster-density-v2",
             "workload": "kube-burner",
             "trigger_rule": "all_done",
-            "custom_cmd": "kube-burner ocp cluster-density --uuid=${UUID} --iterations=500 --timeout=3h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --churn=true --churn-delay=2m --churn-duration=1h --churn-percent=10"
+            "custom_cmd": "kube-burner ocp cluster-density-v2 --uuid=${UUID} --iterations=500 --timeout=3h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --churn=true --churn-delay=2m --churn-duration=1h --churn-percent=10"
         }
     ]
 }
