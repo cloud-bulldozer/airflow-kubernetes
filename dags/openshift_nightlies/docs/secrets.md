@@ -142,7 +142,7 @@ Type: string
 
 Description: ES Server to index results to. 
 
-Used by: install, benchmarks, cleanup, indexers
+Used by: install, benchmarks, cleanup
 
 Platforms: All
 

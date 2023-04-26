@@ -108,11 +108,3 @@ Otherwise, `run_benchmarh.sh` will run an e2e-benchmarking based script based on
 ```
 cmd = f"{constants.root_dag_dir}/scripts/run_benchmark.sh -w {benchmark['workload']} -c {benchmark['command']}",
 ```
-
-## `index`
-
-Goal: Post a document to elasticsearch for the associated task.
-
-Defines a StatusIndexer that invokes `scripts/index.sh`.
-
-Each install and benchmark task is created with a dependent StatusIndexer.
