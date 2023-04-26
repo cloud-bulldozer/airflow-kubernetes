@@ -1,6 +1,5 @@
 import abc
 from openshift_nightlies.util import var_loader, executor, constants
-from openshift_nightlies.tasks.index.status import StatusIndexer
 from openshift_nightlies.models.release import OpenshiftRelease
 from common.models.dag_config import DagConfig
 from os import environ
@@ -70,11 +69,7 @@ class AbstractOpenshiftInstaller(ABC):
         raise NotImplementedError()
 
     def get_install_task(self):
-        indexer = StatusIndexer(self.dag, self.dag_config, self.release,
-                                "install").get_index_task()
-        install_task = self._get_task(operation="install")
-        install_task >> indexer
-        return install_task
+        return self._get_task(operation="install")
 
     def get_cleanup_task(self):
         # trigger_rule = "all_done" means this task will run when every other task has finished, whether it fails or succeededs

@@ -1,5 +1,4 @@
 from openshift_nightlies.util import var_loader, executor, constants
-from openshift_nightlies.tasks.index.status import StatusIndexer
 from openshift_nightlies.tasks.install.openshift import AbstractOpenshiftInstaller
 
 import json
