@@ -21,7 +21,7 @@ fi
 echo -e "Release Name:    \t $_airflow_namespace"
 echo -e "Airflow Namespace: \t $_airflow_namespace"
 
-oc new-project $_airflow_namespace || true
+oc create ns $_airflow_namespace || true
 oc label namespace $_airflow_namespace mode=playground || true
 envsubst < $GIT_ROOT/scripts/playground/templates/airflow.yaml | kubectl apply -f -
 output_info
