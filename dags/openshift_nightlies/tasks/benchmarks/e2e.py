@@ -1,7 +1,6 @@
 from os import environ
 
 from openshift_nightlies.util import var_loader, executor, constants
-from openshift_nightlies.tasks.index.status import StatusIndexer
 from openshift_nightlies.models.release import OpenshiftRelease
 from common.models.dag_config import DagConfig
 
@@ -132,9 +131,6 @@ class E2EBenchmarks():
                 benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
         return benchmarks
 
-    def _add_indexer(self, benchmark): 
-        indexer = StatusIndexer(self.dag, self.dag_config, self.release, benchmark.task_id, task_group=self.task_group).get_index_task() 
-        benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):
         env = {**self.env, **benchmark.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch'), "KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
@@ -164,7 +160,6 @@ class E2EBenchmarks():
                 executor_config=self.exec_config
         )
 
-        self._add_indexer(task)
         return task
 
     # This Helper Injects Airflow environment variables into the task execution runtime

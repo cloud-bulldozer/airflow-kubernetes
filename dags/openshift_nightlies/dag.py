@@ -25,7 +25,6 @@ from openshift_nightlies.tasks.install.hypershift import hypershift
 from openshift_nightlies.tasks.install.prebuilt import initialize_cluster
 from openshift_nightlies.tasks.benchmarks import e2e
 from openshift_nightlies.tasks.utils import rosa_post_install, scale_ci_diagnosis, final_dag_status
-from openshift_nightlies.tasks.index import status
 from openshift_nightlies.util import var_loader, manifest, constants
 from abc import ABC, abstractmethod
 
