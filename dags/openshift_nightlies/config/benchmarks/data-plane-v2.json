@@ -1,0 +1,42 @@
+{
+    "benchmarks": [
+        {
+            "name": "network-smoke",
+            "workload": "network-perf-v2",
+            "command": "./run.sh",
+            "env": {
+            }
+        },
+        {
+            "name": "network-test",
+            "workload": "network-perf-v2",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "full-run.yaml"
+            }
+        },
+        {
+            "name": "scale-24",
+            "workload": "scale-perf",
+            "command": "./run_scale_fromgit.sh",
+            "env": {
+                "SCALE": "24",
+                "METADATA_COLLECTION": "false",
+                "WORKLOAD_NODE_ROLE": "workload"
+            }
+        },
+        {
+            "name": "router",
+            "workload": "router-perf-v2",
+            "command": "./ingress-performance.sh",
+            "env": {
+                "LARGE_SCALE_THRESHOLD": "19",
+                "ENGINE": "local",
+                "LARGE_SCALE_ROUTES": "500",
+                "COMPARE": "false",
+                "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
+                "GSHEET_KEY_LOCATION": "/tmp/key.json"
+            }
+        }
+    ]
+}
