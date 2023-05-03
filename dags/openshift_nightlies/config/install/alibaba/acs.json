@@ -6,7 +6,7 @@
     "alibaba_resource_group_id": "",
     "aliyun_binary": "https://aliyuncli.alicdn.com/aliyun-cli-linux-3.0.32-amd64.tgz",
     "openshift_master_count": 3,
-    "openshift_worker_count": 3,
+    "openshift_worker_count": 6,
     "openshift_base_domain": "alicloud-qe.devcluster.openshift.com",
     "openshift_host_prefix": "22",
     "openshift_debug_config": false,
