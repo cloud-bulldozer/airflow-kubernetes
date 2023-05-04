@@ -41,7 +41,6 @@
                 "PLATFORM_ALERTS": "false",
                 "CLEANUP_WHEN_FINISH": "true",
                 "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true",
                 "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
             }
         },

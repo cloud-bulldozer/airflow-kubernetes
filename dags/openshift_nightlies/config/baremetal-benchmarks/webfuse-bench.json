@@ -26,8 +26,7 @@
                 "STEP_SIZE": "30s",
                 "LOG_LEVEL": "info",
                 "CLEANUP_WHEN_FINISH": "true",
-                "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "CLEANUP": "true"
             }
         },
         {
@@ -43,8 +42,7 @@
                 "BURST": "20",
                 "LOG_LEVEL": "info",
                 "CLEANUP_WHEN_FINISH": "true",
-                "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "true"
+                "CLEANUP": "true"
             }
         },                
         {

@@ -17,8 +17,7 @@
                 "LOG_LEVEL": "info",
                 "PLATFORM_ALERTS": "false",
                 "CLEANUP_WHEN_FINISH": "false",
-                "CLEANUP": "true",
-                "MUST_GATHER_EACH_TASK": "false"
+                "CLEANUP": "true"
             }
         }
     ]

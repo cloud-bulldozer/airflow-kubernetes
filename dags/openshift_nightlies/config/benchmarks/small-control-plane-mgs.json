@@ -38,7 +38,6 @@
                 "CHURN_DURATION": "1h",
                 "CHURN_DELAY": "2m",
                 "CHURN_PERCENT": "10",
-                "MUST_GATHER_EACH_TASK": "true",
                 "NODE_SELECTOR": "{node-role.kubernetes.io/workload: }"
             }
         },
