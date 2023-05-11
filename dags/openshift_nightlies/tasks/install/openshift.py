@@ -73,7 +73,7 @@ class AbstractOpenshiftInstaller(ABC):
 
     def get_cleanup_task(self):
         # trigger_rule = "all_done" means this task will run when every other task has finished, whether it fails or succeededs
-        return self._get_task(operation="cleanup")
+        return self._get_task(operation="cleanup", trigger_rule="all_done")
 
     def _setup_task(self, operation="install"):
         self.config = {**self.config,
