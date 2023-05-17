@@ -88,20 +88,21 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         final_status=final_dag_status.get_task(self.dag)
-
-        with TaskGroup("utils", prefix_group_id=False, dag=self.dag) as utils:
-            utils_tasks = self._get_scale_ci_diagnosis().get_utils()
-            chain(*utils_tasks)
+        benchmark_list = []
+        diagnosis = self._get_scale_ci_diagnosis()
 
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
-            chain(*benchmark_tasks)
+            for benchmark in benchmark_tasks:
+                benchmark_list.append(benchmark)
+                benchmark_list.append(diagnosis.get_must_gather(f"must-gather-{benchmark.task_id}"))
+            chain(*benchmark_list)
 
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
-            install_cluster >> benchmarks >> utils >> cleanup_cluster >> final_status
+            install_cluster >> benchmarks >> cleanup_cluster >> final_status
         else:
-            install_cluster >> benchmarks >> utils
+            install_cluster >> benchmarks
 
     def _get_openshift_installer(self):
         return openshift.CloudOpenshiftInstaller(self.dag, self.config, self.release)
@@ -283,16 +284,16 @@ class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 
         installer = self._get_openshift_installer()
         initialize_cluster = installer.initialize_cluster_task()
+        diagnosis = self._get_scale_ci_diagnosis()
 
-        with TaskGroup("utils", prefix_group_id=False, dag=self.dag) as utils:
-            utils_tasks = self._get_scale_ci_diagnosis().get_utils()
-            chain(*utils_tasks)
-
+        benchmark_list = []
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
-            chain(*benchmark_tasks)
-
-        initialize_cluster >> benchmarks >> utils
+            for benchmark in benchmark_tasks:
+                benchmark_list.append(benchmark)
+                benchmark_list.append(diagnosis.get_must_gather(f"must-gather-{benchmark.task_id}"))
+            chain(*benchmark_list)
+        initialize_cluster >> benchmarks
         
     def _get_openshift_installer(self):
         return initialize_cluster.InitializePrebuiltCluster(self.dag, self.config, self.release)

@@ -18,7 +18,7 @@ class Diagnosis():
 
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
-            release=self.release, task="utils")
+            release=self.release, task="utils")["must_gather"]
         self.git_name = self._git_name()
         self.env = {
             "SNAPPY_DATA_SERVER_URL": self.snappy_creds['server'],
@@ -36,21 +36,12 @@ class Diagnosis():
         else:
             return f"{git_username}"
 
-    def get_utils(self):
-        utils = self._get_utils(self.vars["utils"])
-        return utils
-
-    def _get_utils(self, utils):
-        for index, util in enumerate(utils):
-            utils[index] = self._get_util(util)
-        return utils
-
-    def _get_util(self, util):
-        env = {**self.env, **util.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch')}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
+    def get_must_gather(self, task_id):
+        env = {**self.env, **self.vars.get('env', {}), **{"ES_SERVER": var_loader.get_secret('elasticsearch')}, **{"KUBEADMIN_PASSWORD": environ.get("KUBEADMIN_PASSWORD", "")}}
         return BashOperator(
-            task_id=f"{util['name']}",
+            task_id=task_id,
             depends_on_past=False,
-            bash_command=f"{constants.root_dag_dir}/scripts/utils/run_scale_ci_diagnosis.sh -w {util['workload']} -c {util['command']} ",
+            bash_command=f"{constants.root_dag_dir}/scripts/utils/run_scale_ci_diagnosis.sh -w {self.vars['workload']} -c {self.vars['command']} ",
             retries=3,
             dag=self.dag,
             env=env,

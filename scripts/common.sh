@@ -49,7 +49,7 @@ output_info() {
         _results_api_url=$(oc get route/perf-dashboard-api -o jsonpath='{.spec.host}' -n dashboard)
 
         printf "\n\n Results Dashboard Configs"
-        printf "\n Dashboard URL: $_results_dashboard_url \n API Endpoint: $_results_api_url \n"
+        printf "\n Dashboard URL: http://$_results_dashboard_url \n API Endpoint: http://$_results_api_url \n"
     fi
 
 }

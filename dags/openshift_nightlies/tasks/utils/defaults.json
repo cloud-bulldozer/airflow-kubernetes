@@ -1,5 +1,5 @@
 {
-    "utils": [
+    "must_gather":
         {
             "name": "must-gather",
             "workload": "scale-ci-diagnosis",
@@ -11,5 +11,4 @@
                 "STORAGE_MODE": "snappy"
             }
         }
-    ]
 }
