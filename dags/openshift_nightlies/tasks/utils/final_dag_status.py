@@ -1,23 +1,16 @@
-from os import environ
-from openshift_nightlies.util import var_loader, executor, constants
-from openshift_nightlies.models.release import OpenshiftRelease
-from common.models.dag_config import DagConfig
-
-
 from airflow.operators.python import PythonOperator
+from airflow import exceptions
 
 
 def final_status(**kwargs):
-    failed_tasks=[]
+    failed_tasks = []
     for task_instance in kwargs['dag_run'].get_task_instances():
-        if "index" in task_instance.task_id:
-            continue
-        elif task_instance.current_state() != 'success' and task_instance.task_id != kwargs['task_instance'].task_id:
+        if task_instance.current_state() == 'failed' and task_instance.task_id != kwargs['task_instance'].task_id:
             failed_tasks.append(task_instance.task_id)
 
     if len(failed_tasks) > 0:
-        raise Exception("Tasks {} failed. Failing this DAG run".format(failed_tasks))
-
+        kwargs['ti'].xcom_push(key="failed_tasks", value=" ".join(failed_tasks))
+        raise exceptions.AirflowFailException(f"Tasks {failed_tasks} failed. Failing this DAG run")
 
 
 def get_task(dag):
