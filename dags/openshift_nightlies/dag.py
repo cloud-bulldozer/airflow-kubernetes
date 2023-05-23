@@ -80,12 +80,11 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         installer = self._get_openshift_installer()
         install_cluster = installer.get_install_task()
         final_status=final_dag_status.get_task(self.dag)
-        diagnosis = self._get_scale_ci_diagnosis()
 
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
+            must_gather = self._get_scale_ci_diagnosis().get_must_gather("must-gather")
             chain(*benchmark_tasks)
-            must_gather = diagnosis.get_must_gather("must-gather")
             # Configure must_gather as downstream of all benchmark tasks
             for benchmark in benchmark_tasks:
                 benchmark >> must_gather
@@ -169,8 +168,12 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
                 install_cluster = installer.get_install_task()
                 final_status=final_dag_status.get_task(self.dag)
                 with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
+                    must_gather = self._get_scale_ci_diagnosis().get_must_gather("must-gather")
                     benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
                     chain(*benchmark_tasks)
+                    # Configure must_gather as downstream of all benchmark tasks
+                    for benchmark in benchmark_tasks:
+                        benchmark >> must_gather
                 rosa_post_installation = self._get_rosa_postinstall_setup()._get_rosa_postinstallation()
                 cleanup_cluster = installer.get_cleanup_task()
                 install_cluster >> rosa_post_installation >> benchmarks >> cleanup_cluster >> final_status
@@ -278,10 +281,9 @@ class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
     def build(self):       
         installer = self._get_openshift_installer()
         initialize_cluster = installer.initialize_cluster_task()
-        diagnosis = self._get_scale_ci_diagnosis()
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
+            must_gather = self._get_scale_ci_diagnosis().get_must_gather("must-gather")
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
-            must_gather = diagnosis.get_must_gather("must-gather")
             chain(*benchmark_tasks)
             for benchmark in benchmark_tasks:
                 benchmark >> must_gather
