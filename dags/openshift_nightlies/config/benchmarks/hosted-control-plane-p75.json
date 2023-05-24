@@ -3,7 +3,6 @@
         {
             "name": "cluster-density-ms-p75",
             "workload": "kube-burner",
-            "trigger_rule": "all_done",
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "cluster-density-ms",

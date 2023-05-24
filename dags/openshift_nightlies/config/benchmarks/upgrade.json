@@ -3,8 +3,7 @@
         {
             "name": "cluster-density",
             "workload": "kube-burner",
-            "trigger_rule": "all_done",
-            "custom_cmd": "kube-burner ocp cluster-density --iterations=500 --timeout=2h -churn=false --gc=false"
+            "custom_cmd": "kube-burner ocp cluster-density --iterations=500 --timeout=2h --churn=false --gc=false"
         },
         {
             "name": "upgrades",
