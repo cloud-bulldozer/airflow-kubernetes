@@ -80,7 +80,10 @@ class E2EBenchmarks():
                 "AWS_SECRET_ACCESS_KEY": self.aws_creds['aws_secret_access_key'],
                 "AWS_DEFAULT_REGION": self.aws_creds['aws_region_for_openshift'],
                 "AWS_ACCOUNT_ID": self.aws_creds['aws_account_id'],
-                "OCM_TOKEN": self.ocm_creds['ocm_token']
+                "OCM_TOKEN": self.ocm_creds['ocm_token'],
+                "INSTALL_CMMO": f"{self.install_vars['install_cmmo']}",
+                "CMMO_PASSWORD": f"{self.install_vars['cmmo_password']}",
+                "CMMO_USERNAME": f"{self.install_vars['cmmo_username']}"
             }
             self.install_vars = var_loader.build_task_vars(
                 release, task="install") 
