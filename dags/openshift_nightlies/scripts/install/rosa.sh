@@ -435,6 +435,8 @@ install(){
 }
 
 postinstall(){
+    # sleeping to address issue #324
+    sleep 120
     export WORKLOAD_TYPE=$(cat ${json_file} | jq -r .openshift_workload_node_instance_type)
     export EXPIRATION_TIME=$(cat ${json_file} | jq -r .rosa_expiration_time)
     _download_kubeconfig "$(_get_cluster_id ${CLUSTER_NAME})" ./kubeconfig
