@@ -22,6 +22,81 @@ _get_cluster_id(){
     fi
 }
 
+_download_rosa_kubeconfig() { 
+# Config htpasswd idp
+# The expected time for the htpasswd idp configuaration is in 1 minute. But actually, we met the waiting time
+# is over 10 minutes, so we give a loop to wait for the configuration to be active before timeout. 
+echo "Config htpasswd idp ..."
+CLUSTER_ID=$1
+IDP_NAME="osd-htpasswd"
+IDP_USER="osd-admin"
+IDP_PASSWD="HTPasswd_$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 6)"
+IDP_PAYLOAD=$(echo -e '{
+  "kind": "IdentityProvider",
+  "htpasswd": {
+    "users": {
+      "items": [
+        {
+          "username": "'${IDP_USER}'",
+          "password": "'${IDP_PASSWD}'"
+        }
+      ]
+    }
+  },
+  "name": "'${IDP_NAME}'",
+  "type": "HTPasswdIdentityProvider"  
+}')
+echo "${IDP_PAYLOAD}" | jq -c | ocm post "/api/clusters_mgmt/v1/clusters/${CLUSTER_ID}/identity_providers"  > "htpasswd.txt"
+
+API_URL=$(ocm get "/api/clusters_mgmt/v1/clusters/${CLUSTER_ID}" | jq -r ".api.url")
+echo "oc login ${API_URL} -u ${IDP_USER} -p ${IDP_PASSWD} --insecure-skip-tls-verify=true" > "$2/api.login"
+cat "${SHARED_DIR}/api.login" > "${ARTIFACT_DIR}/api.login"
+
+# Grant cluster-admin access to the cluster
+echo "Add the user ${IDP_USER} to the cluster-admins group..."
+ocm create user ${IDP_USER} --cluster=${CLUSTER_ID} --group=cluster-admins
+
+echo "Waiting for idp ready..."
+IDP_LOGIN_LOG="htpasswd_login.log"
+start_time=$(date +"%s")
+while true; do
+  sleep 60
+  echo "Attempt to login..."
+  oc login ${API_URL} -u ${IDP_USER} -p ${IDP_PASSWD} --insecure-skip-tls-verify=true > "${IDP_LOGIN_LOG}" || true
+  LOGIN_INFO=$(cat "${IDP_LOGIN_LOG}")
+  if [[ "${LOGIN_INFO}" =~ "Login successful" ]]; then
+    echo "${LOGIN_INFO}"
+    break
+  fi
+
+  if (( $(date +"%s") - $start_time >= $IDP_TIMEOUT )); then
+    echo "error: Timed out while waiting for the htpasswd idp to be ready for login"
+    exit 1
+  fi
+done
+
+echo "Waiting for cluster-admin ready..."
+start_time=$(date +"%s")
+while true; do
+  sleep 30
+  echo "Attempt to get cluster-admins group..."
+  cluster_admin=$(oc get group cluster-admins -o json | jq -r '.users[0]' || true)
+  if [[ "${cluster_admin}" == "${IDP_USER}" ]]; then
+    echo "cluster-admin is granted succesffully on the user ${cluster_admin}"
+    break
+  fi
+
+  if (( $(date +"%s") - $start_time >= $IDP_TIMEOUT )); then
+    echo "error: Timed out while waiting for cluster-admin to be granted"
+    exit 1
+  fi
+done
+
+# Store kubeconfig
+echo "Kubeconfig file: ${KUBECONFIG}"
+cat ${KUBECONFIG} > "$2/kubeconfig"
+}
+
 _download_kubeconfig(){
     ocm get /api/clusters_mgmt/v1/clusters/$1/credentials | jq -r .kubeconfig > $2
 }
@@ -35,7 +110,12 @@ _get_cluster_status(){
 }
 
 _wait_for_nodes_ready(){
-    _download_kubeconfig "$(_get_cluster_id $1)" ./kubeconfig
+
+    if [[ $INSTALL_METHOD == "osd" ]]; then
+        _download_kubeconfig "$(_get_cluster_id ${CLUSTER_NAME})" ./kubeconfig
+    else
+        _download_rosa_kubeconfig "$(_get_cluster_id ${CLUSTER_NAME})" ./kubeconfig
+    fi
     export KUBECONFIG=./kubeconfig
     ALL_READY_ITERATIONS=0
     ITERATIONS=0
@@ -106,7 +186,12 @@ _login_check(){
 }
 
 _wait_for_workload_nodes_ready(){
-    _download_kubeconfig "$(_get_cluster_id $1)" ./kubeconfig
+
+    if [[ $INSTALL_METHOD == "osd" ]]; then
+        _download_kubeconfig "$(_get_cluster_id ${CLUSTER_NAME})" ./kubeconfig
+    else
+        _download_rosa_kubeconfig "$(_get_cluster_id ${CLUSTER_NAME})" ./kubeconfig
+    fi
     export KUBECONFIG=./kubeconfig
     ALL_READY_ITERATIONS=0
     ITERATIONS=0
@@ -439,7 +524,13 @@ postinstall(){
     sleep 120
     export WORKLOAD_TYPE=$(cat ${json_file} | jq -r .openshift_workload_node_instance_type)
     export EXPIRATION_TIME=$(cat ${json_file} | jq -r .rosa_expiration_time)
-    _download_kubeconfig "$(_get_cluster_id ${CLUSTER_NAME})" ./kubeconfig
+
+    if [[ $INSTALL_METHOD == "osd" ]]; then
+        _download_kubeconfig "$(_get_cluster_id ${CLUSTER_NAME})" ./kubeconfig
+    else
+        _download_rosa_kubeconfig "$(_get_cluster_id ${CLUSTER_NAME})" ./kubeconfig
+    fi
+
     unset KUBECONFIG
     kubectl delete secret ${KUBECONFIG_NAME} || true
     kubectl create secret generic ${KUBECONFIG_NAME} --from-file=config=./kubeconfig
@@ -475,7 +566,12 @@ postinstall(){
 
 index_metadata(){
     if [[ ! "${INDEXDATA[*]}" =~ "cleanup" ]] ; then
-        _download_kubeconfig "$(_get_cluster_id ${CLUSTER_NAME})" ./kubeconfig
+
+        if [[ $INSTALL_METHOD == "osd" ]]; then
+            _download_kubeconfig "$(_get_cluster_id ${CLUSTER_NAME})" ./kubeconfig
+        else
+            _download_rosa_kubeconfig "$(_get_cluster_id ${CLUSTER_NAME})" ./kubeconfig
+        fi
         export KUBECONFIG=./kubeconfig
     fi
     if [[ $INSTALL_METHOD == "osd" ]]; then
