@@ -483,8 +483,7 @@ postinstall(){
 
 _install_cmmo(){
    echo "INFO: Installing Cost Management Metrics Operator"
-   pushd /home/airflow/workspace
-   git clone https://github.com/krishvoor/cmmo-cli-install
+   git clone https://github.com/krishvoor/cmmo-cli-install /home/airflow/workspace/cmmo-cli-install
 
    # Update variable values
    sed -i "s/UPDATE_SOURCE_NAME/${UUID}/g" CostManagementMetricsConfig.yaml
@@ -492,7 +491,7 @@ _install_cmmo(){
    sed -i "s/UPDATE_USERNAME/${CMMO_USERNAME}/g" secret.yaml
 
    # Install the Operator
-   cd cmmo-cli-install
+   pushd /home/airflow/workspace/cmmo-cli-install
    oc create -f operator_group.yaml
    oc create -f secret.yaml
    oc create -f CostManagementMetricsConfig.yaml
