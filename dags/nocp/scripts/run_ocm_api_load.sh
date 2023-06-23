@@ -12,7 +12,7 @@ list-clusters 20/s 30 \n
 get-current-account 10/s 10 \n
 quota-cost 10/s 30 \n
 resource-review 5/s 30 \n
-cluster-authorizations 10/s 15 \n
+cluster-authorizations 1/s 15 linear 6 20 20 \n
 self-terms-review 30/s 10 \n
 certificates 15/s 10"
 
@@ -62,7 +62,23 @@ run_ocm_api_load(){
 
     # Run each test individually
     start_time=$(date +%s)
-    echo -e $tests | while read tname trate tduration; do
+    echo -e $tests | while read -a var; do
+        tname=""
+        trate=""
+        tduration=0
+        rampoptions=""
+
+        if [ ${#var[@]} -eq 3 ]; then
+            tname=${var[0]}
+            trate=${var[1]}
+            tduration=${var[2]}
+        else
+            tname=${var[0]}
+            trate=${var[1]}
+            tduration=${var[2]}
+            IFS='/' read -r srate unit <<<"$trate"
+            rampoptions="--ramp-type ${var[3]} --ramp-steps ${var[4]} --end-rate ${var[5]} --start-rate $srate --ramp-duration ${var[6]}"
+        fi
 
         # As each test runs for a longer duration, aws OsdCcsAdmin key migt have been deleted if rosa cluster is created in parallel
         aws_osdccadmin_keys=`aws iam list-access-keys --user-name OsdCcsAdmin --output text --query 'AccessKeyMetadata[*].AccessKeyId'`
@@ -73,7 +89,7 @@ run_ocm_api_load(){
 
 	# Timeout runs ocm-load-test for the specified duration even if airflow killed this script (when user wants to stop benchmark execution). This helps in ocm-load-test to cleanup resources it created. 10 minutes extra timeout is set so that test can prepare results after running for the given duration.
 	# kill-after option needs sudo permissions
-        timeout --kill-after=60s --preserve-status $(((tduration + 10) * 60)) $TESTDIR/build/ocm-load-test --aws-region $AWS_DEFAULT_REGION --aws-account-id $AWS_ACCOUNT_ID --aws-access-key $AWS_OSDCCADMIN_KEY --aws-access-secret $AWS_OSDCCADMIN_SECRET --cooldown $COOLDOWN --duration $tduration --elastic-index ocm-request-test --elastic-insecure-skip-verify=true --elastic-server $ES_SERVER --gateway-url $GATEWAY_URL --ocm-token $OCM_TOKEN --ocm-token-url $OCM_TOKEN_URL --output-path $TESTDIR/results --rate $trate --test-id $UUID --test-names $tname
+        timeout --kill-after=60s --preserve-status $(((tduration + 10) * 60)) $TESTDIR/build/ocm-load-test --aws-region $AWS_DEFAULT_REGION --aws-account-id $AWS_ACCOUNT_ID --aws-access-key $AWS_OSDCCADMIN_KEY --aws-access-secret $AWS_OSDCCADMIN_SECRET --cooldown $COOLDOWN --duration $tduration --elastic-index ocm-request-test --elastic-insecure-skip-verify=true --elastic-server $ES_SERVER --gateway-url $GATEWAY_URL --ocm-token $OCM_TOKEN --ocm-token-url $OCM_TOKEN_URL --output-path $TESTDIR/results --rate $trate --test-id $UUID --test-names $tname $rampoptions
 	sleep $COOLDOWN
     done
     benchmark_rv=$?

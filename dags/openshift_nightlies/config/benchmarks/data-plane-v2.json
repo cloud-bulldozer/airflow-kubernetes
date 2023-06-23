@@ -16,26 +16,15 @@
             }
         },
         {
-            "name": "scale-24",
-            "workload": "scale-perf",
-            "command": "./run_scale_fromgit.sh",
+            "name": "ingress-perf",
+            "workload": "ingress-perf",
+            "command": "./run.sh",
             "env": {
-                "SCALE": "24",
-                "METADATA_COLLECTION": "false",
-                "WORKLOAD_NODE_ROLE": "workload"
-            }
-        },
-        {
-            "name": "router",
-            "workload": "router-perf-v2",
-            "command": "./ingress-performance.sh",
-            "env": {
-                "LARGE_SCALE_THRESHOLD": "19",
-                "ENGINE": "local",
-                "LARGE_SCALE_ROUTES": "500",
-                "COMPARE": "false",
-                "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
-                "GSHEET_KEY_LOCATION": "/tmp/key.json"
+                "BASELINE_UUID": "rosa-4.12-9w-2r-c5.4xlarge",
+                "CONFIG": "config/aws-standard.yml",
+                "ES_INDEX": "ingress-performance",
+                "BASELINE_INDEX": "ingress-performance-baseline",
+                "TOLERANCY": "20"
             }
         }
     ]
