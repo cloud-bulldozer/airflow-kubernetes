@@ -105,38 +105,6 @@ _login_check(){
     echo "Failed to login after 100 attempts with 5 sec interval"
 }
 
-_wait_for_workload_nodes_ready(){
-    _download_kubeconfig "$(_get_cluster_id $1)" ./kubeconfig
-    export KUBECONFIG=./kubeconfig
-    ALL_READY_ITERATIONS=0
-    ITERATIONS=0
-    # Node count is number of workload nodes, which is 3
-    NODES_COUNT=3
-    # 180 seconds per node, waiting 5 times 60 seconds (5*60 = 5 minutes) with all nodes ready to finalize
-    while [ ${ITERATIONS} -le ${NODES_COUNT} ] ; do
-        NODES_READY_COUNT=$(oc get nodes | grep -i workload | grep " Ready " | wc -l)
-        if [ ${NODES_READY_COUNT} -ne ${NODES_COUNT} ] ; then
-            echo "WARNING: ${ITERATIONS}/${NODES_COUNT} iterations. ${NODES_READY_COUNT}/${NODES_COUNT} nodes ready. Waiting 180 seconds for next check"
-            ALL_READY_ITERATIONS=0
-            ITERATIONS=$((${ITERATIONS}+1))
-            sleep 180
-        else
-            if [ ${ALL_READY_ITERATIONS} -eq 5 ] ; then
-                echo "INFO: ${ALL_READY_ITERATIONS}/5. All nodes ready, continuing process"
-                return 0
-            else
-                echo "INFO: ${ALL_READY_ITERATIONS}/5. All nodes ready. Waiting 60 seconds for next check"
-                ALL_READY_ITERATIONS=$((${ALL_READY_ITERATIONS}+1))
-                sleep 60
-            fi
-        fi
-    done
-    END_CLUSTER_STATUS="Ready. No Workers"
-    echo "ERROR: Workload nodes (${NODES_READY_COUNT}/${NODES_COUNT}) are ready after about $((${NODES_COUNT}*3)) minutes, dumping oc get nodes..."
-    oc get nodes
-    exit 1
-}
-
 _wait_for_cluster_ready(){
     START_TIMER=$(date +%s)
     echo "INFO: Installation starts at $(date -d @${START_TIMER})"
@@ -437,7 +405,6 @@ install(){
 postinstall(){
     # sleeping to address issue #324
     sleep 120
-    export WORKLOAD_TYPE=$(cat ${json_file} | jq -r .openshift_workload_node_instance_type)
     export EXPIRATION_TIME=$(cat ${json_file} | jq -r .rosa_expiration_time)
     _download_kubeconfig "$(_get_cluster_id ${CLUSTER_NAME})" ./kubeconfig
     unset KUBECONFIG
@@ -447,10 +414,6 @@ postinstall(){
         export PASSWORD=$(echo ${CLUSTER_NAME} | md5sum | awk '{print $1}')
         ocm create idp -n localauth -t htpasswd --username kubeadmin --password ${PASSWORD} -c ${CLUSTER_NAME}
         ocm create user kubeadmin -c "$(_get_cluster_id ${CLUSTER_NAME})" --group=cluster-admins
-        if [[ $WORKLOAD_TYPE != "null" ]]; then
-            # create machinepool for workload nodes
-            ocm create machinepool -c ${CLUSTER_NAME} --instance-type ${WORKLOAD_TYPE} --labels 'node-role.kubernetes.io/workload=' --taints 'role=workload:NoSchedule' --replicas 3 workload
-        fi
         # set expiration time
         EXPIRATION_STRING=$(date -d "${EXPIRATION_TIME} minutes" '+{"expiration_timestamp": "%FT%TZ"}')
         ocm patch /api/clusters_mgmt/v1/clusters/"$(_get_cluster_id ${CLUSTER_NAME})" <<< ${EXPIRATION_STRING}
@@ -460,10 +423,6 @@ postinstall(){
         URL=$(rosa describe cluster -c $CLUSTER_NAME --output json | jq -r ".api.url")
         PASSWORD=$(rosa create admin -c "$(_get_cluster_id ${CLUSTER_NAME})" -y 2>/dev/null | grep "oc login" | awk '{print $7}')
         if [ $HCP == "true" ]; then _login_check $URL $PASSWORD; fi
-        if [[ $WORKLOAD_TYPE != "null" ]]; then
-            # create machinepool for workload nodes
-            rosa create machinepool -c ${CLUSTER_NAME} --instance-type ${WORKLOAD_TYPE} --name workload --labels node-role.kubernetes.io/workload= --taints role=workload:NoSchedule --replicas 3
-        fi
         # set expiration to 24h
         rosa edit cluster -c "$(_get_cluster_id ${CLUSTER_NAME})" --expiration=${EXPIRATION_TIME}m
     fi
@@ -685,7 +644,6 @@ if [[ "$operation" == "install" ]]; then
             install
             index_metadata
         fi
-        if [[ $WORKLOAD_TYPE != "null" ]]; then _wait_for_workload_nodes_ready ${CLUSTER_NAME}; fi
     elif [ "${CLUSTER_STATUS}" == "ready" ] ; then
         printf "INFO: Cluster ${CLUSTER_NAME} already installed and ready, reusing..."
 	    postinstall
