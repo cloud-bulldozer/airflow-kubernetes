@@ -34,7 +34,7 @@ setup(){
     if [[ ! -z $MGMT_KUBECONFIG_SECRET ]]; then
         unset KUBECONFIG # Unsetting Hostedcluster kubeconfig, will fall back to Airflow cluster kubeconfig
         kubectl get secret $MGMT_KUBECONFIG_SECRET -o json | jq -r '.data.config' | base64 -d > /home/airflow/workspace/mgmt_kubeconfig
-        export HYPERSHIFT_MANAGEMENT_KUBECONFIG="/home/airflow/workspace/mgmt_kubeconfig"
+        export MC_KUBECONFIG="/home/airflow/workspace/mgmt_kubeconfig"
         export KUBECONFIG=/home/airflow/workspace/config
     fi
 }
