@@ -647,6 +647,9 @@ if [[ "$operation" == "install" ]]; then
     elif [ "${CLUSTER_STATUS}" == "ready" ] ; then
         printf "INFO: Cluster ${CLUSTER_NAME} already installed and ready, reusing..."
 	    postinstall
+    elif [ "${CLUSTER_STATUS}" == "error" ] ; then
+        printf "INFO: Cluster ${CLUSTER_NAME} errored, cleaning them now..."
+	    cleanup  
     else
         printf "INFO: Cluster ${CLUSTER_NAME} already installed but not ready, exiting..."
 	    exit 1
