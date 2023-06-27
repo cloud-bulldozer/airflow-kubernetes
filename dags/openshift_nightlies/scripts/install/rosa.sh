@@ -466,6 +466,8 @@ install(){
             export OIDC_CONFIG=$(rosa list oidc-config | grep $OIDC_PREFIX | awk '{print$1}')
             if [ -z $OIDC_CONFIG ]; then _oidc_config create $OIDC_PREFIX; fi
             ROSA_HCP_PARAMS="${ROSA_HCP_PARAMS} --oidc-config-id ${OIDC_CONFIG}"
+        else
+            INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --multi-az"  # Multi AZ is default on hosted-cp cluster
         fi
         rosa create cluster --tags=User:${GITHUB_USERNAME} --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --replicas ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS} ${ROSA_HCP_PARAMS}
     fi
