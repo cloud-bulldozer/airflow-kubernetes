@@ -95,13 +95,20 @@ _login_check(){
             echo "Attempt $ITR: Failed to login $1, retrying after 5 seconds"
             ITR=$(($ITR+1))
             sleep 5
+            RECHECK=1
         else
-            CURRENT_TIMER=$(date +%s)
-            # Time since rosa cluster is ready until all nodes are ready
-            DURATION=$(($CURRENT_TIMER - $START_TIMER))
-            INDEXDATA+=("cluster_admin_login-${DURATION}")
-            _adm_logic_check $1 $2
-            return 0
+            if [[ $RECHECK -eq 10 ]]; then
+                CURRENT_TIMER=$(date +%s)
+                # Time since rosa cluster is ready until all nodes are ready
+                DURATION=$(($CURRENT_TIMER - $START_TIMER))
+                INDEXDATA+=("cluster_admin_login-${DURATION}")
+                _adm_logic_check $1 $2
+                return 0
+            else
+                echo "Rechecking login for $((10-$RECHECK)) more times"
+                RECHECK=$(($RECHECK+1))
+                sleep 1
+            fi
         fi
     done
     END_CLUSTER_STATUS="Ready. Not Access"
