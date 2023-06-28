@@ -16,11 +16,6 @@
             "custom_cmd": "kube-burner ocp node-density-cni --uuid=${UUID} --pods-per-node=245 --timeout=2h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --user-metadata=metadata.yml --reporting"
         },
         {
-            "name": "cluster-density",
-            "workload": "kube-burner",
-            "custom_cmd": "kube-burner ocp cluster-density --uuid=${UUID} --iterations=500 --timeout=6h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --user-metadata=metadata.yml --reporting"
-        },
-        {
             "name": "cluster-density-v2",
             "workload": "kube-burner",
             "custom_cmd": "kube-burner ocp cluster-density-v2 --uuid=${UUID} --iterations=500 --timeout=3h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --user-metadata=metadata.yml --reporting"
