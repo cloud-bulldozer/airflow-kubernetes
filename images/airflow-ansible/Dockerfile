@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=quay.io/cloud-bulldozer/airflow:latest
+ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 USER root
 RUN apt install bc awscli -y
