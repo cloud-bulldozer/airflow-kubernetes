@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=quay.io/cloud-bulldozer/airflow:2.3.2
+ARG BASE_IMAGE=quay.io/cloud-bulldozer/airflow:latest
 # Hypershift Compilation
 FROM golang:1.18 AS hypershift
 RUN git clone --branch main https://github.com/openshift/hypershift
