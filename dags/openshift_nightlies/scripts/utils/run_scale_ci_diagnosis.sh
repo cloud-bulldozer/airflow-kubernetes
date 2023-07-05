@@ -27,10 +27,6 @@ setup(){
     curl -sS https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xz oc
 
     export PATH=$PATH:$(pwd)
-
-    if [[ ! -z "$KUBEADMIN_PASSWORD" ]]; then 
-        oc login -u kubeadmin -p $KUBEADMIN_PASSWORD --insecure-skip-tls-verify
-    fi
 }
 
 setup
