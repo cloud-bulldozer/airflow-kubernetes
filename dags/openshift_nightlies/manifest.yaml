@@ -28,8 +28,8 @@ dagConfig:
     tag: 2.3.2
   dependencies:
     e2e_benchmarking:
-      repo: https://github.com/mukrishn/e2e-benchmarking.git
-      branch: ocp-wrapper
+      repo: https://github.com/cloud-bulldozer/e2e-benchmarking.git
+      branch: master
 
 platforms:
   cloud:
