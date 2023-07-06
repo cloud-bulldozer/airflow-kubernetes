@@ -290,6 +290,9 @@ setup(){
     export ES_SERVER=$(cat ${json_file} | jq -r .es_server)
     export HCP=$(cat ${json_file} | jq -r .rosa_hcp)
     export UUID=$(uuidgen)
+    export INSTALL_CMMO=$(cat ${json_file} | jq -r .install_cmmo)
+    export CMMO_USERNAME=$(cat ${json_file} | jq -r .cmmo_username)
+    export CMMO_PASSWORD=$(cat ${json_file} | jq -r .cmmo_password)
     if [ $HCP == "true" ]; then
         export STAGE_CONFIG=""
         export MGMT_CLUSTER_NAME=$(cat ${json_file} | jq -r .staging_mgmt_cluster_name)
@@ -428,8 +431,31 @@ postinstall(){
     fi
     kubectl delete secret ${KUBEADMIN_NAME} || true
     kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=${PASSWORD}
+    # Check if CMMO Install is true
+    if [ $INSTALL_CMMO == "true" ]; then 
+    export KUBECONFIG=./kubeconfig
+    _install_cmmo
+    fi
     if [ $HCP == "true" ]; then index_metadata "cluster-install"; fi
     return 0
+}
+
+_install_cmmo(){
+   echo "INFO: Installing Cost Management Metrics Operator"
+   git clone https://github.com/krishvoor/cmmo-cli-install /home/airflow/workspace/cmmo-cli-install
+
+   # Update variable values
+   sed -i "s/UPDATE_SOURCE_NAME/${UUID}/g" CostManagementMetricsConfig.yaml
+   sed -i "s/UPDATE_PASSWORD/${CMMO_PASSWORD}/g" secret.yaml
+   sed -i "s/UPDATE_USERNAME/${CMMO_USERNAME}/g" secret.yaml
+
+   # Install the Operator
+   pushd /home/airflow/workspace/cmmo-cli-install
+   oc create -f operator_group.yaml
+   oc create -f secret.yaml
+   oc create -f CostManagementMetricsConfig.yaml
+   popd
+   echo "INFO: Installed the Cost Management Metrics Operator"
 }
 
 index_metadata(){

@@ -38,5 +38,6 @@
     "rosa_hcp": "false",
     "staging_mgmt_cluster_name": "",
     "staging_mgmt_provisioner_shards": "",
-    "aws_region": "us-west-2"
+    "aws_region": "us-west-2",
+    "enable_cmmo": "false"
 }
