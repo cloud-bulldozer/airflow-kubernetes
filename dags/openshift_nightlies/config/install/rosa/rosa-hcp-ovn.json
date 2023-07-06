@@ -17,5 +17,12 @@
     "machineset_metadata_label_prefix": "machine.openshift.io",
     "staging_mgmt_provisioner_shards": "b4bb294b-a76c-11ed-91b2-0a580a831ba1",
     "number_of_hostedcluster": 2,
-    "hcp_install_interval": 60
+    "hcp_install_interval": 60,
+    "extra_machinepool": [{
+        "name": "infra",
+        "replica": "1",
+        "instance_type": "m5.2xlarge",
+        "labels": "node-role.kubernetes.io/infra=true",
+        "taints": "node-role.kubernetes.io/infra=true:NoSchedule"
+    }]
 }

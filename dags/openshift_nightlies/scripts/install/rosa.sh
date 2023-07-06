@@ -43,14 +43,14 @@ _wait_for_nodes_ready(){
         NODES_COUNT=$2
         ALL_READY_ITERATIONS=4 #reduced extra buffers for hosted cp clusters
     else
-        # Node count is number of workers + 3 masters + 3 infra
-        NODES_COUNT=$(($2+6))
+        # Node count is number of workers + 3 infra
+        NODES_COUNT=$(($2+3))
     fi
     # 30 seconds per node, waiting for all nodes ready to finalize
     while [ ${ITERATIONS} -le $((${NODES_COUNT}*5)) ] ; do
-        NODES_READY_COUNT=$(oc get nodes | grep " Ready " | wc -l)
+        NODES_READY_COUNT=$(oc get nodes -l $3 | grep " Ready " | wc -l)
         if [ ${NODES_READY_COUNT} -ne ${NODES_COUNT} ] ; then
-            echo "WARNING: ${ITERATIONS}/${NODES_COUNT} iterations. ${NODES_READY_COUNT}/${NODES_COUNT} nodes ready. Waiting 30 seconds for next check"
+            echo "WARNING: ${ITERATIONS}/${NODES_COUNT} iterations. ${NODES_READY_COUNT}/${NODES_COUNT} $3 nodes ready. Waiting 30 seconds for next check"
             # ALL_READY_ITERATIONS=0
             ITERATIONS=$((${ITERATIONS}+1))
             sleep 30
@@ -66,7 +66,7 @@ _wait_for_nodes_ready(){
         fi
     done
     END_CLUSTER_STATUS="Ready. No Workers"
-    echo "ERROR: Not all nodes (${NODES_READY_COUNT}/${NODES_COUNT}) are ready after about $((${NODES_COUNT}*3)) minutes, dumping oc get nodes..."
+    echo "ERROR: Not all $3 nodes (${NODES_READY_COUNT}/${NODES_COUNT}) are ready after about $((${NODES_COUNT}*3)) minutes, dumping oc get nodes..."
     oc get nodes
     exit 1
 }
@@ -137,6 +137,79 @@ _adm_logic_check(){
     echo "Failed to execute oc adm commands after 100 attempts with 5 sec interval" 
 }
 
+_balance_infra(){
+    echo "Initiate migration of prometheus componenets to infra nodepools"
+    oc get pods -n openshift-monitoring -o wide | grep prometheus-k8s
+    oc get sts prometheus-k8s -n openshift-monitoring
+    echo "Restart stateful set pods"
+    oc rollout restart -n openshift-monitoring statefulset/prometheus-k8s 
+    echo "Wait till they are completely restarted"
+    oc rollout status -n openshift-monitoring statefulset/prometheus-k8s
+    echo "Check pods status again and the hosting nodes"
+    oc get pods -n openshift-monitoring -o wide | grep prometheus-k8s
+    for node in $(oc get pods -n openshift-monitoring -o wide | grep -i prometheus-k8s | grep -i running | awk '{print$7}');
+    do
+        if [[ $(oc get nodes | grep infra | awk '{print$1}' | grep $node) != "" ]]; then
+                echo "$node is an infra node"
+        else
+                echo "ERROR: Prometheus-k8s pod on $node is not an infra node"
+                exit 1
+        fi
+    done
+
+    echo "Initiate migration of ingress router-default pods to infra nodepools"
+    echo "Add toleration to use infra nodes"
+    oc patch ingresscontroller -n openshift-ingress-operator default --type merge --patch  '{"spec":{"nodePlacement":{"nodeSelector":{"matchLabels":{"node-role.kubernetes.io/infra":"true"}},"tolerations":[{"effect":"NoSchedule","key":"node-role.kubernetes.io/infra","operator":"Exists"}]}}}'
+    echo "Wait till it gets rolled out"
+    sleep 60
+    oc get pods -n openshift-ingress -o wide
+    for node in $(oc get pods -n openshift-ingress -o wide | grep -i router | grep -i running | awk '{print$7}');
+    do
+        if [[ $(oc get nodes | grep infra | awk '{print$1}' | grep $node) != "" ]]; then
+                echo "$node is an infra node"
+        else
+                echo "ERROR: router-default pod on $node is not an infra node"
+                exit 1
+        fi
+    done
+    
+    return 0
+}
+
+_wait_for_extra_nodes_ready(){
+    export NODE_LABLES=$(cat ${json_file} | jq -r .extra_machinepool[].labels)
+    for label in $NODE_LABLES;
+    do
+        REPLICA=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.labels == '\"$label\"')'.replica)
+        NODES_COUNT=$((REPLICA*3))
+        _wait_for_nodes_ready $CLUSTER_NAME $NODES_COUNT $label
+        if [[ $label == *"infra"* ]] ; then
+            _balance_infra
+        fi       
+    done
+    return 0
+}
+
+_add_machinepool(){
+    export MACHINEPOOLS=$(cat ${json_file} | jq -r .extra_machinepool[].name)
+    for mcp in $MACHINEPOOLS; 
+    do
+        echo "Add an extra machinepool - $mcp to cluster"
+        REPLICA=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.name == '\"$mcp\"')'.replica)
+        INS_TYPE=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.name == '\"$mcp\"')'.instance_type)
+        LABELS=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.name == '\"$mcp\"')'.labels)
+        TAINTS=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.name == '\"$mcp\"')'.taints)
+        for ZONE in a b c;
+        do
+            if [[ $(rosa list machinepool --cluster "$(_get_cluster_id ${CLUSTER_NAME})" | grep infra-$ZONE) == "" ]]; then
+                rosa create machinepool --cluster "$(_get_cluster_id ${CLUSTER_NAME})" --name infra-$ZONE --instance-type ${INS_TYPE} --replicas $REPLICA --availability-zone $AWS_REGION$ZONE --labels $LABELS --taints $TAINTS
+            fi
+        done
+    done
+    _wait_for_extra_nodes_ready
+    return 0
+}
+
 _wait_for_cluster_ready(){
     START_TIMER=$(date +%s)
     echo "INFO: Installation starts at $(date -d @${START_TIMER})"
@@ -169,11 +242,12 @@ _wait_for_cluster_ready(){
             echo "Set end time of prom scrape"
             export END_TIME=$(date +"%s")       
             START_TIMER=$(date +%s)
-            _wait_for_nodes_ready $1 ${COMPUTE_WORKERS_NUMBER}
+            _wait_for_nodes_ready $1 ${COMPUTE_WORKERS_NUMBER} "node-role.kubernetes.io/worker"
             CURRENT_TIMER=$(date +%s)
             # Time since rosa cluster is ready until all nodes are ready
             DURATION=$(($CURRENT_TIMER - $START_TIMER))
             INDEXDATA+=("day2operations-${DURATION}")
+            if [ $HCP == "true" ]; then _add_machinepool $URL $PASSWORD; fi
             if [[ $INSTALL_METHOD == "osd" ]]; then
                 echo "INFO: Cluster and nodes on ready status.."
             else
@@ -478,12 +552,12 @@ install(){
         fi
         rosa create cluster --tags=User:${GITHUB_USERNAME} --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --replicas ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS} ${ROSA_HCP_PARAMS}
     fi
-    _wait_for_cluster_ready ${CLUSTER_NAME}
     postinstall
     return 0
 }
 
 postinstall(){
+    _wait_for_cluster_ready ${CLUSTER_NAME}
     # sleeping to address issue #324
     sleep 120
     export EXPIRATION_TIME=$(cat ${json_file} | jq -r .rosa_expiration_time)
