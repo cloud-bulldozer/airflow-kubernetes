@@ -593,6 +593,7 @@ postinstall(){
         # set expiration to 24h
         rosa edit cluster -c "$(_get_cluster_id ${CLUSTER_NAME})" --expiration=${EXPIRATION_TIME}m
     fi
+    unset KUBECONFIG
     kubectl delete secret ${KUBEADMIN_NAME} || true
     kubectl create secret generic ${KUBEADMIN_NAME} --from-literal=KUBEADMIN_PASSWORD=${PASSWORD}
     if [ $HCP == "true" ]; then index_metadata "cluster-install"; fi
