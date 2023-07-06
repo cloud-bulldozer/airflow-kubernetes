@@ -137,6 +137,77 @@ _adm_logic_check(){
     echo "Failed to execute oc adm commands after 100 attempts with 5 sec interval" 
 }
 
+_balance_infra(){
+    echo "Initiate migration of prometheus componenets to infra nodepools"
+    oc get pods -n openshift-monitoring -o wide | grep prometheus-k8s
+    oc get sts prometheus-k8s -n openshift-monitoring
+    echo "Restart stateful set pods"
+    oc rollout restart -n openshift-monitoring statefulset/prometheus-k8s 
+    echo "Wait till they are completely restarted"
+    oc rollout status -n openshift-monitoring statefulset/prometheus-k8s
+    echo "Check pods status again and the hosting nodes"
+    oc get pods -n openshift-monitoring -o wide | grep prometheus-k8s
+    for node in $(oc get pods -n openshift-monitoring -o wide | grep -i prometheus-k8s | grep -i running | awk '{print$7}');
+    do
+        if [[ $(oc get nodes | grep infra | awk '{print$1}' | grep $node) != "" ]]; then
+                echo "$node is an infra node"
+        else
+                echo "ERROR: Prometheus-k8s pod on $node is not an infra node"
+                exit 1
+        fi
+    done
+    return 0
+}
+
+_wait_for_extra_nodes_ready(){
+    _download_kubeconfig "$(_get_cluster_id $CLUSTER_NAME)" ./kubeconfig
+    export KUBECONFIG=./kubeconfig    
+    export NODE_LABLES=$(cat ${json_file} | jq -r .extra_machinepool[].labels)
+    for label in $NODE_LABLES;
+    do
+        REPLICA=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.labels == '\"$label\"')'.replica)
+        ITERATIONS=0
+        NODES_COUNT=$((REPLICA*3))
+        while [ ${ITERATIONS} -le $((${NODES_COUNT}*5)) ] ; do
+            if [[ $(oc get nodes -l $label | grep -c "Ready") -ne ${NODES_COUNT} ]]; then
+                echo "WARNING: ${ITERATIONS}/${NODES_COUNT} iteration, $label nodes are not ready. Waiting 30 seconds for next check"
+                ITERATIONS=$((${ITERATIONS}+1))
+                sleep 30
+            else
+                if [[ $label == *"infra"* ]] ; then
+                    _balance_infra
+                fi
+                break
+            fi
+        done
+        END_CLUSTER_STATUS="Ready. Not all extra machinpools nodes are ready"
+        echo "ERROR: Not all nodes are ready, dumping oc get nodes..."
+        oc get nodes
+        exit 1        
+    done
+    return 0
+}
+
+_add_machinepool(){
+    export MACHINEPOOLS=$(cat ${json_file} | jq -r .extra_machinepool[].name)
+    for mcp in $MACHINEPOOLS; 
+    do
+        echo "Add an extra machinepool - $mcp to cluster"
+        REPLICA=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.name == '\"$mcp\"')'.replica)
+        INS_TYPE=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.name == '\"$mcp\"')'.instance_type)
+        LABELS=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.name == '\"$mcp\"')'.labels)
+        TAINTS=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.name == '\"$mcp\"')'.taints)
+        for ZONE in a b c;
+        do
+            if [[ $(rosa list machinepool --cluster "$(_get_cluster_id ${CLUSTER_NAME})" | grep infra-$ZONE) == "" ]]; then
+                rosa create machinepool --cluster "$(_get_cluster_id ${CLUSTER_NAME})" --name infra-$ZONE --instance-type ${INS_TYPE} --replicas $REPLICA --availability-zone $AWS_REGION$ZONE --labels $LABELS --taints $TAINTS
+            fi
+        done
+    done
+    _wait_for_extra_nodes_ready
+    return 0
+}
+
 _wait_for_cluster_ready(){
     START_TIMER=$(date +%s)
     echo "INFO: Installation starts at $(date -d @${START_TIMER})"
@@ -174,6 +245,7 @@ _wait_for_cluster_ready(){
             # Time since rosa cluster is ready until all nodes are ready
             DURATION=$(($CURRENT_TIMER - $START_TIMER))
             INDEXDATA+=("day2operations-${DURATION}")
+            if [ $HCP == "true" ]; then _add_machinepool $URL $PASSWORD; fi
             if [[ $INSTALL_METHOD == "osd" ]]; then
                 echo "INFO: Cluster and nodes on ready status.."
             else
