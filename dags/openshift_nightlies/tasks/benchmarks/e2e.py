@@ -88,12 +88,9 @@ class E2EBenchmarks():
                 cluster_name = release._generate_cluster_name()         
                 self.env = {
                     **self.env,
-                    "THANOS_RECEIVER_URL": var_loader.get_secret("thanos_receiver_url"),
-                    "PROM_URL": var_loader.get_secret("thanos_querier_url"),
                     "MGMT_CLUSTER_NAME": f"{self.install_vars['staging_mgmt_cluster_name']}.*",
                     "SVC_CLUSTER_NAME": f"{self.install_vars['staging_svc_cluster_name']}.*",
-                    "HOSTED_CLUSTER_NS": f".*-{cluster_name}-{self.task_group}",
-                    "MGMT_KUBECONFIG_SECRET": f"{release.get_release_name()}-kubeconfig",
+                    "MGMT_KUBECONFIG_SECRET": "staging-mgmt-cluster-kubeconfig",
                     **self._insert_kube_env()
                 }
 
