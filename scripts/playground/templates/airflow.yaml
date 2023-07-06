@@ -22,8 +22,8 @@ spec:
       releaseName: airflow
       values: |-
         defaultAirflowRepository: quay.io/cloud-bulldozer/airflow
-        defaultAirflowTag: 2.3.2
-        airflowVersion: 2.3.2
+        defaultAirflowTag: 2.6.2
+        airflowVersion: 2.6.2
         executor: KubernetesExecutor
         createUserJob:
           useHelmHooks: false
@@ -107,6 +107,8 @@ spec:
     name: airflow-webserver
     weight: 100
   wildcardPolicy: None
+  tls:
+    termination: edge
 --- 
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role

@@ -1,10 +1,12 @@
 name: Release Airflow Images
 on:
+  schedule:  # triggers every midnight
+    - cron: '0 0 * * *' 
   push:
     branches:
       - master
     tags:
-      - "*" # triggers only if push new tag version
+      - "*" # triggers on a push event
 
 jobs:
   containers:
