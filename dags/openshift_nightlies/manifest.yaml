@@ -25,7 +25,7 @@ dagConfig:
   cleanupOnSuccess: true
   executorImages:
     repository: quay.io/cloud-bulldozer
-    tag: 2.3.2
+    tag: 2.6.2
   dependencies:
     e2e_benchmarking:
       repo: https://github.com/cloud-bulldozer/e2e-benchmarking.git
