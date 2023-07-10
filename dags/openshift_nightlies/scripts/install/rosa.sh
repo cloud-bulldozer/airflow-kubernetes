@@ -182,6 +182,7 @@ _wait_for_extra_nodes_ready(){
     do
         REPLICA=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.labels == '\"$label\"')'.replica)
         NODES_COUNT=$((REPLICA*3))
+        if [[ $label == *"infra"* ]] ; then NODES_COUNT=$((REPLICA*2)); fi
         _wait_for_nodes_ready $CLUSTER_NAME $NODES_COUNT $label
         if [[ $label == *"infra"* ]] ; then
             _balance_infra
@@ -195,14 +196,17 @@ _add_machinepool(){
     for mcp in $MACHINEPOOLS; 
     do
         echo "Add an extra machinepool - $mcp to cluster"
+        ZONES="a b c"
+        MC_NAME=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.name == '\"$mcp\"')'.name)
         REPLICA=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.name == '\"$mcp\"')'.replica)
         INS_TYPE=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.name == '\"$mcp\"')'.instance_type)
         LABELS=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.name == '\"$mcp\"')'.labels)
         TAINTS=$(cat ${json_file} | jq -r .extra_machinepool[] | jq -r 'select(.name == '\"$mcp\"')'.taints)
-        for ZONE in a b c;
+        if [[ $MC_NAME == *"infra"* ]]; then ZONES="a b"; fi
+        for ZONE in $ZONES;
         do
-            if [[ $(rosa list machinepool --cluster "$(_get_cluster_id ${CLUSTER_NAME})" | grep infra-$ZONE) == "" ]]; then
-                rosa create machinepool --cluster "$(_get_cluster_id ${CLUSTER_NAME})" --name infra-$ZONE --instance-type ${INS_TYPE} --replicas $REPLICA --availability-zone $AWS_REGION$ZONE --labels $LABELS --taints $TAINTS
+            if [[ $(rosa list machinepool --cluster "$(_get_cluster_id ${CLUSTER_NAME})" | grep $MC_NAME-$ZONE) == "" ]]; then
+                rosa create machinepool --cluster "$(_get_cluster_id ${CLUSTER_NAME})" --name $MC_NAME-$ZONE --instance-type ${INS_TYPE} --replicas $REPLICA --availability-zone $AWS_REGION$ZONE --labels $LABELS --taints $TAINTS
             fi
         done
     done
