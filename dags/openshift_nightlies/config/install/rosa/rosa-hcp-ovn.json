@@ -22,7 +22,7 @@
         "name": "infra",
         "replica": "1",
         "instance_type": "r5.xlarge",
-        "labels": "node-role.kubernetes.io/infra=true",
-        "taints": "node-role.kubernetes.io/infra=true:NoSchedule"
+        "labels": "node-role.kubernetes.io/infra=",
+        "taints": "node-role.kubernetes.io/infra=:NoSchedule"
     }]
 }
