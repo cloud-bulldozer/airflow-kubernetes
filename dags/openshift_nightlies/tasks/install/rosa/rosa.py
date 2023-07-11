@@ -4,6 +4,7 @@ from os import environ
 
 from openshift_nightlies.util import var_loader, kubeconfig, constants, executor
 from openshift_nightlies.tasks.install.openshift import AbstractOpenshiftInstaller
+from openshift_nightlies.tasks.utils import rosa_post_install
 from common.models.dag_config import DagConfig
 from openshift_nightlies.models.release import OpenshiftRelease
 
@@ -22,6 +23,7 @@ class RosaInstaller(AbstractOpenshiftInstaller):
     def __init__(self, dag, config: DagConfig, release: OpenshiftRelease):
         super().__init__(dag, config, release)
         self.exec_config = executor.get_default_executor_config(self.dag_config, executor_image="airflow-managed-services")
+        self.rosa_postinstall_setup = rosa_post_install.Diagnosis(dag, config, release)
 
     def get_type(self):
         if self.config['rosa_hcp'] == "true":
@@ -32,7 +34,7 @@ class RosaInstaller(AbstractOpenshiftInstaller):
     def get_install_hcp_task(self):
         for iteration in range(self.config['number_of_hostedcluster']):
             c_id = f"{'hcp-'+str(iteration+1)}" # adding 1 to name the cluster hcp-1, hcp-2..
-            yield c_id, self._get_task(operation="install", id=c_id), self._get_task(operation="cleanup", id=c_id)
+            yield c_id, self._get_task(operation="install", id=c_id), self.rosa_postinstall_setup._get_rosa_postinstallation(id=c_id), self._get_task(operation="cleanup", id=c_id)
 
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", id="", trigger_rule="all_success"):

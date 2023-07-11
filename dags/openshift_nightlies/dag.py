@@ -160,9 +160,9 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
             hosted_installer = self._get_hypershift_openshift_installer()
             wait_task = hosted_installer.wait_task()
             wait_before_cleanup = hosted_installer.wait_task(id="wait_before_cleanup")
-            for c_id, install_hc, cleanup_hc in install_cluster:
+            for c_id, install_hc, postinstall_hc, cleanup_hc in install_cluster:
                 benchmark = self._add_benchmarks(task_group=c_id)
-                install_hc >> wait_task >> benchmark >> wait_before_cleanup >> cleanup_hc
+                install_hc >> postinstall_hc >> wait_task >> benchmark >> wait_before_cleanup >> cleanup_hc
         else:
             install_cluster = installer.get_install_task()
             final_status = final_dag_status.get_task(self.dag)
