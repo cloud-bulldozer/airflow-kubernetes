@@ -1,6 +1,7 @@
 import abc
 from openshift_nightlies.util import var_loader, executor, constants
 from openshift_nightlies.models.release import OpenshiftRelease
+from openshift_nightlies.tasks.index.status import StatusIndexer
 from common.models.dag_config import DagConfig
 from os import environ
 import json
@@ -44,7 +45,7 @@ class AbstractOpenshiftInstaller(ABC):
         self.exec_config = executor.get_default_executor_config(self.dag_config)
 
         # Merge all variables, prioritizing Airflow Secrets over git based vars
-        self.config = {        
+        self.config = {
             **self.vars,
             **self.ansible_orchestrator,
             **self.install_secrets,
@@ -69,7 +70,10 @@ class AbstractOpenshiftInstaller(ABC):
         raise NotImplementedError()
 
     def get_install_task(self):
-        return self._get_task(operation="install")
+        indexer = StatusIndexer(self.dag, self.dag_config, self.release, "install").get_index_task()
+        install_task = self._get_task(operation="install")
+        install_task >> indexer
+        return install_task
 
     def get_cleanup_task(self):
         # trigger_rule = "all_done" means this task will run when every other task has finished, whether it fails or succeededs
