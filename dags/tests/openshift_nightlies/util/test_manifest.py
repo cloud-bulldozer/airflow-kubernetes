@@ -26,7 +26,7 @@ class TestManifest():
         return mocked_manifest.get_releases()
 
     def test_manifest_patched_secret_populates(self,mocked_manifest):
-        assert len( mocked_manifest.latest_releases ) == 8 
+        assert len( mocked_manifest.latest_releases ) == 6
 
     def assert_amd_installer(self,stream):
         assert "arm64" not in stream
@@ -67,17 +67,7 @@ class TestManifest():
                 self.assert_amd_installer(release["release"].get_latest_release()[self.INSTALL_BINARY])
                 self.assert_amd_client(release["release"].get_latest_release()[self.CLIENT_BINARY])
                 hits += 1
-        assert hits == 6 
-
-    def test_cloudreleases_arm(self,mocked_releases):
-        releases = mocked_releases
-        hits = 0
-        for release in releases:
-            if "4.12-aws-arm" in release["release"].get_release_name():
-                self.assert_arm_installer(release["release"].get_latest_release()[self.INSTALL_BINARY])
-                self.assert_arm_client(release["release"].get_latest_release()[self.CLIENT_BINARY])
-                hits += 1
-        assert hits == 6 
+        assert hits == 4
 
     def test_endwith(self):
         assert "aws-arm".endswith("arm")

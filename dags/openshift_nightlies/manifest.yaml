@@ -1,8 +1,4 @@
 versions:
-  - version: "4.11"
-    alias: old 
-    releaseStream: 4.11.0-0.nightly
-    baremetalReleaseStream: latest-4.11
   - version: "4.12"
     alias: stable
     releaseStream: 4.12.0-0.nightly
@@ -34,8 +30,8 @@ dagConfig:
 platforms:
   cloud:
     versions: ["4.12", "4.13", "4.14"]
-    providers: ["aws", "aws-arm", "azure","gcp"]
-    # providers: ["aws", "gcp", "azure", "alibaba"]
+    providers: ["aws"]
+    #providers: ["aws", "aws-arm", "azure","gcp"]
     variants:
     - name: ovn-small-cp
       schedule: "0 12 * * 3"
@@ -57,36 +53,26 @@ platforms:
       config:
         install: ovn-dp-v2.json
         benchmarks: data-plane-v2.json
-    - name: ovn-data-plane
-      config:
-        install: ovn-dp.json
-        benchmarks: data-plane.json
-    - name: acs
-      config: 
-        install: acs.json
-        benchmarks: acs.json
-  baremetal:
-    build: dev
-    versions: ["4.11", "4.12", "4.13"]
-    variants:
-      - name: jetski
-        config:
-          install: baremetal/jetski.json
-          benchmarks: baremetal-benchmarks
 
-  openstack:
-    versions: ["4.11", "4.12", "4.13"]
-    variants:
-      - name: ovnk-control-plane
-        schedule: "0 0 * * 3"
-        config:
-          install: openstack/ovnk.json
-          benchmarks: osp-large-control-plane.json
-      - name: ovnk-data-plane
-        schedule: "0 0 * * 4"
-        config:
-          install: openstack/ovnk.json
-          benchmarks: osp-data-plane.json
+          # Removing old dp tests and ACS as we don't use them in the main dag
+          #    - name: ovn-data-plane
+          #      config:
+          #        install: ovn-dp.json
+          #        benchmarks: data-plane.json
+          #    - name: acs
+          #      config: 
+          #        install: acs.json
+          #        benchmarks: acs.json
+
+          #Disabling Baremetal as we don't use it in the main dag.
+          #  baremetal:
+          #    build: dev
+          #    versions: ["4.11", "4.12", "4.13"]
+          #    variants:
+          #      - name: jetski
+          #        config:
+          #          install: baremetal/jetski.json
+          #          benchmarks: baremetal-benchmarks
 
   # Do not program concurrent builds of ROSA/ROGCP/ARO
   rosa:
