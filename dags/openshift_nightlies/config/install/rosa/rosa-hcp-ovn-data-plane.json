@@ -21,7 +21,7 @@
     "extra_machinepool": [{
         "name": "infra",
         "replica": "1",
-        "instance_type": "r5.xlarge",
+        "instance_type": "c5.4xlarge",
         "labels": "node-role.kubernetes.io/infra=",
         "taints": "node-role.kubernetes.io/infra=:NoSchedule"
     }]

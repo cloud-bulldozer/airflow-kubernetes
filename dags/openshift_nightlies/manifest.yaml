@@ -142,6 +142,11 @@ platforms:
         config:
           install: rosa/rosa-hcp-ovn.json
           benchmarks: hosted-control-plane-p75.json
+      - name: rosa-hcp-data-plane
+        schedule:  "1 12 * * 3"
+        config:
+          install: rosa/rosa-hcp-ovn-data-plane.json
+          benchmarks: data-plane-v2.json
 
   rogcp:
     versions: ["4.12", "4.13"]

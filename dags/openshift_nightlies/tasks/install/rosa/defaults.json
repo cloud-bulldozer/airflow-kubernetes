@@ -40,5 +40,6 @@
     "staging_svc_cluster_name": "",
     "staging_mgmt_provisioner_shards": "",
     "aws_region": "us-west-2",
-    "oidc_config": ""
+    "oidc_config": "",
+    "extra_machinepool": []
 }
