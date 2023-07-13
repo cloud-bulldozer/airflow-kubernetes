@@ -138,42 +138,44 @@ _adm_logic_check(){
 }
 
 _balance_infra(){
-    echo "Initiate migration of prometheus componenets to infra nodepools"
-    oc get pods -n openshift-monitoring -o wide | grep prometheus-k8s
-    oc get sts prometheus-k8s -n openshift-monitoring
-    echo "Restart stateful set pods"
-    oc rollout restart -n openshift-monitoring statefulset/prometheus-k8s 
-    echo "Wait till they are completely restarted"
-    oc rollout status -n openshift-monitoring statefulset/prometheus-k8s
-    echo "Check pods status again and the hosting nodes"
-    oc get pods -n openshift-monitoring -o wide | grep prometheus-k8s
-    for node in $(oc get pods -n openshift-monitoring -o wide | grep -i prometheus-k8s | grep -i running | awk '{print$7}');
-    do
-        if [[ $(oc get nodes | grep infra | awk '{print$1}' | grep $node) != "" ]]; then
-                echo "$node is an infra node"
-        else
-                echo "ERROR: Prometheus-k8s pod on $node is not an infra node"
-                exit 1
-        fi
-    done
+    if [[ $1 == "prometheus-k8s" ]] ; then
+        echo "Initiate migration of prometheus componenets to infra nodepools"
+        oc get pods -n openshift-monitoring -o wide | grep prometheus-k8s
+        oc get sts prometheus-k8s -n openshift-monitoring
+        echo "Restart stateful set pods"
+        oc rollout restart -n openshift-monitoring statefulset/prometheus-k8s 
+        echo "Wait till they are completely restarted"
+        oc rollout status -n openshift-monitoring statefulset/prometheus-k8s
+        echo "Check pods status again and the hosting nodes"
+        oc get pods -n openshift-monitoring -o wide | grep prometheus-k8s
+    else
+        echo "Initiate migration of ingress router-default pods to infra nodepools"
+        echo "Add toleration to use infra nodes"
+        oc patch ingresscontroller -n openshift-ingress-operator default --type merge --patch  '{"spec":{"nodePlacement":{"nodeSelector":{"matchLabels":{"node-role.kubernetes.io/infra":""}},"tolerations":[{"effect":"NoSchedule","key":"node-role.kubernetes.io/infra","operator":"Exists"}]}}}'
+        echo "Wait till it gets rolled out"
+        sleep 60
+        oc get pods -n openshift-ingress -o wide
+    fi
+}
 
-    echo "Initiate migration of ingress router-default pods to infra nodepools"
-    echo "Add toleration to use infra nodes"
-    oc patch ingresscontroller -n openshift-ingress-operator default --type merge --patch  '{"spec":{"nodePlacement":{"nodeSelector":{"matchLabels":{"node-role.kubernetes.io/infra":""}},"tolerations":[{"effect":"NoSchedule","key":"node-role.kubernetes.io/infra","operator":"Exists"}]}}}'
-    echo "Wait till it gets rolled out"
-    sleep 60
-    oc get pods -n openshift-ingress -o wide
-    for node in $(oc get pods -n openshift-ingress -o wide | grep -i router | grep -i running | awk '{print$7}');
-    do
-        if [[ $(oc get nodes | grep infra | awk '{print$1}' | grep $node) != "" ]]; then
-                echo "$node is an infra node"
-        else
-                echo "ERROR: router-default pod on $node is not an infra node"
-                exit 1
-        fi
+_check_infra(){
+    TRY=0
+    while [ $TRY -le 3 ]; do # Attempts three times to migrate pods
+        FLAG_ERROR=""
+        _balance_infra $1
+        for node in $(oc get pods -n $2 -o wide | grep -i $1 | grep -i running | awk '{print$7}');
+        do
+            if [[ $(oc get nodes | grep infra | awk '{print$1}' | grep $node) != "" ]]; then
+                    echo "$node is an infra node"
+            else
+                    echo "$1 pod on $node is not an infra node, retrying"
+                    FLAG_ERROR=true
+            fi
+        done
+        if [[ $FLAG_ERROR == "" ]]; then return 0; else TRY=$((TRY+1)); fi
     done
-    
-    return 0
+    echo "Failed to move $1 pods in $2 namespace"
+    exit 1
 }
 
 _wait_for_extra_nodes_ready(){
@@ -185,7 +187,8 @@ _wait_for_extra_nodes_ready(){
         if [[ $label == *"infra"* ]] ; then NODES_COUNT=$((REPLICA*2)); fi
         _wait_for_nodes_ready $CLUSTER_NAME $NODES_COUNT $label
         if [[ $label == *"infra"* ]] ; then
-            _balance_infra
+            _check_infra prometheus-k8s openshift-monitoring
+            _check_infra router openshift-ingress
         fi       
     done
     return 0
