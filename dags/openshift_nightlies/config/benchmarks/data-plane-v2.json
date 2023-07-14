@@ -21,7 +21,7 @@
             "command": "./run.sh",
             "env": {
                 "BASELINE_UUID": "rosa-4.12-9w-2r-c5.4xlarge",
-                "CONFIG": "config/aws-standard.yml",
+                "CONFIG": "config/standard.yml",
                 "ES_INDEX": "ingress-performance",
                 "BASELINE_INDEX": "ingress-performance-baseline",
                 "TOLERANCY": "20"
