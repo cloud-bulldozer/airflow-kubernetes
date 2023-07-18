@@ -14,6 +14,6 @@ RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | b
 
 ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6
 
-RUN curl -L https://github.com/cloud-bulldozer/kube-burner/releases/download/v1.7.2/kube-burner-V1.7.2-linux-x86_64.tar.gz | tar xz -C /usr/bin kube-burner
+RUN curl -L https://github.com/cloud-bulldozer/kube-burner/releases/download/v1.7.3/kube-burner-V1.7.3-linux-x86_64.tar.gz | tar xz -C /usr/bin kube-burner
 RUN curl -L https://github.com/cloud-bulldozer/k8s-netperf/releases/download/v0.1.11/k8s-netperf_Linux_v0.1.11_x86_64.tar.gz | tar xz -C /usr/bin k8s-netperf
 USER airflow
