@@ -41,5 +41,7 @@
     "staging_mgmt_provisioner_shards": "",
     "aws_region": "us-west-2",
     "oidc_config": "",
-    "extra_machinepool": []
+    "extra_machinepool": [],
+    "openshift_workload_node_instance_type": null,
+    "enable_spot_workers": false
 }
