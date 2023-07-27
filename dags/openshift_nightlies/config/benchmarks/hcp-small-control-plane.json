@@ -31,7 +31,8 @@
                 "WORKLOAD": "cluster-density-v2",
                 "ITERATIONS": "500",
                 "LOG_LEVEL": "debug",
-                "CHURN": "false"
+                "CHURN": "true",
+                "EXTRA_FLAGS": "--churn-duration=1h --churn-percent=10 --churn-delay=30s"
             }
         }                
     ]

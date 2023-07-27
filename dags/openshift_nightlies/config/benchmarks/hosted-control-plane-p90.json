@@ -1,13 +1,13 @@
 {
     "benchmarks": [
         {
-            "name": "cluster-density-ms-p90",
+            "name": "cluster-density-v2-p90",
             "workload": "kube-burner-ocp-wrapper",
             "trigger_rule": "all_done",
             "command": "./run.sh",
             "env": {
-                "WORKLOAD": "cluster-density-ms",
-                "ITERATIONS": "90",
+                "WORKLOAD": "cluster-density-v2",
+                "ITERATIONS": "84",
                 "LOG_LEVEL": "debug",
                 "EXTRA_FLAGS": "--churn-duration=1h --churn-percent=10 --churn-delay=30s"
             }
