@@ -1,0 +1,27 @@
+{
+    "aws_profile": "",
+    "aws_access_key_id": "",
+    "aws_secret_access_key": "",
+    "aws_authentication_method": "sts",
+    "aws_region": "us-east-2",
+    "rosa_environment": "staging",
+    "rosa_cli_version": "container",
+    "ocm_cli_version": "container",
+    "ocm_environment": "stage",
+    "managed_channel_group": "nightly",
+    "managed_ocp_version": "latest",
+    "openshift_worker_count": 24,
+    "openshift_network_type": "OVNKubernetes",
+    "openshift_worker_instance_type": "m5.2xlarge",
+    "machineset_metadata_label_prefix": "machine.openshift.io",
+    "staging_mgmt_provisioner_shards": "b4bb294b-a76c-11ed-91b2-0a580a831ba1",
+    "number_of_hostedcluster": 1,
+    "hcp_install_interval": 10,
+    "extra_machinepool": [{
+        "name": "infra",
+        "replica": "1",
+        "instance_type": "r5.xlarge",
+        "labels": "node-role.kubernetes.io/infra=",
+        "taints": "node-role.kubernetes.io/infra=:NoSchedule"
+    }]
+}

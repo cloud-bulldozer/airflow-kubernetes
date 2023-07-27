@@ -1,5 +1,4 @@
 {
-    "rosa_hcp": "true",
     "aws_profile": "",
     "aws_access_key_id": "",
     "aws_secret_access_key": "",
@@ -16,12 +15,12 @@
     "openshift_worker_instance_type": "m5.2xlarge",
     "machineset_metadata_label_prefix": "machine.openshift.io",
     "staging_mgmt_provisioner_shards": "b4bb294b-a76c-11ed-91b2-0a580a831ba1",
-    "number_of_hostedcluster": 2,
+    "number_of_hostedcluster": 10,
     "hcp_install_interval": 60,
     "extra_machinepool": [{
         "name": "infra",
         "replica": "1",
-        "instance_type": "c5.4xlarge",
+        "instance_type": "r5.xlarge",
         "labels": "node-role.kubernetes.io/infra=",
         "taints": "node-role.kubernetes.io/infra=:NoSchedule"
     }]

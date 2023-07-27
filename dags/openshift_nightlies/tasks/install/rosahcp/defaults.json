@@ -35,6 +35,11 @@
     "rosa_cli_fork": "https://github.com/openshift/rosa",
     "ocm_cli_fork": "https://github.com/openshift-online/ocm-cli",
     "ocm_cli_version": "container",
-    "rosa_hcp": "false",
-    "aws_region": "us-west-2"
+    "rosa_hcp": "true",
+    "staging_mgmt_cluster_name": "",
+    "staging_svc_cluster_name": "",
+    "staging_mgmt_provisioner_shards": "",
+    "aws_region": "us-west-2",
+    "oidc_config": "",
+    "extra_machinepool": []
 }

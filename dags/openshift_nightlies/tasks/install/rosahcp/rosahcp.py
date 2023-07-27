@@ -19,12 +19,24 @@ import json
 
 # Defines Tasks for installation of Openshift Clusters
 
-class RosaInstaller(AbstractOpenshiftInstaller):
+class RosaHCPInstaller(AbstractOpenshiftInstaller):
     def __init__(self, dag, config: DagConfig, release: OpenshiftRelease):
         super().__init__(dag, config, release)
         self.exec_config = executor.get_default_executor_config(self.dag_config, executor_image="airflow-managed-services")
         self.rosa_postinstall_setup = rosa_post_install.Diagnosis(dag, config, release)
 
+    def get_install_hcp_task(self):
+        for iteration in range(self.config['number_of_hostedcluster']):
+            c_id = f"{'hcp-'+str(iteration+1)}" # adding 1 to name the cluster hcp-1, hcp-2..
+            yield c_id, self._get_task(operation="install", id=c_id), self.rosa_postinstall_setup._get_rosa_postinstallation(id=c_id), self._get_task(operation="cleanup", id=c_id)
+
+    def wait_task(self, id="wait_task"):
+        return BashOperator(task_id=f"{id}",
+                            depends_on_past=False,
+                            trigger_rule="all_success",
+                            dag=self.dag,
+                            bash_command="sleep 60s")
+    
     # Create Airflow Task for Install/Cleanup steps
     def _get_task(self, operation="install", id="", trigger_rule="all_success"):
         self._setup_task(operation=operation)
@@ -36,8 +48,8 @@ class RosaInstaller(AbstractOpenshiftInstaller):
             "PROM_URL": var_loader.get_secret("thanos_querier_url"),       
             **self.env
         }
-        env = {**self.env}
-        command=f"{constants.root_dag_dir}/scripts/install/rosa.sh -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}"
+        env = {**self.env, **{"HOSTED_ID": id}}
+        command=f"{constants.root_dag_dir}/scripts/install/rosa-hcp.sh -v {self.release.version} -j /tmp/{self.release_name}-{operation}-task.json -o {operation}"
 
         return BashOperator(
             task_id=f"{task_prefix if id != '' else ''}{operation}",
