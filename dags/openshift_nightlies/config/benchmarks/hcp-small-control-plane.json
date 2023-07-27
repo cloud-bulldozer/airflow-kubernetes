@@ -7,8 +7,7 @@
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "node-density",
-                "LOG_LEVEL": "debug",
-                "CHURN": "false"
+                "LOG_LEVEL": "debug"
             }
         },
         {
@@ -18,8 +17,7 @@
             "command": "./run.sh",
             "env": {
                 "WORKLOAD": "node-density-cni",
-                "LOG_LEVEL": "debug",
-                "CHURN": "false"
+                "LOG_LEVEL": "debug"
             }
         },
         {
