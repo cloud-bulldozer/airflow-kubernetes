@@ -278,7 +278,7 @@ class Manifest():
         if 'rosahcp' in self.yaml['platforms']:
             self.get_rosahcp_releases()
         if 'rogcp' in self.yaml['platforms']:
-            self.get_rogcp_releases()            
+            self.get_rogcp_releases()
         if 'hypershift' in self.yaml['platforms']:
             self.get_hypershift_releases()
         if 'prebuilt' in self.yaml['platforms']:
