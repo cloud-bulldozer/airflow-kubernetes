@@ -38,7 +38,7 @@
         {
             "name": "cluster-density-v2",
             "workload": "kube-burner",
-            "custom_cmd": "kube-burner ocp cluster-density-v2 --uuid=${UUID} --iterations=3000 --timeout=6h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --user-metadata=metadata.yml"
+            "custom_cmd": "kube-burner ocp cluster-density-v2 --uuid=${UUID} --iterations=3000 --timeout=6h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --user-metadata=metadata.yml --gc=false"
         }
     ]
 }
