@@ -730,7 +730,7 @@ EOF
     curl -k -sS -X POST -H "Content-type: application/json" ${ES_SERVER}/${ES_INDEX}/_doc -d "${METADATA}" -o /dev/null
 
     echo "Running kube-burner index.." 
-    kube-burner index --uuid=${UUID} --prometheus-url=${MC_PROMETHEUS} --token ${MC_PROMETHEUS_TOKEN} --start=$START_TIME --end=$END_TIME --step 2m --metrics-profile ${METRIC_PROFILE}  --config ./baseconfig.yml --log-level debug
+    kube-burner index --uuid=${UUID} --prometheus-url=${MC_PROMETHEUS} --token ${MC_PROMETHEUS_TOKEN} --start=$START_TIME --end=$((END_TIME+600)) --step 2m --metrics-profile ${METRIC_PROFILE}  --config ./baseconfig.yml --log-level debug
     echo "Finished indexing results"
 }
 
