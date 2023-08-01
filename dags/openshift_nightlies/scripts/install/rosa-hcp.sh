@@ -694,18 +694,21 @@ index_mgmt_cluster_stat(){
     sudo tar -xvzf kube-burner.tar.gz -C /usr/local/bin/
     git clone -q -b ${E2E_BENCHMARKING_BRANCH}  ${E2E_BENCHMARKING_REPO} --depth=1 --single-branch
     METRIC_PROFILE=/home/airflow/workspace/e2e-benchmarking/workloads/kube-burner-ocp-wrapper/metrics-profiles/mc-metrics.yml
-    envsubst < /home/airflow/workspace/e2e-benchmarking/workloads/kube-burner/workloads/managed-services/baseconfig.yml > baseconfig.yml
-    cat baseconfig.yml
+    cat > baseconfig.yml << EOF
+---
+global:
+  indexerConfig:
+    esServers: ["${ES_SERVER}"]
+    insecureSkipVerify: true
+    defaultIndex: ${ES_INDEX}
+    type: elastic
+EOF
+
     HCP_NAMESPACE="$(_get_cluster_id ${CLUSTER_NAME})-$CLUSTER_NAME"
     MC_PROMETHEUS=https://$(oc --kubeconfig=./mgmt_kubeconfig get route -n openshift-monitoring prometheus-k8s -o jsonpath="{.spec.host}")
     MC_PROMETHEUS_TOKEN=$(oc --kubeconfig=./mgmt_kubeconfig sa new-token -n openshift-monitoring prometheus-k8s)
-    MGMT_CLUSTER_NAME=$(oc get --kubeconfig=./mgmt_kubeconfig infrastructure.config.openshift.io cluster -o json 2>/dev/null | jq -r .status.infrastructureName)
-    Q_NODES=""
-    for n in $(curl -H "Authorization: Bearer ${MC_PROMETHEUS_TOKEN}" -k --silent --globoff  ${MC_PROMETHEUS}/api/v1/query?query='sum(kube_node_role{role!~"master|infra|workload|obo"})by(node)&time='$(date +"%s")'' | jq -r '.data.result[].metric.node');
-    do
-       if [[ ${Q_NODES} == "" ]]; then Q_NODES=${n}; else Q_NODES=${Q_NODES}"|"${n}; fi
-    done
-    MGMT_WORKER_NODES=${Q_NODES}
+    Q_NODES=$(curl -H "Authorization: Bearer ${MC_PROMETHEUS_TOKEN}" -k --silent --globoff  ${MC_PROMETHEUS}/api/v1/query?query='sum(kube_node_role{role!~"master|infra|workload|obo"})by(node)&time='$(date +"%s")'' | jq -r '.data.result[].metric.node' | xargs)
+    MGMT_WORKER_NODES=${Q_NODES// /|}
     echo "Exporting required vars"
     cat << EOF
 MC_PROMETHEUS: ${MC_PROMETHEUS}
