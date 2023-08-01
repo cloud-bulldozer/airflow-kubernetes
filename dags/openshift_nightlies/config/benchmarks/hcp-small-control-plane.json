@@ -1,0 +1,37 @@
+{
+    "benchmarks": [
+        {
+            "name": "node-density",
+            "workload": "kube-burner-ocp-wrapper",
+            "trigger_rule": "all_done",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "node-density",
+                "LOG_LEVEL": "debug"
+            }
+        },
+        {
+            "name": "node-desnity-cni",
+            "workload": "kube-burner-ocp-wrapper",
+            "trigger_rule": "all_done",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "node-density-cni",
+                "LOG_LEVEL": "debug"
+            }
+        },
+        {
+            "name": "cluster-density-v2",
+            "workload": "kube-burner-ocp-wrapper",
+            "trigger_rule": "all_done",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "cluster-density-v2",
+                "ITERATIONS": "500",
+                "LOG_LEVEL": "debug",
+                "CHURN": "true",
+                "EXTRA_FLAGS": "--churn-duration=1h --churn-percent=10 --churn-delay=30s"
+            }
+        }                
+    ]
+}

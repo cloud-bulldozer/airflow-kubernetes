@@ -25,7 +25,7 @@ def get_config_vars(release: OpenshiftRelease, task="install", config_dir=f"{con
     if release.platform == 'baremetal' and "bench" in task: 
         file_path = f"{config_dir}/{release.config['benchmarks']}/{task}.json"
         return get_json(file_path)
-    elif ( release.platform == 'hypershift' or release.platform == 'rosa' ) and "hcp" in task:
+    elif ( release.platform == 'hypershift' or release.platform == 'rosa'or release.platform == 'rosahcp' ) and "hcp" in task:
         file_path = f"{config_dir}/benchmarks/{release.config['benchmarks']}"
         return get_json(file_path)
     elif task in release.config:
