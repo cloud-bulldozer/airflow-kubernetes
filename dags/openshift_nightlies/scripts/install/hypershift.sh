@@ -296,10 +296,8 @@ update_fw(){
 index_mgmt_cluster_stat(){
     echo "Indexing Management cluster stat..."
     cd /home/airflow/workspace    
-    echo "Installing kube-burner"
-    export KUBE_BURNER_RELEASE=${KUBE_BURNER_RELEASE:-1.3}
-    curl -L https://github.com/cloud-bulldozer/kube-burner/releases/download/v${KUBE_BURNER_RELEASE}/kube-burner-${KUBE_BURNER_RELEASE}-Linux-x86_64.tar.gz -o kube-burner.tar.gz
-    sudo tar -xvzf kube-burner.tar.gz -C /usr/local/bin/
+    echo "Installing last version of kube-burner"
+    curl -L $(curl -s https://api.github.com/repos/cloud-bulldozer/kube-burner/releases/latest | jq -r '.assets | map(select(.name | test("linux-x86_64"))) | .[0].browser_download_url') | tar xz -C /usr/local/bin kube-burner
     echo "Cloning ${E2E_BENCHMARKING_REPO} from branch ${E2E_BENCHMARKING_BRANCH}"
     git clone -q -b ${E2E_BENCHMARKING_BRANCH}  ${E2E_BENCHMARKING_REPO} --depth=1 --single-branch
     export KUBECONFIG=/home/airflow/auth/config

@@ -85,15 +85,31 @@ class E2EBenchmarks():
             }
             self.install_vars = var_loader.build_task_vars(
                 release, task="install")
-            if self.install_vars['rosa_hcp'] == "true":
-                cluster_name = release._generate_cluster_name()
-                self.env = {
-                    **self.env,
-                    "MGMT_CLUSTER_NAME": f"{self.install_vars['staging_mgmt_cluster_name']}.*",
-                    "SVC_CLUSTER_NAME": f"{self.install_vars['staging_svc_cluster_name']}.*",
-                    "MGMT_KUBECONFIG_SECRET": "staging-mgmt-cluster-kubeconfig",
-                    **self._insert_kube_env()
-                }
+
+        if self.release.platform == "rosahcp":
+            self.rosa_creds = var_loader.get_secret("rosa_creds", deserialize_json=True)
+            self.aws_creds = var_loader.get_secret("aws_creds", deserialize_json=True)
+            self.ocm_creds = var_loader.get_secret("ocm_creds", deserialize_json=True)
+            self.environment = self.vars["environment"] if "environment" in self.vars else "staging"
+            self.env = {
+                **self.env,
+                "ROSA_CLUSTER_NAME": release._generate_cluster_name(),
+                "ROSA_ENVIRONMENT": self.environment,
+                "ROSA_TOKEN": self.rosa_creds['rosa_token_'+self.environment],
+                "AWS_ACCESS_KEY_ID": self.aws_creds['aws_access_key_id'],
+                "AWS_SECRET_ACCESS_KEY": self.aws_creds['aws_secret_access_key'],
+                "AWS_DEFAULT_REGION": self.aws_creds['aws_region_for_openshift'],
+                "AWS_ACCOUNT_ID": self.aws_creds['aws_account_id'],
+                "OCM_TOKEN": self.ocm_creds['ocm_token']
+            }
+            self.install_vars = var_loader.build_task_vars(
+                release, task="install")
+            cluster_name = release._generate_cluster_name()
+            self.env = {
+                **self.env,
+                "MGMT_KUBECONFIG_SECRET": "staging-mgmt-cluster-kubeconfig",
+                **self._insert_kube_env()
+            }
 
         if self.release.platform == "hypershift":
             mgmt_cluster_name = release._generate_cluster_name()
