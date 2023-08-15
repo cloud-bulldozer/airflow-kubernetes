@@ -13,7 +13,7 @@
         {
             "name": "node-density",
             "workload": "kube-burner",
-            "custom_cmd": "kube-burner ocp node-density --uuid=${UUID} --pods-per-node=245 --timeout=2h --pod-ready-threshold=5s --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --user-metadata=metadata.yml"
+            "custom_cmd": "kube-burner ocp node-density --uuid=${UUID} --pods-per-node=245 --timeout=2h --pod-ready-threshold=15s --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --user-metadata=metadata.yml"
         },
         {
             "name": "node-density-heavy",
