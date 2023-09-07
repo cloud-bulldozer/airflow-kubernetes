@@ -24,12 +24,12 @@ dagConfig:
     tag: 2.6.2
   dependencies:
     e2e_benchmarking:
-      repo: https://github.com/cloud-bulldozer/e2e-benchmarking.git
-      branch: master
+      repo: https://github.com/rsevilla87/e2e-benchmarking.git
+      branch: OCPBUGS-18011
 
 platforms:
   cloud:
-    versions: ["4.12", "4.13", "4.14"]
+    versions: ["4.13", "4.14"]
     providers: ["aws"]
     #providers: ["aws", "aws-arm", "azure","gcp"]
     variants:
