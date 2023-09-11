@@ -29,8 +29,8 @@ dagConfig:
 
 platforms:
   cloud:
-    versions: ["4.13", "4.14"]
-    providers: ["aws", "azure"]
+    versions: ["4.12", "4.13", "4.14"]
+    providers: ["aws"]
     #providers: ["aws", "aws-arm", "azure","gcp"]
     variants:
     - name: ovn-small-cp
