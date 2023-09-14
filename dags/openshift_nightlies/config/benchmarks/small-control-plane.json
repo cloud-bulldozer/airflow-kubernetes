@@ -12,23 +12,40 @@
         },
         {
             "name": "node-density",
-            "workload": "kube-burner",
-            "custom_cmd": "kube-burner ocp node-density --uuid=${UUID} --pods-per-node=245 --timeout=2h --pod-ready-threshold=15s --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --user-metadata=metadata.yml"
+            "workload": "kube-burner-ocp-wrapper",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "node-density",
+                "EXTRA_FLAGS": "--pod-ready-threshold=15s --timeout=2h"
+            }
         },
         {
             "name": "node-density-heavy",
-            "workload": "kube-burner",
-            "custom_cmd": "kube-burner ocp node-density-heavy --uuid=${UUID} --pods-per-node=245 --timeout=2h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --user-metadata=metadata.yml"
+            "workload": "kube-burner-ocp-wrapper",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "node-density-heavy",
+                "EXTRA_FLAGS": "--timeout=2h"
+            }
         },
         {
             "name": "node-density-cni",
-            "workload": "kube-burner",
-            "custom_cmd": "kube-burner ocp node-density-cni --uuid=${UUID} --pods-per-node=245 --timeout=2h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --user-metadata=metadata.yml"
+            "workload": "kube-burner-ocp-wrapper",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "node-density-cni",
+                "EXTRA_FLAGS": "--timeout=2h"
+            }
         },
         {
             "name": "cluster-density-v2",
-            "workload": "kube-burner",
-            "custom_cmd": "kube-burner ocp cluster-density-v2 --uuid=${UUID} --iterations=500 --timeout=3h --es-server=${ES_SERVER} --es-index=ripsaw-kube-burner --user-metadata=metadata.yml --gc=false"
+            "workload": "kube-burner-ocp-wrapper",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "cluster-density-v2",
+                "ITERATIONS": "216",
+                "EXTRA_FLAGS": "--timeout=3h"
+            }
         }
     ]
 }
