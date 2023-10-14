@@ -83,6 +83,11 @@ platforms:
         config:
           install: rosa/ovn-small.json
           benchmarks: small-control-plane-mgs.json
+      - name: sts-ovn-small-spot-cp
+        schedule: "0 12 * * 3"
+        config:
+          install: rosa/ovn-small-spot.json
+          benchmarks: small-control-plane-mgs.json
       - name: sts-ovn-medium-cp
         schedule: "5 12 * * 1"
         config:
