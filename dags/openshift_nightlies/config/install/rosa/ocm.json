@@ -9,7 +9,7 @@
     "ocm_environment": "stage",
     "managed_channel_group": "nightly",
     "managed_ocp_version": "latest",
-    "openshift_worker_count": 3,
+    "openshift_worker_count": 6,
     "openshift_network_type": "OpenShiftSDN",
     "openshift_worker_instance_type": "m5.2xlarge",
     "machineset_metadata_label_prefix": "machine.openshift.io"
