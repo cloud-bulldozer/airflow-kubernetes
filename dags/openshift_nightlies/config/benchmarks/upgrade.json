@@ -1,9 +1,15 @@
 {
     "benchmarks": [
         {
-            "name": "cluster-density",
-            "workload": "kube-burner",
-            "custom_cmd": "kube-burner ocp cluster-density --iterations=500 --timeout=2h --churn=false --gc=false"
+            "name": "cluster-density-v2",
+            "workload": "kube-burner-ocp-wrapper",
+            "command": "./run.sh",
+            "env": {
+                "WORKLOAD": "cluster-density-v2",
+                "ITERATIONS": "2268",
+                "EXTRA_FLAGS": "--timeout=2h --gc=false",
+                "CHURN": "false"
+            }
         },
         {
             "name": "upgrades",
