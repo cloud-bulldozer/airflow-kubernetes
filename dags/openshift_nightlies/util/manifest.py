@@ -23,7 +23,7 @@ class Manifest():
         self.latest_releases = {}
         for stream in release_streams:
             # ARM binaries under its own CI.
-            base_url_arm = self.release_stream_base_url.replace("openshift-release",f"openshift-release-{self.ARM64}")
+            base_url_arm = self.release_stream_base_url.replace("amd64", f"{self.ARM64}")
             stream_arm = f"{stream}-{self.ARM64}"
             latest_accepted_release,latest_accepted_release_url = self.request_for_payload(f"{base_url_arm}/{stream_arm}/latest")
             self.latest_releases[stream_arm] = {
