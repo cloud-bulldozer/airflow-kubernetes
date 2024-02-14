@@ -47,7 +47,6 @@ This DAG is used for OCM testing. Modules in this DAG -
 * Each test is called with a timeout.
   ```Timeout = test duration + 10 minutes```
   This extra 10 minutes help test to create necessary result files after running the test for given duration
-* ```Automation.py``` uploads all result files to snappy server
 * Kube burner is used to pull metrics from clusters and account manager services and push to observability ES.
 * Finally it displays dashboard URLs for these metrics
 * At the end, this script returns UUID and test result to airflow. UUID is used in the next task (i.e cleanup task)

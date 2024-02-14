@@ -23,7 +23,6 @@ class E2EBenchmarks():
         self.release = release
         self.task_group = task_group
         self.dag_config = config
-        self.snappy_creds = var_loader.get_secret("snappy_creds", deserialize_json=True)
         self.es_server_baseline = var_loader.get_secret("es_server_baseline")
         self.gsheet = var_loader.get_secret("gsheet_key")
 
@@ -38,10 +37,6 @@ class E2EBenchmarks():
             release=self.release, task=self.task_group)
         self.git_name=self._git_name()
         self.env = {
-            "SNAPPY_DATA_SERVER_URL": self.snappy_creds['server'],
-            "SNAPPY_DATA_SERVER_USERNAME": self.snappy_creds['username'],
-            "SNAPPY_DATA_SERVER_PASSWORD": self.snappy_creds['password'],
-            "SNAPPY_USER_FOLDER": self.git_name,
             "PLATFORM": self.release.platform,
             "TASK_GROUP": self.task_group,
             "ES_SERVER_BASELINE": self.es_server_baseline

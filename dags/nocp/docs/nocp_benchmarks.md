@@ -7,7 +7,7 @@ Some workloads doesn't need OCP environemnt. For example, ocm-api-load which tes
 * tool is run from the jump host
 * user has to manually setup needed packages in the jump host
 * airflow will run only one task i.e benchmark task
-* user provided script for benchmark task should handle everything like triggering the tool on jump host, scrapping metrics, pushing data to snappy and cleanup.
+* user provided script for benchmark task should handle everything like triggering the tool on jump host or scrapping metrics
 
 
 ## Adding the new workload
