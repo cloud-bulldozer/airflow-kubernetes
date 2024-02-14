@@ -8,7 +8,6 @@
             "env": {
                 "WORKLOAD": "pod2svc",
                 "COMPARE": "false",
-                "ENABLE_SNAPPY_BACKUP": "false",
                 "MULTI_AZ": "false"
             }
         },
