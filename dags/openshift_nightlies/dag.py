@@ -19,7 +19,7 @@ from openshift_nightlies.tasks.install.rogcp import rogcp
 from openshift_nightlies.tasks.install.hypershift import hypershift
 from openshift_nightlies.tasks.install.prebuilt import initialize_cluster
 from openshift_nightlies.tasks.benchmarks import e2e
-from openshift_nightlies.tasks.utils import rosa_post_install, scale_ci_diagnosis, final_dag_status
+from openshift_nightlies.tasks.utils import rosa_post_install, final_dag_status
 from openshift_nightlies.util import constants, manifest
 from abc import ABC, abstractmethod
 
@@ -68,9 +68,6 @@ class AbstractOpenshiftNightlyDAG(ABC):
     def _get_e2e_benchmarks(self):
         return e2e.E2EBenchmarks(self.dag, self.config, self.release)
 
-    def _get_scale_ci_diagnosis(self):
-        return scale_ci_diagnosis.Diagnosis(self.dag, self.config, self.release)
-
     def _get_rosa_postinstall_setup(self):
         return rosa_post_install.Diagnosis(self.dag, self.config, self.release)
 
@@ -84,11 +81,7 @@ class CloudOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
 
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
-            must_gather = self._get_scale_ci_diagnosis().get_must_gather("must-gather")
             chain(*benchmark_tasks)
-            # Configure must_gather as downstream of all benchmark tasks
-            for benchmark in benchmark_tasks:
-                benchmark >> must_gather
 
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
@@ -159,12 +152,8 @@ class RosaNightlyDAG(AbstractOpenshiftNightlyDAG):
         install_cluster = installer.get_install_task()
         final_status = final_dag_status.get_task(self.dag)
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
-            must_gather = self._get_scale_ci_diagnosis().get_must_gather("must-gather")
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
-            # Configure must_gather as downstream of all benchmark tasks
-            for benchmark in benchmark_tasks:
-                benchmark >> must_gather
         rosa_post_installation = self._get_rosa_postinstall_setup()._get_rosa_postinstallation()
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
@@ -208,11 +197,7 @@ class RoGCPNightlyDAG(AbstractOpenshiftNightlyDAG):
         final_status = final_dag_status.get_task(self.dag)
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
-            must_gather = self._get_scale_ci_diagnosis().get_must_gather("must-gather")
             chain(*benchmark_tasks)
-            # Configure must_gather as downstream of all benchmark tasks
-            for benchmark in benchmark_tasks:
-                benchmark >> must_gather
         if self.config.cleanup_on_success:
             cleanup_cluster = installer.get_cleanup_task()
             install_cluster >> benchmarks >> cleanup_cluster >> final_status
@@ -285,11 +270,8 @@ class PrebuiltOpenshiftNightlyDAG(AbstractOpenshiftNightlyDAG):
         installer = self._get_openshift_installer()
         initialize_cluster = installer.initialize_cluster_task()
         with TaskGroup("benchmarks", prefix_group_id=False, dag=self.dag) as benchmarks:
-            must_gather = self._get_scale_ci_diagnosis().get_must_gather("must-gather")
             benchmark_tasks = self._get_e2e_benchmarks().get_benchmarks()
             chain(*benchmark_tasks)
-            for benchmark in benchmark_tasks:
-                benchmark >> must_gather
         initialize_cluster >> benchmarks
 
     def _get_openshift_installer(self):

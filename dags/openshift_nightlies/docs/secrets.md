@@ -173,11 +173,32 @@ Schema:
 ```
 
 ---
+Key: `rosa_creds`
+
+Type: JSON
+
+Description: Token to interact with OCM to deploy clusters via ROSA
+
+Used by: install, cleanup
+
+Platforms: ROSA (aws)
+
+Schema:
+
+```json
+{
+    "rosa_token_<environment>": "string"
+}
+```
+
+This object han have different keys for the different ROSA environments, for example, a token for the `staging` environment is specified by the key `rosa_token_staging`.
+
+---
 Key: `openshift_install_config`
 
 Type: JSON
 
-Description: Common openshift install configurations that aren't configurable
+Description: Common openshift install configurations that aren't configurable. `openshift_install_pull_secret` should be defined here
 
 Used by: install, cleanup
 
@@ -212,24 +233,3 @@ Platforms: Cloud (all), Openstack
 
 Schema: Fully qualified URL
 
----
-Key: `snappy_creds`
-
-Type: JSON
-
-Description: Credentials for snappy server that houses cluster artifacts we wish to keep after the cluster is destroyed
-
-Used by: scale_ci_diagnosis
-
-Platforms: All
-
-Schema:
-
-```json
-{
-    "username": "string",
-    "server": "string",
-    "password": "string"
-}
-
-```
