@@ -36,7 +36,7 @@ class TestManifest():
     def assert_amd_client(self,stream):
         assert "arm64" not in stream
         assert "openshift-release-artifacts.apps.ci.l2s4.p1.openshiftapps.com/4.17.0-0.nightly-"+ self.year in stream
-        assert "openshift-client-linux-4.17.0-0.nightly-"+ self.year in stream
+        assert "openshift-client-linux-amd64-rhel8-4.17.0-0.nightly-"+ self.year in stream
 
     def test_manifest_amd(self,mocked_manifest):
         stream = mocked_manifest.latest_releases[self.stream]
@@ -51,7 +51,7 @@ class TestManifest():
     def assert_arm_client(self,stream):
         assert "arm64" in stream
         assert "openshift-release-artifacts-arm64.apps.ci.l2s4.p1.openshiftapps.com/4.17.0-0.nightly-arm64-"+self.year in stream
-        assert "openshift-client-linux-amd64-4.17.0-0.nightly-arm64-"+self.year in stream
+        assert "openshift-client-linux-amd64-rhel8-4.17.0-0.nightly-arm64-"+self.year in stream
 
     def test_manifest_arm(self,mocked_manifest):
         stream = mocked_manifest.latest_releases[f"{self.stream}-arm64"]
