@@ -1,16 +1,16 @@
 versions:
-  - version: "4.12"
+  - version: "4.15"
     alias: stable
-    releaseStream: 4.12.0-0.nightly
-    baremetalReleaseStream: latest-4.12
-  - version: "4.13"
+    releaseStream: 4.15.0-0.nightly
+    baremetalReleaseStream: latest-4.15
+  - version: "4.16"
     alias: next
-    releaseStream: 4.13.0-0.nightly
-    baremetalReleaseStream: latest-4.13
-  - version: "4.14"
+    releaseStream: 4.16.0-0.nightly
+    baremetalReleaseStream: latest-4.16
+  - version: "4.17"
     alias: future
-    releaseStream: 4.14.0-0.nightly
-    baremetalReleaseStream: latest-4.14
+    releaseStream: 4.17.0-0.nightly
+    baremetalReleaseStream: latest-4.17
 
 
 dagConfig:
@@ -29,7 +29,7 @@ dagConfig:
 
 platforms:
   cloud:
-    versions: ["4.12", "4.13", "4.14"]
+    versions: ["4.15", "4.16", "4.17"]
     providers: ["aws"]
     #providers: ["aws", "aws-arm", "azure","gcp"]
     variants:
@@ -76,7 +76,7 @@ platforms:
 
   # Do not program concurrent builds of ROSA/ROGCP/ARO
   rosa:
-    versions: ["4.12", "4.13"]
+    versions: ["4.15", "4.16"]
     variants:
       - name: sts-ovn-small-cp
         schedule: "0 12 * * 3"
@@ -115,7 +115,7 @@ platforms:
           benchmarks: upgrade.json
 
   rosahcp:
-    versions: ["4.12", "4.13"]
+    versions: ["4.15", "4.16"]
     variants:
       - name: p75-control-plane
         schedule:  "0 12 * * 3"
@@ -134,7 +134,7 @@ platforms:
           benchmarks: hcp-small-control-plane.json
 
   rogcp:
-    versions: ["4.12", "4.13"]
+    versions: ["4.15", "4.16"]
     variants:
       - name: ovn-control-plane
         schedule: "10 13 * * 1"
