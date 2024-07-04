@@ -1,4 +1,5 @@
 from os import environ
+from os import getenv
 
 from nocp.util import constants
 from nocp.util import var_loader as nocp_var_loader
@@ -11,6 +12,7 @@ from airflow.operators.bash import BashOperator
 from airflow.models import Variable
 from airflow.models import DAG
 from airflow.utils.task_group import TaskGroup
+from airflow.utils.helpers import build_airflow_url_with_query
 from kubernetes.client import models as k8s
 
 
@@ -35,6 +37,7 @@ class NOCPBenchmarks():
             "ES_SERVER_BASELINE": self.es_server_baseline,
             "ES_SERVER": var_loader.get_secret('elasticsearch'),
             "GRAFANA_URL": var_loader.get_secret('grafana'),
+            "BUILD_URL": self._get_build_url(),
         }
         self.env.update(self.dag_config.dependencies)
         if self.app == "ocm":
@@ -54,13 +57,13 @@ class NOCPBenchmarks():
 
     def get_benchmarks(self):
         benchmarks = self._get_benchmarks(self.vars["benchmarks"])
-        return benchmarks 
+        return benchmarks
 
     def _git_name(self):
         git_username = var_loader.get_git_user()
         if git_username == 'cloud-bulldozer':
             return f"perf-ci"
-        else: 
+        else:
             return f"{git_username}"
 
     def _get_benchmarks(self, benchmarks):
@@ -70,7 +73,7 @@ class NOCPBenchmarks():
             elif 'group' in benchmark:
                 with TaskGroup(benchmark['group'], prefix_group_id=False, dag=self.dag) as task_group:
                     benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
-            else: 
+            else:
                 benchmarks[index] = self._get_benchmarks(benchmark['benchmarks'])
         return benchmarks
 
@@ -123,3 +126,18 @@ class NOCPBenchmarks():
             self._add_cleaner(task, env)
 
         return task
+
+    def _get_build_url(self):
+        dag_id = getenv("AIRFLOW_CTX_DAG_ID", default="")
+        task_id = getenv("AIRFLOW_CTX_TASK_ID", default="")
+        dag_execution_date = getenv("AIRFLOW_CTX_EXECUTION_DATE", default="")
+        dag_run_id = getenv("AIRFLOW_CTX_DAG_RUN_ID", default="")
+
+        query = {
+            "dag_id": dag_id,
+            "task_id": task_id,
+            "execution_date": dag_execution_date,
+            "dag_run_id": dag_run_id,
+        }
+
+        return build_airflow_url_with_query(query)
