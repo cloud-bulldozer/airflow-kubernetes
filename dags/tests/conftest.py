@@ -1,8 +1,7 @@
 import pytest
 import json
 
-from common.models.dag_config import DagConfig
-from openshift_nightlies.models.release import OpenshiftRelease, BaremetalRelease
+from openshift_nightlies.models.release import OpenshiftRelease
 
 
 @pytest.fixture(scope="session")
@@ -158,7 +157,7 @@ def _populate_task_dir(base_task_dir, task, platform=None):
 
 def _populate_config_dir(base_config_dir, release: OpenshiftRelease, task):
     overrides = {
-        "default": "override", 
+        "default": "override",
         "new_field": "merge"
     }
     task_dir = base_config_dir / task
