@@ -36,5 +36,6 @@
     "ocm_cli_fork": "https://github.com/openshift-online/ocm-cli",
     "ocm_cli_version": "container",
     "rosa_hcp": "false",
-    "aws_region": "us-west-2"
+    "aws_region": "us-west-2",
+    "enable_spot_workers": false
 }

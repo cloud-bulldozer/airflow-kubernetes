@@ -31,8 +31,17 @@ _wait_for_nodes_ready(){
     export KUBECONFIG=./kubeconfig
     ALL_READY_ITERATIONS=0
     ITERATIONS=0
-    # Node count is number of workers + 3 infra
-    NODES_COUNT=$(($2+3))
+    if [ "$3" == "rosa-spots=true" ]; then
+        if [ "$SPOT_POOL_READY" == "true" ]; then
+            # Node count is number of workers pool + 3 infra
+            NODES_COUNT=$(($2+3))
+        else
+            NODES_COUNT=$2
+        fi
+    else
+        # Node count is number of workers + 3 infra
+        NODES_COUNT=$(($2+3))
+    fi
     # 30 seconds per node, waiting for all nodes ready to finalize
     while [ ${ITERATIONS} -le $((${NODES_COUNT}*5)) ] ; do
         NODES_READY_COUNT=$(oc get nodes -l $3 | grep " Ready " | wc -l)
@@ -86,7 +95,16 @@ _wait_for_cluster_ready(){
             echo "Set end time of prom scrape"
             export END_TIME=$(date +"%s")       
             START_TIMER=$(date +%s)
-            _wait_for_nodes_ready $1 ${COMPUTE_WORKERS_NUMBER} "node-role.kubernetes.io/worker"
+            if [ "$ENABLE_SPOT_WORKERS" == "true" ]; then
+                if [ "$SPOT_POOL_READY" == "true" ]; then
+                    _wait_for_nodes_ready $1 ${COMPUTE_WORKERS_NUMBER} "node-role.kubernetes.io/worker"
+                else
+                    DEFAULT_WORKER_NODES=3
+                    _wait_for_nodes_ready $1 $DEFAULT_WORKER_NODES "node-role.kubernetes.io/worker"
+                fi
+            else
+                _wait_for_nodes_ready $1 ${COMPUTE_WORKERS_NUMBER} "node-role.kubernetes.io/worker"
+            fi
             CURRENT_TIMER=$(date +%s)
             # Time since rosa cluster is ready until all nodes are ready
             DURATION=$(($CURRENT_TIMER - $START_TIMER))
@@ -129,6 +147,8 @@ setup(){
     export MANAGED_CHANNEL_GROUP=$(cat ${json_file} | jq -r .managed_channel_group)
     export CLUSTER_NAME=$(cat ${json_file} | jq -r .openshift_cluster_name)
     export COMPUTE_WORKERS_NUMBER=$(cat ${json_file} | jq -r .openshift_worker_count)
+    export COMPUTE_WORKERS_TYPE=$(cat ${json_file} | jq -r .openshift_worker_instance_type)
+    export ENABLE_SPOT_WORKERS=$(cat ${json_file} | jq -r .enable_spot_workers)
     export NETWORK_TYPE=$(cat ${json_file} | jq -r .openshift_network_type)
     export ES_SERVER=$(cat ${json_file} | jq -r .es_server)
     export UUID=$(uuidgen)
@@ -167,8 +187,17 @@ setup(){
     return 0
 }
 
+_create_spot_worker_pool(){
+    if [ "$ENABLE_SPOT_WORKERS" == "true" ]; then
+        if [ "$COMPUTE_WORKERS_NUMBER" != "3" ]; then
+            rosa create machinepool -c ${CLUSTER_NAME} --name="${CLUSTER_NAME}-spot-pool" --replicas=$((COMPUTE_WORKERS_NUMBER-3)) --instance-type="${COMPUTE_WORKERS_TYPE}" --labels="rosa-spots=true" --use-spot-instances
+            _wait_for_nodes_ready $CLUSTER_NAME $((COMPUTE_WORKERS_NUMBER-3)) "rosa-spots=true"
+            export SPOT_POOL_READY=true
+        fi
+    fi
+}
+
 install(){
-    export COMPUTE_WORKERS_TYPE=$(cat ${json_file} | jq -r .openshift_worker_instance_type)
     export CLUSTER_AUTOSCALE=$(cat ${json_file} | jq -r .cluster_autoscale)
     export OIDC_CONFIG=$(cat ${json_file} | jq -r .oidc_config)
     export INSTALLATION_PARAMS=""
@@ -176,7 +205,13 @@ install(){
         INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --sts -m auto --yes"
     fi
     INSTALLATION_PARAMS="${INSTALLATION_PARAMS} --multi-az"  # Multi AZ is default on hosted-cp cluster
-    rosa create cluster --tags=User:${GITHUB_USERNAME} --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --replicas ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS} 
+    if [ "$ENABLE_SPOT_WORKERS" == "true" ]; then
+        rosa create cluster --tags=User:${GITHUB_USERNAME} --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS} 
+        _wait_for_cluster_ready ${CLUSTER_NAME}
+        _create_spot_worker_pool
+    else
+        rosa create cluster --tags=User:${GITHUB_USERNAME} --cluster-name ${CLUSTER_NAME} --version "${ROSA_VERSION}" --channel-group=${MANAGED_CHANNEL_GROUP} --compute-machine-type ${COMPUTE_WORKERS_TYPE} --replicas ${COMPUTE_WORKERS_NUMBER} --network-type ${NETWORK_TYPE} ${INSTALLATION_PARAMS} 
+    fi
     postinstall
     return 0
 }
@@ -277,6 +312,7 @@ if [[ "$operation" == "install" ]]; then
         index_metadata
     elif [ "${CLUSTER_STATUS}" == "ready" ] ; then
         printf "INFO: Cluster ${CLUSTER_NAME} already installed and ready, reusing..."
+        _create_spot_worker_pool
         postinstall
     elif [ "${CLUSTER_STATUS}" == "error" ] ; then
         printf "INFO: Cluster ${CLUSTER_NAME} errored, cleaning them now..."
