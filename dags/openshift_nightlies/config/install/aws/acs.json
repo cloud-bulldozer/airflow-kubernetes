@@ -2,7 +2,7 @@
     "openshift_client_location": "",
     "openshift_install_binary_url": "",
     "openshift_master_count": 3,
-    "openshift_worker_count": 3,
+    "openshift_worker_count": 6,
     "openshift_host_prefix": "22",
     "openshift_master_instance_type": "r5.4xlarge",
     "openshift_worker_instance_type": "m5.2xlarge",
